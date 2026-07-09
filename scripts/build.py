@@ -8,6 +8,7 @@ static HTML suitable for GitHub Pages. Run: python scripts/build.py
 from __future__ import annotations
 
 import html
+import re
 import shutil
 from datetime import date
 from pathlib import Path
@@ -49,7 +50,21 @@ def contributor_names(doc: dict) -> list[str]:
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "errata"
+LINKS = ROOT / "data" / "links"
 SITE = ROOT / "site"
+
+_MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
+
+
+def md_links(s: str) -> str:
+    """Render a string with markdown [label](url) links to safe HTML."""
+    out, last = [], 0
+    for m in _MDLINK.finditer(s):
+        out.append(html.escape(s[last:m.start()]))
+        out.append(f'<a href="{html.escape(m.group(2))}">{html.escape(m.group(1))}</a>')
+        last = m.end()
+    out.append(html.escape(s[last:]))
+    return "".join(out)
 
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
@@ -94,6 +109,13 @@ details.older > summary { cursor: pointer; font-weight: 600; color: var(--accent
   padding: .6rem .2rem; border-top: 2px solid var(--line); list-style-position: inside; }
 details.older > summary:hover { color: var(--fg); }
 details.older[open] > summary { border-bottom: 1px solid var(--line); margin-bottom: .5rem; }
+details.section { border-bottom: 1px solid var(--line); }
+details.section > summary { cursor: pointer; font-weight: 600; color: var(--accent);
+  padding: .7rem .2rem; list-style-position: inside; }
+details.section > summary:hover { color: var(--fg); }
+details.section > summary .count { color: var(--muted); font-weight: 400; font-size: .85rem; }
+ul.linklist { list-style: none; padding: .2rem 0 .9rem; margin: 0; }
+ul.linklist > li { padding: .35rem 0 .35rem 1.1rem; text-indent: -1.1rem; }
 footer { margin-top: 1.5rem; color: var(--muted); font-size: .82rem; }
 """
 
@@ -118,7 +140,7 @@ def page(title: str, body: str) -> str:
 {body}
 <footer>Generated from data maintained by Terence Tao at
 <a href="https://github.com/teorth/tao-web">github.com/teorth/tao-web</a>.
-Corrections and page numbers welcome as issues or pull requests.</footer>
+Corrections welcome as issues or pull requests.</footer>
 </div></body></html>
 """
 
@@ -251,7 +273,30 @@ def build_book(doc: dict) -> tuple[str, str]:
     return slug, page(book["title"], "\n".join(parts))
 
 
-def build_index(books: list[dict]) -> str:
+def build_links_page(doc: dict) -> tuple[str, str]:
+    """Render a curated link-collection page: intro + collapsible sections."""
+    slug = doc["slug"]
+    parts = ['<p><a href="index.html">&larr; Home</a></p>',
+             f'<h1>{html.escape(doc["title"])}</h1>']
+    if doc.get("source"):
+        parts.append(f'<p class="sub"><a href="{html.escape(doc["source"])}">original page</a></p>')
+    if doc.get("description"):
+        parts.append(f'<p class="desc">{md_links(doc["description"])}</p>')
+    for sec in doc["sections"]:
+        entries = sec.get("entries", [])
+        cnt = f' <span class="count">({len(entries)})</span>' if entries else ""
+        parts.append('<details class="section">')
+        parts.append(f'<summary>{html.escape(sec["title"])}{cnt}</summary>')
+        if sec.get("description"):
+            parts.append(f'<p class="sub">{md_links(sec["description"])}</p>')
+        if entries:
+            lis = "".join(f'<li>{md_links(e)}</li>' for e in entries)
+            parts.append(f'<ul class="linklist">{lis}</ul>')
+        parts.append('</details>')
+    return slug, page(doc["title"], "\n".join(parts))
+
+
+def build_index(books: list[dict], links: list[dict] = ()) -> str:
     rows = []
     for doc in sorted(books, key=lambda d: d["book"]["title"].lower()):
         b = doc["book"]
@@ -263,6 +308,11 @@ def build_index(books: list[dict]) -> str:
             '<p class="sub">Book pages for the works of Terence Tao &mdash; bibliographic details and '
             'errata, generated from a database maintained by the author.</p>'
             f'<ul class="book-list">{"".join(rows)}</ul>')
+    if links:
+        lrows = "".join(
+            f'<li><a href="{l["slug"]}.html">{html.escape(l["title"])}</a></li>'
+            for l in sorted(links, key=lambda d: d["title"].lower()))
+        body += f'<h2>Other pages</h2><ul class="book-list">{lrows}</ul>'
     return page("Books — Terence Tao", body)
 
 
@@ -274,9 +324,14 @@ def main() -> None:
     for doc in books:
         slug, htmltext = build_book(doc)
         (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
-    (SITE / "index.html").write_text(build_index(books), encoding="utf-8", newline="\n")
+    linkdocs = ([yaml.safe_load(p.read_text(encoding="utf-8")) for p in sorted(LINKS.glob("*.yaml"))]
+                if LINKS.exists() else [])
+    for doc in linkdocs:
+        slug, htmltext = build_links_page(doc)
+        (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
+    (SITE / "index.html").write_text(build_index(books, linkdocs), encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
-    print(f"Built {len(books)} book page(s) + index into {SITE}")
+    print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) + index into {SITE}")
 
 
 if __name__ == "__main__":

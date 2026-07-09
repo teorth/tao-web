@@ -1,0 +1,429 @@
+# Imported from https://terrytao.wordpress.com/mastodon-posts/ -- maintain by hand.
+title: Mastodon posts and other links
+slug: mastodon-posts
+source: "https://terrytao.wordpress.com/mastodon-posts/"
+description: "Here I collect some links to some of [my Mastodon posts](https://mathstodon.xyz/@tao), organized\
+  \ loosely by theme, together with some other miscellaneous posts outside of the Mastodon platform."
+sections:
+- title: Current events and personal thoughts
+  entries:
+  - "[My personal traversal of Maslow’s hierarchy of needs after the election](https://mathstodon.xyz/@tao/113444728490902451)\
+    \ (Nov 7, 2024)"
+  - "[An illustration of survivor bias during the Los Angeles fires](https://mathstodon.xyz/@tao/113799103813833857)\
+    \ (Jan 9, 2025)"
+  - "[On the need to adopt complex solutions, and understand the limitations of simpler models, in a complex\
+    \ world](https://mathstodon.xyz/@tao/113873092369347147) (Jan 22, 2025)"
+  - "[On the appropriate amount of reliance on metrics and quantitative reasoning in real world problems](https://mathstodon.xyz/@tao/113901838076679636)\
+    \ (Jan 28, 2025)"
+  - "[On the complexities of mean field games, and the real-world impact of executive orders on fields\
+    \ such as mathematics](https://mathstodon.xyz/@tao/113910070146861518) (Jan 29, 2025)"
+  - "[On the steep NSF spending cuts](https://mathstodon.xyz/@tao/114568996952809637) (May 25, 2025)"
+  - "[On the precious nature of the consensus objective standard of mathematical truth, and the need to\
+    \ defend it](https://mathstodon.xyz/@tao/114801447661785651) (July 5, 2025)"
+  - "[On how the modern world requires emerging forms of game theory that view the information space itself\
+    \ as a primary battleground](https://mathstodon.xyz/deck/@tao/114866543948652941) (July 17, 2025)"
+  - "[NSF and NIH suspend its funding to UCLA, and to IPAM in particular](https://mathstodon.xyz/@tao/114956840959338146)\
+    \ (Aug 1, 2025)"
+  - "[On the compressed sensing work I did at IPAM](https://mathstodon.xyz/@tao/114967650999562435) (Aug\
+    \ 3, 2025)"
+  - "[IPAM fundraising](https://mathstodon.xyz/@tao/114990384250042706) (Aug 7, 2025)"
+  - "[A partial restoration of NSF funding by court order](https://mathstodon.xyz/@tao/115024720864221606)\
+    \ (Aug 13, 2025)"
+  - "[On the decline of small grassroots organizations in society](https://mathstodon.xyz/@tao/115259943398316677)\
+    \ (Sep 29, 2025)"
+- title: Mathematical topics
+  entries:
+  - "[An example of Simpsons paradox: the more failures an author has, the more likely the author is to\
+    \ be competent](https://mathstodon.xyz/@tao/109379222779431057) (Nov 20, 2022)"
+  - "[Using symmetries to reduce a problem to special cases](https://mathstodon.xyz/@tao/109451634735720062)\
+    \ (Dec 3, 2022)"
+  - "[Using Bayesian probability to measure bias](https://mathstodon.xyz/@tao/109690419806082574) (Jan\
+    \ 14, 2023)"
+  - "[Viewing quantifier elimination and introduction of variables as a “wolf, goat, and cabbage” problem](https://mathstodon.xyz/deck/@tao/112608503376814739)\
+    \ (Jun 13, 2024)."
+  - "[On applying the laws of algebra strategically, by performing “gradient descent” on the complexity\
+    \ of the expression](https://mathstodon.xyz/@tao/112712195114972177) (Jul 1, 2024)."
+  - "[My personal experience using kinesthetics (specifically, “rolling around on the floor”) to help\
+    \ me with a math problem](https://mathstodon.xyz/@tao/113465889558324816) (Nov 11, 2024)."
+  - "[Using simplified probabilistic models to explore the interaction of personal risk and external risk\
+    \ in decision-making](https://mathstodon.xyz/@tao/113479000564381543) (Nov 13, 2024)."
+  - "[An example of how numerics can be used to detect and fix errors in a paper](https://mathstodon.xyz/@tao/114236388766049066)\
+    \ (Mar 27, 2025)."
+  - "[A short rule of thumb on when to use coordinates and concrete constructions, and when to use abstract,\
+    \ coordinate-free formalisms](https://mathstodon.xyz/@tao/114456756661540097) (May 5, 2025)."
+- title: Metamathematical or philosophical musings
+  entries:
+  - "[On the role of speculation in mathematics](https://mathstodon.xyz/@tao/109399772089568488) (Nov\
+    \ 24, 2022)"
+  - "[Memes as a means of communicating mathematical relationships](https://mathstodon.xyz/@tao/109411517737642478)\
+    \ (Nov 26, 2022)"
+  - "[Mathematical critiques of real-world theories based on discontinuities](https://mathstodon.xyz/@tao/109587765156668154)\
+    \ (Dec 27, 2022)"
+  - "[Mathematical collaboration requires both optimists and pessimists](https://mathstodon.xyz/@tao/109633672161867361)\
+    \ (Jan 4, 2023)"
+  - "[Breaking up a difficult statement into statements of easier difficulty](https://mathstodon.xyz/@tao/110719533147448808)\
+    \ (Jul 15, 2023)"
+  - "[Explaining mathematics to a non-mathematician](https://mathstodon.xyz/@tao/110741578228485879) (Jul\
+    \ 19, 2023)"
+  - "[Opposition between technical meaning and colloquial meaning](https://mathstodon.xyz/@tao/110804476849866924)\
+    \ (Jul 30, 2023)"
+  - "[On claimed superconductors and the notion of partial success](https://mathstodon.xyz/@tao/110838506450468613)\
+    \ (Aug 5, 2023)"
+  - "[On the importance of incentive gradients](https://mathstodon.xyz/@tao/111982224897367013) (Feb 23,\
+    \ 2024)"
+  - "[The implicit notational conventions of round numbers](https://mathstodon.xyz/@tao/112117611519907981)\
+    \ (Mar 18, 2024)"
+  - "[On the conceptual and technical complexity of papers, and Berkson’s paradox](https://mathstodon.xyz/@tao/112525669406416314)\
+    \ (May 29, 2024)"
+  - "[On the correct amount of mathematical analysis to use in a given situation](https://mathstodon.xyz/@tao/113482950431855749)\
+    \ (Nov 14, 2024)"
+  - "[On the routine nature of rejection of submitted papers](https://mathstodon.xyz/@tao/113721192051328193)\
+    \ (Dec 26, 2024)"
+  - "[On the uses and types of negative results in science and mathematics](https://mathstodon.xyz/@tao/114168708761846590)\
+    \ (Mar 15, 2025)"
+  - "[The distinction between accuracy and inerrancy](https://mathstodon.xyz/@tao/114202916107427434)(Mar\
+    \ 21, 2025)"
+- title: AI, proof assistants, and other machine assistance
+  entries:
+  - "[First encounter with ChatGPT](https://mathstodon.xyz/@tao/109445735818439353) (Dec 2, 2022)"
+  - "[AI tools and homework assignments](https://mathstodon.xyz/@tao/109543141003492779) (Dec 19, 2022)"
+  - "[On the lack of stylistic signals of importance in LLM-generated text](https://mathstodon.xyz/@tao/109945628011027107)\
+    \ (Feb 28, 2023)"
+  - "[ChatGPT as a semantic search tool](https://mathstodon.xyz/@tao/109971038564979877) (Mar 5, 2023)"
+  - "[AI tools as probability kernels](https://mathstodon.xyz/@tao/109971907648866712) (Mar 5, 2023)"
+  - "[ChatGPT and bibliography formatting](https://mathstodon.xyz/@tao/110016361962938280) (Mar 13, 2023)"
+  - "[Two minor use cases for ChatGPT](https://mathstodon.xyz/@tao/110049994510023907) (Mar 19, 2023)\
+    \ (see also [this post](https://mathstodon.xyz/@tao/109978041315935697))"
+  - "[2000 “Visions in Mathematics” view of AI, compared with 2023 reality](https://mathstodon.xyz/@tao/110084623890144657)\
+    \ (Mar 25, 2023)"
+  - "[AI and Cunningham’s law](https://mathstodon.xyz/@tao/110140601704237353) (Apr 4, 2023)"
+  - "[ChatGPT saving me significant time on a data processing task](https://mathstodon.xyz/@tao/110172426733603359)\
+    \ (Apr 9, 2023)"
+  - "[Comparative advantage between human experts and AI](https://mathstodon.xyz/@tao/110250470289337319)\
+    \ (Apr 23, 2023)"
+  - "[Three different types of AI misinformation](https://mathstodon.xyz/@tao/110475302733497908) (Jun\
+    \ 2, 2023)"
+  - "[Trying GPT-4 on a MathOverflow question](https://mathstodon.xyz/@tao/110601051375142142) (Jun 24,\
+    \ 2023)"
+  - "[Automatic universal algebra proving as an AI project?](https://mathstodon.xyz/@tao/110736805384878353)\
+    \ (Jul 18, 2023)"
+  - "[ChatGPT generating Python code](https://mathstodon.xyz/@tao/110991566012143311) (Sep 1, 2023)"
+  - "[Installing VSCode](https://mathstodon.xyz/@tao/111002007618655272) (Sep 3, 2023)"
+  - "[Using ChatGPT and Cocalc AI to write in SAGE](https://mathstodon.xyz/@tao/111016732933604674) (Sep\
+    \ 5, 2023)"
+  - "[Github Copilot as a form letter writing tool](https://mathstodon.xyz/@tao/111021915504862836) (Sep\
+    \ 6, 2023) (see also [this previous post](https://mathstodon.xyz/@tao/109971374075988443))"
+  - "[Github Copilot as a mathematical blog post writing tool](https://mathstodon.xyz/@tao/111158219956220256)\
+    \ (Sep 30, 2023)"
+  - "Journaling my Lean learning process: [Oct 9 2023](https://mathstodon.xyz/@tao/111206761117553482),\
+    \ [Oct 10 2023](https://mathstodon.xyz/@tao/111213740998623666), [Oct 11 2023](https://mathstodon.xyz/@tao/111217227599221279),\
+    \ [Oct 12 2023](https://mathstodon.xyz/@tao/111224173446724762), [Oct 14 2023](https://mathstodon.xyz/@tao/111233986893287137)\
+    \ part 1, [Oct 14 2023](https://mathstodon.xyz/@tao/111234828259171775) part 2, [Oct 14 2023](https://mathstodon.xyz/@tao/111236886097506940)\
+    \ part 3, [Oct 16 2023](https://mathstodon.xyz/@tao/111247716134350297), [Oct 17 2023](https://mathstodon.xyz/@tao/111252123637176099)."
+  - "[On the formalization of the symmetric polynomials paper](https://mathstodon.xyz/@tao/111360218854032278)\
+    \ (Nov 5, 2023) – see also previous updates [here](https://mathstodon.xyz/@tao/111330211327450818),\
+    \ [here](https://mathstodon.xyz/@tao/111305336701455719), [here](https://mathstodon.xyz/@tao/111287749336059662),\
+    \ [here](https://mathstodon.xyz/@tao/111276272280103180), [here](https://mathstodon.xyz/@tao/111271244206606941),\
+    \ [here](https://mathstodon.xyz/@tao/111267770348737498), [here](https://mathstodon.xyz/@tao/111259986983504485),\
+    \ and [here](https://mathstodon.xyz/@tao/111254611759683771)."
+  - "[On the formalization of the PFR paper](https://mathstodon.xyz/@tao/111435047649071344) (Nov 18,\
+    \ 2023)"
+  - "[On the need to address both false positives and false negatives in AI-generated deepfakes](https://mathstodon.xyz/@tao/111845751412302806)\
+    \ (Jan 30, 2024)"
+  - "[On finding errors in an already formalized proof](https://mathstodon.xyz/@tao/112333043706335214)\
+    \ (Apr 25, 2024)"
+  - "[Explaining a proof to ChatGPT, which then provides a LaTeX version](https://mathstodon.xyz/@tao/112617150031897750)\
+    \ (June 14, 2024)"
+  - "[Using ChatGPT and Python to create graph illustrations of informal concepts](https://mathstodon.xyz/deck/@tao/112735110429475270)\
+    \ (Jul 5, 2024)"
+  - "[Initial impressions of GPT-o1](https://mathstodon.xyz/@tao/113132502735585408) (Sep 13, 2024)"
+  - "[Using LLM queries to augment understanding of a lecture in a different field](https://mathstodon.xyz/@tao/114077503108015183)\
+    \ (Feb 27, 2025)"
+  - "[Comparing LLM queries with web searches for locating reasonably standard arguments](https://chatgpt.com/share/67cf13cf-53dc-800e-a382-e4ece8341a6d)\
+    \ (Mar 10, 2025)"
+  - "[Large language models and proof assistants as a continuation of a millennia-long trend of increasing\
+    \ mathematics automation](https://mathstodon.xyz/@tao/114231348588264607) (Mar 26, 2025)"
+  - "[On how the difficulty and acceptable failure rate of a task factors into considerations of suitability\
+    \ for AI-powered automation](https://mathstodon.xyz/@tao/114246467132630996) (Mar 29, 2025)"
+  - "[On how one needs to consider metrics at multiple scales when measuring the efficiency of automation\
+    \ (in the context of autoformalization, at least).](https://mathstodon.xyz/deck/@tao/114501120421010793)\
+    \ (May 13, 2025)"
+  - "[On the crucial importance of standardized methodology when evaluating AI performance at mathematics\
+    \ competitions](https://mathstodon.xyz/@tao/114881418225852441) (July 20, 2025)"
+  - "[As AI matures, one needs to transition from qualitative achievements to quantitative benchmarks](https://mathstodon.xyz/@tao/114910035191885663)\
+    \ (July 24, 2025)"
+  - "[There is a stronger case for AI use in “red teaming” than “blue teaming”](https://mathstodon.xyz/@tao/114915604830689046)\
+    \ (July 25, 2025)"
+  - "[AI tools need a clear “failure mode” in addition to a useful “success mode”](https://mathstodon.xyz/@tao/115086812873540455)\
+    \ (Aug 24, 2025)"
+  - "[In the age of AI, project organizers need to state both explicit and implicit goals.](https://mathstodon.xyz/deck/@tao/115196924307085967)\
+    \ (Sep 13, 2025)"
+  - "[An example of how an extended conversation with AI, combined with external verification, can complete\
+    \ a solution to a MathOverflow problem](https://mathstodon.xyz/@tao/115306424727150237) (Oct 2, 2025)"
+  - "[An update on a more definitive solution to that problem, obtained largely via crowdsourced effort](https://mathstodon.xyz/@tao/115316787727719049)\
+    \ (Oct 4, 2025)"
+  - "[A second update, on an even more definitive solution](https://mathstodon.xyz/@tao/115325228243131134)\
+    \ (Oct 5, 2025)"
+  - "[A third update, on the occasional non-monotonicity of mathematical research](https://mathstodon.xyz/@tao/115329949423342204)\
+    \ (Oct 6, 2025)"
+  - "[An experiment with using advanced AI on a problem outside of my area of expertise](https://mathstodon.xyz/@tao/115351400633010670)\
+    \ (Oct 10, 2025)"
+  - "[The most productive near-term use cases of AI in mathematics will be on accelerating mundane tasks\
+    \ such as literature review](https://mathstodon.xyz/@tao/115385022005130505) (Oct 16, 2025)"
+  - "[A complex story of how humans, numerics, ChatGPT, Lean, and the literature interacted to solve an\
+    \ Erdos problem](https://mathstodon.xyz/@tao/115416208975810074) (Oct 21, 2025)"
+  - "[My experiment with “vibe coding”](https://mathstodon.xyz/@tao/115493667607261044) (Nov 4, 2025)"
+  - "[AI assistance is becoming routine at the Erdos problem site](https://mathstodon.xyz/@tao/115591487350860999)\
+    \ (Nov 21, 2025)"
+  - "[The space of cognitive tasks is very high-dimensional](https://mathstodon.xyz/@tao/115620261936846090)\
+    \ (Nov 26, 2025)"
+  - "[AI is beginning to find success in the “long tail” of open mathematical problems](https://mathstodon.xyz/@tao/115639983683442577)\
+    \ (Nov 30, 2025)"
+  - "[Artificial General Cleverness](https://mathstodon.xyz/@tao/115722360006034040) (Dec 14, 2025)"
+  - "[An empirical correlation between AI-solvability of an Erdos problem, and the problem already being\
+    \ proved in the literature](https://mathstodon.xyz/@tao/115788262274999408) (Dec 26, 2025)"
+  - "[AI tools permit the rapid creation of alternate (but still Lean-verified) writeups of an argument,\
+    \ both by the original author and by third parties](https://mathstodon.xyz/@tao/115855840223258103)\
+    \ (Jan 7, 2026)"
+  - "[An empirical tradeoff between the amount of AI used in a solution, and the depth of that solution](https://mathstodon.xyz/@tao/115891256726420022)\
+    \ (Jan 13, 2026)"
+  - "[On the reporting bias against negative results for AI attacks on open math problems](https://mathstodon.xyz/@tao/115911902186528812)\
+    \ (Jan 17, 2026)"
+  - "[Modern machine assistance is, paradoxically, reviving some archaic mathematical practices](https://mathstodon.xyz/@tao/116037574125913104)\
+    \ (Feb 8, 2026)"
+  - "[On the value of selective friction in AI assistance in mathematics (and other idea-powered activities)](https://mathstodon.xyz/deck/@tao/116117404945094458)\
+    \ (Feb 22, 2026)"
+  - "[An analogy between AI and the automobile, and the need for “AI planning”](https://mathstodon.xyz/@tao/116252708577614828)\
+    \ (Mar 18, 2026)"
+  - "[A casual experiment on using AI chatbots with fictional personalities as a “splash of vanilla” in\
+    \ education](https://mathstodon.xyz/@tao/116386945160338948) (Apr 11, 2026)"
+  - "[Douglas Adams’ three phases of galactic civilization (Survival, Inquiry, and Sophistication) in\
+    \ the age of AI](https://mathstodon.xyz/deck/@tao/116438112449752681) (Apr 20, 2026)"
+  - "[The three components of problem solving: proof generation, proof verification, and proof digestion](https://mathstodon.xyz/@tao/116450581967483825)\
+    \ (Apr 22, 2026)"
+  - "[The transfer of prestige between these components as one enters an era of proof abundance](https://mathstodon.xyz/deck/@tao/116477351524980995)\
+    \ (Apr 27, 2026)"
+  - "[Why overoptimizing on metrics of “proof digestibility” may undermine the net appeal of a proof](https://mathstodon.xyz/deck/@tao/116551624228986501)\
+    \ (May 10, 2026)"
+  - "[Using Claude Code to implement minor corrections from a referee report](https://mathstodon.xyz/@tao/116517314420904580)\
+    \ (May 4, 2026)"
+  - "[My new, and significantly more restrictive, policy on commenting on new proofs in my field](https://mathstodon.xyz/@tao/116564739995448183)\
+    \ (May 12, 2026)"
+  - "[My endorsement of the Leiden declaration](https://mathstodon.xyz/@tao/116681023979910132) (June\
+    \ 2, 2026)"
+  - "[In my formalization projects, the bottleneck has shifted from formalization to review, refactoring\
+    \ to Mathlib quality, and issue design](https://mathstodon.xyz/@tao/116789373239346609) (June 21,\
+    \ 2026)"
+- title: Miscellaneous
+  entries:
+  - "[My experiences at an IPAM workshop on Machine Assisted Proof](https://mathstodon.xyz/@tao/109858184238417737)\
+    \ (Feb 13, 2023)"
+  - "[Viewing historical mathematical documents at the French Academy of Sciences](https://mathstodon.xyz/@tao/110068572186339264)\
+    \ (Mar 22, 2023)"
+  - "[Visually seeing the curvature of the Earth while on vacation](https://mathstodon.xyz/@tao/110675418217876954)\
+    \ (Jul 7, 2023)"
+  - "[My experiences at a Warsaw/Kyiv math conference](https://mathstodon.xyz/@tao/110847567642289735)\
+    \ (Aug 7, 2023) [Update #1](https://mathstodon.xyz/@tao/110858903422243734), [Update #2](https://mathstodon.xyz/@tao/110859875570994118),\
+    \ [Update #3](https://mathstodon.xyz/@tao/110874054691602461)"
+  - "[An unusual optical phenomenon arising from a solar eclipse](https://mathstodon.xyz/@tao/112254548031749423)\
+    \ (Apr 11, 2024)"
+- title: MathOverflow answers
+  description: "I have found that answering [MathOverflow](https://mathoverflow.net/) questions sometimes\
+    \ provide an opportunity to make a broader point beyond the narrow scope of the original question.\
+    \ Here are some selected answers of mine in this vein:"
+  entries:
+  - "[Using physical intuition to buttress mathematical intuition](https://mathoverflow.net/questions/5892/what-is-convolution-intuitively/5916#5916)\
+    \ (Nov 18, 2009)"
+  - "[How to think about Sobolev spaces](https://mathoverflow.net/questions/17736/way-to-memorize-relations-between-the-sobolev-spaces/17906#17906)\
+    \ (Mar 11, 2010)"
+  - "[Thinking about higher dimensions](https://mathoverflow.net/questions/25983/intuitive-crutches-for-higher-dimensional-thinking/26095#26095)\
+    \ (May 27, 2010)"
+  - "[On what it means to be unprovable](https://mathoverflow.net/questions/27755/knuths-intuition-that-goldbach-might-be-unprovable/27764#27764)\
+    \ (Jun 11, 2010)"
+  - "[On the preference for minimalism in mathematical foundations](https://mathoverflow.net/questions/19152/why-is-a-topology-made-up-of-open-sets/30231#30231)\
+    \ (Jul 1, 2010)"
+  - "[Some of my conceptual frameworks for thinking about mathematics](https://mathoverflow.net/questions/38639/thinking-and-explaining/38882#38882)\
+    \ (Sep 15, 2010)"
+  - "[On the desirable features of different types of mathematical notation](https://mathoverflow.net/questions/366070/what-are-the-benefits-of-writing-vector-inner-products-as-langle-u-v-rangle/366118#366118)\
+    \ (Jul 20, 2020)"
+  - "[How to justify a complicated looking step in a paper one is reading](https://mathoverflow.net/questions/455845/understanding-the-application-of-two-inequalities/455862#455862)\
+    \ (Oct 4, 2023) (see also [this followup](https://mathoverflow.net/questions/489241/strichartz-estimates-in-bourgains-1999-jams-paper/489246#489246))"
+  - "[A description of my problem solving process for a specific MO question](https://mathoverflow.net/questions/472510/is-1-f-schwartz-if-f-is-reverse-schwartz/472529#472529)\
+    \ (Jun 3, 2024)"
+  - "[How to think about functional inequalities such as the Sobolev inequality](https://mathoverflow.net/questions/473981/does-int-mathbb-rd-1x1-alpha-ell-x-d-x-infty-imply/473991#473991)\
+    \ (Jun 26, 2024)"
+  - "[Finding the right balance between “optimism” and “pessimism” when solving mathematical problems](https://mathoverflow.net/questions/487041/collaborative-repositories-on-open-problems/487065#487065)\
+    \ (Feb 2, 2025)"
+- title: Video demonstrations
+  description: "In some cases, the text medium is not ideal for a demonstration (particularly if it involves\
+    \ interactive code), so I have made a few videos for some concepts that are best illustrated in that\
+    \ medium:"
+  entries:
+  - "[Formalizing a proof in Lean using Github Copilot and canonical](https://www.youtube.com/watch?v=cyyR7j2ChCI),\
+    \ May 11, 2025."
+  - "[Formalizing a proof in Lean using Claude and o4](https://www.youtube.com/watch?v=cyyR7j2ChCI), May\
+    \ 13, 2025."
+  - "[Formalizing a proof in Lean using Github Copilot only](https://www.youtube.com/watch?v=c1ixXMtmfS8),\
+    \ May 17, 2025"
+  - "[Formalizing a proof in Lean by hand](https://www.youtube.com/watch?v=6uLXA9KROBg), May 25, 2025."
+  - "[Formalizing a proof in Lean using Claude Code](https://www.youtube.com/watch?v=JHEO7cplfk8), Mar\
+    \ 7, 2026."
+  - "[Golfing and stylistically aligning a proof using Claude Code](https://www.youtube.com/watch?v=l3SCK6V-BFw),\
+    \ May 23, 2026."
+- title: Articles, talks, and interviews outside of Mastodon
+  entries:
+  - "[2015 Math Panel with Donaldson, Kontsevich, Lurie, Tao, Taylor, Milner](https://www.youtube.com/watch?v=eNgUQlpc1m0),\
+    \ Breakthrough Prize Symposium, Nov 14, 2014. (Contains some speculation about machine-assisted proof\
+    \ and AI which has become increasingly relevant in recent years.)"
+  - "[The World’s Best Mathematician](https://www.youtube.com/watch?v=MXJ-zpJeY3E) (*), Numberphile, Mar\
+    \ 14, 2017."
+  - "[Interview at CIRM](https://www.youtube.com/watch?v=jQTsdkgFAgw), Oct 2-6, 2017."
+  - "[Four Minutes with Terence Tao](https://www.simonsfoundation.org/2018/02/23/four-minutes-with-terence-tao/),\
+    \ Simons Foundation, Feb 23, 2018."
+  - "[Terence Tao teaches mathematical thinking](https://www.masterclass.com/classes/terence-tao-teaches-mathematical-thinking),\
+    \ Masterclass, 2022."
+  - "“[The value in “Dumb” questions](https://www.youtube.com/watch?v=xt6wGDGGx3o)“, interview with Dr.\
+    \ Berger, September 14, 2022."
+  - "“[Embracing change and resetting expectations](https://unlocked.microsoft.com/ai-anthology/terence-tao/)“,\
+    \ T. Tao, Microsoft Anthology, June 12, 2023."
+  - "“[What makes for ‘Good’ Mathematics](https://www.quantamagazine.org/what-makes-for-good-mathematics-20240201/)“,\
+    \ interview with Steven Strogatz, Feb 1, 2024."
+  - "“[Supercharging Research: Harnessing Artificial Intelligence to Meet Global Challenges](https://bidenwhitehouse.archives.gov/wp-content/uploads/2024/04/AI-Report_Upload_29APRIL2024_SEND-2.pdf)“,\
+    \ PCAST report, April 2024."
+  - "“[AI Will Become Mathematicians’ ‘Co-Pilot’](https://www.scientificamerican.com/article/ai-will-become-mathematicians-co-pilot/)“,\
+    \ Christoph Dresser, Scientific American, June 8, 2024"
+  - "“[KI wird ein großartiger Kopilot für Mathematiker sein](https://www.spektrum.de/news/wie-ki-und-beweispruefer-die-arbeit-von-mathematikern-veraendern/2210083l)“,\
+    \ Christian Dresser, Spektrum, Mar 7, 2024. (Original version of the above article.)"
+  - "“[Machine assisted proof](https://www.ams.org/notices/202501/rnoti-p6.pdf)“, T. Tao, Notices Amer.\
+    \ Math. Soc., Vol. 72 (1), January 2025. ([Video version](https://www.youtube.com/watch?v=AayZuuDDKP0))"
+  - "“[Terence Tao on the cosmic distance ladder](https://www.youtube.com/watch?v=YdOXS_9_P4U)“, 3Blue1Brown,\
+    \ Feb 8, 2025."
+  - "“[Terence Tao continuing history’s cleverest cosmological measurements](https://www.youtube.com/watch?v=hFMaT9oRbs4)“,\
+    \ 3Blue1Brown, Feb 23, 2025."
+  - "“[The Potential for AI in Science and Mathematics](https://www.youtube.com/watch?v=_sTDSO74D8Q&feature=youtu.be)“,\
+    \ Oxford Mathematics Public Lecture, July 17, 2024."
+  - "“[The Future of Math with o1 Reasoning](https://www.youtube.com/watch?v=Zu2oET6Xjow)“, OpenAI Forum,\
+    \ December 3, 2024. With Mark Chen and James Donovan."
+  - "“[Machine-Assisted Proofs](https://www.simonsfoundation.org/event/machine-assisted-proofs/)“, Simons\
+    \ Presidential Lecture, Feb 19 2025."
+  - "“[Terence Tao: Hardest Problems in Mathematics, Physics & the Future of AI](https://www.youtube.com/watch?v=HUkBz-cdB-k)“,\
+    \ Lex Friedman podcast, June 14, 2025"
+  - "“[He’s the ‘Mozart’ of Math and Trump killed his funding](https://www.thebulwark.com/p/terence-tao-ucla-mathematician-mozart-of-math-trump-funding-nsf)“,\
+    \ Jonathan Cohn, The Bulwark, Aug 6, 2025."
+  - "“[I’m an award-winning mathematician. Trump just cut my funding.](https://newsletter.ofthebrave.org/p/im-an-award-winning-mathematician)“,\
+    \ Home of the Brave, Aug 18, 2025."
+  - "“[Great Immigrant: Terence Tao](https://www.carnegie.org/our-work/article/great-immigrant-terence-tao)“,\
+    \ Carnegie Corporation of New York, Aug 21, 2025."
+  - "“[The ‘Mozart of Math’ rarely speaks on politics. The wide-ranging cuts to science funding made him\
+    \ change that.](https://www.nbcnews.com/science/science-news/mozart-math-rarely-speaks-politics-wide-ranging-cuts-science-funding-m-rcna226033)“,\
+    \ Evan Bush, NBC News, Aug 26, 2025."
+  - "“[The world’s greatest mathematician avoided politics. Then Trump cut science funding](https://www.washingtonpost.com/science/2025/09/07/science-math-trump-federal-cuts-grants/)“,\
+    \ Carolyn Johnson, Washington Post, Sep 7, 2025."
+  - "“[Losing support for research means losing our best and brightest](https://newsroom.ucla.edu/stories/terence-tao-support-ucla-best-brightest-with-research-funding)“,\
+    \ UCLA interview, Sep 9, 2025."
+  - "“[Terence Tao: Research powers progress](https://www.youtube.com/watch?v=skWt_PZosik)“, UCLA, Sep\
+    \ 9 2025."
+  - "“[Is Math the Next AI Frontier? A Conversation with Terence Tao](https://www.renaissancephilanthropy.org/news-and-insights/is-math-the-next-ai-frontier-a-conversation-with-terence-tao)“,\
+    \ Tom Kalil, Renaissance Philanthropy, Sep 29 2025."
+  - "“[The mathematicians teaching AI to reason](https://www.ibm.com/think/news/mathematicians-teaching-ai-to-reason)“,\
+    \ Sascha Brodsky, IBM Think, Oct 13 2025."
+  - "“[Best practices for incorporating AI etc. in papers](https://ai-math.zulipchat.com/#narrow/channel/539992-Web-public-channel---AI-Math/topic/Best.20practices.20for.20incorporating.20AI.20etc.2E.20in.20papers)“,\
+    \ AI-math discussion, Oct 22, 2025."
+  - "“[Top researchers consider leaving U.S. amid funding cuts: ‘The science world is ending’](https://www.pbs.org/newshour/show/top-researchers-consider-leaving-u-s-amid-funding-cuts-the-science-world-is-ending)“,\
+    \ Stephanie Sy, Mike Fritz, Sam Weber, PBS News Hour, Oct 29, 2025."
+  - "“[Terence Tao Explains How AI Fits Into Scientific Research](https://www.youtube.com/watch?v=Rm1mHfwlS2w)“,\
+    \ SAIR, Nov 11, 2025."
+  - "“[Terry Tao: “Trump CUT My Funding.” Here’s how I am going to react.](https://www.youtube.com/watch?v=PZw5ehcaQJE)“,\
+    \ Brian Keating, Nov 17, 2025."
+  - "“[Mathematicians say Google’s AI tools are supercharging their research](https://www.newscientist.com/article/2504763-mathematicians-say-googles-ai-tools-are-supercharging-their-research/)“,\
+    \ Alex Wilkins, New Scientist, Nov 18, 2025."
+  - "“[Terence Tao & Riley Tao: Turning AI’s Firehose Into Usable Science](https://www.youtube.com/watch?v=AkXnZr3p4A8)“,\
+    \ SAIR, Dec 10, 2025"
+  - "“[AI is solving ‘impossible’ math problems. Can it best the world’s top mathematicians?](https://www.livescience.com/physics-mathematics/mathematics/ai-is-solving-impossible-math-problems-can-it-best-the-worlds-top-mathematicians)“,\
+    \ Kit Yates, LiveScience, Dec 19, 2025."
+  - "“[Can AI help us solve the hardest problems in Mathematics? (ft. Terry Tao)](https://www.youtube.com/watch?v=ukpCHo5v-Gc)“,\
+    \ Brian Keating, Dec 30, 2025."
+  - "“[Terry Tao on the future of mathematics](https://www.youtube.com/watch?v=4ykbHwZQ8iU)“, Math, Inc.,\
+    \ Dec 30, 2025."
+  - "“[Terence Tao, inaugural Veritas Fellow — autoformalizing number theory](https://www.youtube.com/watch?v=KeX9JqepgiM)“,\
+    \ Math Inc., Jan 7, 2026."
+  - "“[Can AI Prove It? Terence Tao on “Big Math” and Our Theoretical Future](https://www.youtube.com/watch?v=H1e7_qkKe64)“,\
+    \ The Futurology Podcast, Jan 20, 2026."
+  - "“[Math maestro Terence Tao *96 is solving the world’s puzzles](https://alumni.princeton.edu/stories/terence-tao-madison-medal-alumni-day)“,\
+    \ Don Steinberg, Princeton University Alumni, Feb 9, 2026."
+  - "“[Why I co-founded SAIR](https://www.youtube.com/watch?v=Z5GKnb4H_bM)“, Feb 10, 2026."
+  - "“[Machine Assistance and the Future of Research Mathematics](https://www.youtube.com/watch?v=SuTxpKggY30)“,\
+    \ AI for Science Kickoff, Feb 10, 2026."
+  - "[Madison Medal Lecture](https://www.youtube.com/watch?v=Nft7XqMmrWs), Princeton University’s Alumni\
+    \ Day, Feb 21, 2026"
+  - "[Daily Princetonian article](https://www.dailyprincetonian.com/article/2026/03/princeton-news-broadfocus-terence-tao-james-madison-medal)\
+    \ (Aitana Camponovo, Mar 16, 2026)"
+  - "“[The Edge of Mathematics](https://www.theatlantic.com/technology/2026/02/ai-math-terrance-tao/686107)“,\
+    \ Matteo Wong, The Atlantic, Feb 24, 2026."
+  - "“[Is the Universe a Math Problem? With Terence Tao](https://overcast.fm/+AAzXlUoaiV0)“, StarTalk\
+    \ with Neil DeGrasse Tyson, Feb 24, 2026. [[Youtube version](https://www.youtube.com/watch?v=vJnkMxx9CEs)]"
+  - "“[Terence Tao and Mark Chen – Fireside Chat with James Donovan](https://www.youtube.com/watch?v=ddTvK9nlquM)”\
+    \ – IPAM at UCLA, Mar 4, 2026."
+  - "“[What does it mean to think like a mathematician?](https://terrytao.wordpress.com/wp-content/uploads/2026/03/talk-ver-3.pdf)“,\
+    \ Curtis Center Pi Day event, Mar 14, 2026. [[Youtube version](https://www.youtube.com/watch?v=kRcro90Aj0w)]"
+  - "“[Terence Tao – How the world’s top mathematician uses AI](https://www.youtube.com/watch?v=Q8Fkpi18QXU)“,\
+    \ Dwarkesh Patel, Mar 20, 2026."
+  - "“[Terence Tao and Tanya Klowden: Mathematical Methods and Human Thought in the Age of AI](https://www.youtube.com/watch?v=9Kicf4rzCHA)“,\
+    \ SAIR, Apr 7, 2026."
+  - "“[The music of the spheres](https://www.smbc-comics.com/comic/spheres-part-1)“, Terence Tao and Zach\
+    \ Wienersmith, Saturday Morning Breakfast Cereal, Apr 9, 2026. [[Part 1](https://www.smbc-comics.com/comic/spheres-part-1)]\
+    \ [[Part 2](https://www.smbc-comics.com/comic/spheres-part-2)] [[Part 3](https://www.smbc-comics.com/comic/spheres-part-3)]\
+    \ [[Part 4](https://www.smbc-comics.com/comic/spheres-part-4)] [[Part 5](https://www.smbc-comics.com/comic/spheres-part-5)]"
+  - "“[Qué hace a Terence Tao “el mejor matemático vivo del mundo”](https://www.bbc.com/mundo/articles/c2d8r3w3xeno)“,\
+    \ Margarita Rodríguez, BBC News Mundo, Apr 18, 2026."
+  - "“[‘The job description is changing’: mathematician Terence Tao on the rise of AI](https://www.nature.com/articles/d41586-026-01246-9)“,\
+    \ Davide Castelvecchi, Nature, Apr 27, 2026."
+  - "“[New Mathematical Workflows](https://www.youtube.com/watch?v=Uc2zt198U_U)“, Future of Mathematics\
+    \ Symposium, Stanford, May 2, 2026. ([slides](https://terrytao.wordpress.com/wp-content/uploads/2026/06/new-workflows.pdf))"
+  - "“[The Integrated Explicit Analytic Number Theory Network: a progress report](https://icerm.brown.edu/video_archive/4649)“,\
+    \ ICERM talk, May 15, 2026. ([slides](https://app.icerm.brown.edu/assets/583/10902/10902_6145_Tao_051520261130_Slides.pdf))"
+  - "“[How Terry Tao Became an Evangelist for AI in Math](https://www.quantamagazine.org/how-terry-tao-became-an-evangelist-for-ai-in-math-20260608/)“,\
+    \ Kevin Hartnett, Quanta, June 6, 2026."
+  - "“[Award-winning maths prodigy Terence Tao on the importance of making mistakes](https://www.abc.net.au/listen/programs/the-radio-national-hour/terence-tao-making-mistakes-maths-prodigy/106773610)“,\
+    \ ABC Radio, June 7, 2026."
+  - "“[How should university students control their AI diet?](https://www.youtube.com/watch?v=aTCaONNbrPY)“,\
+    \ 2026 EMS Lecture Series on Mathematics Education. Lecture 6, June 12, 2026. ([slides](https://terrytao.wordpress.com/wp-content/uploads/2026/06/diet.pdf))"
+  - "“[What it means to be a mathematician when AI does the Math](https://spectrum.ieee.org/ai-in-mathematics)“,\
+    \ Ben Skuse, IEEE Spectrum, June 25, 2026."
+- title: Cosmic Distance Ladder (Instagram)
+  entries:
+  - "Finally, [my instagram account on “Climbing the Cosmic Distance Ladder”](https://www.instagram.com/cosmic_distance_ladder/),\
+    \ with Tanya Klowden, has a number of additional astronomy-themed essays."
+- title: Selected writing by others
+  description: I also collect here some selected talks, essays, or articles by others on the interaction
+    between math, AI, and proof assistants.
+  entries:
+  - "Jeremy Avigad, “[Mathematicians in the age of AI](https://arxiv.org/abs/2603.03684)“, Mar 2026."
+  - "David Bessis, “[The fall of the theorem economy](https://davidbessis.substack.com/p/the-fall-of-the-theorem-economy)“,\
+    \ Apr 21, 2026."
+  - "Johan Commelin, Mateja Jamnik, Rodrigo Ochigame, Lenny Taelman, Akshay Venkatesh, “[Shaping the Future\
+    \ of Mathematics in the Age of AI](https://arxiv.org/abs/2603.24914)“, Mar 2026."
+  - "David Donoho, “[Data science at the Singularity](https://arxiv.org/abs/2310.00865)“, Oct 2023."
+  - "Timothy Gowers, “[Rough strcuture and classification](https://link.springer.com/book/10.1007/978-3-0346-0422-2)“,\
+    \ GAFA 2000 Special Volume “Visions in Mathematics”, 79-117 (see in particular the section “Will Mathematics\
+    \ Exist in 2009?”)."
+  - "Martin Hairer, “[Does Mathematicians need computers?](https://www.youtube.com/watch?v=fbVqc1tPLos)“,\
+    \ Simons Foundation, Dec 5, 2025."
+  - "Minas Karimanis, “[The machines are fine. I’m worried about us.](https://ergosphere.blog/posts/the-machines-are-fine/)“,\
+    \ Mar 30, 2026."
+  - "Daniel Litt, “[Mathematics in the Library of Babel](https://www.daniellitt.com/blog/2026/2/20/mathematics-in-the-library-of-babel)“,\
+    \ Feb 21, 2026."
+  - "Heather Macbeth, “[Algorithm and abstraction in formal mathematics](https://arxiv.org/abs/2405.04699)“,\
+    \ May 2024."
+  - "Emily Riehl, “[A New Paradigm for Mathematical Proof?](https://www.youtube.com/watch?v=fzxW2XJS6SE)“,\
+    \ Hopkins Natural Philosophy Forum, Nov 7, 2025."
+  - "Talia Ringer, “[Proofs and Conversations](https://dependenttyp.es/pdf/conversations.pdf)“, AMS Early\
+    \ Career Notices, May 2024."
+  - "Akshay Venkatesh, “[What do we tell our students about AI?](https://www.youtube.com/watch?v=STTvEmBM3rg)“,\
+    \ Mathematics in the age of automated proofs, Oct 1, 2025."
+  - "The Bulletin of the AMS published [two](https://www.ams.org/journals/bull/2024-61-02/) [issues](https://www.ams.org/journals/bull/2024-61-03/)\
+    \ devoted to mathematics and AI, featuring articles by Fraser-Granville-Harris-McLarty-Riehl-Venkatesh,\
+    \ Venkatesh, Buzzard, Avigad, Commelin-Topaz, Shulman, Williamson, Davis, Cheng, Granville, Harris,\
+    \ Romeo, DeDeo, Davies, De Toffoli, McLarty, Ochigame, Poggio-Fraser, and Bengio-Malkin."
+  - "The Feb 2023 [IPAM workshop on Machine Assisted Proofs](https://www.ipam.ucla.edu/programs/workshops/machine-assisted-proofs/?tab=schedule)\
+    \ has a number of interesting talks recorded on these topics."

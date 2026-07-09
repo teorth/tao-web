@@ -15,6 +15,27 @@ from jsonschema import Draft7Validator
 ROOT = Path(__file__).resolve().parent.parent
 SCHEMA = ROOT / "schema" / "errata.schema.json"
 DATA = ROOT / "data" / "errata"
+LINKS_SCHEMA = ROOT / "schema" / "links.schema.json"
+LINKS = ROOT / "data" / "links"
+
+
+def validate_links() -> int:
+    """Validate curated link-collection files against links.schema.json."""
+    if not LINKS.exists():
+        return 0
+    validator = Draft7Validator(yaml.safe_load(LINKS_SCHEMA.read_text(encoding="utf-8")))
+    problems = 0
+    for path in sorted(LINKS.glob("*.yaml")):
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+        for err in errors:
+            loc = "/".join(str(p) for p in err.path) or "(root)"
+            print(f"{path.name}: {loc}: {err.message}")
+            problems += 1
+        n = sum(len(s.get("entries", [])) for s in doc.get("sections", []))
+        print(f"  {path.name}: {len(doc.get('sections', []))} sections, {n} links "
+              f"-> {'OK' if not errors else 'INVALID'}")
+    return problems
 
 
 def main() -> int:
@@ -53,10 +74,12 @@ def main() -> int:
         status = "OK" if not errors else "INVALID"
         print(f"  {path.name}: {n} errata, {stubs} stubs -> {status}")
 
+    problems += validate_links()
+
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)
         return 1
-    print(f"\nAll {len(files)} file(s) valid.")
+    print(f"\nAll {len(files)} errata file(s) + link page(s) valid.")
     return 0
 
 
