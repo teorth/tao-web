@@ -1,5 +1,435 @@
-# Imported from math.ucla.edu/~tao/preprints/ subpages -- review coauthors, tags, venues.
+# Imported from math.ucla.edu/~tao/preprints/ subpages + reconciled with newer Google-Docs versions -- maintain by hand.
 works:
+- id: polynomial-towers-and-inverse-gowers-theory-for-bounded-expo
+  kind: paper
+  title: Polynomial towers and inverse Gowers theory for bounded-exponent groups
+  coauthors:
+  - Asgar Jamneshan
+  - Or Shalom
+  year: 2026
+  status: submitted
+  venue: Submitted
+  arxiv: '2601.00961'
+  tags:
+  - additive-combinatorics
+  - gowers-norms
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2601.00961"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/01/06/polynomial-towers-and-inverse-gowers-theory-for-bounded-exponent-groups/"
+- id: products-of-consecutive-integers-with-unusual-anatomy
+  kind: paper
+  title: Products of consecutive integers with unusual anatomy
+  year: 2026
+  status: submitted
+  venue: Submitted, Acta Arith. (special issue in honor of Heath-Brown)
+  arxiv: '2603.27990'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2603.27990"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/03/31/products-of-consecutive-integers-with-unusual-anatomy/"
+- id: primitive-sets-and-von-mangoldt-chains-erd-s-problem-1196-an
+  kind: paper
+  title: "Primitive sets and von Mangoldt chains: Erdős Problem #1196 and beyond"
+  coauthors:
+  - Boris Alexeev
+  - Kevin Barreto
+  - Yanyang Li
+  - Jared Duker Lichtman
+  - Liam Price
+  - Jibran Iqbal Shah
+  - Quanyu Tang
+  year: 2026
+  status: to-appear
+  venue: To appear
+  arxiv: '2605.00301'
+  tags:
+  - additive-combinatorics
+  - multiplicative-functions
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2605.00301"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/05/03/primitive-sets-and-von-mangoldt-chains-erdos-problem-1196-and-beyond/"
+- id: local-bernstein-theory-and-lower-bounds-for-lebesgue-constan
+  kind: paper
+  title: Local Bernstein theory, and lower bounds for Lebesgue constants
+  year: 2026
+  status: submitted
+  venue: Submitted, Constructive Analysis
+  arxiv: '2603.21453'
+  tags:
+  - harmonic-analysis
+  - random-matrices
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2603.21453"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/03/23/local-bernstein-theory-and-lower-bounds-for-lebesgue-constants/"
+- id: mathematical-methods-and-human-thought-in-the-age-of-ai
+  kind: paper
+  title: Mathematical methods and human thought in the age of AI
+  coauthors:
+  - Tanya Klowden
+  year: 2026
+  status: submitted
+  venue: Submitted, Blackwell Companion to Philosophy of Mathematics
+  arxiv: '2603.26524'
+  tags:
+  - misc
+  - machine-assisted
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2603.26524"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/03/29/mathematical-methods-and-human-thought-in-the-age-of-ai/"
+- id: new-exponent-pairs-zero-density-estimates-and-zero-additive-
+  kind: paper
+  title: "New exponent pairs, zero density estimates, and zero additive energy estimates: a systematic approach"
+  coauthors:
+  - Timothy Trudgian
+  - Andrew Yang
+  year: 2025
+  status: to-appear
+  venue: To appear, Math. Comp.
+  arxiv: '2501.16779'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2501.16779"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/01/28/new-exponent-pairs-zero-density-estimates-and-zero-additive-energy-estimates-a-systematic-approach/"
+- id: decomposing-a-factorial-into-large-factors
+  kind: paper
+  title: Decomposing a factorial into large factors
+  coauthors:
+  - Boris Alexeev
+  - Evan Conway
+  - Matthieu Rosenfeld
+  - Andrew V. Sutherland
+  - Markus Uhr
+  - Kevin Ventullo
+  year: 2025
+  status: to-appear
+  venue: To appear, Math. Comp.
+  arxiv: '2503.20170'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2503.20170"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/03/26/decomposing-a-factorial-into-large-factors/"
+- id: some-variants-of-the-periodic-tiling-conjecture
+  kind: paper
+  title: Some variants of the periodic tiling conjecture
+  year: 2025
+  status: submitted
+  venue: Submitted, Comm. Amer. Math. Soc.
+  arxiv: '2505.06757'
+  tags:
+  - additive-combinatorics
+  - tiling
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2505.06757"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/05/12/some-variants-of-the-periodic-tiling-conjecture/"
+- id: on-the-number-of-exceptional-intervals-to-the-prime-number-t
+  kind: paper
+  title: On the number of exceptional intervals to the prime number theorem in short intervals
+  coauthors:
+  - Ayla Gafni
+  year: 2025
+  status: to-appear
+  venue: To appear, Essential Number Theory
+  arxiv: '2505.24017'
+  tags:
+  - additive-combinatorics
+  - primes
+  - sieve-theory
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2505.24017"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/06/02/on-the-number-of-exceptional-intervals-to-the-prime-number-theorem-in-short-intervals/"
+- id: rough-numbers-between-consecutive-primes
+  kind: paper
+  title: Rough numbers between consecutive primes
+  coauthors:
+  - Ayla Gafni
+  year: 2025
+  status: submitted
+  venue: Submitted, Proc Lond. Math. Soc.
+  arxiv: '2508.06463'
+  tags:
+  - additive-combinatorics
+  - primes
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2508.06463"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/08/10/rough-numbers-between-consecutive-primes/"
+- id: growth-rates-of-sequences-governed-by-the-squarefree-propert
+  kind: paper
+  title: Growth rates of sequences governed by the squarefree properties of its translates
+  coauthors:
+  - Wouter van Doorn
+  year: 2025
+  status: to-appear
+  venue: To appear, Acta Arith.
+  arxiv: '2512.01087'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2512.01087"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/12/01/growth-rates-of-sequences-governed-by-the-squarefree-properties-of-its-translates/"
+- id: quantitative-correlations-and-some-problems-on-prime-factors
+  kind: paper
+  title: Quantitative correlations and some problems on prime factors of consecutive integers
+  coauthors:
+  - Joni Teräväinen
+  year: 2025
+  status: submitted
+  venue: Submitted, GAFA
+  arxiv: '2512.01739'
+  tags:
+  - additive-combinatorics
+  - primes
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2512.01739"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/12/01/quantitative-correlations-and-some-problems-on-prime-factors-of-consecutive-integers/"
+- id: new-nikodym-set-constructions-over-finite-fields
+  kind: paper
+  title: New Nikodym set constructions over finite fields
+  year: 2025
+  status: submitted
+  venue: Submitted, Pacific J. Math.
+  arxiv: '2511.07721'
+  tags:
+  - kakeya-restriction
+  - tiling
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2511.07721"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/11/12/new-nikodym-set-constructions-over-finite-fields/"
+- id: sum-difference-exponents-for-boundedly-many-slopes-and-ratio
+  kind: paper
+  title: Sum-difference exponents for boundedly many slopes, and rational complexity
+  year: 2025
+  status: submitted
+  venue: Submitted, Discrete Analysis
+  arxiv: '2511.15135'
+  tags:
+  - kakeya-restriction
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2511.15135"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/11/19/sum-difference-exponents-for-boundedly-many-slopes-and-rational-complexity/"
+- id: the-maximal-length-of-the-erd-s-herzog-piranian-lemniscate-i
+  kind: paper
+  title: The maximal length of the Erdős–Herzog–Piranian lemniscate in high degree
+  year: 2025
+  status: to-appear
+  venue: "To appear, Journal d'Analyse Mathematique"
+  arxiv: '2512.12455'
+  tags:
+  - harmonic-analysis
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2512.12455"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/12/15/the-maximal-length-of-the-erdos-herzog-piranian-lemniscate-in-high-degree/"
+- id: mathematical-exploration-and-discovery-at-scale
+  kind: paper
+  title: Mathematical exploration and discovery at scale
+  coauthors:
+  - Bogdan Georgiev
+  - Javier Gómez-Serrano
+  - Adam Zsolt Wagner
+  year: 2025
+  status: preprint
+  venue: Preprint
+  arxiv: '2511.02864'
+  tags:
+  - misc
+  - machine-assisted
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2511.02864"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/11/05/mathematical-exploration-and-discovery-at-scale/"
+- id: the-equational-theories-project-advancing-collaborative-math
+  kind: paper
+  title: "The Equational Theories Project: Advancing Collaborative Mathematical Research at Scale"
+  coauthors:
+  - Matthew Bolan
+  - Joachim Breitner
+  - Jose Brox
+  - Nicholas Carlini
+  - Mario Carneiro
+  - Floris van Doorn
+  - Martin Dvorak
+  - Andrés Goens
+  - Aaron Hill
+  - Harald Husum
+  - Hernán Ibarra Mejia
+  - Zoltan Kocsis
+  - Bruno Le Floch
+  - Amir Livne Bar-on
+  - Lorenzo Luccioli
+  - Douglas McNeil
+  - Alex Meiburg
+  - Pietro Monticone
+  - Pace P. Nielsen
+  - Emmanuel Osalotioman Osazuwa
+  - Giovanni Paolini
+  - Marco Petracci
+  - Bernhard Reinke
+  - David Renshaw
+  - Marcus Rossel
+  - Cody Roux
+  - Jérémy Scanvic
+  - Shreyas Srinivas
+  - Anand Rao Tadipatri
+  - Vlad Tsyrklevich
+  - Fernando Vaquerizo-Villar
+  - Daniel Weber
+  - Fan Zheng
+  year: 2025
+  status: submitted
+  venue: Submitted
+  arxiv: '2512.07087'
+  tags:
+  - misc
+  - machine-assisted
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2512.07087"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2025/12/09/the-equational-theories-project-advancing-collaborative-mathematical-research-at-scale/"
+- id: marton-s-conjecture-for-abelian-groups-of-finite-torsion
+  kind: paper
+  title: "Marton's conjecture for abelian groups of finite torsion"
+  coauthors:
+  - Timothy Gowers
+  - Ben Green
+  - Freddie Manners
+  year: 2024
+  status: submitted
+  venue: Submitted
+  arxiv: '2404.02244'
+  tags:
+  - additive-combinatorics
+  - approximate-groups
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2404.02244"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/04/04/martons-conjecture-in-abelian-groups-with-bounded-torsion/"
+- id: on-product-representations-of-squares
+  kind: paper
+  title: On product representations of squares
+  year: 2024
+  status: submitted
+  venue: Submitted, Acta Math. Hungarica
+  arxiv: '2405.11610'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2405.11610"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/05/20/on-product-representations-of-squares/"
+- id: dense-sets-of-natural-numbers-with-unusually-large-least-com
+  kind: paper
+  title: Dense sets of natural numbers with unusually large least common multiples
+  year: 2024
+  status: to-appear
+  venue: To appear, Integers
+  arxiv: '2407.04226'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2407.04226"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/07/08/dense-sets-of-natural-numbers-with-unusually-large-least-common-multiples/"
+- id: planar-point-sets-with-forbidden-4-point-patterns-and-few-di
+  kind: paper
+  title: Planar point sets with forbidden 4-point patterns and few distinct distances
+  year: 2024
+  status: to-appear
+  venue: To appear, Combin. Disc. Geom.
+  arxiv: '2409.01343'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2409.01343"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/09/03/planar-point-sets-with-forbidden-four-point-patterns-and-few-distinct-distances/"
+- id: higher-uniformity-of-arithmetic-functions-in-short-intervals
+  kind: paper
+  title: Higher uniformity of arithmetic functions in short intervals II. Almost all intervals
+  coauthors:
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
+  - Xuansheng Shao
+  - Joni Teräväinen
+  year: 2024
+  status: published
+  venue: Invent. math. (2026)
+  arxiv: '2411.05770'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2411.05770"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/11/11/higher-uniformity-of-arithmetic-functions-in-short-intervals-ii-almost-all-intervals/"
+- id: on-several-irrationality-problems-for-ahmes-series
+  kind: paper
+  title: On several irrationality problems for Ahmes series
+  coauthors:
+  - Vjekoslav Kovač
+  year: 2024
+  status: submitted
+  venue: Submitted, Acta Math. Hungarica
+  arxiv: '2406.17593'
+  tags:
+  - additive-combinatorics
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2406.17593"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/11/27/on-several-irrationality-problems-for-ahmes-series/"
+- id: on-the-distribution-of-eigenvalues-of-gue-and-its-minors-at-
+  kind: paper
+  title: On the distribution of eigenvalues of GUE and its minors at fixed index
+  year: 2024
+  status: submitted
+  venue: Submitted, Random Matrix Theory and Applications
+  arxiv: '2412.10889'
+  tags:
+  - additive-combinatorics
+  - random-matrices
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2412.10889"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2024/12/17/on-the-distribution-of-eigenvalues-of-gue-and-its-minors-at-fixed-index/"
 - id: infinite-partial-sumsets-in-the-primes
   kind: paper
   title: Infinite partial sumsets in the primes
@@ -402,6 +832,9 @@ works:
   venue: Not. Amer. Math. Soc. 68 (2021), 546-563
   tags:
   - misc
+  links:
+  - type: journal
+    url: "https://www.ams.org/journals/notices/202104/rnoti-p546.pdf"
 - id: optimal-sine-and-sawtooth-inequalities
   kind: paper
   title: Optimal sine and sawtooth inequalities
@@ -428,6 +861,8 @@ works:
   - additive-combinatorics
   - szemeredi
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=2415"
   - type: discussion
     url: "https://terrytao.wordpress.com/2017/09/12/szemeredis-proof-of-szemeredis-theorem/"
   - type: pdf
@@ -477,6 +912,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=4286"
   - type: arxiv
     url: "https://arxiv.org/abs/2010.00574"
   - type: discussion
@@ -510,6 +947,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=10677"
   - type: arxiv
     url: "https://arxiv.org/abs/2012.02747"
   - type: discussion
@@ -542,6 +981,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=7066"
   - type: arxiv
     url: "https://arxiv.org/abs/2008.05066"
   - type: discussion
@@ -559,6 +1000,8 @@ works:
   - harmonic-analysis
   - machine-assisted
   links:
+  - type: journal
+    url: "https://ems.press/journals/rmi/issues/2012"
   - type: arxiv
     url: "https://arxiv.org/abs/2006.11602"
 - id: fractional-free-convolution-powers-with-an-appendix-by-david
@@ -617,6 +1060,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/series.html?id=3747"
   - type: pdf
     url: "https://terrytao.files.wordpress.com/2019/04/proofspcmi2017_terencetao.pdf"
 - id: value-patterns-of-multiplicative-functions-and-related-seque
@@ -680,6 +1125,8 @@ works:
   - additive-combinatorics
   - collatz
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=8060"
   - type: arxiv
     url: "https://arxiv.org/abs/1909.03562"
   - type: discussion
@@ -725,6 +1172,9 @@ works:
   venue: "Living Proof: Stories of Resilience Along the Mathematical Journey, American Math. Society, Math. Assoc. America, 2019. A. Henderson, E. Lawrence, M. Pons, D. Taylor eds., 96--99."
   tags:
   - misc
+  links:
+  - type: note
+    url: "https://maa.org/livingproof/"
 - id: eigenvectors-from-eigenvalues-a-survey-of-a-basic-identity-i
   kind: paper
   title: "Eigenvectors from Eigenvalues: a survey of a basic identity in linear algebra."
@@ -738,6 +1188,8 @@ works:
   - misc
   - random-matrices
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=3001"
   - type: arxiv
     url: "https://arxiv.org/abs/1908.03795"
   - type: discussion
@@ -756,6 +1208,8 @@ works:
   - euler
   - random-matrices
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=8904"
   - type: arxiv
     url: "https://arxiv.org/abs/1902.06313"
   - type: discussion
@@ -780,6 +1234,8 @@ works:
   - pde
   - navier-stokes
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/series.html?id=334"
   - type: arxiv
     url: "https://arxiv.org/abs/1908.04958"
   - type: discussion
@@ -816,6 +1272,8 @@ works:
   - additive-combinatorics
   - sieve-theory
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=5961"
   - type: arxiv
     url: "http://arxiv.org/abs/1802.07604"
   - type: discussion
@@ -879,6 +1337,8 @@ works:
   tags:
   - misc
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=6422"
   - type: arxiv
     url: "https://arxiv.org/abs/1811.09223"
   - type: discussion
@@ -896,6 +1356,8 @@ works:
   - additive-combinatorics
   - szemeredi
   links:
+  - type: journal
+    url: "https://www.cambridge.org/core/journals/mathematika/article/new-bounds-for-szemeredis-theorem-iii-a-polylogarithmic-bound-for-r4n/B49E54D3411C1B7AE96B540FC02E6B79"
   - type: arxiv
     url: "https://arxiv.org/abs/1705.01703"
   - type: discussion
@@ -910,6 +1372,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=6148"
   - type: arxiv
     url: "https://arxiv.org/abs/1701.02048"
   - type: discussion
@@ -960,6 +1424,8 @@ works:
   - additive-combinatorics
   - multiplicative-functions
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=477"
   - type: arxiv
     url: "https://arxiv.org/abs/1708.02610"
   - type: discussion
@@ -977,6 +1443,8 @@ works:
   - additive-combinatorics
   - multiplicative-functions
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=4566"
   - type: arxiv
     url: "https://arxiv.org/abs/1710.02112"
   - type: discussion
@@ -992,6 +1460,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=5638"
   - type: arxiv
     url: "https://arxiv.org/abs/1711.04337"
   - type: discussion
@@ -1009,6 +1479,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=734"
   - type: arxiv
     url: "https://arxiv.org/abs/1712.08840"
   - type: discussion
@@ -1517,6 +1989,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.ems-ph.org/journals/journal.php?jrn=JEMS"
   - type: arxiv
     url: "http://arxiv.org/abs/1309.1975"
   - type: discussion
@@ -1584,6 +2058,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.ems-ph.org/journals/journal.php?jrn=emss"
   - type: arxiv
     url: "http://arxiv.org/abs/1310.6482"
   - type: discussion
@@ -1598,6 +2074,8 @@ works:
   - pde
   - wave-maps
   links:
+  - type: journal
+    url: "http://www.ams.org/publications/journals/journalsframework/bull"
   - type: pdf
     url: "http://terrytao.files.wordpress.com/2012/10/critwavemap.pdf"
 - id: random-matrices-sharp-concentration-of-eigenvalues
@@ -1613,6 +2091,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.worldscinet.com/rmta/"
   - type: arxiv
     url: "http://arxiv.org/abs/1201.4789"
   - type: discussion
@@ -1628,6 +2108,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.ams.org/publications/journals/journalsframework/mcom"
   - type: arxiv
     url: "http://arxiv.org/abs/1201.6656"
   - type: discussion
@@ -1660,6 +2142,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.springer.com/mathematics/probability/journal/440"
   - type: arxiv
     url: "http://arxiv.org/abs/1203.1605"
   - type: discussion
@@ -1720,6 +2204,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.springer.com/mathematics/numbers/journal/454"
   - type: arxiv
     url: "http://arxiv.org/abs/1208.4714"
   - type: discussion
@@ -1751,6 +2237,8 @@ works:
   - additive-combinatorics
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://www.springer.com/birkhauser/mathematics/journal/39"
   - type: arxiv
     url: "http://arxiv.org/abs/1211.6372"
   - type: discussion
@@ -1765,6 +2253,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://journals.cambridge.org/action/displayJournal?jid=FMS"
   - type: arxiv
     url: "http://arxiv.org/abs/1212.2586"
   - type: discussion
@@ -1797,6 +2287,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.math.ac.vn/publications/acta/"
   - type: discussion
     url: "http://terrytao.wordpress.com/2010/05/18/random-matrices-localization-of-the-eigenvalues-and-the-necessity-of-four-moments/"
 - id: the-inverse-conjecture-for-the-gowers-norm-over-finite-field
@@ -1812,6 +2304,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://www.springer.com/birkhauser/mathematics/journal/26"
   - type: arxiv
     url: "http://arxiv.org/abs/1101.1469"
   - type: discussion
@@ -1847,6 +2341,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.math.washington.edu/~ejpecp/"
   - type: arxiv
     url: "http://arxiv.org/abs/1101.5707"
   - type: discussion
@@ -1864,6 +2360,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.worldscinet.com/rmta/"
   - type: arxiv
     url: "http://arxiv.org/abs/1103.2801"
   - type: discussion
@@ -1880,6 +2378,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.springer.com/mathematics/numbers/journal/454"
   - type: arxiv
     url: "http://arxiv.org/abs/1103.2926"
   - type: discussion
@@ -1894,6 +2394,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622824/description"
   - type: arxiv
     url: "http://arxiv.org/abs/1106.2267"
   - type: discussion
@@ -1910,6 +2412,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.austms.org.au/Journal+of+the+Australian+Mathematical+Society"
   - type: arxiv
     url: "http://arxiv.org/abs/1107.1010"
   - type: discussion
@@ -1928,6 +2432,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=5730"
   - type: arxiv
     url: "http://arxiv.org/abs/1110.5008"
   - type: discussion
@@ -1945,6 +2451,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.journals.elsevier.com/advances-in-mathematics/"
   - type: arxiv
     url: "http://arxiv.org/abs/1111.6300"
   - type: discussion
@@ -1980,6 +2488,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622824/description"
   - type: arxiv
     url: "http://arxiv.org/abs/1112.4174"
   - type: discussion
@@ -1996,6 +2506,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00220/index.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/1105.0873"
   - type: discussion
@@ -2011,6 +2523,8 @@ works:
   - pde
   - navier-stokes
   links:
+  - type: journal
+    url: "http://pjm.math.berkeley.edu/apde/about/cover/cover.html"
   - type: arxiv
     url: "http://arxiv.org/abs/1108.1165"
   - type: discussion
@@ -2029,6 +2543,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://www.math.psu.edu/era/"
   - type: arxiv
     url: "http://arxiv.org/abs/1001.4570"
   - type: discussion
@@ -2078,6 +2594,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://link.springer-ny.com/link/service/journals/00493"
   - type: arxiv
     url: "http://arxiv.org/abs/1002.5028"
   - type: discussion
@@ -2096,6 +2614,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://www.math.tamu.edu/journals/ggd/"
   - type: arxiv
     url: "http://arxiv.org/abs/1005.0782"
   - type: discussion
@@ -2114,6 +2634,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/1005.1881"
   - type: discussion
@@ -2132,6 +2654,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.ma.huji.ac.il/~ijmath/"
   - type: arxiv
     url: "http://arxiv.org/abs/1010.4259"
   - type: discussion
@@ -2150,6 +2674,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "http://arxiv.org/abs/1006.0205"
   - type: discussion
@@ -2171,6 +2697,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.ams.org/publications/journals/journalsframework/mcom"
   - type: arxiv
     url: "http://arxiv.org/abs/1009.3956"
   - type: discussion
@@ -2188,6 +2716,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://www.ma.huji.ac.il/jdm/"
   - type: arxiv
     url: "http://arxiv.org/abs/1012.3509"
   - type: discussion
@@ -2202,6 +2732,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.math.ens.fr/ptrf/"
   - type: arxiv
     url: "http://arxiv.org/abs/1012.4818"
   - type: discussion
@@ -2218,6 +2750,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.ma.huji.ac.il/~ijmath/"
   - type: arxiv
     url: "http://arxiv.org/abs/1003.4013"
   - type: discussion
@@ -2234,6 +2768,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://pjm.math.berkeley.edu/apde/about/cover/cover.html"
   - type: arxiv
     url: "http://arxiv.org/abs/1011.0949"
   - type: discussion
@@ -2268,6 +2804,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www3.interscience.wiley.com/journal/38107/home"
   - type: arxiv
     url: "http://arxiv.org/abs/0902.2357"
   - type: discussion
@@ -2285,6 +2823,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/0903.0614"
   - type: discussion
@@ -2302,6 +2842,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.actamathematica.org/"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.0510"
   - type: discussion
@@ -2319,6 +2861,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://journals.cambridge.org/action/displayJournal?jid=PSP"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.3100"
   - type: discussion
@@ -2334,6 +2878,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://cdm.math.ca/index.php/cdm"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.3535"
   - type: discussion
@@ -2350,6 +2896,8 @@ works:
   - approximate-groups
   - entropy
   links:
+  - type: journal
+    url: "http://journals.cambridge.org/action/displayMoreInfo?jid=CPC&type=ifc"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.4387"
   - type: discussion
@@ -2371,6 +2919,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.4400"
   - type: discussion
@@ -2388,6 +2938,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.springerlink.com/content/100467/"
   - type: arxiv
     url: "http://arxiv.org/abs/0908.1982"
   - type: discussion
@@ -2403,6 +2955,8 @@ works:
   - additive-combinatorics
   - multiplicative-functions
   links:
+  - type: journal
+    url: "http://www.austms.org.au/Bulletin"
   - type: arxiv
     url: "http://arxiv.org/abs/0908.4323"
   - type: discussion
@@ -2435,6 +2989,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/0910.4148"
   - type: discussion
@@ -2453,6 +3009,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://journals.cambridge.org/action/displayJournal?jid=GMJ"
   - type: arxiv
     url: "http://arxiv.org/abs/0911.5681"
   - type: arxiv
@@ -2488,6 +3046,8 @@ works:
   - additive-combinatorics
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://pjm.berkeley.edu/pjm/about/journal/cover.html"
   - type: arxiv
     url: "http://arxiv.org/abs/0912.5093"
   - type: discussion
@@ -2504,6 +3064,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.apnet.com/www/journal/fu.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/0912.1140"
   - type: discussion
@@ -2522,6 +3084,8 @@ works:
   - kakeya-restriction
   - kakeya
   links:
+  - type: journal
+    url: "http://www.ucl.ac.uk/Mathematics/Mathematika/"
   - type: arxiv
     url: "http://arxiv.org/abs/0903.1879"
   - type: arxiv
@@ -2541,6 +3105,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.ems-ph.org/journals/journal.php?jrn=jems"
   - type: arxiv
     url: "http://arxiv.org/abs/0910.1555"
   - type: discussion
@@ -2617,6 +3183,8 @@ works:
   - pde
   - navier-stokes
   links:
+  - type: journal
+    url: "http://pjm.math.berkeley.edu/apde/about/cover/cover.html"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.3070"
   - type: discussion
@@ -2636,6 +3204,8 @@ works:
   - pde
   - kdv
   links:
+  - type: journal
+    url: "http://www.ams.org/mcom/"
   - type: arxiv
     url: "http://arxiv.org/abs/0906.4902"
   - type: discussion
@@ -2654,6 +3224,8 @@ works:
   - pde
   - gauge-theory
   links:
+  - type: journal
+    url: "http://aimsciences.org/"
   - type: arxiv
     url: "http://arxiv.org/abs/0910.1850"
   - type: discussion
@@ -2672,6 +3244,8 @@ works:
   tags:
   - compressed-sensing
   links:
+  - type: journal
+    url: "http://pareja.itsoc.org/initial_submission/"
   - type: arxiv
     url: "http://arxiv.org/abs/0903.1476"
   - type: discussion
@@ -2689,6 +3263,8 @@ works:
   - additive-combinatorics
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "http://arxiv.org/abs/0807.1736"
   - type: discussion
@@ -2705,6 +3281,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www3.interscience.wiley.com/journal/38107/home"
   - type: arxiv
     url: "http://arxiv.org/abs/0801.2179"
   - type: discussion
@@ -2719,6 +3297,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.austms.org.au/Journal+of+the+Australian+Mathematical+Society"
   - type: arxiv
     url: "http://arxiv.org/abs/0802.3361"
   - type: discussion
@@ -2735,6 +3315,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622779/description"
   - type: arxiv
     url: "http://arxiv.org/abs/0804.2362"
   - type: discussion
@@ -2754,6 +3336,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.ams.org/mcom/"
   - type: arxiv
     url: "http://arxiv.org/abs/0805.3167"
   - type: discussion
@@ -2804,6 +3388,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.ams.org/bull/"
   - type: arxiv
     url: "http://arxiv.org/abs/0810.2994"
   - type: discussion
@@ -2821,6 +3407,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://pjm.math.berkeley.edu/apde/about/cover/cover.html"
   - type: arxiv
     url: "http://arxiv.org/abs/0810.5527"
   - type: discussion
@@ -2837,6 +3425,8 @@ works:
   tags:
   - misc
   links:
+  - type: journal
+    url: "http://www.ams.org/proc/"
   - type: arxiv
     url: "http://arxiv.org/abs/0807.1900"
   - type: discussion
@@ -2851,6 +3441,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://www.ams.org/bull/"
   - type: arxiv
     url: "http://arxiv.org/abs/0802.2408"
   - type: discussion
@@ -2866,6 +3458,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://intlpress.com/PDE/"
   - type: arxiv
     url: "http://arxiv.org/abs/0805.1544"
   - type: discussion
@@ -2931,6 +3525,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.springer.com/math/journal/222"
   - type: arxiv
     url: "http://arxiv.org/abs/0808.1742"
   - type: discussion
@@ -2960,6 +3556,9 @@ works:
   venue: IEEE Information Theory Society Newsletter, Dec 2008 58 (4), 20-23
   tags:
   - compressed-sensing
+  links:
+  - type: journal
+    url: "http://www.itsoc.org/publications/newsletters.html"
 - id: john-type-theorems-for-generalized-arithmetic-progressions-a
   kind: paper
   title: John-type theorems for generalized arithmetic progressions and iterated sumsets
@@ -2973,6 +3572,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622779/description"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0701005"
 - id: a-note-on-the-freiman-and-balog-szemeredi-gowers-theorems-in
@@ -2990,6 +3591,8 @@ works:
   - szemeredi
   - approximate-groups
   links:
+  - type: journal
+    url: "http://www.austms.org.au/Publ/Jamsa/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0701585"
 - id: the-condition-number-of-a-randomly-perturbed-matrix
@@ -3038,6 +3641,8 @@ works:
   - additive-combinatorics
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://journals.cambridge.org/action/displayJournal?jid=ETS"
   - type: arxiv
     url: "http://arxiv.org/abs/0707.1117"
   - type: discussion
@@ -3073,6 +3678,8 @@ works:
   - additive-combinatorics
   - random-matrices
   links:
+  - type: journal
+    url: "http://www.worldscinet.com/ccm/ccm.shtml"
   - type: arxiv
     url: "http://arxiv.org/abs/0708.2895"
   - type: discussion
@@ -3090,6 +3697,8 @@ works:
   - additive-combinatorics
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "http://arxiv.org/abs/0709.3562"
   - type: discussion
@@ -3125,6 +3734,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.lms.ac.uk/publications/proceedings/"
   - type: arxiv
     url: "http://arxiv.org/abs/0706.2646"
   - type: discussion
@@ -3139,6 +3750,8 @@ works:
   tags:
   - misc
   links:
+  - type: journal
+    url: "http://www.ams.org/bull/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.HO/0702396"
 - id: multi-linear-multipliers-associated-to-simplexes-of-arbitrar
@@ -3154,6 +3767,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://pjm.math.berkeley.edu/apde/about/journal/about.html"
   - type: arxiv
     url: "http://arxiv.org/abs/0712.2420"
   - type: discussion
@@ -3172,6 +3787,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.uam.es/departamentos/ciencias/matematicas/especifica/ibero/index.html"
   - type: arxiv
     url: "http://arxiv.org/abs/0712.1295"
   - type: discussion
@@ -3192,6 +3809,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.aimsciences.org/journals/dcdsA/index.htm"
   - type: arxiv
     url: "http://arxiv.org/abs/0704.2730"
   - type: discussion
@@ -3225,6 +3844,8 @@ works:
   - pde
   - navier-stokes
   links:
+  - type: journal
+    url: "http://intlpress.com/PDE/"
   - type: arxiv
     url: "http://arxiv.org/abs/0710.1604"
   - type: discussion
@@ -3256,6 +3877,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://aif.cedram.org/?lang=en"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0606087"
 - id: linear-equations-in-primes
@@ -3271,6 +3894,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0606088"
 - id: product-set-estimates-in-noncommutative-groups
@@ -3283,6 +3908,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://link.springer-ny.com/link/service/journals/00493"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0601431"
 - id: a-correspondence-principle-between-hyper-graph-theory-and-pr
@@ -3328,6 +3955,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.actamathematica.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0610050"
 - id: perelman-s-proof-of-the-poincare-conjecture-a-nonlinear-pde-
@@ -3358,6 +3987,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.dukemathjournal.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.DS/0601455"
 - id: spacetime-bounds-for-the-energy-critical-nonlinear-wave-equa
@@ -3370,6 +4001,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://intlpress.com/PDE/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0601164"
 - id: scattering-for-the-quartic-generalised-korteweg-de-vries-equ
@@ -3383,6 +4016,8 @@ works:
   - pde
   - kdv
   links:
+  - type: journal
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622868/description#description"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0605357"
 - id: global-regularity-for-a-logarithmically-supercritical-defocu
@@ -3395,6 +4030,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://www.worldscinet.com/jhde/jhde.shtml"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0606145"
 - id: two-remarks-on-the-generalised-korteweg-de-vries-equation
@@ -3408,6 +4045,8 @@ works:
   - pde
   - kdv
   links:
+  - type: journal
+    url: "http://aimsciences.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0606236"
 - id: a-pseudoconformal-compactification-of-the-nonlinear-schrodin
@@ -3450,6 +4089,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.degruyter.de/rs/278_3128_DEU_h.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0609690"
 - id: global-well-posedness-and-scattering-for-the-mass-critical-n
@@ -3466,6 +4107,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.dukeupress.edu/dmj/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0609692"
 - id: a-counterexample-to-an-endpoint-bilinear-strichartz-inequali
@@ -3480,6 +4123,8 @@ works:
   - strichartz
   - multilinear
   links:
+  - type: journal
+    url: "http://ejde.math.swt.edu/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0609849"
 - id: a-concentration-compact-attractor-for-high-dimensional-non-l
@@ -3493,6 +4138,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://intlpress.com/PDE/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0611402"
 - id: a-priori-bounds-and-weak-solutions-for-the-nonlinear-schr-di
@@ -3509,6 +4156,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.apnet.com/www/journal/fu.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0612457"
 - id: robust-uncertainty-principles-exact-signal-reconstruction-fr
@@ -3522,6 +4171,9 @@ works:
   venue: IEEE Inf. Theory 52 (2006) Vol 2., 489�509
   tags:
   - compressed-sensing
+  links:
+  - type: journal
+    url: "http://pareja.itsoc.org/initial_submission/"
 - id: new-bounds-for-szemeredi-s-theorem-i-progressions-of-length-
   kind: paper
   title: "New bounds for Szemeredi's Theorem, I: Progressions of length 4 in finite field geometries"
@@ -3549,6 +4201,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.ams.org/jams/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0501313"
 - id: the-gaussian-primes-contain-arbitrarily-shaped-constellation
@@ -3562,6 +4216,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.ma.huji.ac.il/jdm/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0501314"
 - id: an-inverse-theorem-for-the-gowers-u-3-g-norm
@@ -3577,6 +4233,8 @@ works:
   - additive-combinatorics
   - gowers-norms
   links:
+  - type: journal
+    url: "http://uk.cambridge.org/journals/journal_catalogue.asp?mnemonic=PEM&rnd=01/03/2005+19:50:02"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0503014"
 - id: a-variant-of-the-hypergraph-removal-lemma
@@ -3590,7 +4248,7 @@ works:
   - additive-combinatorics
   links:
   - type: journal
-    url: "http://dx.doi.org/10.1016/j.jcta.2005.11.006"
+    url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622862/description#description"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0503572"
 - id: szemeredi-s-regularity-lemma-revisited
@@ -3604,6 +4262,8 @@ works:
   - additive-combinatorics
   - szemeredi
   links:
+  - type: journal
+    url: "http://cdm.ucalgary.ca/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0504472"
 - id: random-symmetric-matrices-are-almost-surely-non-singular
@@ -3619,6 +4279,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.dukeupress.edu/dmj/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.PR/0505156"
 - id: obstructions-to-uniformity-and-arithmetic-patterns-in-the-pr
@@ -3632,6 +4294,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://qjpam.henu.edu.cn/home.jsp"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0505402"
 - id: compressions-convex-geometry-and-the-freiman-bilu-theorem
@@ -3647,6 +4311,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://qjmath.oxfordjournals.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0511069"
 - id: inverse-littlewood-offord-theorems-and-the-condition-number-
@@ -3661,6 +4327,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.PR/0511215"
 - id: the-dichotomy-between-structure-and-randomness-arithmetic-pr
@@ -3692,6 +4360,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.springerlink.com/link.asp?id=100476"
   - type: arxiv
     url: "https://arxiv.org/abs/math.MG/0505065"
 - id: finiteness-bounds-for-holder-brascamp-lieb-multilinear-inequ
@@ -3709,6 +4379,8 @@ works:
   - harmonic-analysis
   - multilinear
   links:
+  - type: journal
+    url: "http://math.berkeley.edu/~mchrist/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0505691"
 - id: on-the-multilinear-restriction-and-kakeya-conjectures
@@ -3727,6 +4399,8 @@ works:
   - restriction
   - multilinear
   links:
+  - type: journal
+    url: "http://www.ml.kva.se/publications/acta/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0509262"
 - id: maximal-multilinear-operators
@@ -3742,6 +4416,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.ams.org/tran/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0510581"
 - id: stability-of-energy-critical-nonlinear-schr-dinger-equations
@@ -3757,6 +4433,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://ejde.math.swt.edu/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0507005"
 - id: sharp-well-posedness-and-ill-posedness-results-for-a-quadrat
@@ -3773,7 +4451,7 @@ works:
   - nls
   links:
   - type: journal
-    url: "http://dx.doi.org/10.1016/j.jfa.2005.08.004"
+    url: "http://www.apnet.com/www/journal/fu.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0508210"
 - id: velocity-averaging-kinetic-formulations-and-regularizing-eff
@@ -3788,6 +4466,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://www.wiley.com/WileyCDA/WileyTitle/productCd-CPA.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0511054"
 - id: the-nonlinear-schr-dinger-equation-with-combined-power-type-
@@ -3804,6 +4484,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.dekker.com/e/p.pl/0360-5302"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0511070"
 - id: decoding-by-linear-programming
@@ -3818,6 +4500,8 @@ works:
   tags:
   - compressed-sensing
   links:
+  - type: journal
+    url: "http://pareja.itsoc.org/initial_submission/"
   - type: arxiv
     url: "http://arxiv.org/abs/math.MG/0502327"
 - id: stable-signal-recovery-from-incomplete-and-inaccurate-measur
@@ -3833,6 +4517,8 @@ works:
   tags:
   - compressed-sensing
   links:
+  - type: journal
+    url: "http://www.wiley.com/WileyCDA/WileyTitle/productCd-CPA.html"
   - type: arxiv
     url: "http://www.arxiv.org/abs/math.NA/0503066"
 - id: error-correction-via-linear-programming
@@ -3879,6 +4565,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0404188"
   - type: slides
@@ -3901,6 +4589,8 @@ works:
   - restriction
   - sieve-theory
   links:
+  - type: journal
+    url: "http://www.math.ethz.ch/EMIS/journals/JTNB/jtnb_english.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0405581"
 - id: a-quantitative-ergodic-theory-proof-of-szemer-di-s-theorem
@@ -3915,6 +4605,8 @@ works:
   - szemeredi
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://www.combinatorics.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0405251"
 - id: on-random-pm-1-matrices-singularity-and-determinant
@@ -3929,6 +4621,8 @@ works:
   tags:
   - additive-combinatorics
   links:
+  - type: journal
+    url: "http://www3.interscience.wiley.com/journal/38107/home"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0411095"
 - id: arithmetic-progressions-and-the-primes
@@ -3942,6 +4636,8 @@ works:
   - additive-combinatorics
   - primes
   links:
+  - type: journal
+    url: "http://www.imub.ub.es/collect/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.NT/0411246"
 - id: the-bi-carleson-operator
@@ -3957,6 +4653,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0409406"
 - id: multi-parameter-paraproducts
@@ -3973,6 +4671,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.uam.es/departamentos/ciencias/matematicas/especifica/ibero/index.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0411607"
 - id: symplectic-nonsqueezing-of-the-kdv-flow
@@ -3991,6 +4691,8 @@ works:
   - pde
   - kdv
   links:
+  - type: journal
+    url: "http://www.actamathematica.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0412381"
 - id: global-well-posedness-and-scattering-in-the-energy-space-for
@@ -4009,6 +4711,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0402129"
 - id: long-time-decay-estimates-for-schrodinger-equations-on-manif
@@ -4037,6 +4741,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://nyjm.albany.edu:8000/Edboard.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0402130"
 - id: sharp-strichartz-estimates-on-non-trapping-asymptotically-co
@@ -4053,6 +4759,8 @@ works:
   - pde
   - strichartz
   links:
+  - type: journal
+    url: "http://www.press.jhu.edu/press/journals/titles/ajm.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0408273"
 - id: geometric-renormalization-of-large-energy-wave-maps
@@ -4080,6 +4788,8 @@ works:
   tags:
   - compressed-sensing
   links:
+  - type: journal
+    url: "http://pareja.itsoc.org/initial_submission/"
   - type: arxiv
     url: "http://arxiv.org/abs/math.CA/0410542"
 - id: a-sum-product-estimate-for-finite-fields-and-applications
@@ -4096,6 +4806,8 @@ works:
   - additive-combinatorics
   - approximate-groups
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0301343"
 - id: fuglede-s-conjecture-is-false-in-5-and-higher-dimensions
@@ -4108,6 +4820,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0306134"
 - id: an-uncertainty-principle-for-cyclic-groups-of-prime-order
@@ -4121,6 +4835,8 @@ works:
   - harmonic-analysis
   - primes
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0308286"
 - id: a-positive-proof-of-the-littlewood-richardson-rule-using-the
@@ -4137,6 +4853,8 @@ works:
   - honeycombs
   - ergodic-theory
   links:
+  - type: journal
+    url: "http://www.combinatorics.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/0306274"
 - id: some-recent-progress-on-the-restriction-conjecture
@@ -4150,6 +4868,8 @@ works:
   - kakeya-restriction
   - restriction
   links:
+  - type: journal
+    url: "http://www.ams.org/msnmain?fn=405&pg1=CN&s1=Appl_Numer_Harmon_Anal&v1=Appl%2E%20Numer%2E%20Harmon%2E%20Anal%2E%2C"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0303136"
 - id: recent-progress-on-the-restriction-conjecture
@@ -4179,6 +4899,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.ml.kva.se/publications/acta/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0310367"
 - id: on-multilinear-oscillatory-integrals-nonsingular-and-singula
@@ -4195,6 +4917,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.dukemathjournal.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0311039"
 - id: global-existence-and-scattering-for-rough-solutions-of-a-non
@@ -4213,6 +4937,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.wiley.com/WileyCDA/WileyTitle/productCd-CPA.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0301260"
 - id: global-regularity-for-the-maxwell-klein-gordon-equation-in-h
@@ -4228,6 +4954,8 @@ works:
   - pde
   - gauge-theory
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00220/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0309353"
 - id: ill-posedness-for-nonlinear-schrodinger-and-wave-equations
@@ -4261,6 +4989,8 @@ works:
   - strichartz
   - nls
   links:
+  - type: journal
+    url: "http://www.dekker.com/e/p.pl/0360-5302"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0312225"
 - id: global-well-posedness-of-the-benjamin-ono-equation-in-h-1-r
@@ -4273,6 +5003,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://www.worldscinet.com/jhde/jhde.shtml"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0307289"
 - id: instability-of-the-periodic-nonlinear-schrodinger-equation
@@ -4302,6 +5034,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://intlpress.com/PDE/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0309428"
 - id: endpoint-mapping-properties-of-spherical-maximal-operators
@@ -4347,6 +5081,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.press.jhu.edu/press/journals/titles/ajm.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0205156"
 - id: weak-type-1-1-bounds-for-fourier-integral-operators
@@ -4359,6 +5095,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.austms.org.au/Publ/Jamsa/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0201220"
 - id: on-the-maximal-bochner-riesz-conjecture-in-the-plane-for-p-2
@@ -4387,6 +5125,8 @@ works:
   - kakeya
   - restriction
   links:
+  - type: journal
+    url: "http://www.dukemathjournal.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0204234"
   - type: pdf
@@ -4404,6 +5144,8 @@ works:
   - kakeya-restriction
   - bochner-riesz
   links:
+  - type: journal
+    url: "http://www.math.ucla.edu/~cag/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0207225"
 - id: a-new-bound-for-finite-field-besicovitch-sets-in-four-dimens
@@ -4416,6 +5158,8 @@ works:
   tags:
   - kakeya-restriction
   links:
+  - type: journal
+    url: "http://www.math.uci.edu/pjm.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0204251"
 - id: a-sharp-bilinear-restriction-estimate-for-paraboloids
@@ -4430,6 +5174,8 @@ works:
   - restriction
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0210084"
 - id: relative-efficiencies-of-kernel-and-local-likelihood-density
@@ -4455,6 +5201,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00039/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0201060"
 - id: a-carleson-type-theorem-for-a-cantor-group-model-of-the-scat
@@ -4470,6 +5218,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.iop.org/EJ/S/1/NCA203394/journal/0951-7715"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0205139"
 - id: l-p-bounds-for-a-maximal-dyadic-sum-operator
@@ -4485,6 +5235,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer-ny.com/link/service/journals/00209/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0212164"
 - id: almost-conservation-laws-and-global-rough-solutions-to-a-non
@@ -4503,6 +5255,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0203218"
   - type: slides
@@ -4523,6 +5277,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://aimsciences.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0206218"
 - id: polynomial-growth-and-orbital-instability-bounds-for-l-2-sub
@@ -4541,6 +5297,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://aimsciences.org/CPAA/cpaa.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0212113"
 - id: a-singularity-removal-theorem-for-yang-mills-fields-in-highe
@@ -4556,6 +5314,8 @@ works:
   - pde
   - gauge-theory
   links:
+  - type: journal
+    url: "http://www.ams.org/jams"
   - type: arxiv
     url: "https://arxiv.org/abs/math.DG/0209352"
 - id: asymptotics-frequency-modulation-and-low-regularity-ill-pose
@@ -4571,6 +5331,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://www.press.jhu.edu/press/journals/titles/ajm.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0203044"
 - id: upper-and-lower-bounds-for-dirichlet-eigenfunctions
@@ -4585,6 +5347,8 @@ works:
   tags:
   - pde
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0202140"
   - type: pdf
@@ -4612,6 +5376,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://www.math.sciences.univ-nantes.fr/edpa/2002/"
   - type: pdf
     url: "http://www.math.sciences.univ-nantes.fr/edpa/2002/pdf/keel.pdf"
 - id: l-p-improving-estimates-for-averages-along-curves
@@ -4643,6 +5409,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0104087"
 - id: carleson-measures-trees-extrapolation-and-t-b-theorems
@@ -4661,6 +5429,8 @@ works:
   - harmonic-analysis
   - multilinear
   links:
+  - type: journal
+    url: "http://mat.uab.es/pubmat"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0108138"
 - id: the-honeycomb-model-of-gl-n-c-tensor-products-ii-facets-of-t
@@ -4692,6 +5462,8 @@ works:
   tags:
   - honeycombs
   links:
+  - type: journal
+    url: "http://www.dukemathjournal.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AT/0112150"
   - type: pdf
@@ -4772,6 +5544,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00208/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0102083"
 - id: l-p-estimates-for-the-biest-ii-the-fourier-model
@@ -4787,6 +5561,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00208/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0102084"
 - id: a-counterexample-to-a-multilinear-endpoint-question-of-chris
@@ -4802,6 +5578,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0108156"
 - id: multilinear-interpolation-between-adjoint-operators
@@ -4816,6 +5594,8 @@ works:
   tags:
   - multilinear
   links:
+  - type: journal
+    url: "http://www.apnet.com/www/journal/fu.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.FA/0111141"
 - id: global-well-posedness-result-for-kdv-in-sobolev-spaces-of-ne
@@ -4894,6 +5674,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://epubs.siam.org/sam-bin/dbq/toclist/SIMA"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0101263"
 - id: a-refined-global-well-posedness-for-the-schrodinger-equation
@@ -4912,6 +5694,8 @@ works:
   - pde
   - nls
   links:
+  - type: journal
+    url: "http://epubs.siam.org/sam-bin/dbq/toclist/SIMA"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0110026"
 - id: a-physical-approach-to-wave-equation-bilinear-estimates
@@ -4928,6 +5712,8 @@ works:
   - pde
   - multilinear
   links:
+  - type: journal
+    url: "http://www.ams.org/msnmain?fn=305&pg1=CN&s1=J_Anal_Math&v1=J.+Anal.+Math."
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0106091"
 - id: almost-everywhere-convergence-of-general-wavelet-shrinkage-e
@@ -4955,6 +5741,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://www.uam.es/departamentos/ciencias/matematicas/ibero/irevista.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0001050"
 - id: some-light-on-littlewood-paley-theory
@@ -4969,6 +5757,8 @@ works:
   tags:
   - harmonic-analysis
   links:
+  - type: journal
+    url: "http://link.springer.de/link/service/journals/00208/index.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0011246"
 - id: honeycombs-and-sums-of-hermitian-matrices
@@ -4983,6 +5773,8 @@ works:
   tags:
   - honeycombs
   links:
+  - type: journal
+    url: "http://www.ams.org/notices/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.RT/0009048"
   - type: pdf
@@ -5042,6 +5834,8 @@ works:
   tags:
   - kakeya-restriction
   links:
+  - type: journal
+    url: "http://www.ams.org/notices/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/0008098"
   - type: pdf
@@ -5072,6 +5866,8 @@ works:
   - pde
   - gauge-theory
   links:
+  - type: journal
+    url: "http://www.apnet.com/www/journal/de.htm"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0005064"
 - id: multilinear-weighted-convolution-of-l-2-functions-and-applic
@@ -5100,6 +5896,8 @@ works:
   - pde
   - wave-maps
   links:
+  - type: journal
+    url: "http://www.imrn.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0010068"
   - type: slides
@@ -5195,6 +5993,8 @@ works:
   - restriction
   - bochner-riesz
   links:
+  - type: journal
+    url: "http://www.dukemathjournal.org/"
   - type: pdf
     url: "http://www.dukeupress.edu/dmj/1999/abstracts/articles/DMJ9602_4.pdf"
 - id: an-improved-bound-on-the-minkowski-dimension-of-besicovitch-
@@ -5210,6 +6010,8 @@ works:
   tags:
   - kakeya-restriction
   links:
+  - type: journal
+    url: "http://www.math.princeton.edu/~annals/web/index.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/9903166"
   - type: arxiv
@@ -5243,6 +6045,8 @@ works:
   - kakeya-restriction
   - kakeya
   links:
+  - type: journal
+    url: "http://math.ucsd.edu/~mrl/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CO/9906097"
 - id: an-x-ray-transform-estimate-in-r-n
@@ -5257,6 +6061,8 @@ works:
   tags:
   - kakeya-restriction
   links:
+  - type: journal
+    url: "http://www.uam.es/departamentos/ciencias/matematicas/especifica/ibero/index.html"
   - type: arxiv
     url: "https://arxiv.org/abs/math.CA/9909032"
 - id: multilinear-operators-given-by-singular-multipliers
@@ -5363,6 +6169,8 @@ works:
   - pde
   - wave-maps
   links:
+  - type: journal
+    url: "http://www.imrn.org/"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/9807171"
   - type: slides
@@ -5381,6 +6189,8 @@ works:
   - strichartz
   - nls
   links:
+  - type: journal
+    url: "http://www.dekker.com/e/p.pl/0360-5302"
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/9811168"
 - id: ill-posedness-for-one-dimensional-wave-maps-at-the-critical-
@@ -5469,6 +6279,8 @@ works:
   - additive-combinatorics
   - szemeredi
   links:
+  - type: journal
+    url: "http://www.scholarpedia.org/article/Main_Page"
   - type: discussion
     url: "http://terrytao.wordpress.com/2007/07/06/scholarpedia-article-szemeredis-theorem/"
 - id: gowers-proof-of-szemeredi-s-theorem-for-progressions-of-leng
