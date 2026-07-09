@@ -88,9 +88,12 @@ ol.errata > li { display: grid; grid-template-columns: 5.5rem 1fr; gap: .6rem;
 .pg.stub { color: var(--stub-fg); background: var(--stub-bg); border-radius: 4px;
   padding: 0 .4rem; font-size: .82rem; align-self: start; }
 .txt { overflow-wrap: anywhere; }
-.book-list { list-style: none; padding: 0; }
+.book-list { list-style: none; padding: 0; margin: .6rem 0 0; }
 .book-list li { padding: .6rem .8rem; border: 1px solid var(--line); border-radius: 8px;
   margin-bottom: .5rem; background: var(--card); }
+.book-list .year { color: var(--muted); font-variant-numeric: tabular-nums;
+  display: inline-block; min-width: 6.2rem; }
+.book-list .coauth { color: var(--muted); font-size: .92rem; }
 .bib { background: var(--card); border: 1px solid var(--line); border-radius: 8px;
   padding: .8rem 1rem; margin: 0 0 1.2rem; font-size: .92rem; }
 .bib dl { display: grid; grid-template-columns: max-content 1fr; gap: .2rem .8rem; margin: 0; }
@@ -297,23 +300,37 @@ def build_links_page(doc: dict) -> tuple[str, str]:
 
 
 def build_index(books: list[dict], links: list[dict] = ()) -> str:
+    def pub_year(doc):
+        return (doc["book"].get("publication") or {}).get("first_published")
+
     rows = []
-    for doc in sorted(books, key=lambda d: d["book"]["title"].lower()):
+    # Chronological by publication year; undated ("in preparation") last, then by title.
+    for doc in sorted(books, key=lambda d: (pub_year(d) is None, pub_year(d) or 0,
+                                            d["book"]["title"].lower())):
         b = doc["book"]
+        y = pub_year(doc)
+        yr = f'<span class="year">{y}</span>' if y else '<span class="year">in preparation</span>'
         n = sum(len(ed.get("errata", [])) for ed in doc.get("editions", []) if ed.get("active", True))
         tag = (f"{n} correction" + ("s" if n != 1 else "")) if n else "book details"
-        rows.append(f'<li><a href="{b["slug"]}.html">{html.escape(b["title"])}</a>'
-                    f' <span class="count">&mdash; {tag}</span></li>')
-    body = ('<h1>Books</h1>'
-            '<p class="sub">Book pages for the works of Terence Tao &mdash; bibliographic details and '
-            'errata, generated from a database maintained by the author.</p>'
-            f'<ul class="book-list">{"".join(rows)}</ul>')
+        coauth = [a for a in b.get("authors", []) if a != "Terence Tao"]
+        auth = (f'<span class="coauth"> &middot; with {html.escape(", ".join(coauth))}</span>'
+                if coauth else "")
+        rows.append(f'<li>{yr} <a href="{b["slug"]}.html">{html.escape(b["title"])}</a>{auth}'
+                    f'<span class="count"> &mdash; {tag}</span></li>')
+    body = ('<h1>Terence Tao</h1>'
+            '<p class="sub">Book pages (bibliographic details and errata) and other collected pages, '
+            'generated from a database maintained by the author.</p>'
+            '<details class="section">'
+            f'<summary>Books <span class="count">({len(books)})</span></summary>'
+            f'<ul class="book-list">{"".join(rows)}</ul></details>')
     if links:
         lrows = "".join(
             f'<li><a href="{l["slug"]}.html">{html.escape(l["title"])}</a></li>'
             for l in sorted(links, key=lambda d: d["title"].lower()))
-        body += f'<h2>Other pages</h2><ul class="book-list">{lrows}</ul>'
-    return page("Books — Terence Tao", body)
+        body += ('<details class="section">'
+                 f'<summary>Other pages <span class="count">({len(links)})</span></summary>'
+                 f'<ul class="book-list">{lrows}</ul></details>')
+    return page("Terence Tao — books and errata", body)
 
 
 def main() -> None:
