@@ -533,19 +533,25 @@ students:
 - name: James Leng
   level: PhD
   institution: UCLA
-  years: 2022–
+  years: 2022–2025
+  thesis:
+    title: Szemerédi's theorem, primes, and nilsequences
+    url: "https://escholarship.org/uc/item/7z39f2qk"
 - name: Ben Johnsrude
   level: PhD
   institution: UCLA
-  years: 2022–
+  years: 2022–2025
+  thesis:
+    title: Topics in the theory of Fourier decoupling
+    url: "https://escholarship.org/uc/item/9z00n279"
 - name: Zi Li Lim
   level: PhD
   institution: UCLA
-  years: 2022–
+  years: 2022–2026
 - name: Rushil Raghavan
   level: PhD
   institution: UCLA
-  years: 2023–
+  years: 2023–2026
 - name: Arian Nadjimzadah
   level: PhD
   institution: UCLA
