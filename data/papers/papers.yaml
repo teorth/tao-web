@@ -450,7 +450,8 @@ works:
   kind: paper
   title: A Host--Kra Fω2-system of order 5 that is not Abramov of order 5, and non-measurability of the inverse theorem for the U6(Fn2) norm
   coauthors:
-  - Asgar Jamneshan, Or Shalom
+  - Asgar Jamneshan
+  - Or Shalom
   year: 2023
   status: submitted
   venue: submitted,JEMS
@@ -467,7 +468,8 @@ works:
   kind: paper
   title: The structure of totally disconnected Host--Kra--Ziegler factors, and the inverse theorem for the Uk Gowers uniformity norms on finite abelian groups of bounded torsion
   coauthors:
-  - Asgar Jamneshan, Or Shalom
+  - Asgar Jamneshan
+  - Or Shalom
   year: 2023
   status: submitted
   venue: submitted
@@ -484,7 +486,7 @@ works:
   kind: paper
   title: An upper bound on the mean value of the Hooley delta function
   coauthors:
-  - Dimitris Koukouloupolous
+  - Dimitris Koukoulopoulos
   year: 2023
   status: to-appear
   venue: To appear, Proc LMS
@@ -500,7 +502,8 @@ works:
   kind: paper
   title: Sumsets and entropy revisited
   coauthors:
-  - Ben GreenFreddie Manners
+  - Ben Green
+  - Freddie Manners
   year: 2023
   status: submitted
   venue: Submitted, Random Structures and Algorithms
@@ -533,7 +536,8 @@ works:
   kind: paper
   title: A lower bound on the mean value of the Hooley delta function
   coauthors:
-  - Kevin FordDimitris Koukouloupolous
+  - Kevin Ford
+  - Dimitris Koukoulopoulos
   year: 2023
   status: published
   venue: "Proc LMS 127, December 2023, 1865-1885http://dx.doi.org/10.1112/plms.12572"
@@ -579,7 +583,9 @@ works:
   kind: paper
   title: On a conjecture of Marton
   coauthors:
-  - Timothy GowersBen GreenFreddie Manners
+  - Timothy Gowers
+  - Ben Green
+  - Freddie Manners
   year: 2023
   status: submitted
   venue: Submitted, Annals Math.
@@ -644,7 +650,9 @@ works:
   kind: paper
   title: Measurable tilings by abelian group actions
   coauthors:
-  - Jan Grebík, Rachel Greenfeld, Václav Rozhoň
+  - Jan Grebík
+  - Rachel Greenfeld
+  - Václav Rozhoň
   year: 2022
   status: published
   venue: "IMRN, rnad048, https://doi.org/10.1093/imrn/rnad048"
@@ -661,7 +669,9 @@ works:
   kind: paper
   title: Higher uniformity of arithmetic functions in short intervals I. All intervals
   coauthors:
-  - Kaisa Matomaki,Xuansheng Shao, Joni Teravainen
+  - Kaisa Matomäki
+  - Xuansheng Shao
+  - Joni Teräväinen
   year: 2022
   status: published
   venue: "Forum of Mathematics, Pi. 2023;11:e29. doi:10.1017/fmp.2023.28"
@@ -710,7 +720,10 @@ works:
   kind: paper
   title: "Singmaster's conjecture in the interior of Pascal's triangle"
   coauthors:
-  - Kaisa Matomaki, Maksym Radziwill, Xuansheng Shao, Joni Teravainen
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
+  - Xuansheng Shao
+  - Joni Teräväinen
   year: 2021
   status: published
   venue: "The Quarterly Journal of Mathematics, haac006, https://doi.org/10.1093/qmath/haac006"
@@ -726,7 +739,7 @@ works:
   kind: paper
   title: Quantitative bounds for Gowers uniformity of the Möbius and von Mangoldt functions
   coauthors:
-  - Joni Teravainen
+  - Joni Teräväinen
   year: 2021
   status: to-appear
   venue: to appear, J. Europ. Math. Soc.
@@ -761,7 +774,7 @@ works:
   kind: paper
   title: The Hardy--Littlewood--Chowla conjecture in the presence of a Siegel zero
   coauthors:
-  - Joni Teravainen
+  - Joni Teräväinen
   year: 2021
   status: published
   venue: "J. Lond. Math. Soc. https://doi.org/10.1112/jlms.12663"
@@ -778,7 +791,8 @@ works:
   kind: paper
   title: The structure of arbitrary Conze-Lesigne systems
   coauthors:
-  - Asgar Jamneshan, Or Shalom
+  - Asgar Jamneshan
+  - Or Shalom
   year: 2021
   status: submitted
   venue: submitted, Comm. AMS
@@ -813,7 +827,8 @@ works:
   kind: paper
   title: The effective potential of an $M$-matrix
   coauthors:
-  - Marcel Filoche, Svetlana Mayboroda
+  - Marcel Filoche
+  - Svetlana Mayboroda
   year: 2021
   status: published
   venue: J. Math. Phys. 62, 041902 (2021)
@@ -839,7 +854,9 @@ works:
   kind: paper
   title: Optimal sine and sawtooth inequalities
   coauthors:
-  - Louis Esser, Burt Totaro, Chengxi Wang
+  - Louis Esser
+  - Burt Totaro
+  - Chengxi Wang
   year: 2021
   status: published
   venue: "J. Fourier Anal. Appl. (2022) 28:14"
@@ -871,7 +888,10 @@ works:
   kind: paper
   title: Higher uniformity of bounded multiplicative functions in short intervals on average
   coauthors:
-  - Kaisa Matomaki, Maksym Radziwill, Joni Teravainen, Tamar Ziegler
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
+  - Joni Teräväinen
+  - Tamar Ziegler
   year: 2020
   status: published
   venue: Annals Math Pages 739-857 from Volume 197 (2023), Issue 2
@@ -888,7 +908,10 @@ works:
   kind: paper
   title: "Zarankiewicz's problem for semilinear hypergraphs"
   coauthors:
-  - Abdul Basit, Artem Chernikov, Sergei Starchenko, Chiu-Minh Tran
+  - Abdul Basit
+  - Artem Chernikov
+  - Sergei Starchenko
+  - Chiu-Minh Tran
   year: 2020
   status: published
   venue: Forum of Mathematics, Sigma , Volume 9 , 2021 , e59
@@ -959,7 +982,8 @@ works:
   kind: paper
   title: Pointwise ergodic theorems for non-conventional bilinear polynomial averages
   coauthors:
-  - Ben Krause, Mariusz Mirek
+  - Ben Krause
+  - Mariusz Mirek
   year: 2020
   status: published
   venue: Annals Math. Pages 997-1109 from Volume 195 (2022), Issue 3
@@ -993,7 +1017,9 @@ works:
   kind: paper
   title: Homogenization of iterated singular integrals with applications to random quasiconformal maps
   coauthors:
-  - Kari Astala, Steffen Rohde, Eero Saksman
+  - Kari Astala
+  - Steffen Rohde
+  - Eero Saksman
   year: 2020
   status: published
   venue: Revista Iberoamericana VOL. 38, NO. 7PP. 2285–2336
@@ -1102,7 +1128,8 @@ works:
   kind: paper
   title: Large prime gaps and probabilistic models
   coauthors:
-  - William Banks, Kevin Ford
+  - William Banks
+  - Kevin Ford
   year: 2019
   status: published
   venue: Inventiones Volume 233, pages 1471–1518, (2023)
@@ -1181,7 +1208,9 @@ works:
   kind: paper
   title: "Eigenvectors from Eigenvalues: a survey of a basic identity in linear algebra."
   coauthors:
-  - Peter Denton, Stephen Parke, Xining Zhang
+  - Peter Denton
+  - Stephen Parke
+  - Xining Zhang
   year: 2019
   status: published
   venue: Bull. Amer. Math. Soc. (N.S.) 59 (2022), no. 1, 31–58.
@@ -1263,7 +1292,10 @@ works:
   kind: paper
   title: Long gaps in sieved sets
   coauthors:
-  - Kevin FordSergei KonyaginJames MaynardCarl Pomerance
+  - Kevin Ford
+  - Sergei Konyagin
+  - James Maynard
+  - Carl Pomerance
   year: 2018
   status: published
   venue: J. Eur. Math. Soc. (JEMS) 23 (2021), no. 2, 667–700.
@@ -1299,8 +1331,8 @@ works:
   kind: paper
   title: Fourier uniformity of bounded multiplicative functions in short intervals on average
   coauthors:
-  - Kaisa Matomaki
-  - Maksym Radziwill
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
   year: 2018
   status: published
   venue: Inventiones, 220 (2020), no. 1, 1–58
@@ -1398,8 +1430,8 @@ works:
   kind: paper
   title: Correlations of the von Mangoldt and higher divisor functions I. Long shift ranges
   coauthors:
-  - Kaisa Matomaki
-  - Maksym Radziwill
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
   year: 2017
   status: published
   venue: Proc. Lond. Math. Soc. (3) 118 (2019), no. 2, 284–350.
@@ -1471,8 +1503,8 @@ works:
   kind: paper
   title: Correlations of the von Mangoldt and higher divisor functions II. Divisor correlations in short ranges
   coauthors:
-  - Kaisa Matomaki
-  - Maksym Radziwill
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
   year: 2017
   status: published
   venue: Math. Ann. 374 (2019), no. 1-2, 793–840.
@@ -1676,8 +1708,8 @@ works:
   kind: paper
   title: An averaged form of Chowla’s conjecture
   coauthors:
-  - Kaisa Matomaki
-  - Maksym Radziwill
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
   year: 2015
   status: published
   venue: Algebra & Number Theory 9-9 (2015), 2167--2196. DOI 10.2140/ant.2015.9.2167
@@ -1727,8 +1759,8 @@ works:
   kind: paper
   title: Sign patterns for the Liouville and Mobius functions
   coauthors:
-  - Kaisa Matomaki
-  - Maksym Radziwill
+  - Kaisa Matomäki
+  - Maksym Radziwiłł
   year: 2015
   status: published
   venue: Forum Math. Sigma 4 (2016), e14, 44 pp.
@@ -2687,7 +2719,8 @@ works:
   kind: paper
   title: Deterministic methods to find primes
   coauthors:
-  - Ernie CrootHarald Helfgott
+  - Ernie Croot
+  - Harald Helfgott
   year: 2010
   status: published
   venue: Mathematics of Computation 81 (2012), 1233-1246
@@ -6128,7 +6161,8 @@ works:
   kind: paper
   title: A bilinear approach to the restriction and Kakeya conjectures
   coauthors:
-  - Ana Vargas Luis Vega
+  - Ana Vargas
+  - Luis Vega
   year: 1998
   status: published
   venue: J. Amer. Math. Soc. 11 (1998), 967-1000
@@ -6574,7 +6608,9 @@ works:
   kind: paper
   title: "Analysis and applications: the work of Elias Stein"
   coauthors:
-  - Charles FeffermanAlex IonescuStephen Wainger
+  - Charles Fefferman
+  - Alex Ionescu
+  - Stephen Wainger
   status: published
   venue: "Bull. Amer. Math. Soc. https://doi.org/10.1090/bull/1691"
   tags:
