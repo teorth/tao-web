@@ -11,7 +11,7 @@ works:
   venue: Submitted
   arxiv: '2601.00961'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: arxiv
@@ -26,7 +26,7 @@ works:
   venue: Submitted, Acta Arith. (special issue in honor of Heath-Brown)
   arxiv: '2603.27990'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2603.27990"
@@ -48,7 +48,7 @@ works:
   venue: To appear
   arxiv: '2605.00301'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -79,8 +79,8 @@ works:
   venue: Submitted, Blackwell Companion to Philosophy of Mathematics
   arxiv: '2603.26524'
   tags:
-  - misc
   - machine-assisted
+  - misc
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2603.26524"
@@ -97,7 +97,7 @@ works:
   venue: To appear, Math. Comp.
   arxiv: '2501.16779'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2501.16779"
@@ -118,7 +118,7 @@ works:
   venue: To appear, Math. Comp.
   arxiv: '2503.20170'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2503.20170"
@@ -132,7 +132,7 @@ works:
   venue: Submitted, Comm. Amer. Math. Soc.
   arxiv: '2505.06757'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - tiling
   links:
   - type: arxiv
@@ -149,7 +149,7 @@ works:
   venue: To appear, Essential Number Theory
   arxiv: '2505.24017'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - sieve-theory
   links:
@@ -167,7 +167,7 @@ works:
   venue: Submitted, Proc Lond. Math. Soc.
   arxiv: '2508.06463'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -184,7 +184,7 @@ works:
   venue: To appear, Acta Arith.
   arxiv: '2512.01087'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2512.01087"
@@ -200,7 +200,7 @@ works:
   venue: Submitted, GAFA
   arxiv: '2512.01739'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -261,8 +261,8 @@ works:
   venue: Preprint
   arxiv: '2511.02864'
   tags:
-  - misc
   - machine-assisted
+  - misc
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2511.02864"
@@ -310,8 +310,8 @@ works:
   venue: Submitted
   arxiv: '2512.07087'
   tags:
-  - misc
   - machine-assisted
+  - misc
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2512.07087"
@@ -329,7 +329,7 @@ works:
   venue: Submitted
   arxiv: '2404.02244'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: arxiv
@@ -344,7 +344,7 @@ works:
   venue: Submitted, Acta Math. Hungarica
   arxiv: '2405.11610'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2405.11610"
@@ -358,7 +358,7 @@ works:
   venue: To appear, Integers
   arxiv: '2407.04226'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2407.04226"
@@ -372,7 +372,7 @@ works:
   venue: To appear, Combin. Disc. Geom.
   arxiv: '2409.01343'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2409.01343"
@@ -391,7 +391,7 @@ works:
   venue: Invent. math. (2026)
   arxiv: '2411.05770'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2411.05770"
@@ -407,7 +407,7 @@ works:
   venue: Submitted, Acta Math. Hungarica
   arxiv: '2406.17593'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2406.17593"
@@ -421,7 +421,7 @@ works:
   venue: Submitted, Random Matrix Theory and Applications
   arxiv: '2412.10889'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -438,7 +438,7 @@ works:
   venue: "J. d'Analyse Jerusalem Volume 151, pages 375–389, (2023) 10.1007/s11854-023-0323-y"
   arxiv: '2301.10303'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - approximate-groups
   links:
@@ -456,7 +456,7 @@ works:
   venue: submitted,JEMS
   arxiv: '2303.04853'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: arxiv
@@ -473,7 +473,7 @@ works:
   venue: submitted
   arxiv: '2303.04860'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: arxiv
@@ -490,7 +490,7 @@ works:
   venue: To appear, Proc LMS
   arxiv: '2306.08615'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2306.08615"
@@ -506,7 +506,7 @@ works:
   venue: Submitted, Random Structures and Algorithms
   arxiv: '2306.13403'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   - entropy
   links:
@@ -522,7 +522,7 @@ works:
   venue: To appear, Comm. AMS
   arxiv: '2308.07205'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -539,7 +539,7 @@ works:
   venue: "Proc LMS 127, December 2023, 1865-1885http://dx.doi.org/10.1112/plms.12572"
   arxiv: '2308.11987'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2308.11987"
@@ -553,7 +553,7 @@ works:
   venue: submitted, La Matematica
   arxiv: '2309.02325'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2309.02325"
@@ -569,7 +569,7 @@ works:
   venue: submitted, JEMS
   arxiv: '2309.09504'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2309.09504"
@@ -585,7 +585,7 @@ works:
   venue: Submitted, Annals Math.
   arxiv: '2311.05762'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: arxiv
@@ -650,7 +650,7 @@ works:
   venue: "IMRN, rnad048, https://doi.org/10.1093/imrn/rnad048"
   arxiv: '2203.01511'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - tiling
   links:
   - type: arxiv
@@ -667,7 +667,7 @@ works:
   venue: "Forum of Mathematics, Pi. 2023;11:e29. doi:10.1017/fmp.2023.28"
   arxiv: '2204.03754'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2204.03754"
@@ -683,7 +683,7 @@ works:
   venue: submitted, Annals Math.
   arxiv: '2211.15847'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - tiling
   links:
   - type: arxiv
@@ -716,7 +716,7 @@ works:
   venue: "The Quarterly Journal of Mathematics, haac006, https://doi.org/10.1093/qmath/haac006"
   arxiv: '2106.03335'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2106.03335"
@@ -732,7 +732,7 @@ works:
   venue: to appear, J. Europ. Math. Soc.
   arxiv: '2107.02158'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - multiplicative-functions
   links:
@@ -750,7 +750,7 @@ works:
   venue: to appear, Disc. Comp. Geom.
   arxiv: '2108.07902'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - tiling
   links:
   - type: arxiv
@@ -767,7 +767,7 @@ works:
   venue: "J. Lond. Math. Soc. https://doi.org/10.1112/jlms.12663"
   arxiv: '2109.06291'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -784,7 +784,7 @@ works:
   venue: submitted, Comm. AMS
   arxiv: '2112.02056'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: arxiv
@@ -801,7 +801,7 @@ works:
   venue: "Discrete Analysis https://doi.org/10.19086/da.84268"
   arxiv: '2112.13759'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - ergodic-theory
   links:
@@ -858,7 +858,7 @@ works:
   status: published
   venue: Acta Math. Hungar. 161 (2020), no. 2, 443–487.
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: journal
@@ -877,7 +877,7 @@ works:
   venue: Annals Math Pages 739-857 from Volume 197 (2023), Issue 2
   arxiv: '2007.15644'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -894,7 +894,7 @@ works:
   venue: Forum of Mathematics, Sigma , Volume 9 , 2021 , e59
   arxiv: '2009.02922'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2009.02922"
@@ -910,7 +910,7 @@ works:
   venue: Studia Math. 266 (2022), no. 3, 241–289.
   arxiv: '2010.00574'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -929,7 +929,7 @@ works:
   venue: "Discrete Analysis 2021:16, 28 pp."
   arxiv: '2010.03254'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - tiling
   links:
   - type: arxiv
@@ -946,7 +946,7 @@ works:
   venue: Ars Inven. Anal. 2021, Paper No. 1, 38 pp.
   arxiv: '2012.02747'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - compressed-sensing
   links:
   - type: journal
@@ -1058,7 +1058,7 @@ works:
   status: published
   venue: Random matrices, 461–498,IAS/Park City Math. Ser., 26, Amer. Math. Soc., Providence, RI, 2019.
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -1075,7 +1075,7 @@ works:
   venue: Forum Math Sigma Volume 7 (2019), e33
   arxiv: '1904.05096'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1092,7 +1092,7 @@ works:
   venue: "Research in the Mathematical Sciences (2019) 6: 31. https://doi.org/10.1007/s40687-019-0193-1"
   arxiv: '1904.12438'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1904.12438"
@@ -1108,7 +1108,7 @@ works:
   venue: Inventiones Volume 233, pages 1471–1518, (2023)
   arxiv: '1908.08613'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -1123,7 +1123,7 @@ works:
   venue: Forum Math. Pi 10 (2022), Paper No. e12, 56 pp.
   arxiv: '1909.03562'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - collatz
   links:
   - type: journal
@@ -1142,7 +1142,7 @@ works:
   venue: "Ergodic Theory and Dynamical Systems Volume 43 , Issue 7 , July 2023 , pp. 2376 - 2403 https://doi.org/10.1017/etds.2022.36"
   arxiv: '1911.12033'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: arxiv
@@ -1187,8 +1187,8 @@ works:
   venue: Bull. Amer. Math. Soc. (N.S.) 59 (2022), no. 1, 31–58.
   arxiv: '1908.03795'
   tags:
-  - misc
   - random-matrices
+  - misc
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=3001"
@@ -1251,8 +1251,7 @@ works:
   venue: Forum of Math. Pi, Volume 8 (2020), e6
   arxiv: '1801.03908'
   tags:
-  - additive-combinatorics
-  - misc
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1801.03908"
@@ -1270,7 +1269,7 @@ works:
   venue: J. Eur. Math. Soc. (JEMS) 23 (2021), no. 2, 667–700.
   arxiv: '1802.07604'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - sieve-theory
   links:
   - type: journal
@@ -1289,7 +1288,7 @@ works:
   venue: Algebra & Number Theory 13-9 (2019), 2103--2150. DOI 10.2140/ant.2019.13.2103
   arxiv: '1809.02518'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1307,7 +1306,7 @@ works:
   venue: Inventiones, 220 (2020), no. 1, 1–58
   arxiv: '1812.01224'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1354,7 +1353,7 @@ works:
   venue: Mathematika Volume 63, Issue 3 2017 , pp. 944-1040
   arxiv: '1705.01703'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: journal
@@ -1371,7 +1370,7 @@ works:
   venue: Contrib. Discrete Math. 13 (2018), no. 2, 1–31.
   arxiv: '1701.02048'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=6148"
@@ -1389,7 +1388,7 @@ works:
   venue: Electron. J. Combin. 24 (2017), no. 2, Paper 2.31, 13 pp.
   arxiv: '1702.00912'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1702.00912"
@@ -1406,7 +1405,7 @@ works:
   venue: Proc. Lond. Math. Soc. (3) 118 (2019), no. 2, 284–350.
   arxiv: '1707.01315'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1423,7 +1422,7 @@ works:
   venue: Duke Math. J. 168 (2019), no. 11, 1977–2027
   arxiv: '1708.02610'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: journal
@@ -1442,7 +1441,7 @@ works:
   venue: J. Théor. Nombres Bordeaux 30 (2018), no. 3, 997–1015.
   arxiv: '1710.02112'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: journal
@@ -1459,7 +1458,7 @@ works:
   venue: Proc. Steklov Inst. Math. 303 (2018), no. 1, 193–219
   arxiv: '1711.04337'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -1479,7 +1478,7 @@ works:
   venue: Math. Ann. 374 (2019), no. 1-2, 793–840.
   arxiv: '1712.08840'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: journal
@@ -1543,7 +1542,7 @@ works:
   venue: "Discrete Analysis 2016:15, 31 pp.Survey: J. Comb. 8n3, 2017, 541--552"
   arxiv: '1603.03068'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1603.03068"
@@ -1561,7 +1560,7 @@ works:
   venue: Discrete Anal. 2016, Paper No. 13, 60 pp.
   arxiv: '1603.07815'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - ergodic-theory
   links:
@@ -1579,7 +1578,7 @@ works:
   venue: Forum Math. Pi 6 (2018), e1, 60 pp.
   arxiv: '1603.07817'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -1594,7 +1593,7 @@ works:
   venue: Number theory—Diophantine problems, uniform distribution and applications, 391–421, Springer, Cham, 2017.
   arxiv: '1605.04628'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1609,7 +1608,7 @@ works:
   venue: Forum Math. Sigma 5(2017), e30
   arxiv: '1611.07441'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1611.07441"
@@ -1684,7 +1683,7 @@ works:
   venue: Algebra & Number Theory 9-9 (2015), 2167--2196. DOI 10.2140/ant.2015.9.2167
   arxiv: '1503.05121'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1702,7 +1701,7 @@ works:
   venue: Probab. Theory Related Fields 167 (2017), no. 3-4, 777–816.
   arxiv: '1504.00396'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -1717,7 +1716,7 @@ works:
   venue: Q. J. Math. 68 (2017), no. 1, 13–57
   arxiv: '1507.01276'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: arxiv
@@ -1735,7 +1734,7 @@ works:
   venue: Forum Math. Sigma 4 (2016), e14, 44 pp.
   arxiv: '1509.01545'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1750,7 +1749,7 @@ works:
   venue: Forum Math. Pi 4 (2016), e8, 36 pp.
   arxiv: '1509.05422'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: arxiv
@@ -1765,7 +1764,7 @@ works:
   venue: "Discrete Analysis 2016:1, 26 pp."
   arxiv: '1509.05363'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1509.05363"
@@ -1782,7 +1781,7 @@ works:
   venue: Submitted
   arxiv: '1511.04468'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - sieve-theory
   links:
@@ -1829,7 +1828,7 @@ works:
   venue: Algebra & Number Theory 8-9 (2014), 2067--2199
   arxiv: '1402.0811'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1402.0811"
@@ -1845,7 +1844,7 @@ works:
   venue: "Research in the Mathematical Sciences 1:12 (2014)"
   arxiv: '1407.4897'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - sieve-theory
   links:
@@ -1865,7 +1864,7 @@ works:
   venue: Annals Math. 183 (2016), 935--974.
   arxiv: '1408.4505'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - sieve-theory
   links:
@@ -1883,7 +1882,7 @@ works:
   venue: Analytic number theory, 357–379, Springer, Cham, 2015.
   arxiv: '1409.1327'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -1900,7 +1899,7 @@ works:
   venue: Newsletter of the European Mathematical Society, Dec 2014. Issue 94, 13--23
   arxiv: '1409.8361'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - sieve-theory
   - polymath
@@ -1917,7 +1916,7 @@ works:
   venue: Algebra & Number Theory 9-4 (2015), 1005--1034. DOI 10.2140/ant.2015.9.1005
   arxiv: '1410.7073'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1410.7073"
@@ -1933,7 +1932,7 @@ works:
   venue: Combinatorica 37 (2017), no. 3, 539–553
   arxiv: '1412.1438'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -1953,7 +1952,7 @@ works:
   venue: J. Amer. Math. Soc. 31 (2018), no. 1, 65–105
   arxiv: '1412.5029'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -1989,7 +1988,7 @@ works:
   venue: J. Europ. Math. Soc. 17 (2015), 1367-1434
   arxiv: '1309.1975'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.ems-ph.org/journals/journal.php?jrn=JEMS"
@@ -2008,7 +2007,7 @@ works:
   venue: J. Anal. Math. 127 (2015), 329–378.
   arxiv: '1305.4717'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: arxiv
@@ -2025,7 +2024,7 @@ works:
   venue: Israel J. Math., Feb 2015
   arxiv: '1306.2886'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   - szemeredi
   links:
@@ -2043,7 +2042,7 @@ works:
   venue: "International Mathematics Research Notices 2014;doi: 10.1093/imrn/rnu084"
   arxiv: '1307.4357'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1307.4357"
@@ -2057,7 +2056,7 @@ works:
   venue: EMS surveys in the mathematical sciences 1 (2014), 1--46
   arxiv: '1310.6482'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.ems-ph.org/journals/journal.php?jrn=emss"
@@ -2089,7 +2088,7 @@ works:
   venue: "Random matrices: Theory and Applications 2 (2013), 1350007"
   arxiv: '1201.4789'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2106,7 +2105,7 @@ works:
   venue: Mathematics of Computation 83 (2014), 997-1038
   arxiv: '1201.6656'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -2125,7 +2124,7 @@ works:
   venue: "In: Modern Aspects of Random Matrix Theory, Proceedings of Symposia in Applied Mathematics 72 (2013), V. Vu Editor, 121--172."
   arxiv: '1202.0068'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -2140,7 +2139,7 @@ works:
   venue: Probability Theory and Related Fields 157 (2013), 81-106
   arxiv: '1203.1605'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2156,8 +2155,7 @@ works:
   status: published
   venue: Daedalus 141 (3) (Summer 2012)
   tags:
-  - additive-combinatorics
-  - misc
+  - additive-combinatorics-number-theory
 - id: new-bounds-for-szemeredi-s-theorem-ia-progressions-of-length
   kind: paper
   title: "New bounds for Szemeredi's theorem, Ia: Progressions of length 4 in finite field geometries revisited"
@@ -2168,7 +2166,7 @@ works:
   venue: Submitted, Proc. Lond. Math. Soc.
   arxiv: '1205.1330'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: arxiv
@@ -2185,7 +2183,7 @@ works:
   venue: Annals of Prob. 43 (2015), 782-874
   arxiv: '1206.1893'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -2202,7 +2200,7 @@ works:
   venue: Disc. Comp. Geom. 50 (2013), 409-468
   arxiv: '1208.4714'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.springer.com/mathematics/numbers/journal/454"
@@ -2218,7 +2216,7 @@ works:
   venue: Contrib. Discrete Math. 10 (2015), no. 1, 22–98
   arxiv: '1211.2894'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1211.2894"
@@ -2234,7 +2232,7 @@ works:
   venue: Geom. Func. Anal. 24 (2014), 1-48
   arxiv: '1211.6372'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -2251,7 +2249,7 @@ works:
   venue: Forum of Mathematics, Sigma 1 (2013), e2
   arxiv: '1212.2586'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -2285,7 +2283,7 @@ works:
   status: published
   venue: Acta Mathematica Vietnamica 36 (2011), 431--449
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2302,7 +2300,7 @@ works:
   venue: Annals of Combinatorics 16 (2012), 121-188
   arxiv: '1101.1469'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -2322,7 +2320,7 @@ works:
   venue: Submitted,
   arxiv: '1101.2552'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: arxiv
@@ -2339,7 +2337,7 @@ works:
   venue: Electronic Journal of Probability 16 (2011), 2104-2121
   arxiv: '1101.5707'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2358,7 +2356,7 @@ works:
   venue: "Random matrices: Theory and Applications 1 (2012), 1150001"
   arxiv: '1103.2801'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2377,7 +2375,7 @@ works:
   venue: Disc. Comp. Geom. 48 (2012), 255-280
   arxiv: '1103.2926'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.springer.com/mathematics/numbers/journal/454"
@@ -2393,7 +2391,7 @@ works:
   venue: European Journal of Combinatorics 34 (2013), 1459-1465
   arxiv: '1106.2267'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622824/description"
@@ -2411,7 +2409,7 @@ works:
   venue: J. Aust. Math. Soc. 94 (2013), 50-105
   arxiv: '1107.1010'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.austms.org.au/Journal+of+the+Australian+Mathematical+Society"
@@ -2430,7 +2428,7 @@ works:
   venue: Publ. Math. Inst. Hautes Études Sci. 116 (2012), 115–221
   arxiv: '1110.5008'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2449,7 +2447,7 @@ works:
   venue: Adv. Math. 231 (2012), 74-101
   arxiv: '1111.6300'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2468,7 +2466,7 @@ works:
   venue: Random matrix theory, interacting particle systems, and integrable systems, 509–528, Math. Sci. Res. Inst. Publ., 65, Cambridge Univ. Press, New York, 2014.
   arxiv: '1112.1976'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -2486,7 +2484,7 @@ works:
   venue: European Journal of Combinatorics 34 (2013), 1287-1292
   arxiv: '1112.4174'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2541,7 +2539,7 @@ works:
   venue: Electronic research announcements 17 (2010), 57-67
   arxiv: '1001.4570'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2560,7 +2558,7 @@ works:
   venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 261-334"
   arxiv: '1002.2028'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1002.2028"
@@ -2576,7 +2574,7 @@ works:
   venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 335-342"
   arxiv: '1002.2254'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: arxiv
@@ -2593,7 +2591,7 @@ works:
   venue: Combinatorica, 32 (2012), 363-372
   arxiv: '1002.5028'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://link.springer-ny.com/link/service/journals/00493"
@@ -2612,7 +2610,7 @@ works:
   venue: Groups, Geometry, and Dynamics 5 (2011), no. 2, 281–-299.
   arxiv: '1005.0782'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2632,7 +2630,7 @@ works:
   venue: GAFA 21 (2011), 774-819
   arxiv: '1005.1881'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2653,7 +2651,7 @@ works:
   venue: Israel J. Math. 192 (2012), 347-379
   arxiv: '1010.4259'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.ma.huji.ac.il/~ijmath/"
@@ -2672,7 +2670,7 @@ works:
   venue: "Annals of Math. 176 (2012), no. 2, 1231–1372.(Announcement: Submitted, Electronic Research Announcements)"
   arxiv: '1006.0205'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -2695,7 +2693,7 @@ works:
   venue: Mathematics of Computation 81 (2012), 1233-1246
   arxiv: '1009.3956'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -2714,7 +2712,7 @@ works:
   venue: J. d’Analyse Mathematique 117 (2012), 133-186
   arxiv: '1012.3509'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - ergodic-theory
   links:
@@ -2732,7 +2730,7 @@ works:
   venue: Probability theory and related fields155 (2013), 231-263
   arxiv: '1012.4818'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.math.ens.fr/ptrf/"
@@ -2787,7 +2785,7 @@ works:
   venue: Geom. Funct. Anal. 19 (2010), no. 6, 1539--1596.
   arxiv: '0901.2602'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: arxiv
@@ -2804,7 +2802,7 @@ works:
   venue: Random Structures and Algorithms37 (2010), 525-539
   arxiv: '0902.2357'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www3.interscience.wiley.com/journal/38107/home"
@@ -2822,7 +2820,7 @@ works:
   venue: GAFA, 20 (2010), 260-297
   arxiv: '0903.0614'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2841,7 +2839,7 @@ works:
   venue: Acta Math 206 (2011), 127-204
   arxiv: '0906.0510'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2860,7 +2858,7 @@ works:
   venue: Math. Proc. Camb. Phil. Soc. 149 (2010), 1-19
   arxiv: '0906.3100'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2877,7 +2875,7 @@ works:
   venue: Contributions to Discrete Mathematics 5 (2010), no. 2, 137–184,
   arxiv: '0906.3535'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -2894,7 +2892,7 @@ works:
   venue: Combinatorics, Probability, and Computing 19 (2010), 603-639
   arxiv: '0906.4387'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   - entropy
   links:
@@ -2918,7 +2916,7 @@ works:
   venue: Math. Res. Lett. 17 (2010), 793-794
   arxiv: '0906.4400'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2937,7 +2935,7 @@ works:
   venue: Communications in Mathematical Physics, 298 (2010), 549-572
   arxiv: '0908.1982'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -2954,7 +2952,7 @@ works:
   venue: Bull. Aust. Math. Soc. 81 (2010), 343-349
   arxiv: '0908.4323'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: journal
@@ -2973,7 +2971,7 @@ works:
   venue: Annals of Math. 175 (2012), 1283-1327.
   arxiv: '0910.3926'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/0910.3926"
@@ -2989,7 +2987,7 @@ works:
   venue: GAFA 20 (2010), no. 6, 1502–1547.
   arxiv: '0910.4148'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://link.springer.de/link/service/journals/00039/index.htm"
@@ -3008,7 +3006,7 @@ works:
   venue: Glasgow Mathematical Journal 53(2011), no. 1, 1–50
   arxiv: '0911.5681'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -3027,7 +3025,7 @@ works:
   venue: Annals of Probability 40 (2012), 1283--1315.
   arxiv: '0912.0966'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -3045,7 +3043,7 @@ works:
   venue: Pacific Journal of Mathematics 250-1 (2011), 1--60. DOI 10.2140/pjm.2011.250.1
   arxiv: '0912.5093'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -3262,7 +3260,7 @@ works:
   venue: Annals of Math., 175 (2012), 541--566
   arxiv: '0807.1736'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   - ergodic-theory
   links:
@@ -3282,7 +3280,7 @@ works:
   venue: Random Structures and Algorithms 36 (2010), 373-463
   arxiv: '0801.2179'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www3.interscience.wiley.com/journal/38107/home"
@@ -3298,7 +3296,7 @@ works:
   venue: J. Aust. Math. Soc. 91 (2011), 405-413
   arxiv: '0802.3361'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.austms.org.au/Journal+of+the+Australian+Mathematical+Society"
@@ -3316,7 +3314,7 @@ works:
   venue: Adv. Math. 220 (2009), 657—669.
   arxiv: '0804.2362'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622779/description"
@@ -3336,7 +3334,7 @@ works:
   venue: Mathematics of Computation, 79 (2010), 2333-2352
   arxiv: '0805.3167'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -3353,7 +3351,7 @@ works:
   venue: Contrib. Discrete Math. 4 (2009), no. 2, 59--82.
   arxiv: '0806.2497'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: arxiv
@@ -3371,7 +3369,7 @@ works:
   venue: Annals of Probability 38 (2010), no. 5, 2023--2065.
   arxiv: '0807.4898'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: arxiv
@@ -3388,7 +3386,7 @@ works:
   venue: Bull. Amer. Math. Soc. 46 (2009), 377-396
   arxiv: '0810.2994'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -3407,7 +3405,7 @@ works:
   venue: Analysis & PDE 3 (2010), 1-20
   arxiv: '0810.5527'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -3572,7 +3570,7 @@ works:
   venue: Adv. in Math. 219 (2008), 428—449.
   arxiv: math.CO/0701005
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -3589,7 +3587,7 @@ works:
   venue: J. Aust. Math. Soc. 86 (2009), 61-74.
   arxiv: math.CO/0701585
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - szemeredi
   - approximate-groups
@@ -3608,7 +3606,7 @@ works:
   venue: Proceedings of the thirty-ninth annual ACM symposium on Theory of computing (STOC) 2007, 248-255
   arxiv: math.PR/0703307
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/math.PR/0703307"
@@ -3626,7 +3624,7 @@ works:
   venue: Combin. Probab. Comput. 18 (2009), no. 3, 335--355
   arxiv: math.CO/0703668
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: arxiv
@@ -3641,7 +3639,7 @@ works:
   venue: Ergodic Theory and Dynamical Systems 28 (2008), 657-688
   arxiv: '0707.1117'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -3658,7 +3656,7 @@ works:
   venue: Proceedings of the 48th annual symposium on Foundations of Computer Science (FOCS) 2007, 3-18
   arxiv: '0707.4269'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/0707.4269"
@@ -3678,7 +3676,7 @@ works:
   venue: Communications in Contemporary Mathematics, 10 (2008), 261--307
   arxiv: '0708.2895'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - random-matrices
   links:
   - type: journal
@@ -3697,7 +3695,7 @@ works:
   venue: Annals of Math. Volume 175 (2012), Issue 2, 465-540.
   arxiv: '0709.3562'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: journal
@@ -3718,7 +3716,7 @@ works:
   venue: Contrib. Discrete Math. 4 (2009), no. 2, 1--36.
   arxiv: '0711.3191'
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: discussion
@@ -3863,7 +3861,7 @@ works:
   venue: "Analytic number theory: essays in honour of Klaus Roth, W. W. L. Chen, W. T. Gowers, H. Halberstam, W. M. Schmidt, R. C. Vaughan, eds, Cambridge University Press, 2009. 180-204."
   arxiv: math.NT/0610604
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: arxiv
@@ -3878,7 +3876,7 @@ works:
   venue: Annales de l’Institut Fourier 58 (2009), 1863—1935.
   arxiv: math.NT/0606087
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - multiplicative-functions
   links:
   - type: journal
@@ -3895,7 +3893,7 @@ works:
   venue: Annals of Math. 171 (2010), 1753-1850
   arxiv: math.NT/0606088
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -3910,7 +3908,7 @@ works:
   venue: Combinatorica 28 (2008), 547-594
   arxiv: math.CO/0601431
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://link.springer-ny.com/link/service/journals/00493"
@@ -3924,7 +3922,7 @@ works:
   venue: J. d’Analyse Mathematique 103 (2007), 1--45.
   arxiv: math.CO/0602037
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.springerlink.com/content/h2k65715352n5313/"
@@ -3940,7 +3938,7 @@ works:
   venue: Centre de Recerches Mathématiques, CRM Proceedings and Lecture Notes Vol. 43 (2007), 145--193
   arxiv: math.CO/0604456
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   - ergodic-theory
   links:
@@ -3956,7 +3954,7 @@ works:
   venue: "Acta Math. 201 (2008), 213—305.Errata: Acta Math. 210, (2013), Page 403-404"
   arxiv: math.NT/0610050
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -4187,7 +4185,7 @@ works:
   venue: Proc. Lond. Math. Soc. 98 (2009), 365-392
   arxiv: math.NT/0509560
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: arxiv
@@ -4202,7 +4200,7 @@ works:
   venue: J. Amer. Math. Soc. 20 (2007), 603-628
   arxiv: math.CO/0501313
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.ams.org/jams/"
@@ -4216,7 +4214,7 @@ works:
   venue: J. d’Analyse Mathematique 99 (2006), 109-176
   arxiv: math.CO/0501314
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -4233,7 +4231,7 @@ works:
   venue: Proc. Edin. Math. Soc. 51 (2008), 73-153
   arxiv: math.NT/0503014
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   links:
   - type: journal
@@ -4248,7 +4246,7 @@ works:
   venue: J. Combin. Thy. A 113 (2006), 1257--1280
   arxiv: math.CO/0503572
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.elsevier.com/wps/find/journaldescription.cws_home/622862/description#description"
@@ -4262,7 +4260,7 @@ works:
   venue: Contrib. Discrete Math. 1 (2006), 8-28
   arxiv: math.CO/0504472
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: journal
@@ -4280,7 +4278,7 @@ works:
   venue: Duke Math. J. 135 (2006), 395-413
   arxiv: math.PR/0505156
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.dukeupress.edu/dmj/"
@@ -4294,7 +4292,7 @@ works:
   venue: "Quarterly J. Pure Appl. Math. 2 (2006), 199-217 [Special issue in honour of John H. Coates, Vol. 1 of 2]"
   arxiv: math.NT/0505402
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -4311,7 +4309,7 @@ works:
   venue: Quarterly J. Math. 57 (2006), 495-504
   arxiv: math.NT/0511069
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -4328,7 +4326,7 @@ works:
   venue: Annals of Math. 169 (2009), 595-632
   arxiv: math.PR/0511215
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www.math.princeton.edu/~annals/"
@@ -4342,7 +4340,7 @@ works:
   venue: 2006 ICM proceedings, Vol. I., 581--608
   arxiv: math.NT/0512114
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: arxiv
@@ -4565,7 +4563,7 @@ works:
   venue: Annals of Math. 167 (2008), 481-547
   arxiv: math.NT/0404188
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -4588,7 +4586,7 @@ works:
   venue: Journal de Théorie des Nombres de Bordeaux 18 (2006), 137—172
   arxiv: math.NT/0405581
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - restriction
   - sieve-theory
   links:
@@ -4604,7 +4602,7 @@ works:
   venue: Electron. J. Combin. 13 (2006). 1 No. 99, 1-49.
   arxiv: math.CO/0405251
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   - ergodic-theory
   links:
@@ -4622,7 +4620,7 @@ works:
   venue: "Random Structures and Algorithms 28 (2006), 1—23.[An extended abstracted is also in: STOC’05: Proceedings of the 37thannual ACM symposium on the theory of computing, 431—440, New York 2005.]"
   arxiv: math.CO/0411095
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: journal
     url: "http://www3.interscience.wiley.com/journal/38107/home"
@@ -4636,7 +4634,7 @@ works:
   venue: "Collectanea Mathematica (2006), Vol. Extra., 37-88.[Proceedings, 7th International Conference on Harmonic Analysis and Partial Differential Equations]"
   arxiv: math.NT/0411246
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: journal
@@ -4806,7 +4804,7 @@ works:
   venue: GAFA 14 (2004), 27-57
   arxiv: math.CO/0301343
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: journal
@@ -6279,7 +6277,7 @@ works:
   status: published
   venue: Scholarpedia, p. 15573
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: journal
@@ -6290,7 +6288,7 @@ works:
   kind: short-story
   title: "Gowers' proof of Szemeredi's theorem for progressions of length 4"
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - gowers-norms
   - szemeredi
   links:
@@ -6300,7 +6298,7 @@ works:
   kind: short-story
   title: An ergodic transference theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: note
@@ -6309,7 +6307,7 @@ works:
   kind: short-story
   title: A quantitative ergodic theory proof of Szemeredi’s theorem (abridged)
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   - ergodic-theory
   links:
@@ -6319,7 +6317,7 @@ works:
   kind: short-story
   title: A quantitative bound for prime progressions of length k
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: note
@@ -6328,7 +6326,7 @@ works:
   kind: short-story
   title: Fourier analytic proofs of the prime number theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: note
@@ -6337,7 +6335,7 @@ works:
   kind: short-story
   title: Non-commutative sum set estimates
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/noncomm.dvi"
@@ -6345,7 +6343,7 @@ works:
   kind: short-story
   title: A remark on Goldston-Yildirim correlation estimates
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/gy-corr.dvi"
@@ -6353,7 +6351,7 @@ works:
   kind: short-story
   title: Arithmetic Ramsey Theory
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/ramsey.dvi"
@@ -6361,7 +6359,7 @@ works:
   kind: short-story
   title: Menger’s theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/menger.dvi"
@@ -6369,7 +6367,7 @@ works:
   kind: short-story
   title: The Roth-Bourgain theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/roth-bourgain.dvi"
@@ -6377,7 +6375,7 @@ works:
   kind: short-story
   title: Santalo’s inequality
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/santalo.dvi"
@@ -6385,7 +6383,7 @@ works:
   kind: short-story
   title: Quadratic reciprocity via theta functions
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/reciprocity.dvi"
@@ -6393,7 +6391,7 @@ works:
   kind: short-story
   title: Entropy sumset estimates
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   - entropy
   links:
@@ -6403,7 +6401,7 @@ works:
   kind: short-story
   title: The parity problem in sieve theory
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - sieve-theory
   links:
   - type: note
@@ -6412,7 +6410,7 @@ works:
   kind: short-story
   title: The crossing number inequality
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2007/09/18/the-crossing-number-inequality/"
@@ -6420,7 +6418,7 @@ works:
   kind: short-story
   title: "Ratner's theorems"
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2007/09/29/ratners-theorems/"
@@ -6428,7 +6426,7 @@ works:
   kind: short-story
   title: "Dvir's proof of the finite field Kakeya conjecture"
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - kakeya-restriction
   - kakeya
   links:
@@ -6438,7 +6436,7 @@ works:
   kind: short-story
   title: The van der Corput trick, and equidistribution on nilmanifolds
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: note
@@ -6447,7 +6445,7 @@ works:
   kind: short-story
   title: "Tate's proof of the functional equation"
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/07/27/tates-proof-of-the-functional-equation/"
@@ -6455,7 +6453,7 @@ works:
   kind: short-story
   title: Some notes on non-classical polynomials in finite characteristic
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/11/13/some-notes-on-non-classical-polynomials-in-finite-characteristic/"
@@ -6463,7 +6461,7 @@ works:
   kind: short-story
   title: A counterexample to a strong polynomial Freiman-Ruzsa conjecture
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: note
@@ -6472,7 +6470,7 @@ works:
   kind: short-story
   title: Finite subsets of groups with no finite models
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/10/06/finite-subsets-of-groups-with-no-finite-models/"
@@ -6480,7 +6478,7 @@ works:
   kind: short-story
   title: The Lucas-Lehmer test for Mersenne primes
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: note
@@ -6489,7 +6487,7 @@ works:
   kind: short-story
   title: The divisor bound
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/09/23/the-divisor-bound/"
@@ -6497,7 +6495,7 @@ works:
   kind: short-story
   title: The correspondence principle and finitary ergodic theory
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - ergodic-theory
   links:
   - type: note
@@ -6506,7 +6504,7 @@ works:
   kind: short-story
   title: Szemeredi’s regularity lemma via random partitions
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: note
@@ -6515,7 +6513,7 @@ works:
   kind: short-story
   title: Szemeredi’s regularity lemma via the correspondence principle
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - szemeredi
   links:
   - type: note
@@ -6524,7 +6522,7 @@ works:
   kind: open-question
   title: Best bounds for cap sets
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2007/02/23/open-question-best-bounds-for-cap-sets/"
@@ -6532,7 +6530,7 @@ works:
   kind: open-question
   title: Noncommutative Freiman theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - approximate-groups
   links:
   - type: note
@@ -6541,7 +6539,7 @@ works:
   kind: open-question
   title: Triangle and diamond densities in large dense graphs
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2007/04/01/open-question-triangle-and-diamond-densities-in-large-dense-graphs/"
@@ -6549,7 +6547,7 @@ works:
   kind: open-question
   title: Effective Skolem-Mahler-Lech theorem
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2007/05/25/open-question-effective-skolem-mahler-lech-theorem/"
@@ -6557,7 +6555,7 @@ works:
   kind: open-question
   title: Van Vu
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   links:
   - type: note
     url: "http://www.math.ucsd.edu/~vanvu/"
@@ -6567,7 +6565,7 @@ works:
   kind: open-question
   title: Structure and randomness in the prime numbers
   tags:
-  - additive-combinatorics
+  - additive-combinatorics-number-theory
   - primes
   links:
   - type: note
@@ -6985,8 +6983,8 @@ works:
   status: submitted
   venue: Submitted, Notices Amer. Math. Soc.
   tags:
-  - misc
   - machine-assisted
+  - misc
   links:
   - type: pdf
     url: "https://terrytao.files.wordpress.com/2024/03/machine-assisted-proof-notices.pdf"
@@ -7012,8 +7010,8 @@ works:
   kind: short-story
   title: The Lagarias-Shor tiling of R^12
   tags:
-  - misc
   - tiling
+  - misc
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/tiling.dvi"
@@ -7173,8 +7171,8 @@ works:
   kind: short-story
   title: When are eigenvalues stable?
   tags:
-  - misc
   - random-matrices
+  - misc
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/10/28/when-are-eigenvalues-stable/"
