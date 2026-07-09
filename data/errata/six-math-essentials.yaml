@@ -1,0 +1,17 @@
+# Stub created from https://www.quantabooks.org/books/six-math-essentials/ -- maintain by hand.
+book:
+  title: Six Math Essentials
+  slug: six-math-essentials
+  authors:
+  - Terence Tao
+  source: "https://www.quantabooks.org/books/six-math-essentials/"
+  description: "In Six Math Essentials, the renowned mathematician and Fields Medalist Terence Tao introduces readers to six central concepts that have guided mathematicians from antiquity to the frontiers of what we know today and now help us make sense of our complex world. This slim, elegant volume explores numbers as the gateway to quantitative thinking; algebra as the gateway to abstraction; geometry as a way to calculate beyond what we can see; probability as a tool to navigate uncertainty with rigorous thinking; analysis as a means to tame the very large or the very small; and dynamics as the mathematics of change."
+  publication:
+    publisher: Quanta Books
+    first_published: 2026
+    isbn: "978-0-374-62179-7"
+    note: "Hardcover, 128 pages; also available as e-book and audiobook. Distributed by Farrar, Straus and Giroux. To be published October 27, 2026."
+  links:
+  - title: "Publisher (Farrar, Straus and Giroux)"
+    url: "http://fsgbooks.com"
+editions: []
