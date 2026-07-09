@@ -135,7 +135,9 @@ def render_edition(ed: dict) -> list[str]:
     """HTML parts for one edition: heading, count, and the errata list."""
     errata = ed.get("errata", [])
     stubs = sum(1 for e in errata if e.get("page") == "?")
-    out = [f'<h2>{html.escape(ed["name"])}</h2>']
+    out = []
+    if ed.get("name"):
+        out.append(f'<h2>{html.escape(ed["name"])}</h2>')
     cnt = f"{len(errata)} correction" + ("s" if len(errata) != 1 else "")
     if stubs:
         cnt += f" &middot; {stubs} awaiting a page number"
@@ -206,9 +208,11 @@ def build_book(doc: dict) -> tuple[str, str]:
         parts.append(f'<ul class="links">{items}</ul>')
 
     # Editions: active ones inline; older (active: false) ones collapsed together.
-    editions = doc["editions"]
+    editions = doc.get("editions", [])
     active = [ed for ed in editions if ed.get("active", True)]
     older = [ed for ed in editions if not ed.get("active", True)]
+    if not editions:
+        parts.append('<p class="sub">No errata have been recorded for this book.</p>')
     for ed in active:
         parts.extend(render_edition(ed))
     if older:

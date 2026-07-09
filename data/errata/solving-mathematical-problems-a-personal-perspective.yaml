@@ -1,0 +1,18 @@
+# Imported from https://terrytao.wordpress.com/books/solving-mathematical-problems-a-personal-perspective/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: "Solving Mathematical Problems: A personal perspective"
+  slug: solving-mathematical-problems-a-personal-perspective
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/solving-mathematical-problems-a-personal-perspective/"
+  description: This first edition discusses various Olympiad level problems and how one can go about trying
+    to solve them. It is unfortunately completely out of print (the entire press no longer exists).
+  publication:
+    publisher: Deakin University Press
+    first_published: 1992
+    isbn: 0-7300-1365-0
+    note: Hardcover, 85 pages. Geelong, Victoria.
+  links:
+  - title: Second edition
+    url: "https://terrytao.wordpress.com/books/solving-mathematical-problems/"
+editions: []

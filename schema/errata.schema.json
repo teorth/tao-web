@@ -79,18 +79,23 @@
     },
     "editions": {
       "type": "array",
-      "minItems": 1,
+      "minItems": 0,
+      "description": "May be empty for a book with no recorded errata (renders as a bare page).",
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "name", "errata"],
+        "required": ["id", "errata"],
         "properties": {
           "id": {
             "type": "string",
             "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
             "description": "Stable edition id, e.g. fourth-edition."
           },
-          "name": { "type": "string", "minLength": 1 },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Edition heading. Omit for a book with a single, unlabelled errata list (no per-edition <h2> is then shown)."
+          },
           "active": {
             "type": "boolean",
             "description": "Whether this edition's errata show in the main list. Defaults to true when omitted. Set false for superseded/older editions, which render in a collapsed 'older editions' section."

@@ -1,0 +1,16 @@
+# Imported from https://terrytao.wordpress.com/books/three-regularity-results-in-harmonic-analysis/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Three Regularity Results in Harmonic Analysis
+  slug: three-regularity-results-in-harmonic-analysis
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/three-regularity-results-in-harmonic-analysis/"
+  description: This is a mildly edited version of my thesis, collected together with the theses of Wilhelm
+    Schlag, Christoph Thiele, Anna Gilbert, and Naoki Saito.
+  publication:
+    publisher: World Scientific Publishing Co.
+    first_published: 2000
+    isbn: 981-02-4093-7
+    note: "Hardcover, 464 pages, pp. 61–98. In: Topics in analysis and its applications: selected theses\
+      \ (edited by R. Coifman, Yale University)."
+editions: []

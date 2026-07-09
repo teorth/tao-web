@@ -1,0 +1,204 @@
+# Imported from https://terrytao.wordpress.com/books/solving-mathematical-problems/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Solving Mathematical Problems (Second edition)
+  slug: solving-mathematical-problems
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/solving-mathematical-problems/"
+  description: This book discusses various Olympiad level problems and how one can go about trying to
+    solve them. It is the second edition of an earlier first edition. It has also been translated into
+    Portuguese (as «Como resolver problemas matemáticos», by Paulo Ventura Araújo for the Sociedade Portuguesa
+    de Matemática), Chinese («解题·成长·快乐——陶哲轩教你学数学», ISBN 9787301154472, by Qinglin Yu (于青林) for Peking
+    University Press), and Italian («Risolvere problemi matematici. Il mio punto di vista», ISBN 8896973880,
+    by Samuele Maschio and Carlo Càssola for Scienza Express Edizioni). It has been reviewed for the Notices
+    of the American Mathematical Society by Loren Larson.
+  publication:
+    publisher: Oxford University Press
+    first_published: 2006
+    isbn: 978-0-19-920560-8 (ISBN-13); 0-19-920560-4 (ISBN-10)
+    note: Paperback, 128 pages. Oxford, England.
+  links:
+  - title: First edition
+    url: "https://terrytao.wordpress.com/books/solving-mathematical-problems-a-personal-perspective/"
+  - title: Sample chapters (PS)
+    url: "http://www.math.ucla.edu/~tao/preprints/problem.ps"
+  - title: Publisher (Oxford University Press)
+    url: "https://global.oup.com/academic/product/solving-mathematical-problems-9780199205608"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Paulo Ventura Araújo
+    - Thomas Drucker
+    - Manas Ghai
+    - Tathagata Gupta
+    - Percival Li
+    - ouzi
+    - Cecil Rousseau
+    - Naoki Sato
+    - dsilvestre
+    - Arnstein Skåra
+    - Tom Verhoeff
+    - Weiyu Xu
+    - Li Yan
+    - Au Cheuk Yin
+    - 현민 오
+  migrated: '2026-07-09'
+editions:
+- id: second-edition
+  errata:
+  - id: second-edition-0001
+    page: '2'
+    text: "“Problem 1.1 question” should just be “Problem 1.1”."
+  - id: second-edition-0002
+    page: '6'
+    text: second to last paragraph, “once can avoid” should be “one can avoid”.
+  - id: second-edition-0003
+    page: '7'
+    text: "“ompute” should be “compute”, and “put clear denominators” should be “clear denominators”.\
+      \ On the fourth displayed equation, $4d^2$ should be $4d^4$, and $196t^2$ should be $192t^2$."
+  - id: second-edition-0004
+    page: '9'
+    text: "example (e), “876” should be “376”. “which are exactly” should be “which have exactly”. In\
+      \ example (d), $n+1$ should be $n(n+1)/2$."
+  - id: second-edition-0005
+    page: '13'
+    text: "“which was weaker” should be “which was stronger”."
+  - id: second-edition-0006
+    page: '16'
+    text: "bottom, “217” should be “$2^{17}$“. “if this question is true, then the original question is\
+      \ true” should be “if the answer to the original question is “yes”, then so is the answer to this\
+      \ question”."
+  - id: second-edition-0007
+    page: '25'
+    text: "third paragraph: one of the “n”s should be in math mode."
+  - id: second-edition-0008
+    page: '33'
+    text: "Exercise 2.5: For an additional challenge, prove this exercise without using Bertrand’s postulate."
+  - id: second-edition-0009
+    page: '35'
+    text: In the quote, “that was originally” should be “than was originally”.
+  - id: second-edition-0010
+    page: '37'
+    text: "second display: $f(f(2)-1)$ should be $f(f(f(2)-1)))$."
+  - id: second-edition-0011
+    page: '40'
+    text: "“smells heavily on” should be “smells heavily of”."
+  - id: second-edition-0012
+    page: '42'
+    text: "$t^m$ should be $t^n$ in one of the displays."
+  - id: second-edition-0013
+    page: '44'
+    text: 5ab should be (13) (two occurrences)
+  - id: second-edition-0014
+    page: '45'
+    text: "Problem 3.4, there should be no commas between $(x-a_1)^2$ and $(x-a_n)^2$. “are all integers”\
+      \ should be “are all distinct integers”. One should delete all references to $a_0$, for instance\
+      \ deleting the factor $(x-a_0)^2$ in the problem box, and also $p(a_0)$ and $q(a_0)$ in the next\
+      \ page."
+  - id: second-edition-0015
+    page: '46'
+    text: in the sentence “But polynomials only have as many degrees of freedom as their degree”, insert
+      “with leading coefficient 1” after “polynomials”.
+  - id: second-edition-0016
+    page: '47'
+    text: "Exercise 3.7, the $+1$ should be a $-1$, one should look at $p(x)+q(x)$ rather than $p(x)-q(x)$,\
+      \ and “are integers” should be “are distinct integers”."
+  - id: second-edition-0017
+    page: '50'
+    text: the intersection of BC and AI should be labeled D.
+  - id: second-edition-0018
+    page: '52'
+    text: "In the second to last line on page 52, “either $\\beta = 60^\\circ$ or $\\alpha = \\gamma$”\
+      \ should be “either $\\alpha = 60^\\circ$ or $\\beta = \\gamma$“."
+  - id: second-edition-0019
+    page: '53'
+    text: "In the diagram on page 53, the angle at D should be $\\gamma + \\beta/2$, and the angle at\
+      \ E should be $\\beta + \\gamma/2$."
+  - id: second-edition-0020
+    page: '58'
+    text: "one of the instances of $ABEF$ should be in math mode (like all the other instances). “on the\
+      \ same side of $AB$” should be “on the same side of $AC$“."
+  - id: second-edition-0021
+    page: '63'
+    text: third line, “inner square” should be “inner rectangle”.
+  - id: second-edition-0022
+    page: 65-66
+    text: "the informal geometric argument given is incomplete, the issue being that just because the\
+      \ sum of side lengths of $R_1$ is (say) bigger than 1, it is not immediately obvious that the same\
+      \ is true for, say, $R_2$. But one can check using algebra that if $a+b > 1$, then $(1-a) + \\frac{ab}{1-a}\
+      \ > 1$, and similarly with the inequalities reversed; this allows the argument as stated to be made\
+      \ rigorous. (One can also argue by considering the rectangle with the narrowest side, and showing\
+      \ that it is adjacent to one which is even narrower if its sides do not add up to length 1.)"
+  - id: second-edition-0023
+    page: '66'
+    text: "problem 44, there is a $=2$ missing at the end of the string of equations, thus $x^p+y^q=y^r+z^p=z^q+x^r=2$."
+  - id: second-edition-0024
+    page: '74'
+    text: "second paragraph: “this can be true is of” should be “this can be true is if”"
+  - id: second-edition-0025
+    page: 76-77
+    text: The informal topological argument here does not quite work as stated, for if two rectangles
+      with integer horizontal lengths (say) are connected by a common horizontal line segment rather than
+      a common vertical one, then the lengths do not add together as suggested in the argument. To fix
+      this, one needs a more complicated colouring scheme. Namely, one colours the interiors of rectangles
+      with integer horizontal lengths green, and those with integer vertical lengths red. As for the edges,
+      one colours the (open) vertical edges green and the (open) horizontal edges red. There are a few
+      remaining corners which are not on any open edge that remain to be coloured; these can be assigned
+      either red or green arbitrarily. With this colouring, any green path between the two horizontal
+      edges of the big rectangle can be used to deduce the integer horizontal length of that rectangle,
+      and similarly for a red path between the two vertical edges. (There are also several other proofs,
+      for instance one can induct on the number of rectangles.)
+  - id: second-edition-0026
+    page: '77'
+    text: second-to-last paragraph, “it seems that the assertion is plausible” should be “it seems plausible
+      that the procedure always terminates”.
+  - id: second-edition-0027
+    page: '79'
+    text: In the diagrams on page 79 and page 82, the labels C and D should be switched.
+  - id: second-edition-0028
+    page: '82'
+    text: "“X is a quarter-length or less from M” should be “X is a quarter-length or more from M”."
+  - id: second-edition-0029
+    page: '87'
+    text: second-to-last paragraph, “eliminated (c)” should be “eliminated is (c)”.
+  - id: second-edition-0030
+    page: '90'
+    text: "second paragraph: “ths game” should be “this game”."
+  - id: second-edition-0031
+    page: '92'
+    text: "third paragraph: “that it is a sure” should be “that is a sure”. In the second to last line,\
+      \ “all sure losers, as we have shown above” should be “all sure winners, as we have shown above”."
+  - id: second-edition-0032
+    page: '95'
+    text: change all occurrences of “rouble” to “ruble” (for consistency). In the third paragraph, “in
+      terms of equation” should be “in terms of equations”.
+  - id: second-edition-0033
+    page: '96'
+    text: "last line: “restricted to between” should be “restricted to lie between”."
+  - id: second-edition-0034
+    page: '97'
+    text: "second paragraph: “$s = \\pm 4 (\\hbox{mod }20)$” should be “$s = \\pm 4 (\\hbox{mod }20)$\
+      \ or $s = \\pm 6 (\\hbox{mod }20)$“, and so the example values of s should now read $s = 4, 6, 14,\
+      \ 16, 24, 26, 34, 36, \\ldots$."
+  - id: second-edition-0035
+    page: null
+    text: In the references, “G.A. Hardy” should be “G.H. Hardy”.
+  - id: second-edition-0036
+    page: '40'
+    text: (d), “如果k是正奇數，則 1^k+2^k+…+n^k 可被 n+1 整除”, n+1 should be n(n+1)/2.
+  - id: second-edition-0037
+    page: '76'
+    text: "“幸好第一個因數（p-1)i 和 p^2 是互質的（因為（p-1)i 和 p 是互質的）”, the i’s should be factorial symbols."
+  - id: second-edition-0038
+    page: '146'
+    text: "“與一些三角形和圓有關的∠APF，看起來似乎是比較「主流」的角”, APF should be ABF."
+  - id: second-edition-0039
+    page: '154'
+    text: "“若 n 為偶數，令 m=(n+2)/1”, (n+2)/1 should be n/2+1."
+  - id: second-edition-0040
+    page: '202'
+    text: "” 我們只能說 s = ±4 (mod 20)，因此羊的數量可能是 4、16、24、36、44、56 等”, $s = \\pm 4 (\\hbox{mod }20)$” should\
+      \ be “$s = \\pm 4 (\\hbox{mod }20)$ or $s = \\pm 6 (\\hbox{mod }20)$“, and so the example values\
+      \ of s should now read $s = 4, 6, 14, 16, 24, 26, 34, 36, \\ldots$."
