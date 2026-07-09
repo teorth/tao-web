@@ -52,6 +52,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "errata"
 LINKS = ROOT / "data" / "links"
 TEACHING = ROOT / "data" / "teaching"
+PAPERS = ROOT / "data" / "papers"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -121,6 +122,31 @@ details.section > summary .count { color: var(--muted); font-weight: 400; font-s
 ul.linklist { list-style: none; padding: .2rem 0 .9rem; margin: 0; }
 ul.linklist > li { padding: .35rem 0 .35rem 1.1rem; text-indent: -1.1rem; }
 h2.linkgroup { margin: 2.4rem 0 .2rem; }
+.search { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0 .6rem; }
+.search input, .search select { font: inherit; padding: .45rem .6rem; border: 1px solid var(--line);
+  border-radius: 6px; background: var(--bg); color: var(--fg); }
+.search input { flex: 1 1 16rem; }
+#chips { display: flex; flex-wrap: wrap; gap: .3rem; margin: .2rem 0 .6rem; }
+.chip { font: inherit; font-size: .82rem; cursor: pointer; border: 1px solid var(--line);
+  background: var(--card); color: var(--muted); border-radius: 999px; padding: .12rem .6rem; }
+.chip.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+.chip span { opacity: .6; }
+#count { color: var(--muted); font-size: .85rem; margin: .2rem 0 .6rem; }
+ol.works { list-style: none; margin: 0; padding: 0; }
+ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
+  padding: .55rem .2rem; border-bottom: 1px solid var(--line); }
+.wy { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .9rem; }
+.wt { font-weight: 600; }
+.wa { color: var(--muted); }
+.wv { color: var(--muted); font-size: .9rem; }
+.kb { font-size: .7rem; text-transform: uppercase; letter-spacing: .04em; color: var(--stub-fg);
+  background: var(--stub-bg); border-radius: 4px; padding: .05rem .35rem; margin-left: .4rem; vertical-align: .1em; }
+.wtags { display: block; margin-top: .1rem; }
+.tg { font: inherit; font-size: .78rem; cursor: pointer; border: none; background: none;
+  color: var(--accent); padding: 0 .35rem 0 0; }
+.tg:hover { text-decoration: underline; }
+.wl { display: block; margin-top: .1rem; font-size: .85rem; }
+.wl .lk { margin-right: .7rem; }
 footer { margin-top: 1.5rem; color: var(--muted); font-size: .82rem; }
 """
 
@@ -303,11 +329,128 @@ def build_links_page(doc: dict) -> tuple[str, str]:
     return slug, page(doc["title"], "\n".join(parts))
 
 
+_LINK_LABEL = {"arxiv": "arXiv", "journal": "journal", "discussion": "discussion",
+               "slides": "slides", "pdf": "pdf", "note": "link", "blog": "blog"}
+_LINK_PRIO = {"journal": 0, "arxiv": 1, "pdf": 2, "note": 3, "discussion": 4, "slides": 5, "blog": 6}
+
+_PAPERS_JS = """
+<script>
+(function(){
+  var list=document.getElementById('list');
+  var works=[].slice.call(list.getElementsByClassName('work'));
+  var q=document.getElementById('q'),kind=document.getElementById('kind'),sort=document.getElementById('sort');
+  var count=document.getElementById('count'),active={};
+  function chips(){[].forEach.call(document.querySelectorAll('.chip'),function(c){
+    c.classList.toggle('on',!!active[c.getAttribute('data-t')]);});}
+  function apply(){
+    var terms=q.value.toLowerCase().split(/\\s+/).filter(Boolean),k=kind.value,tags=Object.keys(active),shown=0;
+    works.forEach(function(el){
+      var s=el.getAttribute('data-s'),ok=terms.every(function(t){return s.indexOf(t)>=0;});
+      if(ok&&k&&el.getAttribute('data-kind')!==k)ok=false;
+      if(ok&&tags.length){var et=' '+el.getAttribute('data-tags')+' ';
+        ok=tags.every(function(t){return et.indexOf(' '+t+' ')>=0;});}
+      el.style.display=ok?'':'none';if(ok)shown++;});
+    count.textContent=shown+' of '+works.length+' works';chips();
+    var p=new URLSearchParams();
+    if(q.value)p.set('q',q.value);if(k)p.set('kind',k);
+    if(tags.length)p.set('tag',tags.join(','));if(sort.value!=='year-desc')p.set('sort',sort.value);
+    history.replaceState(null,'',location.pathname+(p.toString()?'?'+p.toString():''));
+  }
+  function doSort(){
+    var v=sort.value,arr=works.slice();
+    arr.sort(function(a,b){
+      if(v==='title')return a.querySelector('.wt').textContent.localeCompare(b.querySelector('.wt').textContent);
+      var ya=+a.getAttribute('data-year'),yb=+b.getAttribute('data-year');
+      return v==='year-asc'?ya-yb:yb-ya;});
+    arr.forEach(function(el){list.appendChild(el);});
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.tg,.chip'):null;if(!b)return;
+    if(b.tagName==='A')return;e.preventDefault();var t=b.getAttribute('data-t');
+    if(active[t])delete active[t];else active[t]=1;apply();});
+  q.addEventListener('input',apply);kind.addEventListener('change',apply);
+  sort.addEventListener('change',function(){doSort();apply();});
+  var pp=new URLSearchParams(location.search);
+  if(pp.get('q'))q.value=pp.get('q');if(pp.get('kind'))kind.value=pp.get('kind');
+  if(pp.get('sort'))sort.value=pp.get('sort');
+  if(pp.get('author'))q.value=(q.value+' '+pp.get('author')).trim();
+  if(pp.get('tag'))pp.get('tag').split(',').forEach(function(t){if(t)active[t]=1;});
+  doSort();apply();
+})();
+</script>
+"""
+
+
+def render_work(w: dict) -> str:
+    yr = w.get("year")
+    links = w.get("links") or []
+    ordered = sorted(links, key=lambda l: _LINK_PRIO.get(l["type"], 9))
+    title = html.escape(w["title"])
+    if ordered:
+        title = f'<a href="{html.escape(ordered[0]["url"])}">{title}</a>'
+    parts = [f'<span class="wt">{title}</span>']
+    if w["kind"] != "paper":
+        parts.append(f'<span class="kb">{html.escape(w["kind"].replace("-", " "))}</span>')
+    co = w.get("coauthors") or []
+    if co:
+        parts.append(f' <span class="wa">with {html.escape(", ".join(co))}</span>')
+    if w.get("venue"):
+        parts.append(f' <span class="wv">{html.escape(w["venue"])}</span>')
+    tags = w.get("tags", [])
+    chips = "".join(f'<button class="tg" data-t="{html.escape(t)}">#{html.escape(t)}</button>' for t in tags)
+    parts.append(f'<span class="wtags">{chips}</span>')
+    if links:
+        lk = "".join(f'<a class="lk" href="{html.escape(l["url"])}">{_LINK_LABEL.get(l["type"], l["type"])}</a>'
+                     for l in ordered)
+        parts.append(f'<span class="wl">{lk}</span>')
+    hay = " ".join([w["title"], *co, w.get("venue", ""), w.get("journal", ""),
+                    w.get("arxiv", ""), *tags]).lower()
+    hay = html.escape(re.sub(r"\s+", " ", hay))
+    ylabel = str(yr) if yr else "&mdash;"
+    return (f'<li class="work" data-kind="{w["kind"]}" data-year="{yr or 0}" '
+            f'data-tags="{html.escape(" ".join(tags))}" data-s="{hay}">'
+            f'<span class="wy">{ylabel}</span><span class="wmain">{"".join(parts)}</span></li>')
+
+
+def build_papers_page(doc: dict) -> tuple[str, str]:
+    from collections import Counter
+    works = doc.get("works", [])
+    works = sorted(works, key=lambda w: (w.get("year") or 0), reverse=True)
+    tagc = Counter(t for w in works for t in w.get("tags", []))
+    kinds = sorted({w["kind"] for w in works})
+    kopts = '<option value="">all kinds</option>' + "".join(
+        f'<option value="{k}">{html.escape(k.replace("-", " "))}</option>' for k in kinds)
+    chips = "".join(f'<button class="chip" data-t="{html.escape(t)}">{html.escape(t)} '
+                    f'<span>{n}</span></button>' for t, n in tagc.most_common(28))
+    parts = [
+        '<p><a href="index.html">&larr; Home</a></p>',
+        '<h1>Papers and preprints</h1>',
+        f'<p class="sub">A searchable database of {len(works)} works &mdash; papers, expository '
+        '&ldquo;short stories&rdquo;, and related writing. Search by title, coauthor, journal, arXiv, '
+        'or tag; click a tag to filter.</p>',
+        '<div class="search">',
+        '<input id="q" type="search" placeholder="Search title, coauthor, journal, arXiv, tag…" '
+        'autocomplete="off">',
+        f'<select id="kind">{kopts}</select>',
+        '<select id="sort"><option value="year-desc">newest first</option>'
+        '<option value="year-asc">oldest first</option><option value="title">by title</option></select>',
+        '</div>',
+        f'<div id="chips">{chips}</div>',
+        '<p id="count"></p>',
+        '<ol id="list" class="works">',
+        *[render_work(w) for w in works],
+        '</ol>',
+        _PAPERS_JS,
+    ]
+    return "papers", page("Papers and preprints — Terence Tao", "\n".join(parts))
+
+
 _QUARTER_NAME = {"F": "Fall", "W": "Winter", "S": "Spring", "Su": "Summer"}
 _QUARTER_ORDER = {"W": 1, "S": 2, "Su": 3, "F": 4}  # chronological within a year
 
 
-def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None) -> str:
+def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None,
+                papers: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -327,10 +470,14 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
                     f'<span class="count"> &mdash; {tag}</span></li>')
     body = ('<h1>Terence Tao</h1>'
             '<p class="sub">Book pages (bibliographic details and errata) and other collected pages, '
-            'generated from a database maintained by the author.</p>'
-            '<details class="section">'
-            f'<summary>Books <span class="count">({len(books)})</span></summary>'
-            f'<ul class="book-list">{"".join(rows)}</ul></details>')
+            'generated from a database maintained by the author.</p>')
+    nworks = len((papers or {}).get("works") or [])
+    if nworks:
+        body += ('<p class="desc"><a href="papers.html"><strong>Papers and preprints</strong></a> '
+                 f'&mdash; a searchable, tag-organized database of {nworks} works.</p>')
+    body += ('<details class="section">'
+             f'<summary>Books <span class="count">({len(books)})</span></summary>'
+             f'<ul class="book-list">{"".join(rows)}</ul></details>')
     courses = (teaching or {}).get("courses") or []
     if courses:
         crows = []
@@ -370,11 +517,17 @@ def main() -> None:
         (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
     teaching_files = sorted(TEACHING.glob("*.yaml")) if TEACHING.exists() else []
     teaching = yaml.safe_load(teaching_files[0].read_text(encoding="utf-8")) if teaching_files else None
-    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching),
+    papers_files = sorted(PAPERS.glob("*.yaml")) if PAPERS.exists() else []
+    papers = yaml.safe_load(papers_files[0].read_text(encoding="utf-8")) if papers_files else None
+    if papers:
+        slug, htmltext = build_papers_page(papers)
+        (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
+    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers),
                                      encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
     ncourses = len((teaching or {}).get("courses") or [])
-    print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) "
+    nworks = len((papers or {}).get("works") or [])
+    print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) + {nworks} works "
           f"+ index ({ncourses} courses) into {SITE}")
 
 

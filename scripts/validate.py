@@ -19,6 +19,8 @@ LINKS_SCHEMA = ROOT / "schema" / "links.schema.json"
 LINKS = ROOT / "data" / "links"
 TEACHING_SCHEMA = ROOT / "schema" / "teaching.schema.json"
 TEACHING = ROOT / "data" / "teaching"
+PAPERS_SCHEMA = ROOT / "schema" / "papers.schema.json"
+PAPERS = ROOT / "data" / "papers"
 
 
 def validate_links() -> int:
@@ -54,6 +56,28 @@ def validate_teaching() -> int:
             print(f"{path.name}: {loc}: {err.message}")
             problems += 1
         print(f"  {path.name}: {len(doc.get('courses', []))} courses "
+              f"-> {'OK' if not errors else 'INVALID'}")
+    return problems
+
+
+def validate_papers() -> int:
+    """Validate the works database against papers.schema.json (+ unique ids)."""
+    if not PAPERS.exists():
+        return 0
+    validator = Draft7Validator(yaml.safe_load(PAPERS_SCHEMA.read_text(encoding="utf-8")))
+    problems = 0
+    for path in sorted(PAPERS.glob("*.yaml")):
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+        for err in errors[:40]:
+            loc = "/".join(str(p) for p in err.path) or "(root)"
+            print(f"{path.name}: {loc}: {err.message}")
+            problems += 1
+        works = doc.get("works", [])
+        kinds = {}
+        for w in works:
+            kinds[w.get("kind")] = kinds.get(w.get("kind"), 0) + 1
+        print(f"  {path.name}: {len(works)} works {kinds} "
               f"-> {'OK' if not errors else 'INVALID'}")
     return problems
 
@@ -96,6 +120,7 @@ def main() -> int:
 
     problems += validate_links()
     problems += validate_teaching()
+    problems += validate_papers()
 
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)

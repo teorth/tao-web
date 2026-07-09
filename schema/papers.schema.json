@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrytao.github.io/tao-web/schema/papers.schema.json",
+  "title": "Works database (papers, short stories, blog posts, ...)",
+  "description": "Unified, tag-organized database of Terence Tao's papers, expository 'short stories', and related works, rendered as one searchable page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["works"],
+  "properties": {
+    "works": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "kind", "title", "tags"],
+        "properties": {
+          "id": { "type": "string", "minLength": 1, "description": "Stable slug." },
+          "kind": {
+            "type": "string",
+            "enum": ["paper", "short-story", "blog-post", "survey", "pcm", "open-question", "talk", "obituary"],
+            "description": "paper; short-story (expository note); blog-post; survey; pcm (Princeton Companion article); open-question; talk; obituary."
+          },
+          "title": { "type": "string", "minLength": 1 },
+          "coauthors": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Co-authors (Terence Tao implicit); omit or empty for solo works."
+          },
+          "year": { "type": "integer", "description": "Canonical year for sorting/search (publication year, else preprint year)." },
+          "status": {
+            "type": "string",
+            "enum": ["published", "to-appear", "submitted", "preprint", "unpublished"]
+          },
+          "venue": { "type": "string", "description": "Human-readable status/venue string." },
+          "journal": { "type": "string", "description": "Parsed journal name, for faceting." },
+          "arxiv": { "type": "string", "description": "arXiv id, e.g. 2306.16558 or math.NT/0404188." },
+          "tags": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+            "description": "Topic tags (multiple). Replace the old rigid per-page categories."
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "url"],
+              "properties": {
+                "type": { "type": "string", "enum": ["arxiv", "journal", "discussion", "slides", "pdf", "note", "blog"] },
+                "url": { "type": "string", "minLength": 1 }
+              }
+            }
+          },
+          "abstract": { "type": "string" }
+        }
+      }
+    }
+  }
+}
