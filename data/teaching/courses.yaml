@@ -1,6 +1,11 @@
 # Imported from the UCLA home page teaching tables -- maintain by hand.
 title: Teaching
 courses:
+- year: 2026
+  quarter: S
+  number: Math 246C
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/231037"
 - year: 2025
   quarter: F
   number: Math 245A
