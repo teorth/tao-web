@@ -454,7 +454,7 @@ works:
   - Or Shalom
   year: 2023
   status: submitted
-  venue: submitted,JEMS
+  venue: Submitted, Math. Annalen
   arxiv: '2303.04853'
   tags:
   - additive-combinatorics-number-theory
@@ -471,8 +471,8 @@ works:
   - Asgar Jamneshan
   - Or Shalom
   year: 2023
-  status: submitted
-  venue: submitted
+  status: to-appear
+  venue: To appear, Annales de la Faculté des Sciences de Toulouse
   arxiv: '2303.04860'
   tags:
   - additive-combinatorics-number-theory
@@ -505,8 +505,8 @@ works:
   - Ben Green
   - Freddie Manners
   year: 2023
-  status: submitted
-  venue: Submitted, Random Structures and Algorithms
+  status: published
+  venue: "Random Structures and Algorithms (2023). doi:10.1002/rsa.21252"
   arxiv: '2306.13403'
   tags:
   - additive-combinatorics-number-theory
@@ -553,8 +553,8 @@ works:
   kind: paper
   title: Monotone non-decreasing sequences of the Euler totient function
   year: 2023
-  status: submitted
-  venue: submitted, La Matematica
+  status: published
+  venue: "La Matematica (2024). doi:10.1007/s44007-024-00115-z"
   arxiv: '2309.02325'
   tags:
   - additive-combinatorics-number-theory
@@ -569,8 +569,8 @@ works:
   coauthors:
   - Rachel Greenfeld
   year: 2023
-  status: submitted
-  venue: submitted, JEMS
+  status: to-appear
+  venue: To appear, J. Eur. Math. Soc.
   arxiv: '2309.09504'
   tags:
   - additive-combinatorics-number-theory
@@ -618,8 +618,8 @@ works:
   kind: paper
   title: A Maclaurin type inequality
   year: 2023
-  status: submitted
-  venue: Submitted, Proc. AMS
+  status: to-appear
+  venue: To appear, Proc. Amer. Math. Soc.
   arxiv: '2310.05328'
   tags:
   - harmonic-analysis
@@ -635,8 +635,8 @@ works:
   - Hariharan Narayanan
   - Scott Sheffield
   year: 2023
-  status: to-appear
-  venue: To appear, Prob. Thy. Rel. Fields
+  status: published
+  venue: Probab. Theory Relat. Fields 190 (2024), 1121–1165.
   arxiv: '2306.11514'
   tags:
   - honeycombs
@@ -741,8 +741,8 @@ works:
   coauthors:
   - Joni Teräväinen
   year: 2021
-  status: to-appear
-  venue: to appear, J. Europ. Math. Soc.
+  status: published
+  venue: J. Eur. Math. Soc. 27 (2025), no. 4, 1321–1384.
   arxiv: '2107.02158'
   tags:
   - additive-combinatorics-number-theory
@@ -2698,8 +2698,8 @@ works:
   - Ben Green
   - Tamar Ziegler
   year: 2010
-  status: submitted
-  venue: "Annals of Math. 176 (2012), no. 2, 1231–1372.(Announcement: Submitted, Electronic Research Announcements)"
+  status: published
+  venue: Annals of Math. 176 (2012), no. 2, 1231–1372.
   arxiv: '1006.0205'
   tags:
   - additive-combinatorics-number-theory
