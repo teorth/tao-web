@@ -1,0 +1,21 @@
+# Imported from https://terrytao.wordpress.com/books/climbing-the-cosmic-distance-ladder/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Climbing the cosmic distance ladder
+  slug: climbing-the-cosmic-distance-ladder
+  authors:
+  - Tanya Klowden
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/climbing-the-cosmic-distance-ladder/"
+  description: A popular science book, co-written with Tanya Klowden and to be published by Yale University
+    Press, expanding a public lecture on the cosmic distance ladder. (In preparation.)
+  publication:
+    publisher: Yale University Press
+    note: In preparation.
+  links:
+  - title: Sample “fourth rung” chapter
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2025/11/sample_fourth.pdf"
+  - title: Sample “seventh rung” chapter
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2025/11/sample_seventh.pdf"
+  - title: Cosmic distance ladder (YouTube, with 3Blue1Brown)
+    url: "https://www.youtube.com/watch?v=YdOXS_9_P4U"
+editions: []

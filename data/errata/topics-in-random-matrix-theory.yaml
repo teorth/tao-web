@@ -1,0 +1,424 @@
+# Imported from https://terrytao.wordpress.com/books/topics-in-random-matrix-theory/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Topics in random matrix theory
+  slug: topics-in-random-matrix-theory
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/topics-in-random-matrix-theory/"
+  description: This continues my series of books derived from my blog. It is based primarily on my 254A
+    random matrices lecture notes.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2012
+    isbn: 978-0-8218-7430-1
+    note: Graduate Studies in Mathematics 132.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2011/08/matrix-book.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/publications/authors/books/postpub/gsm-132"
+  - title: Lecture notes (254A)
+    url: "https://terrytao.wordpress.com/category/teaching/254a-random-matrices/"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Sviatoslav Archava
+    - Giovanni Barbarino
+    - Rex Cheung
+    - Nicholas Christofferson
+    - Nick Cook
+    - Jesus A Dominguez
+    - Peter Forrester
+    - Yihan Gao
+    - Stephen Ge
+    - Paul Jung
+    - Gautam Kamath
+    - keej
+    - Miklós Kornyik
+    - Fan Lau
+    - Euiwoong Lee
+    - Yijia Liu
+    - John Lentfer
+    - Travis Martin
+    - Ramis Movassagh
+    - Doron Puder
+    - Al Ray
+    - Ilya Razenshteyn
+    - Adam Sawicki
+    - Calum Shearer
+    - Yeonjong Shin
+    - Frieder Simon
+    - Noah Singer
+    - Weiji Su
+    - David Terjek
+    - Ambuj Tewari
+    - Dominik Tomecki
+    - tornado92
+    - Danny Wood
+    - Felix V.
+  migrated: '2026-07-09'
+editions:
+- id: pre-errata
+  name: Pre-errata (corrected in the published version)
+  errata:
+  - id: pre-errata-0001
+    page: '20'
+    text: In Exercise 1.1.11(i), “if and only for” should be “if and only if for”.
+  - id: pre-errata-0002
+    page: '21'
+    text: "In Exercise 1.1.18, in the definition of convexity, $\\geq$ should be $\\leq$."
+  - id: pre-errata-0003
+    page: '46'
+    text: "In Exercise 1.3.16, Weilandt should be Wielandt. Similarly on p. 47 after Exercise 1.3.9, in\
+      \ Exercise 1.3.22(v) on page 53, on page 137 before (2.82), on page 184 after (2.129), and on page\
+      \ 208 before 2.6.6. Also, before (1.66), the supremum should be over $1 \\leq i \\leq n$ rather\
+      \ than $1 \\leq i \\leq p$."
+  - id: pre-errata-0004
+    page: '72'
+    text: "All occurrences of $2t/\\pi$ on this page should be $\\pi t/2$."
+  - id: pre-errata-0005
+    page: '183'
+    text: The formula (2.127) should be attributed to Dyson ( The three fold way, J. Math. Phys. vol.
+      3 (1962) pgs. 1199-1215) rather than to Ginibre. Similarly on pages 251, 259, and 265.
+  - id: pre-errata-0006
+    page: 225-226
+    text: "U should be U_0 (several occurrences). Also, $\\frac{1}{\\sqrt{n}U}$ should be $\\frac{1}{\\\
+      sqrt{n}}U_0$ and $\\frac{1}{\\sqrt{n} U_\\varepsilon}$ should be $\\frac{1}{\\sqrt{n}} U_\\varepsilon$."
+  - id: pre-errata-0007
+    page: '225'
+    text: "Section 2.8.2: right parenthesis should be added after “sufficient decay at infinity.”"
+  - id: pre-errata-0008
+    page: '228'
+    text: "just before (2.179): “g_n” should be “f_n”"
+  - id: pre-errata-0009
+    page: '231'
+    text: "“lets ignore” should be “lets us ignore”"
+  - id: pre-errata-0010
+    page: '258'
+    text: "In the second paragraph, $d \\times d$ should be $n \\times n$, and $X_n$ should be $X_N$."
+  - id: pre-errata-0011
+    page: '6'
+    text: "In parts (iii), (iv) of Lemma 1.1.3, “the $\\bigwedge_\\alpha E_\\alpha$” should be “then $\\\
+      bigwedge_\\alpha E_\\alpha$“."
+  - id: pre-errata-0012
+    page: '16'
+    text: In Example 1.1.9, the Poisson distribution should be classified as having sub-exponential tail
+      rather than being sub-Gaussian.
+  - id: pre-errata-0013
+    page: '17'
+    text: "In Exercise 1.1.5, $\\exp(C k^C)$ should be $k^{Ck}$."
+  - id: pre-errata-0014
+    page: '18'
+    text: "Exercise 1.1.10 is incorrect as stated. Replace the second sentence with “Show that there exists\
+      \ a random variable $Y$ (on the sample space $R$) taking values in $R$, such that $X$ is equal almost\
+      \ surely to an extension of $Y$ (to the sample space $\\Omega$), and $X'$ is equal almost surely\
+      \ to an extension of $Y$ (to the sample space $\\Omega'$)."
+  - id: pre-errata-0015
+    page: '22'
+    text: "In Exercise 1.1.18(ii), the requirement that the $X_i$ take values in $[0,+\\infty]$ should\
+      \ be dropped."
+  - id: pre-errata-0016
+    page: '29'
+    text: "In Definition 1.1.23, $y$ should lie in $R'$ rather than $R$."
+  - id: pre-errata-0017
+    page: '32'
+    text: "In Definition 1.1.29, Remark 1.1.30, and Exercise 1.1.25, “$\\sigma$-compact” should be “$\\\
+      sigma$-compact and locally compact”."
+  - id: pre-errata-0018
+    page: '37'
+    text: "After (1.49), “uniform lower bound” should be “uniform upper bound”, and after the second line\
+      \ of the following display, $|x| > \\sqrt{n}$ should be $x > \\sqrt{n}$."
+  - id: pre-errata-0019
+    page: '41'
+    text: "In the proof of Theorem 1.3.1, $\\lambda v^* v$ should strictly speaking be $\\lambda(v^*v-1)$\
+      \ (though it makes no difference to the remainder of the argument)."
+  - id: pre-errata-0020
+    page: '41'
+    text: "In Exercise 1.3.1, $u_j(A)^* u_j(A)$ should be $u_j(A) u_j(A)^*$."
+  - id: pre-errata-0021
+    page: '45'
+    text: "“But, from (1.57)” should be “But, from (1.58)”."
+  - id: pre-errata-0022
+    page: '49'
+    text: "After (1.72), $\\dot u_i^*u_i=0$ should be $\\hbox{Re} \\dot u_i^* u_i$, and “orthogonal” should\
+      \ be “orthogonal (using the real part of the inner product)”."
+  - id: pre-errata-0023
+    page: '51'
+    text: In Section 1.3.6, the role of rows and columns should be reversed in “at least as many rows
+      as columns”.
+  - id: pre-errata-0024
+    page: '53'
+    text: "In Exercise 1.3.22 (vii), (viii), the eigenvalues $\\lambda_i$ should be replaced by singular\
+      \ values $\\sigma_i$."
+  - id: pre-errata-0025
+    page: '60'
+    text: "?: Just before (2.8), $\\sqrt{nk}$ should be $\\sqrt{k}$."
+  - id: pre-errata-0026
+    page: '61'
+    text: "In the proof of Theorem 2.1.3, $X$ should be $X_i$ throughout (three occurrences), and ${\\\
+      bf E} \\exp( t S_n) = \\exp( O( t^2 \\sigma^2 ) )$ should be ${\\bf E} \\exp( t S_n) \\leq \\exp(\
+      \ O( t^2 \\sigma^2 ) )$. Also, the reference to (2.9) here may be replaced by (2.10). In the second\
+      \ last line of the proof of Lemma 2.1.2, a closing parenthesis is missing."
+  - id: pre-errata-0027
+    page: '68'
+    text: "In the last display of Proposition 2.1.9, $2^{-m-1}$ should be $\\frac{1}{100(m+1)^2}$. The\
+      \ definitions of $X_{i,0}$ and $X_{i,m}$ are missing absolute value signs (they should be $X_{i,0}\
+      \ := X_i {\\bf I}(|X_i| \\leq 1)$ and $X_{i,m} := X_i {\\bf I}(2^{m-1} < |X_i| \\leq 2^m )$ respectively).\
+      \ Also, $2^{-m-1} A$ should be $\\frac{A}{100(m+1)^2}$."
+  - id: pre-errata-0028
+    page: '69'
+    text: "In Theorem 2.1.10, $x_j \\in X_j$ should be $x_j \\in R_j$. In (2.15), $\\sigma^2$ should be\
+      \ $\\sigma$."
+  - id: pre-errata-0029
+    page: '70'
+    text: "The footnote “Note that we must have $K \\leq 1$…” should read “Note that we should take $K\
+      \ \\geq 1$ if we wish to allow the variance to actually be able to attain the value $1$“. The condition\
+      \ $\\lambda \\leq c\\sqrt{n}/\\sqrt{K}$ after (2.8) sohuld be $\\lambda \\leq c \\sqrt{n}/K$."
+  - id: pre-errata-0030
+    page: '74'
+    text: "In the proof of Lemma 2.1.14, $X-A$ should be $A-X$ (two times)."
+  - id: pre-errata-0031
+    page: '74'
+    text: "In the proof of Lemma 2.1.15, $U_B(X') \\times \\{1\\}$ should be $(U_B(X') \\backslash U_{A_{X_n}}(X')\
+      \ \\times \\{1\\}$, and $(\\lambda t + (1-\\lambda)u, 1-\\lambda)$ should be “one of $(\\lambda\
+      \ t + (1-\\lambda)u, 1-\\lambda)$ or $(\\lambda t + (1-\\lambda)u, 0)$“."
+  - id: pre-errata-0032
+    page: '76'
+    text: "In the proof of Lemma 2.1.16, after (2.24), the expectation in the next two expressions should\
+      \ instead be conditional expectation with respect to $X_n$."
+  - id: pre-errata-0033
+    page: '81'
+    text: In Remark 2.2.2, “central limit” should be “central limit theorem”
+  - id: pre-errata-0034
+    page: "?"
+    text: "In Lemma 2.3.1, $\\exp(-CAn)$ should be $-\\exp(CA^2 n)$."
+  - id: pre-errata-0035
+    page: null
+    text: "In Section 2.4: all references to the “circular law” should be to the “semi-circular law”."
+  - id: pre-errata-0036
+    page: '88'
+    text: "At and just before (2.4.1), $1+|t|$ should be $|t|$. (Also to avoid having to deal with distributions,\
+      \ one should temporarily truncate $1_{(-\\infty,a]}$ to, say, $1_{[-M,a]}$ and then let $M$ go to\
+      \ infinity at the end of the argument.) In the display after (2.40), $\\hat \\eta(t/\\varepsilon)$\
+      \ should be $\\hat \\eta(\\varepsilon t)$. Just before the last display in the proof of Theorem\
+      \ 2.2.8, $|t| \\leq c \\varepsilon$ should be $|t| \\leq c/\\varepsilon$."
+  - id: pre-errata-0037
+    page: '90'
+    text: In Theorem 2.2.9(i), k should range in 1,2,3,… rather than 0,1,2,… .
+  - id: pre-errata-0038
+    page: '95'
+    text: "In the first display of the proof of Theorem 2.2.11, $o(1)$ should be $O( \\frac{1}{\\sqrt{n}}\
+      \ {\\bf E} |X|^3 ) \\sup_{x \\in R} |\\phi'''(x)|$."
+  - id: pre-errata-0039
+    page: '97'
+    text: "Near the end of Section 2.2.5: [TaVuKr2010] should be [TaVu2009b]."
+  - id: pre-errata-0040
+    page: "?"
+    text: In remark 2.2.12, the discussion on the four moment theorem can be deleted (I never did end
+      up incorporating this material into the text).
+  - id: pre-errata-0041
+    page: '98'
+    text: "In the proof of Theorem 2.2.13, $\\phi$ should be assumed to be Lipschitz and not just continuous."
+  - id: pre-errata-0042
+    page: '99'
+    text: "In the final display, every term should have an expectation symbol ${\\bf E}$ attached to it."
+  - id: pre-errata-0043
+    page: '107'
+    text: "After (2.58), ${\\bf C}^d$ should be ${\\bf C}^n$ (two occurrences)."
+  - id: pre-errata-0044
+    page: '113'
+    text: "Before (2.62), the $\\bigvee_{1 \\leq i < j \\leq n}$ symbol should be $\\bigwedge_{1 \\leq\
+      \ i < j \\leq n}$."
+  - id: pre-errata-0045
+    page: '114'
+    text: "In Proposition 2.3.10, $M \\|M\\|_{op}$ should be ${\\bf M} \\|M\\|_{op}$ (two occurrences)."
+  - id: pre-errata-0046
+    page: '117'
+    text: "In item (ii) i the list after (2.69), the condition $i_1 \\neq i_2$ should be added."
+  - id: pre-errata-0047
+    page: '126'
+    text: "second line: the $o(1)$ error term needs to be improved to $O(k^2/n)$."
+  - id: pre-errata-0048
+    page: '127'
+    text: In the proof of Lemma 2.3.22, the first arrival can be either a fresh leg or a high multiplicity
+      edge, not simply a fresh leg as stated in the text. However, this does not affect the rest of the
+      argument.
+  - id: pre-errata-0049
+    page: '128'
+    text: "For each non-innovative leg, one also needs to record a leg that had already departed from\
+      \ the vertex that one is revisiting; this increases the total combinatorial cost here from $k^m$\
+      \ to $k^{2m}$ (and the first display should be similarly adjusted). However, the rest of the argument\
+      \ remains unchanged. In the last display and the first display of the next page, $\\max(j+1,k/2)$\
+      \ should be $\\min(j+1,k/2)$."
+  - id: pre-errata-0050
+    page: '130'
+    text: The statement “(2.76) holds” should read “(2.76) fails”.
+  - id: pre-errata-0051
+    page: "?"
+    text: "In the paragraph before Remark 2.4.1, it should be stated that $\\mathrm{Pr}({\\bf R})$ is\
+      \ equipped with the vague topology, and can be viewed as a measurable subset of the compact space\
+      \ $\\mathrm{Pr}({\\bf R} \\cup \\{\\infty\\})$ of probability measures on the compactification ${\\\
+      bf R} \\cup \\{\\infty\\}$."
+  - id: pre-errata-0052
+    page: "?"
+    text: "In the definition of the Stieltjes transform before (2.90), $x-z$ should be $z-x$."
+  - id: pre-errata-0053
+    page: '157'
+    text: "In the discussion of classical independence in Section 2.5, “all of ${\\bf E} f(X), {\\bf E}\
+      \ g(Y)$ vanishes” should be “${\\bf E} f(X), {\\bf E} g(Y)$ both vanish”."
+  - id: pre-errata-0054
+    page: '170'
+    text: "Before Exercise 2.5.10, the constraint $X \\in L^\\infty(\\tau)$ should be $X \\in {\\mathcal\
+      \ A} \\cap L^\\infty(\\tau)$."
+  - id: pre-errata-0055
+    page: '174'
+    text: "In Exercise 2.5.15, the additional hypothesis that X and Y are self-adjoint should be added.\
+      \ In Exercise 2.5.16, add “Show more generally that $P(U_1,U_1^*)$ and $Q(U_2,U_2^*)$ are freely\
+      \ independent for any polynomials $P,Q$."
+  - id: pre-errata-0056
+    page: '175'
+    text: In the second display, an extra right parenthesis should be added to the left-hand side.
+  - id: pre-errata-0057
+    page: '176'
+    text: "In the proof of Lemma 2.5.20, $X_i \\in {\\mathcal A}_i$ should be $X_i \\in {\\mathcal A}_i^0$.\
+      \ Also, $\\tau(X_i Y_{i_1})$ should be $\\tau_i(X_i Y_{i_1})$."
+  - id: pre-errata-0058
+    page: '181'
+    text: "The formulae for $\\tau(X^k)$ in Exercises 2.5.20 and Exercises 2.5.21 should be swapped with\
+      \ each other. Also, the formula for the third cumulant $\\kappa_3(X)$ is incorrect; this quantity\
+      \ is in fact equal to the third free cumulant $C_3(X)$ (but $\\kappa_4(X)$ and $C_4(X)$ are not\
+      \ equal in general)."
+  - id: pre-errata-0059
+    page: '183'
+    text: "In (2.127), the factor $1! \\ldots (n-1)!$ is missing from the denominator."
+  - id: pre-errata-0060
+    page: '184'
+    text: "In the paragraph before (2.128), “eigenvalues of $M$” should be “eigenvalues of $M_n$“."
+  - id: pre-errata-0061
+    page: 187-188
+    text: "The derivation of the Ginibre formula requires modification, because the claim that the space\
+      \ of upper triangular matrices is preserved with respect to conjugation by permutation matrices\
+      \ is incorrect. Instead, the given data $G$ needs to be replaced by a pair consisting of the random\
+      \ matrix $G$, together with a random enumeration $\\lambda_1,\\ldots,\\lambda_n$ of the eigenvalues\
+      \ of $G$, and the factorisation $G = U T U^{-1}$ is then subjected to the constraint that $T$ has\
+      \ diagonal entries $\\lambda_1,\\ldots,\\lambda_n$ in that order. (To put it another way, one works\
+      \ in an n!-fold cover of the space of matrices with simple spectrum.) One then performs the analysis\
+      \ in the text, with the enumeration of the eigenvalues of a perturbation of $T_0$ understood to\
+      \ be the one associated with the diagonal entries of $T_0$. (Details may be found at the associated\
+      \ blog entry for this section.)"
+  - id: pre-errata-0062
+    page: '189'
+    text: "In the second paragraph, $\\varepsilon^{n^2-n}$ should be $(1+o(1)) \\varepsilon^{n^2-n}$."
+  - id: pre-errata-0063
+    page: '191'
+    text: "In the last line in the paragraph after (2.137), $\\frac{1}{|\\lambda_i-\\lambda_j}$ should\
+      \ be $\\log \\frac{1}{|\\lambda_i - \\lambda_j|}$."
+  - id: pre-errata-0064
+    page: '192'
+    text: "In Footnote 52 to Section 2.6.3, the exponent $2$ should be $1/2$ instead."
+  - id: pre-errata-0065
+    page: '199'
+    text: "In (2.161), $(-1)^{(n+1)/2}$ should be $(-1)^{(n-1)/2}$."
+  - id: pre-errata-0066
+    page: '200'
+    text: "In the definition of $\\tilde \\phi_m$, the first factor of $\\sqrt{n}$ should be $n^{1/4}$.\
+      \ In the eigenfunction equation for $\\tilde \\phi_m$, $L_{1/\\sqrt{n}}$ should be $L_{1/n}$."
+  - id: pre-errata-0067
+    page: '201'
+    text: "In (2.162), $\\frac{1}{n}$ should be $\\frac{1}{n^{1/4}}$."
+  - id: pre-errata-0068
+    page: '203'
+    text: "In Exercise 2.6.6, a factor of $n^{-1/2}$ is missing in the $O()$ error term, and $|a|^2(x)\
+      \ + |b|^2(x)$ should be $4 a(0) b(0)$. In the penultimate display, $n^{(n+1)/2}$ should be $n^{\\\
+      frac{n}{2} + \\frac{1}{4}}$."
+  - id: pre-errata-0069
+    page: '206'
+    text: "In Remark 2.6.8, the $n^{1/6}$ denominator in the first display should instead be in the numerator,\
+      \ and similarly for (2.169); the $n^{-1/6}$ denominator two displays afterwards should similarly\
+      \ be $n^{1/6}$."
+  - id: pre-errata-0070
+    page: '212'
+    text: "For the application of Markov’s inequality and through to the next page, all appearances of\
+      \ $8$ should be replaced by $8/\\delta$, and “for at least $n/2$ values of $j$” should be “for at\
+      \ least $(1-\\delta/2)n$ values of $j$. Any appearance of $\\mathbf{C}^p$ should instead be $\\\
+      mathbf{R}^p$."
+  - id: pre-errata-0071
+    page: '213'
+    text: "In Exercise 2.7.1, $r/\\|x\\|^2$ should be $r/\\|x\\|$, the condition $\\sum_{j: |x_j| \\leq\
+      \ \\varepsilon^{100}} |x_j|^2 \\geq \\varepsilon^{10}$ should be $\\sum_{j: |x_j| \\leq \\varepsilon}\
+      \ |x_j|^2 \\geq \\eta$, the final bound should be $\\ll_{\\eta,\\delta} \\varepsilon$ rather than\
+      \ $\\ll \\varepsilon$, and $|x_j| > 1/2$ should be $|x_j| > \\varepsilon$. The definition of incompressibility\
+      \ should be $\\sum_{j: |x_j| \\leq \\varepsilon} |x_j|^2 \\geq \\eta$, with $\\eta>0$ to be chosen\
+      \ later, in the next display $O(\\varepsilon)^n$ should be $(O_{\\eta,\\delta}(\\varepsilon))^{(1-\\\
+      delta/2)n}$, and “within $\\varepsilon$ … $\\varepsilon^{-200}$ positions” on the next paragraph\
+      \ should be “within $\\eta$ … $\\varepsilon^{-2}$ positions”. Finally, in footnote 58, the summation\
+      \ should go up to $n$ rather than to $3$ in both occurrences. Just before this exercise, $x_i$ and\
+      \ $\\xi_i$ should go up to $p$ rather than $n$ (with some corresponding changes within the exercise)."
+  - id: pre-errata-0072
+    page: '214'
+    text: "$n^{O_\\varepsilon(1)}$ should be $n^{O_{\\varepsilon,\\eta}(1)}$ (two occurrences), and $2C\
+      \ \\varepsilon \\sqrt{n}$ should be $2C \\eta \\sqrt{n}$ in Exercise 2.7.2."
+  - id: pre-errata-0073
+    page: '215'
+    text: "In the last line “Proposition 2.7.3” should be “Proposition 2.7.3 and (2.172)”, and on the\
+      \ next page, $O(\\sqrt{k})^{-(n-k)}$ should be $\\hbox{min}( 1/2, O(k^{-1/2}) )^{n-k}$ (two occurrences).\
+      \ Somewhat previously, the entropy cost of $\\lfloor \\varepsilon n \\rfloor \\binom{n}{k}$ should\
+      \ just be $\\binom{n}{k}$."
+  - id: pre-errata-0074
+    page: '216'
+    text: "In the treatment of the incompressible case, every row $X_k$ shuold be replaced instead with\
+      \ the corresponding column $Y_k$."
+  - id: pre-errata-0075
+    page: '217'
+    text: "In Exercise 2.7.3, $\\hbox{dist}(X_i,V_i)^2$ should be $\\hbox{dist}(X_i,V_i)^{-2}$. “$\\sum_{i=1}^n\
+      \ \\sigma_i(M)^{-2} = O(1)$” should be “$\\sum_{i=1}^n \\sigma_i(M)^{-2}$ is comparable to $1$.”\
+      \ “eigenvalues $\\sigma_i(M)$” should be “singular values $\\sigma_i(M)\"$."
+  - id: pre-errata-0076
+    page: '218'
+    text: "After the first complete sentence, add “This of course contains the event that $\\|Mx\\| \\\
+      leq \\lambda/\\sqrt{n}$.”"
+  - id: pre-errata-0077
+    page: '220'
+    text: "In Section 2.7.5, all occurrences of $\\sqrt{n} \\sigma_n(M)$ should be $n \\sigma_n(M)^2$."
+  - id: pre-errata-0078
+    page: '223'
+    text: "in Theorem 2.8.1: add “in the vague topology” after “converges”."
+  - id: pre-errata-0079
+    page: '225'
+    text: "In Section 2.8.2, all integrals should be over ${\\bf C}$ rather than ${\\bf R}$. In Exercise\
+      \ 2.8.3, it should be noted that $\\frac{1}{w-z}$ is interpreted in a principal value sense."
+  - id: pre-errata-0080
+    page: 226-227
+    text: "All occurrences of $\\frac{1}{\\sqrt{n} M_n}$ should be $\\frac{1}{\\sqrt{n}} M_n$."
+  - id: pre-errata-0081
+    page: '228'
+    text: All occurrences of “operator norm” should be “spectral radius”.
+  - id: pre-errata-0082
+    page: "?"
+    text: "In Theorem 2.8.3, add the hypotheses that $\\|\\frac{1}{\\sqrt{n}} M_n\\|_{op} = O(1)$ almost\
+      \ surely, and that $\\mu$ is compactl supported."
+  - id: pre-errata-0083
+    page: '237'
+    text: "In Proposition 3.1.5, “same distribution as $\\mu$” should be “same distribution as $(X_t)_{t\
+      \ \\in \\Sigma}$. Similarly in Proposition 3.1.16."
+  - id: pre-errata-0084
+    page: '246'
+    text: The statement and proof of Theorem 3.1.16 have a number of issues. A corrected version can be
+      found at this blog post.
+  - id: pre-errata-0085
+    page: '251'
+    text: "In Exercise 3.1.11, $t^{-n^2/2}$ should be $t^{-n/2}$. In (3.12) and the preceding display,\
+      \ $n!$ should be $(n-1)!$."
+  - id: pre-errata-0086
+    page: "?"
+    text: "In the last part of Section 2, the threshold $\\lambda$ for $X_1 + \\dots + X_n$ should be\
+      \ $\\lambda \\sigma$, and the factors of $e^{-t\\lambda}$ should similarly be $e^{-t\\lambda\\sigma}$."
+  - id: pre-errata-0087
+    page: '267'
+    text: "In the display after “Hermite polynomial”, $\\frac{d}{dx^2}$ should be $\\frac{d^n}{dx^n}$."
+  - id: pre-errata-0088
+    page: '269'
+    text: "In Section 3.4.2, the expansion into Haar coefficients of $\\sum_j \\frac{x_j^2}{2}$ should\
+      \ instead be of $\\sum_j x_j^2$."

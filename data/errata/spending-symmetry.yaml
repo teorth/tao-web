@@ -1,0 +1,71 @@
+# Imported from https://terrytao.wordpress.com/books/spending-symmetry/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Spending symmetry
+  slug: spending-symmetry
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/spending-symmetry/"
+  description: This continues my series of books derived from my blog. (In preparation.)
+  publication:
+    note: In preparation.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2012/11/blog-book.pdf"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Alan Chang
+    - Nick Gill
+    - Gerry Myerson
+    - Aditya Guha Roy
+    - Ho Boon Suan
+    - Po Lam Yung
+  migrated: '2026-07-09'
+editions:
+- id: pre-errata
+  name: Pre-errata (to be corrected in the published version)
+  errata:
+  - id: pre-errata-0001
+    page: ix
+    text: the parenthetical reference to “compactness and contradiction” should be deleted.
+  - id: pre-errata-0002
+    page: '3'
+    text: "“infinitely twin primes” should be “infinitely many twin primes”."
+  - id: pre-errata-0003
+    page: '34'
+    text: On line 6, “Let now analyse” should be “Let us now analyse”.
+  - id: pre-errata-0004
+    page: '36'
+    text: "“wihch” should be “which”."
+  - id: pre-errata-0005
+    page: '45'
+    text: "In Section 2.2.5, one should use the tensor product ${\\bf C}^2 \\otimes {\\bf C}^2$ instead\
+      \ of the direct sum ${\\bf C}^2 \\oplus {\\bf C}^2$, making the necessary changes to the formulae\
+      \ (e.g. replacing $(v,w)$ by $v \\otimes w$)."
+  - id: pre-errata-0006
+    page: '55'
+    text: "In line 4 of the statement of Theorem 4.1.1: “exactly one of the following statements hold”\
+      \ should be “exactly one of the following statements holds”."
+  - id: pre-errata-0007
+    page: '89'
+    text: "“Converge almost everywhere” should be “Converges almost everywhere”."
+  - id: pre-errata-0008
+    page: '144'
+    text: On the third line before Conjecture 7.2.4, a space is missing after [BoSo1978].
+  - id: pre-errata-0009
+    page: '199'
+    text: "$x^2+y^2+z^2$ should be $x^2+y^2+z^2=1$."
+  - id: pre-errata-0010
+    page: '208'
+    text: "In Lemma 8.5.1 and its proof, one should replace $A+B$ with a measurable superset $C$, since\
+      \ $A+B$ might not itself be measurable."
+  - id: pre-errata-0011
+    page: '233'
+    text: The references [Ba1967,Ba1967b] were puvblished in 1967 rather than 1966; also [BoSaZi2011]
+      has been publishhed.
+  - id: pre-errata-0012
+    page: '235'
+    text: The reference [Er1979] should be Erdős, Paul Some unconventional problems in number theory.
+      Math. Mag. 52 (1979), no. 2, 67–70. The reference [Ka1940] should refer to Erdős instead of Erdos.

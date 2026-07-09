@@ -1,0 +1,854 @@
+# Imported from https://terrytao.wordpress.com/books/nonlinear-dispersive-equations-local-and-global-analysis/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: "Nonlinear dispersive equations: local and global analysis"
+  slug: nonlinear-dispersive-equations
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/nonlinear-dispersive-equations-local-and-global-analysis/"
+  description: These lecture notes try (perhaps ambitiously) to introduce the reader to techniques in
+    analyzing solutions to nonlinear wave, Schrödinger, and KdV equations, in as self-contained a manner
+    as possible. It is a six-chapter book.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2006
+    isbn: 978-0-8218-4143-3
+    note: CBMS Regional Conference Series in Mathematics 106. Softcover, 373 pages.
+  links:
+  - title: Sample chapters (first three chapters and an appendix)
+    url: "http://www.math.ucla.edu/~tao/preprints/chapter.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=cbms-106"
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: xi
+    text: "bottom: “certain many” should be “certainly many”."
+  - id: errata-0002
+    page: xii
+    text: Shaunglin should be Shuanglin.
+  - id: errata-0003
+    page: xiv
+    text: "$End(V \\to W)$ should be $Hom(V \\to W)$ throughout the text (e.g. on pages 33, 34). Frechet\
+      \ should be Fréchet."
+  - id: errata-0004
+    page: xv
+    text: Frechet should be Fréchet.
+  - id: errata-0005
+    page: '1'
+    text: "“is still its infancy” should be “is still in its infancy”."
+  - id: errata-0006
+    page: '2'
+    text: "“A Study in Scarlet” should be “A Scandal in Bohemia”."
+  - id: errata-0007
+    page: '3'
+    text: "In the first equation, $G(u_0,\\ldots,u_k)$ should be $G(u_0,\\ldots,u_k,s_0)$. After (1.4),\
+      \ “the domain ${\\mathcal Y}$” should be “the range ${\\mathcal Y}$“."
+  - id: errata-0008
+    page: '4'
+    text: "In the first paragraph, (6.4) should be 6.4. In the last paragraph, “G is real analytic” should\
+      \ be “F is real analytic”. On line 5, $Y$ should be ${\\mathcal Y}$."
+  - id: errata-0009
+    page: '5'
+    text: "“a open interval” should be “an open interval”. $u_t = u^2$ should be $\\partial_t u = u^2$."
+  - id: errata-0010
+    page: '6'
+    text: "In the definition of weak solution, $L^\\infty$ should be $L^\\infty_{loc}$."
+  - id: errata-0011
+    page: '8'
+    text: "In the proof of Theorem 1.4, $C^0(I \\to \\Omega_\\varepsilon)$ should be $C^0(I \\to {\\mathcal\
+      \ D})$. Similarly on line 17."
+  - id: errata-0012
+    page: '10'
+    text: In the last line of Exercise 1.1, G should be F.
+  - id: errata-0013
+    page: '11'
+    text: "In Exercise 1.4, S(t) should be $S_{t_0}$. “Kowaleski” should be “Kowalevski”."
+  - id: errata-0014
+    page: '12'
+    text: "In Theorem 1.12, $B$ should take values in ${\\mathbb R}$ (and the hypothesis that $B, u$ arenon-negative\
+      \ should be dropped.)"
+  - id: errata-0015
+    page: '13'
+    text: "$|F(u(s))-F(v(s))| \\leq M |u(s)-v(s)|$ should be $\\|F(u(s))-F(v(s))\\|_{\\mathcal D} \\leq\
+      \ M \\|u(s) - v(s) \\|_{\\mathcal D}$."
+  - id: errata-0016
+    page: '16'
+    text: "When defining $B(t)$, note that we can assume this quantity to be finite as the claim is vacuously\
+      \ true otherwise."
+  - id: errata-0017
+    page: '17'
+    text: "In Corollary 1.1, “for all $t \\in {\\mathbb R}$ should be $n \\in {\\mathbb Z}$."
+  - id: errata-0018
+    page: '18'
+    text: "In Exercise 1.14, in order for the supplied hint to work, $F, G$ would need to be $C^2_{loc}$\
+      \ rather than $C^1_{loc}$. However, the exercise is still true as stated; one needs to apply Gronwall’s\
+      \ inequality in $t$ to expressions such as $\\frac{u(s+ds,t) - u(s,t)}{ds} - F(u(s,t))$ for small\
+      \ $dt$. In Exercise 1.10, $S_{t_0}(u_0) = u(t_0)$ should be $S_{t_0}(t)(u_0) = u(t)$ where $u(t)$\
+      \ solves the equation with initial condition $u(t_0)=u_0$."
+  - id: errata-0019
+    page: '19'
+    text: "In Exercise 1.15, $M_n({\\mathbb C})$ should be $\\hbox{End}(H)$."
+  - id: errata-0020
+    page: '20'
+    text: "In the second part of Exercise 1.19 (“Show that $u$ in fact extends…”), the additional hypothesis\
+      \ “If F is continuously differentiable at 0” is needed, and $\\partial_t u(0)$ should be $G(0)/(1-F'(0))$.\
+      \ “built your castles in the air” should be “built castles in the air”."
+  - id: errata-0021
+    page: '22'
+    text: "“be such that such that” should be “be such that”."
+  - id: errata-0022
+    page: '25'
+    text: "In Exercise 1.24, the inequality $\\langle F(v), dH_j(v)\\rangle \\geq 0$ should be $\\langle\
+      \ F(v), dH_j(v)\\rangle > 0$. At the end of the exercise, add “Give a counterexample to show that\
+      \ the result fails if the strict inequality $\\langle F(v), dH_j(v)\\rangle > 0$ is weakened to\
+      \ $\\langle F(v), dH_j(v)\\rangle \\geq 0$“."
+  - id: errata-0023
+    page: '27'
+    text: "In the formula for the Poisson bracket {H,E} in Example 1.27, the $p_j$ and $q_j$ should be\
+      \ swapped (or equivalently, the equation is off by a sign)."
+  - id: errata-0024
+    page: '28'
+    text: "In the definitions of $\\frac{\\partial H}{\\partial z_j}$ and $\\frac{\\partial H}{\\partial\
+      \ \\overline{z}_j}$ in Example 1.28, there are factors of 1/2 missing. In the definition of the\
+      \ symplectic form (both (1.31) and the following equation), there is a negative sign missing."
+  - id: errata-0025
+    page: '29'
+    text: "In (1.33), there should be a minus sign on the RHS. Just before (1.34), $H(u(t_0))$ should\
+      \ be $H(u(t))$."
+  - id: errata-0026
+    page: '30'
+    text: "In (1.35), the $m_i$ should be on the denominator."
+  - id: errata-0027
+    page: '31'
+    text: "In Exercise 1.27, add the hypothesis that J is skew-adjoint. Also, $\\nabla_\\omega H = - J\
+      \ \\nabla H$ should be $\\nabla_\\omega H = J \\nabla H$."
+  - id: errata-0028
+    page: '32'
+    text: In the 10th line from the bottom, Louville should be Liouville.
+  - id: errata-0029
+    page: '33'
+    text: "In Exercise 1.37, $G : C^0_{loc} \\ldots$ should be $G \\in C^0_{loc}\\ldots$."
+  - id: errata-0030
+    page: '34'
+    text: "In Exercise 1.41, “exists real numbers” should be “exist real numbers”, and $z_d$ should be\
+      \ $z_n$."
+  - id: errata-0031
+    page: '36'
+    text: "in Example 1.31, $C \\geq 2$ should be $0 < C \\leq 2$."
+  - id: errata-0032
+    page: '46'
+    text: "In Exercise 1.46, $u$ and $u_0$ should be $x$ and $x_0$."
+  - id: errata-0033
+    page: '40'
+    text: "In the ODE in Exercise 1.48, there is a unit vector $\\frac{x_j(t)-x_i(t)}{|x_j(t)-x_i(t)|}$\
+      \ missing in the right-hand side."
+  - id: errata-0034
+    page: '41'
+    text: "In (1.42), $N(\\|u\\|_D)$ should be $\\|N(u)\\|_D$."
+  - id: errata-0035
+    page: '45'
+    text: "In footnote 19, “the spectrum of $L$ being contained entirely in the interior of the left half-plane”\
+      \ should be “the spectrum of $L + L^*$ being contained entirely in the negative real axis”."
+  - id: errata-0036
+    page: '46'
+    text: "In the definition of ${\\mathcal N}$, the word “then” after $F \\in C^0([0,+\\infty) \\to {\\\
+      mathcal D})$ should be “whose norm”, and $e^{\\sigma t}$ should be $e^{2\\sigma t}$."
+  - id: errata-0037
+    page: '47'
+    text: "After the fourth display, “${\\mathcal N}$ is bounded” should be “$N_k$ is bounded”."
+  - id: errata-0038
+    page: '48'
+    text: "In Exercise 1.51, $\\varepsilon$ should equal $1 / (2k C_0 C_1)^{1/(k-1)}$ rather than $1/(2kC_0C_1)$.\
+      \ In (1.56), there should be summations over $\\xi_1,\\xi_2$."
+  - id: errata-0039
+    page: '53'
+    text: "In Exercise 1.56, “commute with a given Hamiltonian” should be “commute with each other”. “Torii”\
+      \ should be “tori” (two occurrences). In Exercise 1.58, “uppose that” should be “Suppose that”.\
+      \ In Exercise 1.57, $P(u(t))$ should be $-P(u(t))$."
+  - id: errata-0040
+    page: '54'
+    text: "In Exercise 1.59, “Exercise 1.27” should be “Example 1.27”. In the last line (above the footnotes),\
+      \ ${\\Bbb Z}^n$ should be ${\\Bbb Z}^d$."
+  - id: errata-0041
+    page: '57'
+    text: "In the first line, $E, B: \\mathbf{R}^{1+3} \\times \\mathbf{R}^3$ should be $E, B: \\mathbf{R}^{1+3}\
+      \ \\to \\mathbf{R}^3$. After equation (2.6), in the formula for $dg^2$ the space index should run\
+      \ from 1 to d rather than from 1 to 3."
+  - id: errata-0042
+    page: '58'
+    text: "In the “Conversely” portion of Exercise 2.2, one must assume the Lorenz gauge condition $\\\
+      partial^\\alpha A_\\alpha = 0$."
+  - id: errata-0043
+    page: '59'
+    text: "In the first display of Exercise 2.3, $u$ should be $\\overline{u}$. Exercise 2.4 the second\
+      \ line should be $L:= ih(D)$. For the Schrödinger equation in Exercise 2.4, the phase velocity is\
+      \ half the group velocity rather than twice the group velocity (i.e. $v/2$ instead of $2v$). In\
+      \ Exercise 2.5, in the second line the range of $\\tilde u$ is V rather than $\\mathbf{C}$. Same\
+      \ for Exercise 2.6, and 2.10. In the display of Exercise 2.5, the term $e^{i m t |v|^2/ 2\\hbar}$\
+      \ should be $e^{-i m t |v|^2/ 2\\hbar}$."
+  - id: errata-0044
+    page: '60'
+    text: "In the last display, $x_n$ should be $x_d$."
+  - id: errata-0045
+    page: '61'
+    text: "In exercise 2.12, the hypothesis that $u$ is radial should be added. In the second display\
+      \ of Exercise 2.14, the exponent $- \\frac{d-1}{2}-1$ should be $- \\frac{d-1}{2}-2$."
+  - id: errata-0046
+    page: '62'
+    text: "In the second paragraph of Section 2.1, $P:{\\mathbb R}^d \\to {\\mathbb R}$ should be $h:\
+      \ {\\mathbb R}^d \\to {\\mathbb R}$."
+  - id: errata-0047
+    page: '63'
+    text: In the 8th line from the bottom, “propagator” should be “propagators”, and there is a semicolon
+      missing in the preceding display.
+  - id: errata-0048
+    page: '64'
+    text: "In the definition of the spacetime Fourier transform, $dt dx$ should be $dx dt$. Similarly,\
+      \ in the inversion formula, $d\\tau d\\xi$ should be $d\\xi d\\tau$."
+  - id: errata-0049
+    page: '65'
+    text: "After Principle 2.1, $\\hbar \\xi/v$ should be $\\hbar \\xi/m$. In the last paragraph, “thi\
+      \ principle” should be “this principle”. 5th line from top, “to the solution” should be “on the\
+      \ solution”."
+  - id: errata-0050
+    page: '66'
+    text: "In Exercise 2.18, $\\delta(\\tau-|\\xi|)$ should be $\\delta(|\\tau|-|\\xi|)$. In the second\
+      \ to last display, the closing right parenthesis should be deleted."
+  - id: errata-0051
+    page: '67'
+    text: "In Exercise 2.19, the normalisation $\\hbar = 1$ is missing. In the two-sheeted hyperboloid,\
+      \ $|\\xi|2$ should be $|\\xi|^2$."
+  - id: errata-0052
+    page: '67'
+    text: "bottom: “forall” should be “for all”."
+  - id: errata-0053
+    page: '68'
+    text: "In the hint for Exercise 2.24, $e^{ixz+itz^2}$ should be $e^{ixz-itz^2}$."
+  - id: errata-0054
+    page: '70'
+    text: "In the second display, $x/t^{-1/3}$ should be $x/t^{1/3}$."
+  - id: errata-0055
+    page: '71'
+    text: "Two lines before (2.19), $\\lambda^n$ should be $\\lambda^d$. In the first display, $|t|^{n-1}$\
+      \ should be $|t|^{d-1}$."
+  - id: errata-0056
+    page: '72'
+    text: "In Exercise 2.28, the Laplacian $\\Delta$ in the third display should be $\\frac{\\Delta}{2}$,\
+      \ and $v(0,x)$ should equal $\\frac{1}{(2\\pi)^d/2} \\bar{\\hat{u_0}}(x)$ rather than $\\frac{1}{(2\\\
+      pi)^d/2} \\hat{u_0}(x)$; also, “psedoconformal” should be “pseudoconformal”. For the extra challenge,\
+      \ one needs to use separation of variables and consider solutions to Schrödinger of the form $u(t,x)\
+      \ = u(x) e^{iEt}$ for some $E$ (and some rescaling of the wave-Schrödinger correspondence may also\
+      \ be necessary). In Exercise 2.30, “Airy function” should be “Airy equation”."
+  - id: errata-0057
+    page: '73'
+    text: "In Exercise 2.33, $x_n$ should be $x_d$."
+  - id: errata-0058
+    page: '74'
+    text: "In (2.26), $ds$ should be $dt'$. In the discussion after Theorem 2.3, it should be noted that\
+      \ the estimates of Strichartz are based on the earlier restriction theorems obtained by Stein (unpublished,\
+      \ 1968, though mentioned in the thesis of Charles Fefferman) and Tomas (in the cited reference [Tomas]),\
+      \ and in particular on a subsequent unpublished interpolation argument of Stein that leads to what\
+      \ is now known as the Tomas-Stein restriction theorem (and which is discussed for instance in Stein’s\
+      \ book Harmonic analysis, or in Stein’s Beijing lecture notes). Marcinkeiwicz should be Marcinkiewicz.\
+      \ In the second paragraph after (2.23), “than on the left” should be “than on the right”."
+  - id: errata-0059
+    page: '75'
+    text: "In the proof of Theorem 2.3, $q,q' \\neq 2$ should be $q,r,\\tilde q, \\tilde r \\neq 2$."
+  - id: errata-0060
+    page: '76'
+    text: "In Figure 1, the role of $1/r$ and $1/q$ should be interchanged. “Applying Holder’s inequality”\
+      \ should be “Applying Holder’s inequality twice”."
+  - id: errata-0061
+    page: '77'
+    text: "On the fifth line, add “(after replacing $q,r$ with $\\tilde q, \\tilde r$)” after “which is\
+      \ (2.25)”. In the second display, $e^{-is\\Delta}$ should be $e^{i(t-s)\\Delta}$. After invoking\
+      \ Christ-Kiselev, add the parenthetical “(strictly speaking, this lemma does not apply directly\
+      \ because $e^{i(t-s)\\Delta}$ need not be bounded from $L^r$ to $L^{\\tilde r'}$, but this technicality\
+      \ can be dealt with by a standard regularisation argument, e.g. replacing $e^{i(t-s)\\Delta}$ with\
+      \ $P_{\\leq N} e^{i(t-s)\\Delta}$, applying Christ-Kiselev, and then taking the limit $N \\to \\\
+      infty$.)”."
+  - id: errata-0062
+    page: '78'
+    text: "In Figure 2, the role of $1/r$ and $1/q$ should be interchanged."
+  - id: errata-0063
+    page: '80'
+    text: "In Exercise 2.35, “(2.34)” should be “Exercise 2.34”. “for all $u_0$” should be “holds for\
+      \ all $u_0$“. In Exercise 2.3.7, “$=0$” needs to be appended to $\\lim_{t \\to \\pm \\infty} \\\
+      |u(t) \\|_{L^p_x}$."
+  - id: errata-0064
+    page: '81'
+    text: "In Exercise 2.43, the space-time domain “$|t|\\ll 1/\\varepsilon, |x_1-t|\\ll \\varepsilon$\
+      \ and $|x_2|, \\cdots,|x_n|\\ll 1$” should be “$|t|\\ll 1/\\varepsilon^2, |x_1+t|\\ll 1$ and$|x_2|,\
+      \ \\cdots, |x_n|\\ll 1/\\varepsilon$“."
+  - id: errata-0065
+    page: 81-82
+    text: "In Exercise 2.46, the hypothesis $r \\leq \\infty$ should be replaced with $r all Schrödinger-admissible\
+      \ exponents). Also, to use complex interpolation to prove this estimate requires the theory of BMO\
+      \ (and the Fefferman-Stein interpolation theorem); it is easier to use the Littlewood-Paley inequality\
+      \ (A.7) instead."
+  - id: errata-0066
+    page: '83'
+    text: two lines above (2.33), “transation” should be “translation”.
+  - id: errata-0067
+    page: '84'
+    text: In the display after (2.35), the minus sign should be deleted. Three lines above (2.36), “multiplying
+      first equation” should be “multiplying the first equation”. On the 8th line from bottom, delete
+      the second “the useful identity”.
+  - id: errata-0068
+    page: '85'
+    text: "Before (2.40), $4 \\pi$ should be $8 \\pi$. In (2.40), $4\\pi$ should be $2\\pi$."
+  - id: errata-0069
+    page: '87'
+    text: "In Exercise 2.52, add “to” after $H^{k,k}_x({\\mathbb R}^d)$. At the end of Exercise 2.54,\
+      \ “in homogeneous” should be “inhomogeneous”."
+  - id: errata-0070
+    page: '92'
+    text: "In the equation just below (2.54), $T^{00}(t,x)$ should be $T^{00}(0,x)$. In (2.54), $u(t.x)$\
+      \ should be $u(t,x)$."
+  - id: errata-0071
+    page: '94'
+    text: "In the first display, $\\int^{S_{d-1}}$ should be$\\int_{S^{d-1}}$. In the second and third\
+      \ display, $t^{-1-d}$ should be $t^{1-d}$."
+  - id: errata-0072
+    page: '94'
+    text: "?: In the paragraph after (2.56), $x_j \\partial_{x_j} - x_k \\partial_{x_j}$ should be $x_j\
+      \ \\partial_{x_k} - x_k \\partial_{x_j}$."
+  - id: errata-0073
+    page: '96'
+    text: "?: In Exercise 2.64, (2.32) should be (2.44) (with $F=0$)."
+  - id: errata-0074
+    page: '99'
+    text: "in the definition of $X^{s,b}$ norm with the torus as spatial domain around the middle of the\
+      \ page the $\\xi$ should be replaced by k. In the formula following it $\\xi$ should be replaced\
+      \ by x. In the last line of Lemma 2.8, $\\eta \\in {\\mathcal S}_x({\\mathbf R})$ should be $\\\
+      eta \\in {\\mathcal S}_t({\\mathbf R})$."
+  - id: errata-0075
+    page: '100'
+    text: "In the first line, “$s'\\le s$ and $b'\\le b$” should be “$s'\\ge s$ and $b'\\ge b$“. In the\
+      \ penultimate display, $f_\\tau$ should be $f_{\\tau_0}$."
+  - id: errata-0076
+    page: '101'
+    text: "In the last line of Lemma 2.11, the condition $\\sigma > 0$ may be deleted. In the penultimate\
+      \ display, $\\tau - \\tau_0 - h(\\xi)$ should be $\\tau + \\tau_0 - h(\\xi)$."
+  - id: errata-0077
+    page: '102'
+    text: "The case $b'=b$ in the proof of Lemma 2.11 is not as trivial as claimed. However, once the\
+      \ $b'=0$ case is proven, the $b'=b$ case can then be deduced as follows. Observe that the $b'=0$\
+      \ bound suffices to control the portion of $\\| \\eta(t/T) u\\|_{X^{s,b}}$ for which $\\langle \\\
+      tau-h(\\xi) \\rangle \\leq 1/T$, so it suffices to control $\\| P( \\eta(t/T) u) \\|_{X^{s,b}}$,\
+      \ where P is the Fourier projection to the region $\\langle \\tau-h(\\xi) \\rangle \\geq 1/T$. We\
+      \ split this into $\\| P(\\eta(t/T) Pu)\\|_{X^{s,b}}$ and $\\| P(\\eta(t/T) (1-P)u)\\|_{X^{s,b}}$.\
+      \ For the former term, we can observe that $\\| P (e^{it\\tau_0} P u) \\|_{X^{s,b}} \\lesssim_b\
+      \ \\langle T \\tau_0 \\rangle^b \\|u\\|_{X^{s,b}}$ for any frequency $\\tau_0$ (improving the bound\
+      \ in the proof of the first estimate), and then by repeating the proof of the first estimate one\
+      \ obtains an acceptable estimate for this term. As for the final term $\\| P(\\eta(t/T) (1-P)u)\\\
+      |_{X^{s,b}}$, we bound this by $T^{1-b} \\| (\\partial_t -L) (\\eta(t/T) (1-P) u) \\|_{X^{s,0}}$.\
+      \ By the Leibniz rule, the expression inside the norm splits into $\\eta(t/T) (\\partial_t -L) (1-P)\
+      \ u$ and $T^{-1} \\eta'(t/T) (1-P) u$. The first term contributes at most $\\lesssim T^{1-b}\\|(\\\
+      partial_t -L) (1-P) u\\|_{X^{s,0}} \\lesssim \\|u\\|_{X^{s,b}}$, while from the b’=0 theory the\
+      \ second term contributes at most $T^{1-b} T^{-1} T^b \\| (1-P) u \\|_{X^{s,b}}$, and both terms\
+      \ are acceptable. Finally, the composition argument to treat the $b' \\leq 0 \\leq b$ case may be\
+      \ elaborated as follows. Firstly, by a smooth partition of unity it suffices to establish the claim\
+      \ for smooth compactly supported $\\eta$ (as long as the bounds depend only on the width of the\
+      \ support and on a $C^k$ norm for finite $k$). It is then easy to factorise $\\eta = \\eta_1 \\\
+      eta_2$ where $\\eta_1,\\eta_2 \\in C^\\infty_c$ obey similar bounds to $\\eta$. Now one can compose\
+      \ easily."
+  - id: errata-0078
+    page: '102'
+    text: "In the last line of fourth display, the $X^{s,b}$ norm should be $X^{0,b}$. In the fourth to\
+      \ last display, $m(\\xi) f(\\xi)$ should be $m(\\xi) \\hat f(\\xi)$."
+  - id: errata-0079
+    page: '103'
+    text: "In the 9th last line, $\\tau-\\xi$ should be $\\tau-h(\\xi)$. In the third-to-last display,\
+      \ the $X^{0,b}$ norm of F should be $X^{0,b-1}$. In the last display, the plus sign should be a\
+      \ minus sign."
+  - id: errata-0080
+    page: '104'
+    text: "In the fourth display, the right-hand side should be $( \\int_{\\mathbb R} \\langle \\tau-h(\\\
+      xi) \\rangle^{2(b-1)} |\\tilde F(\\tau,\\xi)|^2\\ d\\tau)^{1/2}$. In the third line of the proof\
+      \ of Lemma 2.13, $2^M$ and $2^{M+1}$ should be $M$ and $2M$ respectively (and $M$ should range over\
+      \ powers of two, rather than integer powers of two), and the display after this is missing a final\
+      \ period."
+  - id: errata-0081
+    page: '105'
+    text: "In the fourth display, $(3/4 -2 \\varepsilon m)$ should be $(3/4 -2 \\varepsilon ) m$. In the\
+      \ first line after the fifth display,$2\\tau-k$ should be $2\\tau-k^2$. Moreover, in the display\
+      \ of Exercise 2.70, one should interchange the role of u and v."
+  - id: errata-0082
+    page: '106'
+    text: "In Exercise 2.75, the hypothesis $b > 1/2$ is missing. In Exercise 2.74, $C^0_t L^4_x$ should\
+      \ be $C^0_t L^2_x$, and all occurrences of $latex{\\mathbb T}^2$ should be ${\\mathbb T}$."
+  - id: errata-0083
+    page: '107'
+    text: "In the second display of Exercise 2.77, the $L^2_t L^2_x$ norm should be an $L^6_t L^6_x$ norm.\
+      \ In Exercise 2.78, “Periodic Airy $L^6$ estimate, II” should be “Periodic Schrödinger $L^6_{t,x}$\
+      \ estimate”."
+  - id: errata-0084
+    page: '109'
+    text: "“defocusing, absent, or focusing” should be “focusing, absent, or defocusing”."
+  - id: errata-0085
+    page: '110'
+    text: "In the second paragraph, $F(zu)$ should equal $|z|^{p-1} z F(u)$ rather than $|z|^p F(u)$."
+  - id: errata-0086
+    page: '112'
+    text: "In the second paragraph, “the Laplacian $\\xi$” should be “the Laplacian $\\Delta$“, and “in\
+      \ order to solve the NLS” should be “in order for $u$ to solve the NLS”. After (3.5), ${\\Bbb Z}^d$\
+      \ should be ${\\Bbb R}^d$. In (3.5), the expression of u should be $u=\\alpha e^{i \\xi x}e^{-i\
+      \ |\\xi|^2 t/2} e^{-i \\mu |\\alpha|^{p-1} t}$. In the text after equation (3.5), anticlockwise\
+      \ should be clockwise, and “compared the frequency” should be “compared to the frequency”."
+  - id: errata-0087
+    page: '113'
+    text: "Before (3.6), $\\mu=+1$ should be $\\mu=-1$. After (3.6),$\\mu=-1,0$ should be $\\mu=+1,0$.\
+      \ After (3.7), $\\omega \\in {\\Bbb R}$ should be $\\tau \\in {\\Bbb R}$. In (3.8), $|Q|^p$ should\
+      \ be $|Q|^{p-1}$. After (3.8), “defocusing” should be “focusing”. The discussion for NLW is inaccurate\
+      \ (the sign of $\\beta$ is unfavorable) and all references for NLW ground states should be deleted.\
+      \ (There is a ground state for critical NLW, or for NLKG, but it would be rather complicated to\
+      \ discuss those cases here.) Before Exercise 3.1, “In Section 3.5” should be “in Section 3.5”."
+  - id: errata-0088
+    page: '114'
+    text: "In (3.10), $e^{it|v|^2/2}$ should be $e^{-it|v|^2/2}$."
+  - id: errata-0089
+    page: '116'
+    text: "In (3.15), $e^{- i t/\\tau}$ should be $e^{- i \\tau/t}$. In(3.16), $\\Delta$ should be $\\\
+      frac{\\Delta}{2}$. In the formula before (3.18), “$- i |\\alpha|^{p-1}$” should be “$- i \\mu |\\\
+      alpha|^{p-1}$“. In (3.19), “$+i \\mu |\\alpha|^{p-1}$” should be “$-i \\mu |\\alpha|^{p-1}$“."
+  - id: errata-0090
+    page: '117'
+    text: "In (3.20) and the following equation, $e^{i|\\xi|^2 t/2}$ and $e^{i\\mu|\\alpha|^{p-1} t}$\
+      \ should be $e^{-i|\\xi|^2 t/2}$ and $e^{-i\\mu|\\alpha|^{p-1} t}$."
+  - id: errata-0091
+    page: '119'
+    text: In the end of the first main paragraph, “if Principle 3.1” should be “of Principle 3.1”.
+  - id: errata-0092
+    page: '120'
+    text: "In Exercise 3.4, the exponents for the predicted time $T$ should have a minus sign. In Exercise\
+      \ 3.5, $\\mu=+1$ should be $\\mu=-1$, and “focusing regularity” should be “focusing nonlinearity”."
+  - id: errata-0093
+    page: '122'
+    text: "In the first paragraph, “show existence of solution” should be “show existence of a solution”.\
+      \ In Proposition 3.2, the final inequality should have exponents $p-1$ instead of $p$."
+  - id: errata-0094
+    page: '123'
+    text: "In the proof of Proposition 3.2, Theorem 1.10 is not strictly applicable because $\\|v(t)\\\
+      |_{L^2_x({\\mathbb R}^d)}$ need not be continuous. However, using the Lebesgue differentiation theorem\
+      \ one may extend the proof of Theorem 1.10 to the case when the function is bounded measurable rather\
+      \ than continuous."
+  - id: errata-0095
+    page: '124'
+    text: "the second line after the proof of Proposition 3.3, “one and nonlinearities” should be “and\
+      \ nonlinearities one”. In (3.22), the final semicolon should be deleted. In the penultimate line,\
+      \ the intersection symbol $\\cap$ should be a subset symbol $\\subset$. After (3.23), add “with\
+      \ some polynomial growth bound on the $L^p_t L^p_x$ norm on balls $B(0,R)$.”"
+  - id: errata-0096
+    page: '125'
+    text: "In the second line of Definition 3.4, “$u_0^*\\in {\\mathbb R}^d$“should be “$u_0^*\\in H^s_x\
+      \ ({\\mathbb R}^d)$“. Also, “with the $C^0_t H^s_x([-T,T] \\times {\\mathbb R}^d)$” should be “with\
+      \ the $C^0_t H^s_x([-T,T] \\times {\\mathbb R}^d)$ topology”."
+  - id: errata-0097
+    page: '129'
+    text: In the second-to-last line of the main text, “in one usually needs” should just be “one usually
+      needs”.
+  - id: errata-0098
+    page: '130'
+    text: In the second-to-last sentence of footnote 18, “controlled in” should just be “controlled”.
+      In the third paragraph, “are locally bounded” should be “is locally bounded”. In the first paragraph,
+      the final left parenthesis should be replaced with a semicolon. For Remark 3.9, strictly speaking
+      there is a technical issue establishing the Schwartz well-posedness purely from Proposition 3.8
+      due to the dependence of the local time of existence on k, but this can be fixed by using (a version
+      of) the persistence of regularity result in Proposition 3.11.
+  - id: errata-0099
+    page: '131'
+    text: "“Banach space algebra” should be “Banach algebra”. On the last line of the main text, the right-parenthesis\
+      \ after $u_0$ should be omitted."
+  - id: errata-0100
+    page: '132'
+    text: "In the fourth and fifth lines, $u$ should be $u^*$. In the second paragraph after Remark 3.10,\
+      \ add “norm” before “stays bounded”. In (3.25), the exponent $p$ should instead be $p-1$. In the\
+      \ final display of proof of Proposition 3.8, the iplied constants should depend on $s$ rather than\
+      \ $k$."
+  - id: errata-0101
+    page: '133'
+    text: In Remark 3.12, the phrase “by Sobolev embedding” should be placed in parentheses and moved
+      to before “and hence in”.
+  - id: errata-0102
+    page: '134'
+    text: In Remark 3.14, “a critical controlling norms” should be “a critical controlling norm”.
+  - id: errata-0103
+    page: '135'
+    text: "In Proposition 3.15, $T$ does not depend on $k$. In (3.26), $\\|u(t_0)\\|_{L^2_x (I\\times\
+      \ R^d)}$ should be $\\|u(t_0)\\|_{L^2_x (R^d)}$. Two lines above (3.26), Proposition 2.3 should\
+      \ be Theorem 2.3."
+  - id: errata-0104
+    page: '136'
+    text: "“$1 1/q'$” should be “$p/q < 1/q'$”."
+  - id: errata-0105
+    page: '137'
+    text: "In the formula of Proposition 3.17, $2(n+2)/n$ should be $2(d+2)/d$. The final parenthetical\
+      \ comment in Proposition 3.17 should be deleted."
+  - id: errata-0106
+    page: '138'
+    text: "In (3.28), the $H^1$ norm should be on ${\\Bbb R}^d$, not on $I \\times {\\Bbb R}^d$."
+  - id: errata-0107
+    page: '139'
+    text: "In the second to last display in the proof of Proposition 3.19, the exponent $5/2p$ should\
+      \ be $5(p-1)/2$."
+  - id: errata-0108
+    page: '140'
+    text: "In Figure 5, $H^1$ should be $\\dot H^1$ in both appearances in the caption."
+  - id: errata-0109
+    page: '141'
+    text: "In the formula of Exercise 3.16, the $t_0$ in the LHS should be $t$."
+  - id: errata-0110
+    page: '142'
+    text: In Exercise 3.18, “n” should be “d” throughout (for consistency with the rest of the text).
+  - id: errata-0111
+    page: '144'
+    text: In the line before the first formula, “by by” should be “by”.
+  - id: errata-0112
+    page: '145'
+    text: In Proposition 3.23, “some time interval” should be “the time interval”.
+  - id: errata-0113
+    page: '146'
+    text: In the proof of Proposition 3.23, Proposition 3.23 should be Proposition 3.22. In the first
+      line of the proof, “we” should be capitalised.
+  - id: errata-0114
+    page: '147'
+    text: A period is missing after Footnote 28.
+  - id: errata-0115
+    page: '148'
+    text: second paragraph after Principle 2.34, last line “n>6” should be “d>6”. “Proposition 3.19” should
+      be “(the two-dimensional analogue of) Proposition 3.19”.
+  - id: errata-0116
+    page: '150'
+    text: "“subcritical” should be “sub-critical”"
+  - id: errata-0117
+    page: '151'
+    text: "$H^1$ should be $H^1_x$. In the formula of Exercise 3.31, the term $\\partial_j (\\frac{1}{2}\
+      \ Im( \\overline{\\partial_{jk} u(t,x)} \\partial_k u(t,x))$ should be $\\partial_j (\\frac{1}{2}\
+      \ Im( \\overline{\\partial_{kk} u(t,x)} \\partial_j u(t,x))$."
+  - id: errata-0118
+    page: '152'
+    text: In exercise 3.35, the first appearance of “defocusing” should be omitted.
+  - id: errata-0119
+    page: '153'
+    text: "In the formula of Exercise 3.39, the $H^{k-1}$ norm shouldbe taken for $\\partial_t u(t)$ but\
+      \ not $u(t)$."
+  - id: errata-0120
+    page: '154'
+    text: "fourth to last line: $\\mu=-1$ should be $\\mu=+1$."
+  - id: errata-0121
+    page: '155'
+    text: In the paragraph before (3.36), “Morawetz inequalities for the NLS and NLW” should be “Morawetz
+      inequalities for the Schrödinger and wave equations”.
+  - id: errata-0122
+    page: '156'
+    text: "After (3.37), $\\Delta^2 a$ should be $-\\Delta^2 a$. In (3.38), an integration in $dt$ is\
+      \ missing. In (3.37), there should be a (d-1) in front of the $\\frac{2(p-1)\\mu}{p+1}$, and similarly\
+      \ for (3.40) and (3.41)."
+  - id: errata-0123
+    page: '157'
+    text: "In (3.40) and (3.41), $\\pi$ should be $2\\pi$. In the penultimate display $1 - \\frac{(x_j-y_j)(x_k-y_k)}{|x-y|^2}$\
+      \ should be $\\delta_{jk} - \\frac{(x_j-y_j)(x_k-y_k)}{|x-y|^2}$."
+  - id: errata-0124
+    page: '158'
+    text: "In the first display, $\\pi$ should be $2\\pi$."
+  - id: errata-0125
+    page: '159'
+    text: "In the first display, the first bracket should not be subscripted. In (3.45), an integration\
+      \ in $dx$ is missing. In the second formula of this page, $\\partial_t E[v(t),t]=\\frac{d}{2} (p-p_{L^2_x})$\
+      \ should be $\\partial_t E[v(t),t]=d (p-p_{L^2_x})$. In the last formula of this page, the $L^{2(d+2)/2}$\
+      \ norm should be a $L^{2(d+2)/d}$ norm."
+  - id: errata-0126
+    page: '160'
+    text: "After the first formula of this page, $H^1_x$-criticalshould be $H^{1/2}_x$-critical. In the\
+      \ third formula of this page, the minus sign should not occur."
+  - id: errata-0127
+    page: '161'
+    text: "In Exercise 3.46, the coefficient $+ \\frac{p \\delta_{jk}}{2(p+1)}$ in the first display should\
+      \ be $- \\frac{1}{p+1}$, and the coefficient $\\frac{p}{p+1}$ in the second display should be $\\\
+      frac{2}{p+1}$."
+  - id: errata-0128
+    page: '162'
+    text: "In line 4 and 7, $p_d$ should be $p_{L^2_x}$."
+  - id: errata-0129
+    page: '166'
+    text: "$L^q_x$ should be $L^q_{t,x}$; similarly on (3.51) in page 167."
+  - id: errata-0130
+    page: '167'
+    text: "In the third display, $W^{1,10/3}$ should be $W^{1,10/3}_x$. Near the end of the proof, “yields”\
+      \ should be “yield”. After the display following the proof, “energy give” should be “energy gives”.\
+      \ In the sixth display, the final term should be $\\varepsilon^{2\\alpha} \\|u\\|_{S^1(I \\times\
+      \ {\\mathbb R}^3)}^{3-2\\alpha}$."
+  - id: errata-0131
+    page: '168'
+    text: "In the second formula of this page, the denominator shouldbe 2d rather than 4d. In the statement\
+      \ and proof of Proposition 3.32, $R^3$ should be $R^2$ (three occurrences). “pseudoconformal decay\
+      \ laws” should be “pseudoconformal decay law”. In Proposition 3.32, “norm of $u_0$” should be “norm\
+      \ of $u$“."
+  - id: errata-0132
+    page: '169'
+    text: In the second line after the last formula of this page,Exercise 3.35 should be Proposition 3.25.
+      From the last 6 lines onwards,all occurrences of 1/T should be T.
+  - id: errata-0133
+    page: '170'
+    text: In Remark 3.3, “(still open)” should be “(still unproven)” (although this result has in fact
+      been proven by Dodson after the publication of this book).
+  - id: errata-0134
+    page: '171'
+    text: After (3.52), “small some suitable norms” should be “small in some suitable norms”.
+  - id: errata-0135
+    page: '173'
+    text: In (3.55), (3.56) and the second line before (3.55), four occurrences of the exponent 2 should
+      be p-1. Before (3.56), “This equation just” should be “This equation is just”.
+  - id: errata-0136
+    page: '174'
+    text: "In the first paragraph, (3.55) should be (3.56). In the second and third displays, the last\
+      \ term $\\partial_{xx} \\tilde{v}$ should be $\\frac{\\partial_{xx} \\tilde{v}}{2}$. In the third\
+      \ display, a $e^{i(t-t')\\partial_{xx}/2}$ is missing after the integral sign, and a -i should be\
+      \ present before the integral. In (3.57) and the previous formula, $\\varepsilon^2|\\psi|^2$ should\
+      \ be $\\varepsilon^{p-1}|\\psi|^{p-1}$. Moreover, in (3.57), $t^{(p-3)/2}$ should be $t^{-(p-3)/2}$.\
+      \ In line -7, “long-range case p>3” should be “long-range case p<3”. In the last paragraph, “that\
+      \ the short-range case” should be “that in the short-range case”."
+  - id: errata-0137
+    page: '175'
+    text: "In the proof of Proposition 3.35, $\\varepsilon^2$ should be $\\varepsilon^2/2$ (two occurrences).\
+      \ In the fifth display, “$\\omega(t)=\\int_0^t$” should be “$\\omega(t)=- i\\int_0^t$“. A period\
+      \ is missing after Footnote 42. Also, at the beginning of the proof of Proposition 3.35, observe\
+      \ that one can assume without loss of generality that $\\varepsilon$ is sufficiently small depending\
+      \ on $\\psi$, because the case when $\\varepsilon$ is smaller than (say) 1/2 can then be deduced\
+      \ from this case by a scaling argument."
+  - id: errata-0138
+    page: '176'
+    text: "first line, “sufficiently small depending on t” should be “sufficiently small depending on\
+      \ $\\psi$“."
+  - id: errata-0139
+    page: '177'
+    text: "In Exercise 3.55, the energy should be normalized by subtracting $\\varepsilon^{p+1}$ from\
+      \ $(|u^{(\\varepsilon)}|^2 + \\varepsilon^2)^{(p+1)/2}$."
+  - id: errata-0140
+    page: '178'
+    text: "In the 9th line of the third paragraph, $e^{it \\tau+\\theta(t)}$ should be $e^{i (t \\tau+\\\
+      theta(t))}$."
+  - id: errata-0141
+    page: '179'
+    text: "In the second display, $u^{(\\varepsilon)}$ should be $u$. In Exercise 3.56, the “$\\max (|u^{(\\\
+      lambda)}|^{p-1}, \\lambda |u^{(\\lambda)}|^{4}) u^{(\\lambda)}$” in the first display and “$\\max\
+      \ (\\omega^{p}, \\lambda \\omega^5)$” after the second display should be”$\\min (|u^{(\\lambda)}|^{p-1},\
+      \ \\lambda^4) u^(\\lambda)$” in the firstdisplay and “$\\max (\\omega^{p}, \\lambda^4 \\omega^2)$“,\
+      \ respectively."
+  - id: errata-0142
+    page: '180'
+    text: "In the third line, $+ \\frac{1}{2} |k|^2 t$ should be $-\\frac{1}{2} |k|^2 t$. The definition\
+      \ of ${\\mathcal N}_t$ needs a prefactor of $-i$, and in the exponent $\\frac{i}{2}$ should be $-\\\
+      frac{i}{2}$. In the final display, a right-parenthesis is missing in the norm for $b$, and the first\
+      \ integral sign in that display should be removed."
+  - id: errata-0143
+    page: '182'
+    text: "In (3.72), $\\mu$ should be $2\\mu$. After (3.72), “$p_{L^2_x}:=1+\\frac{4}{2}$” should be\
+      \ “$p_{L^2_x}:=1+\\frac{4}{d}$“. In the second paragraph, the critical index $\\sqrt{2}$ for focusing\
+      \ NLW should be $1+\\sqrt{2}$."
+  - id: errata-0144
+    page: '183'
+    text: After (3.73), Exercise 3.38 should be Exercise 3.35 and Exercise 3.39.
+  - id: errata-0145
+    page: '184'
+    text: "Before the first display, $|v|^2 \\omega_\\varepsilon$ should be $|\\omega_\\varepsilon|^2\
+      \ \\omega_\\varepsilon$. In the last display, one should replace “p” by “3”."
+  - id: errata-0146
+    page: '186'
+    text: In the quote, “Law” should not be capitalised.
+  - id: errata-0147
+    page: '189'
+    text: After (3.74), “wellposednes” should be “wellposedness”.
+  - id: errata-0148
+    page: '190'
+    text: In the penultimate display, the slash should be a period.
+  - id: errata-0149
+    page: '191'
+    text: "In the fourth display, $m(\\xi-\\eta N)$ should be $m(\\frac{\\xi-\\eta}{ N})$. In the second\
+      \ display, a right parenthesis is missing inside the norm."
+  - id: errata-0150
+    page: '192'
+    text: "In Proposition 3.39, $t\\ll_s N^{\\frac{1}{2}-2(1-s)}$ should be $t\\ll_s N^{\\frac{1}{2}-\\\
+      frac{2(1-s)}{s}}$. s>3/4 should be replaced by s>4/5, and the first display should be replaced by\
+      \ $\\|u(t)\\|_{H^s_x}\\lesssim_s \\langle t \\rangle^{(1-s) / (\\frac{1}{2}-\\frac{2(1-s)}{s})}$."
+  - id: errata-0151
+    page: '198'
+    text: "top: the reflection symmetry claimed for the KdV equation is incorrect and should be deleted."
+  - id: errata-0152
+    page: '199'
+    text: "In (4.7), $-5u^4$ should be $+5u^4$. In the bottom middle box, a right-parenthesis is missing.\
+      \ In footnote 4, the nonlinearity should have a minus sign."
+  - id: errata-0153
+    page: '200'
+    text: "In Exercise 4.2, $P(t)$ should be $4D^3 - 3(Du(t) + u(t) D)$, and $P(t) f$ should be $4 \\\
+      partial_{xxx} f - 3 (\\partial_x (u(t) f) + u(t) \\partial_x f)$."
+  - id: errata-0154
+    page: '204'
+    text: "In the fourth equation of the second display, the final $L^\\infty_x$ norm should be $L^2_x$."
+  - id: errata-0155
+    page: '206'
+    text: "In (4.13), $L^2_t L^\\infty_x$ should be $L^2_x L^\\infty_t$. In (4.14), $L^4_t L^\\infty_x$\
+      \ should be $L^4_x L^\\infty_t$."
+  - id: errata-0156
+    page: '208'
+    text: Superfluous ) parenthesis on (4.18) and on the preceding equation, as well as the display two
+      equations down.
+  - id: errata-0157
+    page: '210'
+    text: "In Exercise 4.13, $(\\varepsilon t)^{-3/4}$ should be $(\\varepsilon t)^{-3/8}$. The reference\
+      \ [Tzv] should be [Tzv2]."
+  - id: errata-0158
+    page: '235'
+    text: "In the definition of the local energy $E_\\Omega[u[t_0]]$, all occurrences of $t$ should be\
+      \ $t_0$."
+  - id: errata-0159
+    page: '236'
+    text: "In (5.5), the limit superior should be to $T_*$ rather than $T_*^+$."
+  - id: errata-0160
+    page: '238'
+    text: In the last line of Proposition 5.6, insert “is the linear solution” before “with initial data”.
+  - id: errata-0161
+    page: '240'
+    text: "The application of Proposition 5.1 in the third display is not correct, as it neglects the\
+      \ linear term. The fix is a little complicated: adding the linear term adds a 1 to the RHS, which\
+      \ prevents a direct continuity argument from working. But one can use a wider range of Strichartz\
+      \ estimates than provided by Proposition 5.1 to place the LHS in, say, $L^3_t L^{18}_x$ norm rather\
+      \ than $L^4_t L^{12}_x$ norm. Interpolating back with the $L^6$ hypothesis one recovers an estimate\
+      \ which is amenable to a continuity argument (with $\\epsilon_2$ replaced by a slightly smaller\
+      \ power of $\\epsilon_2$)."
+  - id: errata-0162
+    page: '247'
+    text: "In the third line of Theorem 5.1, $H^1 \\times L^2$ should be $H^1$."
+  - id: errata-0163
+    page: '249'
+    text: "In the fourth display, $\\eta^2$ should be $\\eta^4$."
+  - id: errata-0164
+    page: '254'
+    text: In the sixth to last line, “unexceptional” should be “exceptional”.
+  - id: errata-0165
+    page: '261'
+    text: "In the last paragraph above the exercises, $J - O_{E,\\eta}(1)$ should be $\\gtrsim_{E,\\eta}\
+      \ J$."
+  - id: errata-0166
+    page: '275'
+    text: "In the first line after the display in Exercise 5.21, “$N(t)=1$” should be “$N(0)=1$“."
+  - id: errata-0167
+    page: '280'
+    text: "In (6.3), u should be $\\phi$ (two occurrences). In equation (6.5), the $\\frac{1}{2}$ should\
+      \ be outside the integral."
+  - id: errata-0168
+    page: '281'
+    text: "In the display after (6.7), a factor $\\frac{1}{2}$ is missing from the right-hand side."
+  - id: errata-0169
+    page: '283'
+    text: "In Exercise 6.2(iii), one of the superscripts $\\alpha$ should instead be a subscript."
+  - id: errata-0170
+    page: '285'
+    text: "In Exercise 6.6, the $Y \\nabla_Y X$ term in the zero torsion property should just be $\\nabla_Y\
+      \ X$."
+  - id: errata-0171
+    page: '287'
+    text: "In the last display of Exercise 6.13, $\\psi$ should be $\\Psi$."
+  - id: errata-0172
+    page: '302'
+    text: "In (6.35), $\\tilde \\phi_\\phi$ should be $\\tilde \\phi+\\phi$. In (6.36), $\\partial_\\\
+      beta A$ should be $\\partial_\\beta A_\\alpha + [A_\\alpha,A_\\beta]$."
+  - id: errata-0173
+    page: '334'
+    text: "In (A.7), the condition “for $1 < p < \\infty$” should be added."
+  - id: errata-0174
+    page: '337'
+    text: "In the upper bound on $\\|P_N f\\|_{L^p_x({\\bf R}^d)$, the constants should also depend on\
+      \ $q, \\eta$ and not just $d,p,s$."
+  - id: errata-0175
+    page: '339'
+    text: "second display: $++$ should be $+$. In the right-hand side of the fifth display, $L^2$ should\
+      \ be $H^s$. (The latter correction should also apply to the second line of the fourth display.)"
+  - id: errata-0176
+    page: '340'
+    text: "equation (A.20): $N^{-2k}$ should be $N^{-k}$. In the last display, the $L^\\infty_x$ norm\
+      \ should be $L^2_x$."
+  - id: errata-0177
+    page: '341'
+    text: "last display in proof of Lemma A.9: The $L^2$ norm on the LHS should be squared, and the $(N')^k\
+      \ N^{-k}$ term should be $(N')^{2k-\\varepsilon} N^{-2k+\\varepsilon}$, where $\\varepsilon > 0$\
+      \ is arbitrary (and the implied constant now depends of course on $\\varepsilon$. When we sum in\
+      \ N, we have to assume $\\varepsilon$ sufficiently small depending on k and s."
+  - id: errata-0178
+    page: '343'
+    text: "Exercise A.8: In the endpoint Sobolev inequality, both instances of the exponent $d$ should\
+      \ be replaced by $d/(d-1)$. (Also, $d$ needs to be strictly greater than 1.) In Exercise A.12, there\
+      \ is a term missing on the right-hand side, and the correct bound is $\\|F(f)-F(g)\\|_{H^s_x({\\\
+      mathbb R}^d)} \\leq O_{\\|f\\|_{L^\\infty_x({\\mathbb R}^d)},\\|g\\|_{L^\\infty_x({\\mathbb R}^d)},F,V,s,d}(\\\
+      |f-g\\|_{H^s_x({\\mathbb R}^d)})$ $+ O_{\\|f\\|_{H^s_x({\\mathbb R}^d)},\\|g\\|_{H^s_x({\\mathbb\
+      \ R}^d)}, \\|f\\|_{L^\\infty_x({\\mathbb R}^d)}, \\|g\\|_{L^\\infty_x({\\mathbb R}^d)},F,V,s,d}(\\\
+      |f-g\\|_{L^\\infty_x({\\mathbb R}^d)})$. In Exercise A.15, one needs to subtract the mean $\\frac{1}{|I|}\
+      \ \\int_I f$ from the first left-hand side as well as the second (and in the second the denominator\
+      \ should be $|I|$ rather than $I$."
+  - id: errata-0179
+    page: '344'
+    text: "Exercise A.18: The hypothesis that $u$ is spherically symmetric is missing. In the final part\
+      \ of the exercise, replace the hypothesis $R \\geq 1$ by $R>0$."
+  - id: errata-0180
+    page: '347'
+    text: "The quote by Antoine de Saint-Exupery is slightly inaccurate; the correct quote is “la perfection\
+      \ soit atteinte non quand il n’y a plus rien à ajouter, mais quand il n’y a plus rien à retrancher.“.\
+      \ In the third paragraph, “model example of positive solution” should be “model example of a positive\
+      \ solution”. In the last line, $\\alpha$ should equal $\\frac{2}{p-1}(\\frac{-2p}{p-1}+d)$ rather\
+      \ than $\\frac{2}{p-1}(\\frac{2}{p-1}+d)$."
+  - id: errata-0181
+    page: '348'
+    text: "Before (B.3): “a positive and finite” should be “positive and finite”. In second paragraph:\
+      \ closing parenthesis before “we conclude that”. In Lemma B.1, one can remark that the hypothesis\
+      \ $Q \\not \\equiv 0$ is redundant since $W_{max}$ is known to be positive. The formula for $\\\
+      alpha$ should be $\\frac{2(p+1)}{d(p-1)} \\|Q\\|_{L^{p+1}}^{-p-1} \\| \\nabla Q \\|_{L^2}^2$."
+  - id: errata-0182
+    page: '349'
+    text: "In Lemma B.2: $-|\\nabla Q| \\leq \\nabla |Q| \\leq |\\nabla Q|$ should be $|\\nabla |Q|| \\\
+      leq |\\nabla Q|$, with a similar modification within the proof of that lemma. In the proof of Lemma\
+      \ B.1, there is a factor of $\\int |Q|^{p+1}$ missing in the second and third terms of the right-hand\
+      \ side of the first display. “Q is maximiser of W” should read “Q is a maximiser of W”. In the proof\
+      \ of Lemma B.3, add the following clarification in the second sentence: “(since $P_N u_n(x)$ is\
+      \ the inner product of $u_n$ against a Schwartz function for any fixed $x,N$)”."
+  - id: errata-0183
+    page: '351'
+    text: "In the second line from the top, “On the other hand” should be “On the one hand”. In the last\
+      \ line of the proof of Lemma B.4, W(u) should be W(Q). In Theorem B.5, the hypothesis that u is\
+      \ non-zero may be omitted (since $W_{max}$ is strictly positive)."
+  - id: errata-0184
+    page: '352'
+    text: "In the second display, $1/p+1$ should be $1/(p+1)$ for clarity. In the third display, $\\sup_{n\
+      \ \\to \\infty}$ should be $\\sup_{n \\geq 1}$."
+  - id: errata-0185
+    page: '353'
+    text: "Proposition B.7: “Let Q be non-negative solution” should be “Let Q be a non-negative solution”."
+  - id: errata-0186
+    page: '354'
+    text: "Proposition B.8: “Let Q be non-negative solution” should be “Let Q be a non-negative solution”.\
+      \ All occurrences of $t\\xi - x$ should be replaced with $t\\xi + \\overline{x}$, where $\\overline{x}$\
+      \ denotes the reflection of $x$ across the plane $\\{ x \\cdot \\xi = 0 \\}$. Similarly for $t \\\
+      xi - x_t$. $u_{t_n}(x_{t_n}) \\leq 0$ should be $u_{t_n}(x_{t_n}) < 0$, and Exercise B.6 should\
+      \ be Exercise B.7. “from below” should be “from above”."
+  - id: errata-0187
+    page: '355'
+    text: "the second appearance of $u$ should be $u_y$."
+  - id: errata-0188
+    page: '359'
+    text: "In Exercise B.2, $O_k$ should be $O_{k,d}$, and the condition $|x| \\geq 1$ should be added."
+  - id: errata-0189
+    page: '360'
+    text: "In the hint for Exercise B.3, $Q$ and $x \\cdot \\nabla_x Q$ should be $\\overline{Q}$ and\
+      \ $x \\cdot \\nabla_x \\overline{Q}$. Also, the suggested approach only works under the hypothesis\
+      \ that $\\beta$ is non-negative; to rule out $\\beta < 0$ requires some Agmon-Kato spectral theory\
+      \ and is beyond the scope of this text. In Exercise B.7, $\\xi \\cdot \\nabla u(x)$ should be positive\
+      \ rather than negative. In Exercise B.5, $u$ should be defined on the closure of the unit ball."
+  - id: errata-0190
+    page: '362'
+    text: A right parenthesis is missing at the end of Exercise B.13. In the end of Exercise B.14, the
+      parentheses around B.13 should be removed.
+  - id: errata-0191
+    page: '365'
+    text: In reference [CS], “disperives” should be “dispersives”.

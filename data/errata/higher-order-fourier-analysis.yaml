@@ -1,0 +1,117 @@
+# Imported from https://terrytao.wordpress.com/books/higher-order-fourier-analysis/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Higher order Fourier analysis
+  slug: higher-order-fourier-analysis
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/higher-order-fourier-analysis/"
+  description: This continues my series of books derived from my blog. It is based primarily on my 254B
+    higher-order Fourier analysis lecture notes.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2012
+    isbn: 978-0-8218-8986-2
+    note: Graduate Studies in Mathematics 142.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-142-tao7-higher-book-05june2012.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=GSM-142"
+  - title: Lecture notes (254B)
+    url: "https://terrytao.wordpress.com/category/teaching/254b-higher-order-fourier-analysis/"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - farlabb
+    - Ben Green
+    - Zach Hunter
+    - Abishek Khetan
+    - James Leng
+    - Minghao Pan
+    - Daniel Pezzi Killua Zoldyck
+    - Pavel Zorin
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: '3'
+    text: "?: “asymptotically equidistributed in ${\\bf N}$” should be “asymptotically equidistributed\
+      \ in $X$“."
+  - id: errata-0002
+    page: '17'
+    text: "In Exercise 1.1.17, $1/\\sqrt{N_0}$ should be $1/\\sqrt{N}$."
+  - id: errata-0003
+    page: '18'
+    text: "In Exercise 1.1.20, $\\delta^{-C_d} N$ should be $\\delta^{C_d} N$."
+  - id: errata-0004
+    page: '29'
+    text: after (1.9), “left-hand side of (1.8)” should be “left-hand side of (1.9)”.
+  - id: errata-0005
+    page: '30'
+    text: "All appearances of $\\delta$ here should be $\\delta'$."
+  - id: errata-0006
+    page: '49'
+    text: "Near the start of Section 1.3.2: the $c_i$ should be elements of $G$ rather than ${\\bf Z}$.\
+      \ “equilently” should be “equivalently”."
+  - id: errata-0007
+    page: '52'
+    text: "In Exercise 1.3.8, $a_1=-a_2=-a_3$ should be $a_1=a_2=-a_3$. After (1.29), $c$ should lie in\
+      \ ${\\bf R}/{\\bf Z}$ rather than $G$."
+  - id: errata-0008
+    page: '69'
+    text: "$V^d$ and $V^{d+1}$ should be $V^D$ and $V^{D+1}$ throughout."
+  - id: errata-0009
+    page: '75'
+    text: "In Proposition 1.5.1, $\\|f\\|_{L^\\infty(V)}$ should be bounded by 1. In Exercise 1.5.1, $F$\
+      \ should be $f$, and in Lemma 1.5.2, $G$ should be $latrex V$."
+  - id: errata-0010
+    page: '77'
+    text: "In the penultimate display, $\\phi$ should be $\\psi$."
+  - id: errata-0011
+    page: '93'
+    text: "In Section 1.6.1, $H^{\\{0,1\\}^d}$ should be $H^{\\{0,1\\}^k}$."
+  - id: errata-0012
+    page: "?"
+    text: "In Exercise 1.6.2, the condition $G'_1 = G$ also needs to be added."
+  - id: errata-0013
+    page: '95'
+    text: "In Exercise 1.6.7, $HK^k(G_\\bullet^{+1})$ should be $HK^{k-1}(G_\\bullet^{+1})$."
+  - id: errata-0014
+    page: '98'
+    text: "In the definition of a nilpotent filtered group $G_\\bullet$, the additional hypothesis that\
+      \ $G$ is also nilpotent is required (this is automatic in the most important case $G_{\\geq 0} =\
+      \ G_{\\geq 1} = G$, but not in general)."
+  - id: errata-0015
+    page: '99'
+    text: "In Exercise 1.6.13, it is $y$ rather than $z$ which is a quadratic polynomial."
+  - id: errata-0016
+    page: '100'
+    text: "In the first paragraph, replace “starting from a point” with “starting with the base group\
+      \ $G/G_{\\geq 1}$, which is a point in the most important case $G_{\\geq 0} = G_{\\geq 1} = G$“.\
+      \ Similarly, after Exercise 1.6.14, replace “starting from a point” by “starting from the base space\
+      \ $G/(G_{\\geq 1}\\Gamma)$, which is a point in the most important case $G_{\\geq 0} = G_{\\geq\
+      \ 1} = G$“. In the proof of lemma 1.6.15: “if this vertical frequency is non-zero” should be “if\
+      \ this vertical frequency is zero…” instead of “non-zero.”"
+  - id: errata-0017
+    page: '105'
+    text: "Proof of Lemma 1.6.13: “where $G_{\\ge j} \\times_{\\ge j + 1} G_{\\ge j}$ is the subgroup\
+      \ of $G_{\\ge j} \\times_{\\ge j + 1} G_{\\ge j}$” should be “where $G_{\\ge j} \\times_{\\ge j\
+      \ + 1} G_{\\ge j}$ is the subgroup of $G \\times G$“. “to conclude that F is invariant” should be\
+      \ “to conclude that $\\tilde F$ is invariant.”"
+  - id: errata-0018
+    page: '109'
+    text: "In Exercise 1.6.22, the argument indicated only works under the stronger hypothesis that $\\\
+      alpha, \\beta, \\alpha \\beta$ are linearly independent modulo 1 over the integers. (To handle the\
+      \ general case, one either needs the more complicated quantitative (single-scale) relative van der\
+      \ Corput lemma in my paper with Green, or else rely on the ergodic theorem as was done in the paper\
+      \ of Leibman.)"
+  - id: errata-0019
+    page: '116'
+    text: "$e(\\xi B)$ should be $e(\\xi m/N)$ in several places."
+  - id: errata-0020
+    page: '123'
+    text: "exercise 1.7.5: The bound $0 \\leq f \\leq 1$ should be $0 \\leq f \\leq \\nu$, and the supremum\
+      \ should be over non-zero frequencies $\\xi$."

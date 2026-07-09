@@ -1,0 +1,585 @@
+# Imported from https://terrytao.wordpress.com/books/an-introduction-to-measure-theory/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: An introduction to measure theory
+  slug: an-introduction-to-measure-theory
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/an-introduction-to-measure-theory/"
+  description: This continues my series of books derived from my blog. It is based primarily on my 245A
+    real analysis lecture notes. There is no solution guide for this text.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2011
+    isbn: 978-0-8218-6919-2
+    note: Graduate Studies in Mathematics 126. 206 pp., hardcover.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-126-tao5-measure-book.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=GSM-126"
+  - title: Lecture notes (245A)
+    url: "https://terrytao.wordpress.com/category/teaching/245a-real-analysis/"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Daniel Barter
+    - Jeff Jia Cai
+    - Andres Caicedo
+    - Alan Chang
+    - Oliver Diaz
+    - Daniel Dorani
+    - Zephyr Fan
+    - Robin Fissum
+    - Stephen Ge
+    - Travis Gibson
+    - Yaver Gulusoy
+    - Petri Henrik
+    - Deron Lessure
+    - Joe Li
+    - Weifeng Li
+    - Zijin Liu
+    - Zhiyuan Luo
+    - Yoshiki Otobe
+    - Arpan Pal
+    - Navan Ranasinge
+    - Xiao Shen
+    - Daniel Shved
+    - Frieder Simon
+    - Isaac Solomon
+    - Kent van Vels
+    - Gandhi Viswanathan
+    - Deven Ware
+    - Ittay Weiss
+    - Luqing Ye
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: null
+    text: "In general: Most occurrences of \\ldots can be replaced with \\dots. Throughout, “Exercise!”\
+      \ should be “exercise!”."
+  - id: errata-0002
+    page: xi
+    text: "“adjointed” should be “adjoined”."
+  - id: errata-0003
+    page: '2'
+    text: "In the first paragraph, “same area” should be “same measure”. In the third paragraph, “$\\\
+      infty \\cdot 0$ is indeterminate” should be “$\\infty \\cdot 0$ vanishes by our conventions”"
+  - id: errata-0004
+    page: "?"
+    text: The hint for Exercise 0.0.2 can be replaced with a hint that one may find Exercise 0.0.1 to
+      be useful.
+  - id: errata-0005
+    page: '5'
+    text: In Exercise 1.1.1, the first “and” can be deleted.
+  - id: errata-0006
+    page: "?"
+    text: "In Lemma 1.1.2(ii), clarify that $N$ is restricted to the natural numbers."
+  - id: errata-0007
+    page: '8'
+    text: "In the first paragraph, “or even a rotated box” should be a separate sentence: “A rectangle\
+      \ with sides parallel to the axes is elementary, but most rotations of that rectangle will not be.”"
+  - id: errata-0008
+    page: '10'
+    text: In Exercise 1.1.14, “epsilon entropy” is a slightly more accurate description here than “metric
+      entropy”.
+  - id: errata-0009
+    page: '11'
+    text: "In Exercise 1.1.19, add “Generalise this result to the case when $F$ is Jordan measurable instead\
+      \ of elementary”. In Exercise 1.1.18(4), the second $Q^2$ should be in boldface."
+  - id: errata-0010
+    page: '14'
+    text: In Exercise 1.1.24(3), “Jordan measurable of” should be “Jordan measurable subset of”.
+  - id: errata-0011
+    page: '15'
+    text: In Section 1.2, (iii), “inner and Jordan outer” should be “Jordan inner and outer”.
+  - id: errata-0012
+    page: "?"
+    text: Before Example 1.2.1, “we will briefly review below” should be “we reviewed in the preface”.
+  - id: errata-0013
+    page: '16'
+    text: in order to deal with the peculiarities of zero-dimensional Euclidean spaces (in which all boxes
+      are non-empty), in the definition of Lebesgue outer measure, one should use at most countably many
+      boxes, rather than countably infinite many boxes.
+  - id: errata-0014
+    page: '17'
+    text: Exercise 1.1.13 should be Exercise 1.1.5. In the last paragraph, “In the notes below” should
+      be “In the rest of this section”.
+  - id: errata-0015
+    page: '19'
+    text: "“assigment” should be “assignment”, and “of element of” should be “of elements of”."
+  - id: errata-0016
+    page: '20'
+    text: In the first paragraph, “Vol I” should be “Vol. I”
+  - id: errata-0017
+    page: '21'
+    text: "Remark 1.2.7: “proof this” should be “proof of this”."
+  - id: errata-0018
+    page: '22'
+    text: "after (1.2), “for every $E \\subset {\\mathbf R}^d$” should be “for every bounded $E \\subset\
+      \ {\\mathbf R}^d$“. A little earlier, “Applying by” should just be “Applying”"
+  - id: errata-0019
+    page: '27'
+    text: "In the proof of Lemma 1.2.13(v), (iv) should be (vi). In the proof of Lemma 1.2.13(vi), the\
+      \ phrases “By countable additivity” and “this implies that $\\bigcup_{n=1}^\\infty E_n$ is contained\
+      \ $\\bigcup_{n=1}^\\infty U_n$” should be interchanged."
+  - id: errata-0020
+    page: '29'
+    text: "In the hint for Exercise 1.2.10: “conclude that $[0,1)$ is homeomorphic …” should be “conclude\
+      \ that the set of endpoints of the intervals is homeomorphic …”, and “infinitely many closed intervals”\
+      \ should be “countably many closed intervals”."
+  - id: errata-0021
+    page: '32'
+    text: "In Exercise 1.2.13(ii), insert “Let $E_n$, $E$ be as in part (i).”"
+  - id: errata-0022
+    page: '34'
+    text: In Exercise 1.2.22(i), “Lebesgue measure” should be “Lebesgue outer measure”.
+  - id: errata-0023
+    page: '35'
+    text: "In Exercise 1.2.24(i), “a equivalence” should be “an equivalence”. In Exercise 1.2.24(ii),\
+      \ $m$ should be $m^*$ in $m(E \\Delta E') = m(F \\Delta F')$."
+  - id: errata-0024
+    page: '36'
+    text: In Exercise 1.2.25 and the following paragraph, “continuously differentiable” may be weakened
+      to “Lipschitz continuous”.
+  - id: errata-0025
+    page: '40'
+    text: "Near the end of the second paragraph, the reference to $h$ should be deleted. In the definition\
+      \ of the lower Darboux integral, a “$dx$” is missing."
+  - id: errata-0026
+    page: '42'
+    text: On line 12, “indicator function of these sets” should be “indicator functions of these sets”.
+      In Definition 1.3.3, “a unsigned” should be “an unsigned”.
+  - id: errata-0027
+    page: "?"
+    text: In the proof of Lemma 1.3.4, “each of… arise as unions” -> “each of… arises as the union”.
+  - id: errata-0028
+    page: '45'
+    text: In Definition 1.3.6, “said to be absolutely integrable of” should be “said to be absolutely
+      integrable if”. Before this definition, “absolutely Lebesgue” should be “absolutely convergent Lebesgue”.
+  - id: errata-0029
+    page: '46'
+    text: "In the hint for Exercise 1.3.2, “the second inequality” should be “the second equality”. In\
+      \ Exercise 1.3.2(iii), the set $E$ needs to have finite measure."
+  - id: errata-0030
+    page: '48'
+    text: "“each of which are bounded” should be “each of which is bounded”."
+  - id: errata-0031
+    page: '50'
+    text: In Exercise 1.3.3(iii), “unsigned measurable functions” should be “at most countable family
+      of unsigned measurable functions”.
+  - id: errata-0032
+    page: '52'
+    text: "In Exercise 1.3.8, both (iii) and (iv): “an” should be “a”. After Exercise 1.3.8, add the following\
+      \ question: Suppose that $f: {\\bf R}^d \\to {\\bf C}$ is measurable, and $T: {\\bf R}^{d'} \\to\
+      \ {\\bf R}^{d}$ is a surjective linear map. Show that $f \\circ T: {\\bf R}^{d'} \\to {\\bf C}$\
+      \ is also measurable. (Hint: uses Exercises 1.2.21 and 1.2.22.) What happens if the requirement\
+      \ that $T$ be surjective is dropped?”."
+  - id: errata-0033
+    page: '52'
+    text: "Exercise 1.3.9 should be moved to after Lemma 1.3.15 (Markov’s inequality), and the following\
+      \ hint added: “Show that $f$ can be expressed as the increasing pointwise limit of piecewise constant\
+      \ functions $g_n$, as well as a decreasing pointwise limit of piecewise constant functions $h_n$,\
+      \ with the Riemann integral of $h_n - g_n$ converging to zero. Using Markov’s inequality, show that\
+      \ the difference $h-g$ between the limit $h$ of the $h_n$ and the limit $g$ of $g_n$ is then zero\
+      \ almost everywhere."
+  - id: errata-0034
+    page: '54'
+    text: In Exercise 1.3.10(x), “i.e.” should be “in particular, “.
+  - id: errata-0035
+    page: '58'
+    text: In Exercise 1.3.21, “greatest integer less than” should be “greatest integer less than or equal
+      to”.
+  - id: errata-0036
+    page: '60'
+    text: At the end of Theorem 1.3.20, add “We call a function compactly supported if its support is
+      contained in a compact set.”
+  - id: errata-0037
+    page: '64'
+    text: "In the proof of Theorem 1.3.28, $2^{n+1}$ and $2^{n-1}$ should both be $2^n$, $\\varepsilon/2$\
+      \ should be $\\varepsilon$, and the sentence fragment “, and the same is true for local uniform\
+      \ limits (because continuity is a local property)” should be deleted."
+  - id: errata-0038
+    page: '67'
+    text: "In Definition 1.4.1, “$B$ of $X$” should be “$B$ of subsets of $X$“. “a sub-algebra of” should\
+      \ be moved from the fragment “${\\mathcal B}'$ is finer than…” to “${\\mathcal B}$ is coarser than”."
+  - id: errata-0039
+    page: "?"
+    text: In Exercise 1.4.3, “if and only if exists a bijection” should be “if and only if there exists
+      a bijection”. In Exercise 1.4.2, “length” should be sidelength”.
+  - id: errata-0040
+    page: '68'
+    text: "Example 1.4.7: “finer… atomic algebra” should be “finer … atomic algebras”, and “one or more”\
+      \ should be “zero or more”. At the end of Example 1.4.4, the period should be outside the parenthesis."
+  - id: errata-0041
+    page: '70'
+    text: "Exercise 1.4.9, (ii): “either” should be “are either”. In Exercise 1.4.7, ${\\mathcal E}[{\\\
+      mathbf R}^d]$ should be $\\overline{{\\mathcal E}[{\\mathbf R}^d]}$.In Definition 1.4.12, ${\\mathcal\
+      \ B}$ should be a collection of *subsets of* $X$."
+  - id: errata-0042
+    page: '72'
+    text: "line 1: “only holds if and only if” should be “holds if and only if”."
+  - id: errata-0043
+    page: '73'
+    text: "Remark 1.4.17: “so that $\\langle {\\mathcal F} \\rangle$” should be “so that $\\langle {\\\
+      mathcal F}$ is the Borel $\\sigma$-algebra”. In Exercise 1.4.15, ${\\mathcal F}_{n-1}$ should be\
+      \ ${\\mathcal F}_\\alpha$."
+  - id: errata-0044
+    page: '74'
+    text: "Section 1.4.3, l. 2: “a sigma-algebra a measurable space” should be “a measurable space”. In\
+      \ Remark 1.4.18, delete the left parenthesis before “Indeed”."
+  - id: errata-0045
+    page: '75'
+    text: "In Exercise 1.4.20, “Boolean $\\sigma$-algebra” should be “Boolean algebra”."
+  - id: errata-0046
+    page: "?"
+    text: In Exercise 1.4.24, “converge” should be “converges”.
+  - id: errata-0047
+    page: '77'
+    text: In Example 1.4.29, “Exercise 1.4.22” should be “Example 1.4.22”.
+  - id: errata-0048
+    page: '81'
+    text: "In Definition 1.4.31 and Exercise 1.4.32, “a measurable space $(X, {\\mathcal B})$” should\
+      \ be “a measure space $(X, {\\mathcal B}, \\mu)$“. In Exercise 1.4.33 (iv), the reference to Exercise\
+      \ 1.3.2 instead of Exercise 1.1.2. The definition of almost everywhere should be moved to before\
+      \ Exercise 1.4.31 where it is first used."
+  - id: errata-0049
+    page: '83'
+    text: In Exercise 1.4.35 (ix,x), “Horizontal” and “Vertical” should be interchanged.
+  - id: errata-0050
+    page: '84'
+    text: In the proof of Theorem 1.4.37, “horizontal” and “vertical” should be interchanged.
+  - id: errata-0051
+    page: '85'
+    text: In Exercise 1.4.39, “Exercise 1.4.26” should be “Example 1.4.26”.
+  - id: errata-0052
+    page: '86'
+    text: "After Definition 1.4.38, add to the following paragraph “Clearly, this definition…” the sentence\
+      \ “As in that definition, one can extend the integral to measurable functions that are $\\mu$-almost\
+      \ everywhere defined, rather than everywhere defined.”"
+  - id: errata-0053
+    page: '87'
+    text: "Replace the second half of the last sentence of Example 1.4.40 by “but the support of the $f_n$\
+      \ are becoming increasingly wide, and so Exercise 1.4.41 does not apply”. In Example 1.4.41, “converges\
+      \ pointwise to $f$” should be “converges pointwise to $f := 0$“."
+  - id: errata-0054
+    page: '88'
+    text: In the proof of Theorem 1.4.43, “vertical truncation” should be “horizontal truncation”.
+  - id: errata-0055
+    page: '91'
+    text: "In the first paragraph of the proof of Theorem 1.4.48, $|f_n$ should be $|f_n|$."
+  - id: errata-0056
+    page: "?"
+    text: In Exercise 1.4.51, add a remark that in this exercise the simple functions should be signed
+      rather than unsigned.
+  - id: errata-0057
+    page: '96'
+    text: "In Exercise 1.5.1, $|g_n| \\leq f_n$ may be replaced by $|g_n| \\leq |f_n|$."
+  - id: errata-0058
+    page: '97'
+    text: "The final sentence of Remark 1.5.6 is redundant (it already appears in page 96) and can be\
+      \ deleted. Also, “essential upper bounds for $f$” should be “essential upper bounds for $|f|$“."
+  - id: errata-0059
+    page: '99'
+    text: In the fourth line of Section 1.5.2, “a measurable set” should be “an indicator function of
+      a measurable set”.
+  - id: errata-0060
+    page: '100'
+    text: "In Exercise 1.5.3(iii), replace the condition after “if and only if” by “$\\min(A_n,\\mu(E^*_n))\
+      \ \\to 0$ as $n \\to \\infty$“. Similarly in (vi), replace the condition after “if and only if”\
+      \ by “$\\min(A_n,\\mu(E_n)) \\to 0$ as $n \\to \\infty$“. In 1.5.3 (vii) “converges in $L^1$ norm”\
+      \ should be “converges in $L^1$ norm to zero”. Before Remark 1.5.8, in part (iii), add the word\
+      \ “scenario” for consistency with (i) and (ii)."
+  - id: errata-0061
+    page: '103'
+    text: "Section 1.5.5, line 4: “examples shows” should be “examples show”. In the second paragraph\
+      \ of Section 1.5.5, $g$ should take values in $[0,+\\infty]$, rather than ${\\bf C}$. In Exercise\
+      \ 1.5.9, “using Exercise 1.5.6” should be “using Exercise 1.5.8”."
+  - id: errata-0062
+    page: '104'
+    text: In Exercise 1.5.10, the dominated convergence theorem should be used instead of the monotone
+      convergence theorem.
+  - id: errata-0063
+    page: "?"
+    text: The definition of uniform integrability in Definition 1.5.11 is a little weaker than the commonly
+      accepted one in the case of infinite measure spaces. The blog post associated to this section contains
+      the corrected version (with attendant changes to some subsequent material).
+  - id: errata-0064
+    page: '106'
+    text: "In the second display after (1.17), $\\leq \\varepsilon \\leq$ should just be $\\leq$."
+  - id: errata-0065
+    page: '107'
+    text: In Exercise 1.5.19, a comma is missing between “almost uniformly” and “pointwise”.
+  - id: errata-0066
+    page: '108'
+    text: "line 5: a right parenthesis is missing before “is commonly used”. At the start of Section 1.6,\
+      \ add “Throughout this section, the notions of measurability and “almost everywhere” are understood\
+      \ to be with respect to Lebesgue measure.”"
+  - id: errata-0067
+    page: '112'
+    text: "For Theorem 1.6.11 and Exercise 1.6.5, “definite integral” should be “indefinite integral”\
+      \ (because the endpoint $x$ is allowed to vary). In Theorem 1.6.11, $[-\\infty,x]$ should be $(-\\\
+      infty,x]$."
+  - id: errata-0068
+    page: '114'
+    text: "3rd paragraph, line 3: the symbol $F'$ should be an $f$. In the third display from bottom,\
+      \ $(f_h-f)_h$ should be $(f_h-f)$. In the proof of Proposition 1.6.13, “Applying Littlewood’s second\
+      \ principle … to … $F'$” should be “Applying Littlewood’s second principle … to … $f$“."
+  - id: errata-0069
+    page: 115-116
+    text: "Exercise 1.6.9: The second item here should be labeled (ii) (and the third should be labeled\
+      \ (iii)). In Remark 1.6.15, “equal to 2” should be “equal to 4”, and “if one force” should be “if\
+      \ one wishes to force”."
+  - id: errata-0070
+    page: '117'
+    text: "In the paragraph after (1.24), “$h$ is sufficiently close to $x$” should be “$h$ is sufficiently\
+      \ close to $0$“."
+  - id: errata-0071
+    page: '118'
+    text: "In Lemma 1.6.17(ii), $[a,b]$ should be $(a,b]$, and similarly for the second display after\
+      \ (1.25)."
+  - id: errata-0072
+    page: '119'
+    text: "Near the bottom of the page, “Corollary 1.6.5” should be “Exercise 1.6.5”. In the second paragraph,\
+      \ replace “but not $b$” with “but is disjoint from $[b_n,b]$ (since $F(y) \\leq F(b_n) < F(t)$ for\
+      \ all $b_n \\leq y \\leq b$)”, and $t_* \\in [t,b)$ should be $t_* \\in [t,b_n)$."
+  - id: errata-0073
+    page: '120'
+    text: "Exercise 1.6.13: “Lemma 1.6.16” should be “Exercise 1.6.12”, and the hypothesis $\\lambda>0$\
+      \ should be added."
+  - id: errata-0074
+    page: '121'
+    text: "Before Exercise 1.6.14, “Lebesgue point for ${\\bf R}^d$” should be “Lebesgue point for $f$“."
+  - id: errata-0075
+    page: "?"
+    text: In Exercise 1.6.20, Exercise 1.1.14 should be Lemma 1.2.11.
+  - id: errata-0076
+    page: '122'
+    text: "In Remark 1.6.21, the fragment $\\geq \\lambda \\}$ should be deleted. In Theorem 1.6.20, the\
+      \ second integral should be over ${\\bf R}^d$ rather than ${\\bf R}$."
+  - id: errata-0077
+    page: '124'
+    text: "In the first and second displays, the integrals over ${\\bf R}$ should instead be over ${\\\
+      bf R}^d$."
+  - id: errata-0078
+    page: '125'
+    text: "Exercise 1.6.21: “Besicovich” should be “Besicovitch”; part (i) should be $I_i$ and $I_j$ as\
+      \ opposed to $I_n$ and $I_m$. In part (ii) of this exercise, $I'_m$ should be $I'_j$. In the hint\
+      \ for the exercise, “the the” should be “the”. In Exercise 1.6.22, “positive length” should be “positive\
+      \ finite length”. In Exercise 1.6.20, the integral over ${\\bf R}$ should instead be over ${\\bf\
+      \ R}^d$."
+  - id: errata-0079
+    page: '127'
+    text: "In Exercise 1.6.27(iii), add the parenthetical “In fact one can take $C'_d = 1$.”"
+  - id: errata-0080
+    page: "?"
+    text: "In the proof of Lemma 1.6.28, “$E_{r,R}$ is contained” should be “$E_{r,R} \\cap (a,b)$ is\
+      \ contained”"
+  - id: errata-0081
+    page: '128'
+    text: "Section 1.6.3, line 4: “continuous not differentiable” should be “continuous but not differentiable”.\
+      \ In Exercise 1.6.28(ii), delete “8-dyadic”, and replace “n” with “m” throughout to reduce confusion.\
+      \ Also, replace $\\sin(8^n \\pi x)$ with $\\cos(16^n \\pi x)$, and replace $8$ with $16$ throughout\
+      \ the exercise."
+  - id: errata-0082
+    page: '129'
+    text: In part (iv), “lower right derivative” should be “lower left derivative”. Afterwards, “rather
+      than on the endpoints” should be “rather than on the real line”. After Exercise 1.6.30, “four derivatives”
+      should be “four Dini derivatives”.
+  - id: errata-0083
+    page: '130'
+    text: "In the second to last line (in the proof of Lemma 1.6.26), $G(b_n) \\leq G(a_n)$ should be\
+      \ $G(b_n) \\geq G(a_n)$. Similarly, on page 132 in the proof of Lemma 1.6.28, $G(-a_n) \\leq G(-b_n)$\
+      \ should be $G(-a_n) \\geq G(-b_n)$ and $G(-x) \\leq G(-y)$ should similarly be $G(-x) \\geq G(-y)$."
+  - id: errata-0084
+    page: 131-132
+    text: "$D_-$ and $D_+$ should be $D^-$ and $D^+$ respectively throughout. In the second display, $m(E_{r,R})$\
+      \ should be $m(E_{r,R} \\cap [a,b])$. At the end of Exercise 1.6.31, add a right parenthesis. In\
+      \ the paragraph preceding Definition 1.6.30, remove the period after Lemma 1.6.26."
+  - id: errata-0085
+    page: '133'
+    text: "In the proof of Lemma 1.6.31, $F^+$ should be $F_+$. At the end of the proof, add that by continuity\
+      \ of $F_c$, one can assume that $a,b$ avoid the jumps."
+  - id: errata-0086
+    page: '134'
+    text: "On the eighth line: “$G$ is discontinuous” should be “$F$ is discontinuous”."
+  - id: errata-0087
+    page: "?"
+    text: "In the proof of Theorem 1.6.25, in the display, Lebesgue measure $m()$ is missing on the left-hand\
+      \ side."
+  - id: errata-0088
+    page: '135'
+    text: "Before Definition 1.6.33, “absolutely convergent functions” should be “absolutely integrable\
+      \ functions”. After the first display, “four Dini derivatives” should be “three Dini derivatives”.\
+      \ In Definition 1.6.33, $x_{i+1}$ should be $x_{i-1}$, and similarly on p. 136, 137. “Since $F'_\\\
+      varepsilon$ is almost everywhere differentiable” should be “Since $F_\\varepsilon$ is almost everywhere\
+      \ differentiable”."
+  - id: errata-0089
+    page: "?"
+    text: After Remark 1.6.38, “monotone non-increasing” should be “monotone non-decreasing”.
+  - id: errata-0090
+    page: "?"
+    text: "In Exercise 1.6.39, a $dx$ is missing in the integral."
+  - id: errata-0091
+    page: '137'
+    text: "In the second paragraph, “it suffices to (by writing $F = F_+-(F_+-F_-)$ to show that $F_+-F$”\
+      \ should be “it suffices (by writing $F = F^+ - (F^+-F)$) to show that $F^+-F$“. “is a monotone\
+      \ increasing function” -> “is a monotone non-decreasing function”, and “for all $a \\leq b$” should\
+      \ be stated after the second display."
+  - id: errata-0092
+    page: '141'
+    text: "in the definition (i) after Remark 1.6.38, “contains $x_0$” should be “whose closure contains\
+      \ $x_0$“."
+  - id: errata-0093
+    page: '144'
+    text: "In the third paragraph of the proof of the rising sun lemma (Lemma 1.6.17), $b$ should be $b_n$\
+      \ in the definition of $A$ and in the next two occurrences (i.e. “$t$ but not $b$” should be $t$\
+      \ but not $b_n$“, and “$t_* \\in [t,b)$” should be $t_* \\in [t,b_n)$“."
+  - id: errata-0094
+    page: "?"
+    text: In Exercise 1.6.47, the last two parts of the exercise should be numbered (vii) and (viii) rather
+      than (1) and (2).
+  - id: errata-0095
+    page: '145'
+    text: "bottom: “$f'(x)$ exists” should be “$F'(x)$ exists”. After Exercise 1.6.52, “ensure the almost\
+      \ everywhere existence” should be “ensure the absolute integrability of the derivative”."
+  - id: errata-0096
+    page: 149-152
+    text: In Section 1.7.1, “Caratheodory extension theorem” should be “Caratheodory lemma” throughout.
+  - id: errata-0097
+    page: '150'
+    text: "Exercise 1.7.2: “Lebesgue outer measurable” should be ” the Lebesgue outer measure”"
+  - id: errata-0098
+    page: '151'
+    text: "In the last two displays, and in the first display on the next page, $E_{N+1} \\backslash \\\
+      bigcup_{n=1}^N E_n$ may be simplified to $E_{N+1}$. In the second paragraph, “a disjoint sequence\
+      \ of” should be “a sequence of disjoint”."
+  - id: errata-0099
+    page: "?"
+    text: "In Remark 1.7.6, ${\\mathbf R}^n$ should be ${\\mathbf R}^d$."
+  - id: errata-0100
+    page: "?"
+    text: In Example 1.7.8, “finite unions” should be “finite boolean combinations”.
+  - id: errata-0101
+    page: '156'
+    text: "In Theorem 1.7.9, $-\\infty < b < a < \\infty$ should be $-\\infty < a < b < \\infty$. In the\
+      \ second paragraph of the proof of this theorem, before “, adopting the obvious conventions”, add\
+      \ “to be the required value of ${\\mu_F(I)}$ given by (1.33) (e.g., ${|[a,b]|_F = F_+(b)-F_-(a)}$)”.\
+      \ In the statement concerning disjoint intervals that share a common endpoint, add “in such a fashion\
+      \ that their union is also an interval”."
+  - id: errata-0102
+    page: '157'
+    text: "Before (1.35), replace “By subadditivity, it suffices to show that” with “By finite additivity,\
+      \ we have $\\mu_0(E) \\geq \\sum_{n=1}^N \\mu_0(E_n)$ for any $N$, so it suffices to show that”.\
+      \ In the second display after (1.35), the right-hand side should be $\\inf_{U \\supset E_n} \\mu_0(U)$\
+      \ rather than $\\inf_{U \\supset E_n} \\mu_0(E_n)$. “We suppose that $E = {\\mathcal B}_0$” should\
+      \ be “We suppose that $E \\in {\\mathcal B}_0$“."
+  - id: errata-0103
+    page: '159'
+    text: In Exercise 1.7.13, add a right parenthesis after “absolutely integrable”.
+  - id: errata-0104
+    page: '160'
+    text: "In Exercise 1.7.14(ii), “delta functions” should be “Dirac measures” for consistency. In the\
+      \ first line, $-\\infty < b < a < \\infty$ should be $-\\infty < a < b < \\infty$."
+  - id: errata-0105
+    page: '161'
+    text: "In Exercise 1.7.18 (i), $latex Y \\in B_Y$ should be $F \\in B_Y$. In the second display, $\\\
+      { \\pi_Y^{-1}(E): E \\in {\\mathcal B}_Y \\}$ should be $\\{ \\pi_Y^{-1}(F): F \\in {\\mathcal B}_Y\
+      \ \\}$"
+  - id: errata-0106
+    page: '162'
+    text: Exercise 1.7.19(ii) is not correct as stated and should be deleted.
+  - id: errata-0107
+    page: '163'
+    text: "In the third paragraph of the proof of Proposition 1.7.11, $\\sum_{n=1}^\\infty \\mu(S_n)$\
+      \ should be $\\sum_{ n=1}^\\infty \\mu_0(S_n)$."
+  - id: errata-0108
+    page: '164'
+    text: "“integrate in $X$” should be “integrate in $x$“."
+  - id: errata-0109
+    page: '165'
+    text: "Exercise 1.7.21: Add the line: “In particular, $X \\times (Y \\times Z)$ and $(X \\times Y)\
+      \ \\times Z$ are isomorphic as measure spaces and can thus safely be denoted as $X \\times Y \\\
+      times Z$.” In the definition of a monotone class, “is a collection” should be “to be a collection”.\
+      \ In Example 1.7.13, $({\\mathbf R}^d, {\\mathcal L}[{\\mathbf R}^{d'}])$ should be $({\\mathbf\
+      \ R}^{d'}, {\\mathcal L}[{\\mathbf R}^{d'}])$. In Exercise 1.7.21, “$\\sigma$-finite sets” should\
+      \ be “$\\sigma$-finite measure spaces”."
+  - id: errata-0110
+    page: '167'
+    text: "The sentence preceding Theorem 1.7.18 should be deleted. In parts (i) and (ii) of that theorem,\
+      \ the integrals should be indicated to be over the $y$ and $x$ variables respectively. In Remark\
+      \ 1.7.16, “Tonelli’s theorem for sums” should be “Tonelli’s theorem for series”."
+  - id: errata-0111
+    page: '168'
+    text: "in (1.37), the third integral should have X and Y interchanged (as well as the measures $d\\\
+      mu_Y(y)$ and $d\\mu_X(x)$). In the proof of Theorem 1.7.18, Exercise 1.4.28 should be Exercise 1.4.26."
+  - id: errata-0112
+    page: '169'
+    text: "In Exercise 1.7.22, “the counting measure (…) $\\#$” should be “the counting measure $\\#$\
+      \ (…)”, and “Let … is … and … is ” should be “Let … be … and … be”. The hint in (iv) should be refined:\
+      \ one of the two integration orders can be used to build a candidate measure, but the other one\
+      \ is problematic. Instead, one should use Caratheodory’s theorem with a suitable premeasure. In\
+      \ the second line of (1.38), the integral should be over $Y$ rather than $X$, and $d\\mu_X(x)$ should\
+      \ be $d\\mu_Y(y)$. In the seventh line from the bottom, “equal to one for every $y$” should be “equal\
+      \ to one for every $x$“."
+  - id: errata-0113
+    page: '170'
+    text: "In Exercise 1.7.23, the right-hand side of the display should read $\\int_{[0,1]} (\\int_{[0,1]}\
+      \ f(x,y)\\ dx)\\ dy$ rather than $\\int_{[0,1]} (\\int_{[0,1]} f(x,y)\\ dy)\\ dx$. Also, “exist\
+      \ and are absolutely integrable” should be “exist as absolutely integrable integrals” (two occurrences).\
+      \ In the statement of Theorem 1.7.21(iii), the second appearance of $\\int_X (\\int_Y f(x,y)\\ d\\\
+      mu_Y(y))\\ d\\mu_X(x)$ should instead be $\\int_Y (\\int_X f(x,y)\\ d\\mu_X(x))\\ d\\mu_Y(y)$. In\
+      \ Remark 1.7.22, “$\\sigma$-finite setting” should be “non-$\\sigma$-finite setting”."
+  - id: errata-0114
+    page: '171'
+    text: In Exercise 1.7.24, “Show that if” should be “Show that”.
+  - id: errata-0115
+    page: '175'
+    text: In the last complete paragraph, “for thus purpose” should be “for this purpose”.
+  - id: errata-0116
+    page: '186'
+    text: "In Section 2.1.18, the introduction of the limit inferior should use := instead of =."
+  - id: errata-0117
+    page: '187'
+    text: "In the display before Remark 2.2.3, $h \\to {\\bf R}^d \\backslash \\{0\\}$ should be $h \\\
+      in {\\bf R}^d \\backslash \\{0\\}$."
+  - id: errata-0118
+    page: '188'
+    text: "After (2.2), $\\frac{\\partial f}{\\partial x_0} f$ should just be $\\frac{\\partial f}{\\\
+      partial x_0}$."
+  - id: errata-0119
+    page: "?"
+    text: "In the proof of Theorem 2.2.4, “as ${\\bf Q}^d$ is rational” should be “as ${\\bf Q}^d$ is\
+      \ countable”."
+  - id: errata-0120
+    page: '189'
+    text: "In the second paragraph, a comma is missing between “For $v=0$” and “$E_v$ is clearly”. In\
+      \ the third paragraph, “$E$ is a null set” should be “$E_v$ is a null set”. In the fourth paragraph,\
+      \ “${\\bf Q}^d$ is rational” should be “${\\bf Q}^d$ is countable”. In the definition of $E^{y_0}$,\
+      \ $E$ should be $E_v$. The definition of F-volume is missing the text “to equal the right-hand side\
+      \ of (1.33)”; also, one could replace “F-volume” by “F-length” to be more descriptive."
+  - id: errata-0121
+    page: '191'
+    text: "The modified function $F$ should take values in ${\\bf R}$ rather than ${\\bf R}^d$."
+  - id: errata-0122
+    page: '194'
+    text: "In the final sentence of Section 2.3, ${\\bf E} X$ should be ${\\bf E}(X)$ for notational consistency."
+  - id: errata-0123
+    page: '195'
+    text: "In Exercise 2.4.1(3), $E$ should be $E_A$. In Exercise 2.4.1(8), $x_B \\to f(x_B,x_{A\\backslash\
+      \ B})$ should be $x_B \\mapsto f(x_B,x_{A\\backslash B})$."
+  - id: errata-0124
+    page: '197'
+    text: "In the final display, $K'_N$ should be defined as $\\bigcap_{N'=1}^N \\pi_{B_{N'} \\leftarrow\
+      \ B_N}^{-1}(K_{N'})$ rather than $\\bigcup_{N'=1}^N \\pi_{B_{N'} \\leftarrow B_N}^{-1}(K_{N})$.\
+      \ On the first display of the next page, the first occurrence of $\\varepsilon/2^N$ should be $\\\
+      sum_{N'=1}^N \\varepsilon/2^{N'+1}$, and the final $\\varepsilon - \\varepsilon/2^N$ should just\
+      \ be $\\varepsilon/2$. In the seventh paragraph, $\\bigcup_{n=1}^N E_N$ should be $\\bigcup_{n=1}^N\
+      \ E_n$."
+  - id: errata-0125
+    page: '205'
+    text: The index entry for “restriction (measure)” should point to Example 1.4.25 rather than Exercise
+      1.4.35 (which could instead be referenced by “restriction (function)”.

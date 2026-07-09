@@ -1,0 +1,1059 @@
+# Imported from https://terrytao.wordpress.com/books/an-epsilon-of-room-pages-from-year-three-of-a-mathematical-blog/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: "An epsilon of room: pages from year three of a mathematical blog"
+  slug: an-epsilon-of-room
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/an-epsilon-of-room-pages-from-year-three-of-a-mathematical-blog/"
+  description: The third in my series of books derived from my blog, in two volumes; Volume 1 covers real
+    analysis.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2010
+    isbn: "Volume 1: 978-0-8218-5278-1; Volume 2: 978-0-8218-5280-4"
+    note: "Volume 1 (Real analysis): Graduate Studies in Mathematics 117 (2010). Volume 2 (2011)."
+  links:
+  - title: "Online draft: Volume 1"
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2012/12/gsm-117-tao3-epsilon1.pdf"
+  - title: "Online draft: Volume 2"
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2012/12/mbk-77-tao4-epsilon2.pdf"
+  - title: Volume 1 (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=gsm-117"
+  - title: Volume 2 (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=MBK-77"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Marcelo Aguiar
+    - Adam Azzam
+    - Ravi Bajaj
+    - Farzin Barakat
+    - Lucas Braune
+    - Yunbai Cao
+    - Nick Cook
+    - Alex Dobner
+    - Kun Dong
+    - Sean Eberhard
+    - Sylvester Eriksson-Bique
+    - Shea Fairchild
+    - Federico
+    - Stephen Ge
+    - Wengyin Gan
+    - Julian Gold
+    - Jordy Greenblatt
+    - Cole Grunniger
+    - Robert Hannah
+    - Matthias Hübner
+    - Joe Hughes
+    - Ahmad Hussein
+    - Ivo
+    - Sune Kristian Jakobsen
+    - Dominik Juestel
+    - Deron Lessure
+    - Zane Li
+    - Dirk Lorenz
+    - Martin Los
+    - Cao Lu
+    - Freddie Manners
+    - Ian Martin
+    - Ricardo Minares
+    - Alexey Muranov
+    - Sujit Nair
+    - Nick
+    - Seungly Oh
+    - John Pearson
+    - Qiang
+    - Yudong Qiu
+    - Rex
+    - James Robinson
+    - Agus Seonjaya
+    - Lior Silberman
+    - August Sonne
+    - Dan Stroock
+    - Jon Susice
+    - Sunting
+    - Yotas Trejos
+    - Bruce Tu
+    - Kent Van Vels
+    - Anthony Verbitsky
+    - Gerd Wachsmuth
+    - Ben Wallis
+    - Joshua Wilson
+    - wilsonofgordon
+    - xuhmath
+    - Sunting Yan
+    - Yaoliang
+  migrated: '2026-07-09'
+editions:
+- id: volume-i
+  name: Volume I
+  errata:
+  - id: volume-i-0001
+    page: null
+    text: In some early printed versions, the section numbering of references in the preface are either
+      incorrect or missing. (This only affects a very small number of copies.)
+  - id: volume-i-0002
+    page: '6'
+    text: In Exercise 1.1.2, “unique” should be “maximal”. (It should also be stated that in this text,
+      manifolds are assumed to be second countable.. In Exercise 1.1.5, delete the “of” in “and of the
+      algebra of null sets”.
+  - id: volume-i-0003
+    page: '7'
+    text: "In Example 1.1.14, $\\frac{1}{|E|}$ should be $\\frac{1}{|X|}$."
+  - id: volume-i-0004
+    page: '8'
+    text: In the first paragraph of the proof of Theorem 1.1.17, “see that if” should just be “see that”.
+  - id: volume-i-0005
+    page: '9'
+    text: "In Exercise 1.1.8, add “and let the extension $\\mu: {\\cal X} \\to [0,+\\infty)$ be the measure\
+      \ constructed in the proof of that theorem” to the end of the first sentence. The portion of the\
+      \ exercise regarding how the assumption of finite measure on $E$ may be dropped in the sigma-finite\
+      \ case is incorrect and should be deleted. In Exercise 1.1.10, $\\mu$ should be $m$ (two occurrences)."
+  - id: volume-i-0006
+    page: '15'
+    text: "In (1.5), $d\\mu$ should be $dm$."
+  - id: volume-i-0007
+    page: '17'
+    text: "Before (1.9), “$c>0$ should be $c \\geq 0$“."
+  - id: volume-i-0008
+    page: '18'
+    text: "After Definition 1.2.1: “one of the signed parts” should be “one of the unsigned parts”."
+  - id: volume-i-0009
+    page: '20'
+    text: "In the statement of Theorem 1.2.4, replace $f \\in L^1(X,dm)$ by “$f: X \\to {\\bf R}$ is measurable”.\
+      \ Then add “If $\\mu$ is finite, then $f \\in L^1(X,dm)$ and $\\mu_s$ is finite”. Also replace “$\\\
+      mu, \\nu$ are finite”with “$\\mu,m$” are finite”. In Corollary 1.2.5, $\\mu$ needs to be finite\
+      \ rather than $\\sigma$-finite, and in Corollary 1.2.5 (iii), replace “$\\mu(E) < \\varepsilon$”\
+      \ with “$|\\mu(E)| < \\varepsilon$“. After Corollary 1.2.5, add “When $\\mu$ is $\\sigma$-finite\
+      \ rather than finite, the three claims (i), (ii), (iii) in Corollary 1.2.5 are no longer equivalent;\
+      \ however, a modification of the above arguments shows that claim (ii) holds if and only if $\\\
+      mu = m_f$ for some measurable $f$ with at least one of $f_+,f_-$ absolutely integrable. We take\
+      \ this to be the definition of absolute continuity in the $\\sigma$-finite case.”. Just before Section\
+      \ 1.2.2, add “(One can also complexify this space to obtain a complex vector space of complex finite\
+      \ measures, but we will not use such measures here.)”. In the proof of Corollary 1.2.5, the reference\
+      \ to Theorem 1.2.2 should instead be to Theorem 1.2.4."
+  - id: volume-i-0010
+    page: '22'
+    text: After Remark 1.2.8, “”singular continuous”” should be “”absolutely continuous””.
+  - id: volume-i-0011
+    page: "?"
+    text: "Around (1.13)-(1.14) and preceding: most of the signs and inequality signs here need to be\
+      \ reversed."
+  - id: volume-i-0012
+    page: '33'
+    text: "In (1.18), $f^r$ should be $|f|^r$."
+  - id: volume-i-0013
+    page: "?"
+    text: in the paragraph before Section 1.3.1, “Frechet” should be “Fréchet”.
+  - id: volume-i-0014
+    page: '34'
+    text: "In Exercise 1.3.2 (iv), in the $0 < p < 1$ case the additional hypothesis that $f, g$ are non-negative\
+      \ is required."
+  - id: volume-i-0015
+    page: '36'
+    text: "After Exercise 1.3.6, the first sentence should be replaced by “It is easy to see (using the\
+      \ triangle inequality if $p \\geq 1$, and Exercise 1.3.2 otherwise) that the quasi-norm balls $B(f,r)\
+      \ := \\{ g \\in L^p: \\|f-g\\|_{L^p} < r \\}$ form a base for a topology on $L^p$.” After Remark\
+      \ 1.3.6: Exercise 1.3.5 should be Exercise 1.3.7."
+  - id: volume-i-0016
+    page: "?"
+    text: In the proof of Proposition 1.3.8, “the space … are” should be “the space … is” (two occurrences).
+  - id: volume-i-0017
+    page: '39'
+    text: "In Exercise 1.3.10, $f^p$ and $g^q$ should be $|f|^p$ and $|g|^q$ respectively."
+  - id: volume-i-0018
+    page: '41'
+    text: "In the proof of Theorem 1.3.16, “E” should be in math mode (second paragraph) and “g” should\
+      \ be in math mode (end of third paragraph). Just before (1.28), $\\mu_g$ should be $\\mu_{\\overline{g}}$,\
+      \ and add “(in the sense that the real and imaginary parts are absolutely continuous) after “$\\\
+      nu$ is absolutely continuous”. “$n \\to \\infty$” should be “$N\\to \\infty$“."
+  - id: volume-i-0019
+    page: '42'
+    text: "In the second to last line, $m=1$ should be $g=1$."
+  - id: volume-i-0020
+    page: '43'
+    text: "At the end of the first sentence: $E'$ should be $E$."
+  - id: volume-i-0021
+    page: '46'
+    text: In equation (1.38), the dot product should be an inner product.
+  - id: volume-i-0022
+    page: '50'
+    text: In Exercise 1.4.6, “this inequality” should be “this equality”, and “non-empty finite measure”
+      should be “non-zero finite measure”.
+  - id: volume-i-0023
+    page: '51'
+    text: "In Exercise 1.4.8, a right parenthesis is missing after “of $\\overline{V}$ and $\\overline{V}'$“."
+  - id: volume-i-0024
+    page: "?"
+    text: "In Example 1.4.10, $l^2$ should be $\\ell^2$. (Similarly with $l^1$ and $l^\\infty$ at several\
+      \ places in Section 1.5.)"
+  - id: volume-i-0025
+    page: "?"
+    text: In Exercise 1.4.12, “Then” should be “Show that”.
+  - id: volume-i-0026
+    page: '53'
+    text: In Remark 1.4.15, “next set of notes” should be “next section”.
+  - id: volume-i-0027
+    page: '54'
+    text: "In the second and third bullets of Exercise 1.4.16, $T^\\dagger \\mathrm{T}$ should be $T^\\\
+      dagger T$."
+  - id: volume-i-0028
+    page: '55'
+    text: In Exercise 1.4.18(iv), “take adjoints of (ii)” should be “take adjoints of (iii)”. In Remark
+      1.1.14, “Remark 1.26” should be “Remark 1.3.19”.
+  - id: volume-i-0029
+    page: "?"
+    text: In the proof of Proposition 1.4.18, “contradict orthogonality” should be “contradict maximality”.
+  - id: volume-i-0030
+    page: '61'
+    text: When the notion of isomorphism of normed vector spaces is defined shortly before Exercise 1.5.1,
+      it should be remarked that this is a looser notion than the isometric notion of isomorphism for
+      Hilbert spaces employed after Exercise 1.4.1. (Different categories of isomorphism.) Also, in the
+      definition of equivalence, “continuous linear transformation” should be “bicontinuous linear transformation”.
+  - id: volume-i-0031
+    page: '62'
+    text: "In Exercise 1.5.7, $g \\in \\bar{H}$ should be $\\bar{g} \\in \\bar{H}$."
+  - id: volume-i-0032
+    page: '63'
+    text: "In Exercise 1.5.10, “$n \\times m$” should be “$m \\times n$“. In Remark 1.5.5, one of the\
+      \ “H”s is incorrectly not set in math mode. In Exercise 1.5.1, the finite-dimensional vector space\
+      \ should also be understood to be normed."
+  - id: volume-i-0033
+    page: '64'
+    text: "In the second display in the proof of Proposition 1.5.7, $\\lambda(y') - \\|y'+v\\|_X$ should\
+      \ be $-\\lambda(y') - \\|y'+v\\|_X$."
+  - id: volume-i-0034
+    page: '65'
+    text: "In the proof of the complex case of the Hahn-Banach theorem, $\\tilde \\lambda$ should take\
+      \ values in ${\\mathbf C}$ rather than ${\\mathbf R}$. In Exercise 1.5.13, $\\to$ should be $\\\
+      mapsto$ (and similarly for Remark 1.7.11)."
+  - id: volume-i-0035
+    page: '65'
+    text: "In Exercise 1.5.14, $\\|\\lambda\\|_{X^*}=1$ should be $\\|\\lambda\\|_{X^*} \\leq 1$. Two\
+      \ lines after 1.5.7, “we see that $\\tilde \\rho$ has norm at most 1″ should be “we see that $\\\
+      tilde \\lambda$ has norm at most 1″. After Exercise 1.5.14, the double dual should be described\
+      \ as the space of continuous linear functions on $X^*$."
+  - id: volume-i-0036
+    page: '66'
+    text: "In Exercise 1.5.15(i), the colon after the first appearance of $\\overline{Y}$ should be deleted.\
+      \ One can also add that $\\overline{Y}$ denotes the closure of $Y$ in $X$."
+  - id: volume-i-0037
+    page: '67'
+    text: "In the proof of Theorem 1.5.13, $\\|x\\|$ should be $\\|x\\|_X$. In Exercise 1.5.17, “disjoint\
+      \ sets of positive measure” should be “disjoint sets of positive finite measure”."
+  - id: volume-i-0038
+    page: '68'
+    text: "In Remark 1.5.15, add “, with $\\lambda$ is now required to be non-zero”. In Exercise 1.5.18,\
+      \ X should be a real vector space rather than a complex one, and “usual Hahn-Banach theorem” should\
+      \ be “usual Hahn-Banach theorem for real normed vector spaces”."
+  - id: volume-i-0039
+    page: "?"
+    text: "In Exercise 1.6.5, “Then” should be “Show that”. In Exercise 1.6.6, delete the requirement\
+      \ that $f,g$ be continuous."
+  - id: volume-i-0040
+    page: '72'
+    text: In Definition 1.6.6, after introducing the notion of an isolated point, add “(a point which
+      is open)”.
+  - id: volume-i-0041
+    page: '74'
+    text: "In the proof of (ii) implying (i) in Theorem 1.6.8, a closed parenthesis should be added after\
+      \ “converging to $x$“."
+  - id: volume-i-0042
+    page: '79'
+    text: "In Example 1.6.21, $n \\to \\infty$ should be $n \\to +\\infty$."
+  - id: volume-i-0043
+    page: '80'
+    text: "In Example 1.6.22, “sufficiently large $x$” should be “sufficiently large $n$“. In Example\
+      \ 1.6.25, “the direct sum $f: Z \\to X \\times Y$” should be “the pairing $(f,g): Z \\to X \\times\
+      \ Y$ defined by $(f,g)(z) := (f(z),g(z))$“."
+  - id: volume-i-0044
+    page: "?"
+    text: In Example 1.6.27, the reference to Example 1.6.13 should instead be to Example 1.6.12.
+  - id: volume-i-0045
+    page: '81'
+    text: "In Definition 1.6.29, “partially ordered set” should be “pre-ordered set”. To conform to usual\
+      \ notational conventions, the partial order should be denoted $\\leq$ rather than $<$."
+  - id: volume-i-0046
+    page: '87'
+    text: "In the last sentence of the proof of the Baire category theorem, $B$ should be $B(x_0,r_0)$."
+  - id: volume-i-0047
+    page: "?"
+    text: In the second sentence of Section 1.7.2, the comma should be after “from” rather than before.
+  - id: volume-i-0048
+    page: '89'
+    text: "In the third part of Exercise 1.7.4, some reasonable notion of “operator norm” for a nonlinear\
+      \ operator in order to make the question well-posed. One choice that works is the Lipschitz norm,\
+      \ but the reader is invited to experiment with other choices as well. In the proof of Theorem 1.7.5,\
+      \ “must be dense in a ball” should be “one of the $E_n$ must be dense in a ball”."
+  - id: volume-i-0049
+    page: '90'
+    text: "In Corollary 1.7.7, Y should be assumed to be Banach space and not merely a normed vector space.\
+      \ In (1.64), $T_{\\alpha_m}$ should be $T_{\\alpha_n}$. In the proof of the Corollary, Theorem 1.7.3\
+      \ should be Theorem 1.7.5. Remark 1.7.8 is incorrect and should be deleted."
+  - id: volume-i-0050
+    page: '92'
+    text: "In the proof of Theorem 1.7.12, $nr+n\\varepsilon$ should be $n\\|f_0\\|_Y + nr$, and similarly\
+      \ $2nr+2n\\varepsilon$ should be $2n\\|f_0\\|_Y+2nr$, and $2n\\|f\\|_Y+2n\\varepsilon$ should be\
+      \ $2n (1 + \\frac{\\|f_0\\|_Y}{r}) \\|f\\|_Y$, $\\frac{5}{2} n$ should be $2n (1 + \\frac{\\|f_0\\\
+      |_Y}{r})$, and $5n$ should be $4n (1 + \\frac{\\|f_0\\|_Y}{r})$."
+  - id: volume-i-0051
+    page: '93'
+    text: "In Exercise 1.7.6, the Hahn-Banach theorem is actually not necessary for this exercise. The\
+      \ conclusion “$L^*$ is an isomorphism” should instead read “$L^*$ is a linear homeomorphism”."
+  - id: volume-i-0052
+    page: '94'
+    text: In Exercise 1.7.7, “we can ensure that” may be clarified to “the above statement remains true
+      if we impose the additional condition that”.
+  - id: volume-i-0053
+    page: '95'
+    text: "In Example 1.7.18, both occurrences of $c_0({\\bf N})$ should be $c_c({\\bf N})$. In Remark\
+      \ 1.7.17, “are uncomplemented” should be “is uncomplemented”, and “the appendix” should be “Section\
+      \ 1.7.4”."
+  - id: volume-i-0054
+    page: '97'
+    text: In the first paragraph of Section 1.7.4, add the remark that thanks to Exercise 1.7.9, this
+      provides examples of closed subspaces of Banach spaces that are not complemented. The reference
+      to (1.103) can be replaced with Section 1.12.2.
+  - id: volume-i-0055
+    page: '98'
+    text: "In the proof of Theorem 1.7.22, all occurrences of $\\mu$ should be replaced by $\\sigma$."
+  - id: volume-i-0056
+    page: '100'
+    text: "“Phi, Isett” should be “Phil Isett”."
+  - id: volume-i-0057
+    page: "?"
+    text: "In Exercise 1.8.3, $X$ should be $X = (X,{\\mathcal F})$."
+  - id: volume-i-0058
+    page: '103'
+    text: "Before Exercise 1.8.4, in the definition of an ultrafilter, $E \\in X$ should be $E \\subset\
+      \ X$."
+  - id: volume-i-0059
+    page: '104'
+    text: In Exercise 1.8.8, “basis” should be “base”.
+  - id: volume-i-0060
+    page: '105'
+    text: "In Exercise 1.8.11, “every sufficiently large $x_n$” should be “every sufficiently large $n$“."
+  - id: volume-i-0061
+    page: "?"
+    text: "In Exercise 1.8.14, $X$ should be assumed to be non-empty, and Exercise 1.6.10 should be Example\
+      \ 1.6.21."
+  - id: volume-i-0062
+    page: "?"
+    text: "In the proof of Proposition 1.8.12, $x_2$ should belong to $X_2$, not $X_1$."
+  - id: volume-i-0063
+    page: '111'
+    text: In Exercise 1.8.21, the optional fifth part is incorrect and should be deleted.
+  - id: volume-i-0064
+    page: '112'
+    text: "In the last bullet point of Definition 1.8.18, $x',x \\in x$ should be $x',x \\in X$."
+  - id: volume-i-0065
+    page: "?"
+    text: In Exercise 1.8.23, a “Show that” is missing, and “upsets” should be “subsets”. After Exercise
+      1.8.26, “Note that if” should just be “Note that”.
+  - id: volume-i-0066
+    page: '113'
+    text: "In Example 1.8.21, “$X=Y={\\bf R}$” should be “$X = {\\bf R} \\backslash \\{0\\}$ and $Y =\
+      \ {\\bf R}$“. In Example 1.8.22, equicontinuity can be upgraded to uniform equicontinuity."
+  - id: volume-i-0067
+    page: '114'
+    text: "$f_\\alpha(x_n)$ should be $f_n(x_n)$."
+  - id: volume-i-0068
+    page: '115'
+    text: "In the first line, $F_n$ should be $F_{n_j}$."
+  - id: volume-i-0069
+    page: '118'
+    text: In Definition 1.9.1, “is continuous” should be “are continuous”.
+  - id: volume-i-0070
+    page: "?"
+    text: In Exercise 1.9.2, a “Show that” is missing.
+  - id: volume-i-0071
+    page: '119'
+    text: At the end of Exercise 1.9.3, add the sentence “Such spaces are known as locally convex topological
+      vector spaces.”. In Example 1.9.4, “topological vector space” should instead read “topological space,
+      but not a topological vector space (because multiplication is not continuous)”, and the final sentence
+      of the example should be deleted. In Remark 1.9.7, “lectures” should be “sections”, and Exercise
+      1.9.6 should be Example 1.9.6.
+  - id: volume-i-0072
+    page: '120'
+    text: "In Exercise 1.9.7, one needs to require the additional hypothesis that $\\mu$ is finite. Also,\
+      \ the parenthesis after the epsilon in the definition of $B(f,\\varepsilon,r)$ needs to be moved\
+      \ to the left of the $<$ sign."
+  - id: volume-i-0073
+    page: "?"
+    text: Before Remark 1.9.11, “viewed as a function” should be “viewed as a sequence of functions”.
+  - id: volume-i-0074
+    page: '123'
+    text: "In the second and third parts of Exercise 1.9.13, V (and hence $V^*$ and $(V^*)^*$) need to\
+      \ be assumed to be normed vector spaces."
+  - id: volume-i-0075
+    page: '124'
+    text: "In Remark 1.9.15, $\\ell^\\infty({\\bf N})$ should be $\\ell^\\infty({\\bf N})^*$."
+  - id: volume-i-0076
+    page: '125'
+    text: "In Exercise 1.9.19, the third item is incorrect and should be deleted. “As $n \\to \\infty$”\
+      \ should be “As $N \\to \\infty$“."
+  - id: volume-i-0077
+    page: '127'
+    text: In Remark 1.9.17, “proper chain” should be “proper well-ordered chain” throughout.
+  - id: volume-i-0078
+    page: "?"
+    text: In Example 1.9.21, “translation operator by” should be “translation operator defined by”.
+  - id: volume-i-0079
+    page: '129'
+    text: In Exercise 1.9.25, the first sentence can be deleted (also the word “throughout” should be
+      appended to the last sentence).
+  - id: volume-i-0080
+    page: '135'
+    text: "$\\hbox{inf} \\{ q: x \\in K_q \\}$ should be $\\hbox{inf} \\{ q: x \\not \\in K_q \\}$. “the\
+      \ empty set has sup 0” should be “the empty set has sup 1”. In Exercise 1.10.3, “the rationals”\
+      \ should be “the set $\\{{\\bf Q}\\}$ consisting of the rationals ${\\bf Q}$“. To put it another\
+      \ way, ${\\mathcal F}'$ is the coarsest topology such that every set that is open in ${\\mathcal\
+      \ F}$, is open in ${\\mathcal F}'$, and such that ${\\bf Q}$ is also open."
+  - id: volume-i-0081
+    page: '134'
+    text: "“Gelfand-Neimark” should be “Gelfand-Naimark”."
+  - id: volume-i-0082
+    page: '136'
+    text: "In Exercise 1.10.4, “on this finite set” should be “on this countable set”. In Definition 1.10.2,\
+      \ ${\\bf R}^+$ should be $[0,+\\infty)$."
+  - id: volume-i-0083
+    page: '137'
+    text: "In Proposition 1.10.4, the hypothesis that X is sigma-compact may be deleted, by removing all\
+      \ references to the compact set K in the proof (and also deleting the last sentence of the proof).\
+      \ In Exercise 1.10.7, add the following parenthetical remark: “(This question is easier to prove\
+      \ if one assumes that every non-empty open set has positive measure, but it is also possible to\
+      \ solve the question without this additional hypothesis, by working in the “support” of the measure,\
+      \ that is to say a closed set in which every non-empty open set has finite measure, and then using\
+      \ the Tietze extension theorem. To retain vanishing at infinity, one can either work using the one-point\
+      \ compactification, or decompose a $C_0$ function as an absolutely convergent series of $C_c$ functions.)”.\
+      \ This exercise should thus also be moved to after the Tietze extension theorem."
+  - id: volume-i-0084
+    page: '139'
+    text: "In Remark 1.10.7, the final $K$ should be an $X$."
+  - id: volume-i-0085
+    page: "?"
+    text: In Lemma 1.10.9, “belongs to” should be “intersects”.
+  - id: volume-i-0086
+    page: '140'
+    text: In Exercise 1.10.10, “Then there exists” should be “Show that there exists”. In the proof of
+      Theorem 1.10.8, Theorem 1.10.5 should be Exercise 1.10.10.
+  - id: volume-i-0087
+    page: '141'
+    text: "In the second part of Exercise 1.10.11, “normal” should be “normal and Hausdorff”. Add the\
+      \ following exercise: “Let $X$ be a locally compact Hausdorff space, and let $(U_\\alpha)_{\\alpha\
+      \ \\in A}$ be an open cover of $X$. Show that there exist compactly supported continuous functions\
+      \ $f_\\alpha: X \\to [0,1]$ supported on $U_\\alpha$ for each $\\alpha \\in A$ with $\\sum_{\\alpha\
+      \ \\in A} f_\\alpha(x)=1$ for all $x \\in X$ (with only finitely many of the terms on the left-hand\
+      \ side non-zero for each $x$).”"
+  - id: volume-i-0088
+    page: '146'
+    text: "After “the class of measurable sets is a Boolean algebra”, add “and that $\\mu_+=\\mu_-$ is\
+      \ finitely additive on this Boolean algebra”. The sentence fragment “Each $f$ in this supremum is\
+      \ supported in some closed subset $K$ of $U$” should be replaced by “For each $\\varepsilon > 0$,\
+      \ each $f$ in this supremum is bounded by $\\varepsilon$ plus a continuous function between $0$\
+      \ and $1_{K_\\varepsilon}$ for some closed subset $K_\\varepsilon$ of $U$“."
+  - id: volume-i-0089
+    page: "?"
+    text: "In Exercise 1.10.14, add that the lower semicontinuous function $g$ is permitted to take infinite\
+      \ values."
+  - id: volume-i-0090
+    page: '148'
+    text: "In Lemma 1.10.15, “functions” should read “functionals”, and “$0 \\leq I(f) \\leq I^+(f)$”\
+      \ should read “$0, I(f) \\leq I^+(f)$“. Exercise 1.10.15 should read as follows: “Show that among\
+      \ all possible choices for the functionals $I^+, I^-$ appearing in the above lemma, there is a unique\
+      \ choice which is minimal in the sense that for any other functionals $\\tilde I^+, \\tilde I^-$\
+      \ obeying the conclusions of the lemma, $\\tilde I^+(f) \\geq I^+(f)$ and $\\tilde I^-(f) \\geq\
+      \ I^-(f)$ for all non-negative $f \\in C_c(X \\to {\\bf R})$.”"
+  - id: volume-i-0091
+    page: '149'
+    text: "After the definition of vague convergence, a remark should be added that an application of\
+      \ the uniform boundedness principle (and Exercise 1.10.7) shows that vague convergence of $\\mu_n$\
+      \ to $\\mu$ is equivalent to the $\\mu_n$ being uniformly bounded in $M(X)$ and that $\\int_X f\\\
+      \ d\\mu_n \\to \\int_X f\\ d\\mu$ for all $f \\in C_c(X)$, however the uniform boundedness aspect\
+      \ cannot be dropped (consider for instance the sequence $\\mu_n =n \\delta_n$ on the real line)."
+  - id: volume-i-0092
+    page: "?"
+    text: Before Exercise 1.10.23, “algebras that does” -> “algebras that do”. After this exercise, “axiom”
+      should be “hypothesis”.
+  - id: volume-i-0093
+    page: '152'
+    text: "In Exercise 1.10.25, $[{\\bf R},{\\bf Z}]$ should be ${\\bf R}/{\\bf Z}$. In Exercise 1.10.24,\
+      \ “Then” should be “Show that”."
+  - id: volume-i-0094
+    page: '154'
+    text: "In Exercise 1.10.30, the phrase “on compact subsets of ${\\bf R}$” is redundant and can be\
+      \ deleted. (In the online version of the text, the claim “converges uniformly” should be corrected\
+      \ to “converges pointwise a.e.”.)"
+  - id: volume-i-0095
+    page: '155'
+    text: "In Definition 1.10.25, “$C^*$ algebra” is missing a hyphen. In Exercise 1.10.35, insert “when\
+      \ $x$ is self-adjoint” after the second display."
+  - id: volume-i-0096
+    page: "?"
+    text: "After Example 1.11.1, a superfluous “with $\\theta$” can be deleted."
+  - id: volume-i-0097
+    page: '160'
+    text: "in the last paragraph, the closing parenthesis after (1.80) should instead be after “convex\
+      \ function of $\\theta$“."
+  - id: volume-i-0098
+    page: '161'
+    text: "In (1.82), $(\\pi-\\delta) t$ should be $(\\pi-\\delta)|t|$. In Remark 1.11.4, $A,\\sigma$\
+      \ should be $A,\\delta$. Also, strictly speaking, one should dispose of the degenerate case when\
+      \ $B_0=0$ or $B_1=0$, though this case is easy since non-trivial holomorphic functions cannot vanish\
+      \ on a line."
+  - id: volume-i-0099
+    page: '162'
+    text: "In Exercise 1.11.4, $f(0+it)$ and $f(1+it)$ should be $|f(0+it)|$ and $|f(1+it)|$ respectively,\
+      \ and similarly for $f(\\sigma+it)$."
+  - id: volume-i-0100
+    page: '164'
+    text: "After (1.83), $x_m$ should be $x_M$ (two occurrences). In the following display, $L^p(X)$ on\
+      \ the left-hand side should be $L^p(X^M)$. In the fourth proof, “analytic function of $f$” should\
+      \ be “analytic function of $s$“. In Exercise 1.11.5, add “up to almost everywhere equivalence”.\
+      \ In the display before (1.84), $|f|$ should be $|f(x)|$."
+  - id: volume-i-0101
+    page: '166'
+    text: "In the fourth display, the final $\\|f\\|_{L^{p,\\infty}(X)}$ should be $\\|g\\|_{L^{p,\\infty}(X)}$.\
+      \ “finite $L^{p,\\infty}(X)$” should be “finite $L^{p,\\infty}(X)$ quasi-norm”. In Example 1.11.6,\
+      \ the first $q>p$ should be $q0$ independent of $\\lambda, f$. homogeneity rather than quasihomogeneity\
+      \ by working with the non-dyadic Lorentz norm $(\\int_0^\\infty (t^n \\lambda_f(t)^{1/p})^q \\frac{dt}{t})^{1/q}$\
+      \ instead of the dyadic Lorentz norm, which is equivalent up to constants with the dyadic Lorentz\
+      \ norm, although this was not the intent of the exercise.)"
+  - id: volume-i-0102
+    page: '167'
+    text: "In Exercise 1.11.8, $\\log(1+|X|)$ should be $\\log^{1/p}(1+|X|)$. In the last , the condition\
+      \ $p_0 \\neq p_1$ needs to be imposed."
+  - id: volume-i-0103
+    page: '168'
+    text: "In Exercise 1.11.10, $f^*$ should take values in $[0,+\\infty]$ rather than ${\\bf R}^+$, and\
+      \ $t \\geq 0$ should be replaced by $t>0$. Instead of $f$ be finite almost everywhere, impose that\
+      \ $f \\in L^p(X)$ for some finite $p$."
+  - id: volume-i-0104
+    page: '169'
+    text: "In the first sentence of Section 1.11.3, “these notes” should be “this section”. In Exercise\
+      \ 1.11.13, add that $p'$ is the dual exponent defined by $1/p +1/p' = 1$, and is allowed to be negative\
+      \ in this exercise. Also, it is understood that an assertion such as $|\\int_X f 1_{E'}\\ d\\mu|\
+      \ \\leq C \\mu(E)^{1/p'}$ is false if $f 1_{E'}$ is not absolutely integrable."
+  - id: volume-i-0105
+    page: '170'
+    text: In Remark 1.11.8, the second semicolon should be a comma.
+  - id: volume-i-0106
+    page: '171'
+    text: "“it is in fact convex in all of $[0,+\\infty)^2$” should read “it is also convex in the triangular\
+      \ region $\\{ (1/p,1/q) \\in [0,+\\infty)^2: p \\leq q \\}$“. In Exercise 1.1.16, “$Y$ (resp. $X$)”\
+      \ should be “$X$ (resp. $Y$)”, and there is an extra whitespace after “a.e.”."
+  - id: volume-i-0107
+    page: '172'
+    text: "In the definition of a sublinear operator, the additional condition $|Tf - Tg| \\leq |T(f-g)|$\
+      \ should be added in addition to $|T(f+g)| \\leq |Tf| + |Tg|$ (with a similar modification to Remark\
+      \ 1.11.11). “$(S_\\alpha)_{\\alpha \\in A}$ is a family of linear operators” should be “$(S_\\alpha)_{\\\
+      alpha \\in A}$ is a family of sub-linear operators”, and $T$ should map to ${\\bf C}$-valued or\
+      \ $[0,+\\infty]$-valued” functions rather than just $[0,+\\infty]$-valued functions. In Exercise\
+      \ 1.11.17, the requirement that p be finite or X has finite measure should be imposed through the\
+      \ entire exercise, not just for the uniqueness aspect. As such, when defining strong and weak type,\
+      \ one should only use the second bullet point rather than the first or third bullet point (unless\
+      \ one has finiteness of p or of the measure of X)."
+  - id: volume-i-0108
+    page: '173'
+    text: "Just before Theorem 1.11.10, Marcinkeiwicz should be Marcinkiewicz. The sentence “We say that\
+      \ a linear operator $S$ is of strong type …” is redundant and may be deleted."
+  - id: volume-i-0109
+    page: 174-175
+    text: All occurrences of “(1.91), (1.94)” should be “(1.93), (1.94)”.
+  - id: volume-i-0110
+    page: '176'
+    text: "In the first display, $2^{n\\alpha q_\\theta - mp_\\theta}$ should be $2^{(n\\alpha q_\\theta\
+      \ - m p_\\theta) x_i}$. In Remark 1.11.12, there should not be a C in the subscript of $C_{p_0,p_1,q_0,q_1,\\\
+      theta,C}$ (two occurrences). In Exercise 1.11.18 and Exercise 1.11.19, one also needs to add the\
+      \ hypothesis $p_0 \\neq p_1$."
+  - id: volume-i-0111
+    page: '177'
+    text: "In Exercise 1.11.21, $kO(1)$ should be $k+O(1)$."
+  - id: volume-i-0112
+    page: "?"
+    text: "In Exercise 1.11.22, add the hypothesis $p \\leq q$."
+  - id: volume-i-0113
+    page: '180'
+    text: "In Exercise 1.11.24, $x^{r'}$ should be $y^{r'}$."
+  - id: volume-i-0114
+    page: '181'
+    text: "In Exercise 1.11.26,the hypothesis $1 \\leq p \\leq \\infty$ should be $1 < p < \\infty$."
+  - id: volume-i-0115
+    page: null
+    text: "Chapter 12: In general, the discussion in this chapter should be restricted to sigma-compact\
+      \ LCA groups (due to the reliance on Fubini’s theorem and the Riesz representation theorem, both\
+      \ of which become quite delicate outside of this setting.) In the prologue, “two functions $f$”\
+      \ should be “two functions $f,g$“."
+  - id: volume-i-0116
+    page: '187'
+    text: "In Exercise 1.12.3, $dx$ should be $d\\mu(x)$ . Exercise 1.12.5 is not correct as stated in\
+      \ the non sigma-compact case. It can be replaced with the following: “Let $G$ be an LCA group with\
+      \ non-trivial Haar measure $\\mu$. Let $\\tilde L^\\infty(G)$ be the space of equivalence classes\
+      \ of functions $f: G \\to {\\bf C}$ such that for every set $K$ of finite measure, the restriction\
+      \ of $f$ to $K$ lies in $L^\\infty(K)$ with a norm bounded uniformly in $K$, with two functions\
+      \ in $\\tilde L^\\infty(G)$ in the same equivalence class if they agree almost everywhere on every\
+      \ set $K$ of finite measure, and with the $\\tilde L^\\infty(G)$ norm of $f$ equal to the supremum\
+      \ of the $L^\\infty(K)$ norms of the restrictions. (For $\\sigma$-finite groups $G$, $\\tilde L^\\\
+      infty(G)$ is identical to $L^\\infty(G)$, but the two spaces differ slightly in general.) Show that\
+      \ $L^1(G)^*$ is identifiable with $\\tilde L^\\infty(G)$.”. In Exercise 1.12.6, “to be the an” should\
+      \ be “to be an”."
+  - id: volume-i-0117
+    page: '188'
+    text: "In Exercise 1.12.7(b), the question is technically solvable as stated, but the “Conversely”\
+      \ portion of the question has a trivial answer as currently written. It should read “For every $f\
+      \ \\in C_c(G)^+$, $\\varepsilon > 0$, and neighbourhood $U$ of the identity, there exists $g \\\
+      in C_c(G)^+$ supported on $U$ such that $\\int_G f\\ d\\mu \\geq (f:g) \\int_G g\\ d\\mu - \\varepsilon$”\
+      \ (i.e. the requirement that $g$ has small support is missing). [Actually, this part of the exercise\
+      \ is rather tricky and is not strictly needed for the rest of the exercise; I will probably split\
+      \ it off into a separate exercise in the next edition of this text.]"
+  - id: volume-i-0118
+    page: '189'
+    text: In Exercise 1.12.7(g), “range in” should be “takes values in”.
+  - id: volume-i-0119
+    page: '190'
+    text: "Exercise 1.12.9(e) is significantly harder than intended, as the proof requires Pontryagin\
+      \ duality (which is stated, but not proven, in this text). This part of the exercise should therefore\
+      \ be disregarded. In Exercise 1.12.10, the requirement that $\\mu$ is non-trivial is redundant and\
+      \ may be deleted. For clarity “almost every $x,y \\in G$” should be “almost every $(x,y) \\in G\
+      \ \\times G$“. In Exercise 1.12.9(g), “Note that this identification is not unique” should be “We\
+      \ caution that in general, this identification is not unique”."
+  - id: volume-i-0120
+    page: '194'
+    text: In the “Unitarity” component of Corollary 1.12.5, “Thus the” should simply be “The”.
+  - id: volume-i-0121
+    page: '196'
+    text: "In Exercise 1.12.20, $\\frac{\\sin((N+1/2)x)}{\\sin(x/2)}$ should be $\\frac{\\sin(2\\pi(N+1/2)x)}{\\\
+      sin(\\pi x)}$. In Exercise 1.12.21, $\\frac{\\sin(nx/2)}{\\sin(x/2)}$ should be $\\frac{\\sin(\\\
+      pi N x)}{\\sin(\\pi x)}$."
+  - id: volume-i-0122
+    page: '197'
+    text: "In Exercise 1.12.24, all occurrences of $x_n$ should be $x_d$."
+  - id: volume-i-0123
+    page: '198'
+    text: "In the display in Exercise 1.12.25, ${\\bf R}^n$ should be ${\\bf R}^d$. The final word “that”\
+      \ on this page should be deleted."
+  - id: volume-i-0124
+    page: "?"
+    text: In the definition of the Fejer kernel, 1/n should be 1/N. In the subsequent exercise, D_N should
+      be S_N.
+  - id: volume-i-0125
+    page: "?"
+    text: After (1.107), “propeties” should be “properties”.
+  - id: volume-i-0126
+    page: '200'
+    text: "In Exercise 1.12.33, $f(x_j g)$ should be $f * (x_j g)$."
+  - id: volume-i-0127
+    page: "?"
+    text: "In Theorem 1.12.10, ${\\mathcal S}$ should be ${\\mathcal S}({\\mathbf R}^d)$."
+  - id: volume-i-0128
+    page: '201'
+    text: "In the final display of Exercise 1.12.36, $(\\xi-\\xi_0)$ and $(x-x_0)$ should be $(\\xi-\\\
+      xi_0)^2$ and $(x-x_0)^2$ respectively. Also, in (1.109), ${\\mathcal F} D = X {\\mathcal F}$ and\
+      \ ${\\mathcal F} X = -{\\mathcal F} D$ should be ${\\mathcal F} D = - X {\\mathcal F}$ and ${\\\
+      mathcal F} X = D {\\mathcal F}$ respectively."
+  - id: volume-i-0129
+    page: '203'
+    text: "In Exercise 1.12.37, (1.103) should be (1.111). The minus signs in the entropic uncertainty\
+      \ principle should be plus signs, and the improved constant should be $d\\log(e/2)$ rather than\
+      \ $d\\log(2e)$."
+  - id: volume-i-0130
+    page: '209'
+    text: "In the display discussing the FFT, the summation should be over $x$ rather than $n$. In the\
+      \ discussion of the $z$-transform $z$ should be $e^{2\\pi i x}$ rather than $e^{2\\pi i nx}$."
+  - id: volume-i-0131
+    page: '214'
+    text: "The topology placed on $C^\\infty_c({\\bf R}^d)$ given in the paragraph before Exercise 1.13.2\
+      \ is not suitable for the purposes of this section (it is not locally convex, or even a topological\
+      \ vector space). To fix this, delete the sentence before “Because of this” and replace the next\
+      \ sentence with “We are able to give $C^\\infty_c({\\bf R}^d)$ a (very strong) topology as follows.\
+      \ Call a seminorm $\\| \\|$ on $C^\\infty_c({\\bf R}^d)$ good if it is a continuous function on\
+      \ $C^\\infty_c(K)$ for each compact $K$ (or equivalently, the ball $\\{ f \\in C^\\infty_c(K): \\\
+      |f\\| < 1 \\}$ is open in $C^\\infty_c(K)$ for each compact $K$). We then give $C^\\infty_c({\\\
+      bf R}^d)$ the topology defined by all good seminorms. Clearly, this makes $C^\\infty_c({\\bf R})^d$\
+      \ a (locally convex) topological vector space.”"
+  - id: volume-i-0132
+    page: '215'
+    text: "Exercise 1.13.3(iii) is incorrect and should be replaced with the following: “(iii) As an additional\
+      \ challenge, construct a set $E \\subset C^\\infty({\\bf R}^d)$ such that $0$ is an adherent point\
+      \ of $E$, but $0$ is not as the limit of any sequence in $E$.” Exercise 1.13.4(iii) should then\
+      \ be replaced with “Show that a linear map $T: C^\\infty_c({\\bf R}^d) \\to X$ from the space of\
+      \ test functions into a topological vector space generated by some family of seminorms (i.e., a\
+      \ locally convex topological vector space) is continuous if and only if it is sequentially continuous\
+      \ (i.e. whenever $f_n$ converges to $f$ in $C^\\infty_c({\\bf R}^d)$, $Tf_n$ converges to $Tf$ in\
+      \ $X$), and if and only if $T: C^\\infty_c(K) \\to X$ is continuous for each compact $K \\subset\
+      \ {\\bf R}^d$. Thus while first countability fails for $C^\\infty_c({\\bf R}^d)$, we have a serviceable\
+      \ substitute for this property.”. In Exercise 1.13.4 (iv), the constraint $0 < p$ should be $1 \\\
+      leq p$. Exercise 1.13.4 (viii) is trivial and should be deleted. In Exercise 1.13.4(v), the map\
+      \ T needs to be assumed to be linear."
+  - id: volume-i-0133
+    page: '216'
+    text: "The definition of approximation to to the identity before Exercise 1.13.5 needs to be strengthened,\
+      \ in particular “converge uniformly to zero away from the origin, thus $\\sup_{|x| \\geq r}|\\phi_n(x)|\
+      \ \\to 0$ for all $r>0$” should be replaced by “has supports shrinking to the identity, thus for\
+      \ each $r>0$, $\\phi_n$ is supported on $B(0,r)$ for sufficiently large $n$“. In Exercise 1.13.5,\
+      \ it would be better to use $C_c({\\bf R}^d)$ rather than $C_0({\\bf R}^d)$ in the hint."
+  - id: volume-i-0134
+    page: '217'
+    text: In the second example after Exercise 1.13.7, “Note that this example generalises the previous
+      one” should be “Note that this example generalises the previous one (in the unsigned or absolutely
+      integrable cases, at least)”.
+  - id: volume-i-0135
+    page: "?"
+    text: In Exercise 1.13.9, change all “converge” to “converges” (and “they” to “it”).
+  - id: volume-i-0136
+    page: '220'
+    text: "After (1.114), $\\lambda h$ should be $\\lambda * h$."
+  - id: volume-i-0137
+    page: '224'
+    text: "In the third bullet point of Exercise 1.13.25, “some compactly supported distributions” should\
+      \ be “some compactly supported distributions $\\rho,\\lambda$“."
+  - id: volume-i-0138
+    page: '225'
+    text: "In the final bullet point of Exercise 1.13.26, “show that $L$” should be “show that $\\lambda$“,\
+      \ and should also be preceded by a comma."
+  - id: volume-i-0139
+    page: '227'
+    text: In Remark 1.13.10, it is the word “both” that should be italicised, rather than “growth”.
+  - id: volume-i-0140
+    page: '230'
+    text: "In the final display, $t^d$ should be $t^{-d}$."
+  - id: volume-i-0141
+    page: "?"
+    text: "In Exercise 1.13.26: In the second part, the distributions of the left-hand side should be\
+      \ composed rather than multiplied; and in the third part, the conclusion is to show that $\\lambda$\
+      \ is a linear combination of the Dirac delta and $\\hbox{p.v.} 1/x$."
+  - id: volume-i-0142
+    page: "?"
+    text: In Exercise 1.13.31, “is the … function” should be “are the … functions”.
+  - id: volume-i-0143
+    page: '232'
+    text: "In Exercise 1.13.37, all the fundamental solutions $K$ are missing a minus sign (this is ultimately\
+      \ due to the refusal to put a minus sign in the definition of the Laplacian, as alluded to on page\
+      \ 229). In Exercises 1.13.38-1.13.40, the Laplacian should be understood to be with respect to the\
+      \ spatial variable $x$ (i.e. it is not the spacetime Laplacian). In Exercise 1.13.38, the factor\
+      \ of $|x-y|^2$ in the definition of $K_t$ should just be $|x|^2$."
+  - id: volume-i-0144
+    page: '233'
+    text: "In Exercise 1.13.39, the factor of $|x-y|^2$ in the definition of $K_t$ should just be $|x|^2$.\
+      \ In Exercise 1.13.40, “wave equation $-\\partial_{tt}u+\\Delta u$” should be “wave equation $-\\\
+      partial_{tt}u+\\Delta u=0$″, and “Schwartz functions $f$” should be “Schwartz functions $f,g$“."
+  - id: volume-i-0145
+    page: '238'
+    text: "In the display before Remark 1.14.1, the $\\partial_x$ symbols should be replaced by $\\partial\
+      \ x$. Similarly for the definition of L after Exercise 1.14.3. In the definition of $C^k({\\bf R}^d)$,\
+      \ “derivatives of order $k$” should be “derivatives of order up to $k$“."
+  - id: volume-i-0146
+    page: '239'
+    text: "In Exercise 1.14.3, $C^\\infty_c$ should be $C^k$, and $N$ should be $|\\xi|$."
+  - id: volume-i-0147
+    page: '240'
+    text: "After Exercise 1.14.9, “$C^{k,\\alpha}({\\bf R}^d)$ is contained in $C^{k,\\beta}({\\bf R}^d)$”\
+      \ should be “$C^{k,\\alpha}({\\bf R}^d)$ contains $C^{k,\\beta}({\\bf R}^d)$ for $\\alpha \\leq\
+      \ \\beta$“. Also, $C^{k+1}$ should be $C^{k+1}({\\bf R}^d)$."
+  - id: volume-i-0148
+    page: "?"
+    text: "In Exercise 1.14.10, $0 \\leq \\alpha \\leq 1$ should be $0 < \\alpha < 1$."
+  - id: volume-i-0149
+    page: '241'
+    text: "In Exercise 1.14.12(2), the additional hypothesis that $k \\leq l$ is missing."
+  - id: volume-i-0150
+    page: '242'
+    text: "Exercise 1.14.13 is incorrect and should be replaced by the following: “Let ${k \\geq 0}$ and\
+      \ ${0 \\leq \\alpha' Hint: To approximate a compactly supported ${C^{k,\\alpha}}$ function by a\
+      \ ${C^\\infty_c}$ one, convolve with a smooth, compactly supported approximation to the identity.)\
+      \ What happens in the endpoint case ${\\alpha=\\alpha'}$? “"
+  - id: volume-i-0151
+    page: '242'
+    text: "In Exercise 1.14.14, the signs are reversed in the formulae for $u(x)$ and for $\\frac{\\partial\
+      \ u}{\\partial x_j}$ (i.e. there should be a negative sign in the former and a positive sign in\
+      \ the latter, rather than the other way around. Also, in (iii), the formula for $\\frac{\\partial^2\
+      \ u}{\\partial x_i \\partial x_j}(x)$ has both a reversed sign and a missing term; it should be$\\\
+      frac{1}{3} \\delta_{ij} f(x) - \\frac{1}{4\\pi} \\lim_{\\varepsilon \\to 0} \\int_{|x-y| \\geq \\\
+      varepsilon} [ \\frac{3(x_i-y_i)(x_j-y_j)}{|x-y|^5} - \\frac{\\delta_{ij}}{|x-y|^3}] f(y)\\ dy$."
+  - id: volume-i-0152
+    page: '243'
+    text: In Exercise 1.14.15, Kondrakov should be Kondrachov.
+  - id: volume-i-0153
+    page: '244'
+    text: "In Exercise 1.14.16, $\\phi(x/R) \\sin(\\xi x)$ should be $A \\phi(x/R) \\sin(\\xi \\cdot x)$."
+  - id: volume-i-0154
+    page: '245'
+    text: "In Exercise 1.14.18, “is $C^{k+1}({\\bf R}^d)$” should be “is the space $C^{k}_0({\\bf R}^d)$\
+      \ of $C^k$ functions such that the first $k$ derivatives go to zero at infinity”."
+  - id: volume-i-0155
+    page: '246'
+    text: In Theorem 1.14.7, “encluding” should be “excluding”.
+  - id: volume-i-0156
+    page: '248'
+    text: "In Exercise 1.14.20, “of the form” should be “which are something like”, and the annulus should\
+      \ be replaced with a ball. In Exercise 1.4.22, the hypothesis that $\\Omega$ is bounded needs to\
+      \ be added."
+  - id: volume-i-0157
+    page: '249'
+    text: "Before Exercise 1.14.23, “, which we will do in later notes” should be “; see Exercise 1.15.23”.\
+      \ In the last display of Exercise 1.14.21, the $L^p({\\bf R}^d)$ norm should be $L^p({\\bf R}^{d-1})$\
+      \ instead. (The $d=1$ case of this exercise is somewhat degenerate, but the result is still true\
+      \ in this case; however, the reader may wish to exclude this case in order to avoid such degeneracy.)\
+      \ Similarly, in the second to last display of the proof of Lemma 1.14.9, $\\| f_i\\|_{L^1({\\bf\
+      \ R}^d)}$ should be $\\| f_i \\|_{L^1({\\bf R}^{d-1})}$."
+  - id: volume-i-0158
+    page: "?"
+    text: Before Exercise 1.14.29, “the variable of independent variable” should just be “the independent
+      variable”.
+  - id: volume-i-0159
+    page: "?"
+    text: "In Exercise 1.14.33, $\\tau_x(y)$ should be $\\tau_x f(y)$, and “previous exercise” should\
+      \ be “previous part”."
+  - id: volume-i-0160
+    page: '251'
+    text: "in the third paragraph of Section 1.14.3, $\\frac{\\partial f}{\\partial x_j} f$ should be\
+      \ $\\frac{\\partial f}{\\partial x_j}$."
+  - id: volume-i-0161
+    page: '253'
+    text: "In Exercise 1.14.34, change “use Schur’s test” to “use the Cauchy-Schwarz inequality or Schur’s\
+      \ test”. The hint in Exercise 1.14.35(i) will not work easily. Instead, substitute: “First prove\
+      \ this when $s$ is a non-negative integer using an argument similar to that in Exercise 1.14.12,\
+      \ then exploit duality to handle the case of negative integer $s$. To handle the remaining cases,\
+      \ decompose the Fourier transform of $f$ into annular regions of the form $\\{ \\xi: 2^n \\leq |\\\
+      xi| \\leq 2^{n+1}\\}$ for $n \\geq 0$, as well as the ball $\\{ \\xi: |\\xi| \\leq 1 \\}$, and use\
+      \ the preceding cases to estimate the $L^2$ norm of the Fourier transform of $fg$ these annular\
+      \ regions and on the ball."
+  - id: volume-i-0162
+    page: '254'
+    text: "In the second display of Exercise 1.14.36, $L(\\xi_1,\\ldots,\\xi_d)$ should be $l(\\xi_1,\\\
+      ldots,\\xi_d)$. In the third display, $l(\\xi)$ should be $|l(\\xi)|$. $\\partial \\xi_{j_1} \\\
+      dots \\partial \\xi_{j_d}$ should be $\\partial \\xi_1^{j_1} \\dots \\partial \\xi_d^{j_d}$, and\
+      \ similarly for $\\xi_{j_1} \\dots \\xi_{j_d}$."
+  - id: volume-i-0163
+    page: "?"
+    text: In Remark 1.14.10, “parabolic operators” should be “a parabolic operator”, and similarly for
+      “hyperbolic operators”. “Controling” should be “Controlling”.
+  - id: volume-i-0164
+    page: '258'
+    text: "Before (1.125): “chain of maximal ideals” should be “chain of prime ideals”. Bougliand should\
+      \ be Bouligand."
+  - id: volume-i-0165
+    page: '259'
+    text: "In Section 1.15.1, “k-dimensional subspace” should be “d-dimensional subspace”, and in the\
+      \ second paragraph $d$ should be $n$ throughout."
+  - id: volume-i-0166
+    page: "?"
+    text: "After Exercise 1.15.3, “$\\delta$-metric entropy” should be “$\\delta$-metric entropy of $E$“."
+  - id: volume-i-0167
+    page: '260'
+    text: "In the fourth bullet point, $\\overline{\\hbox{dim}}_M$ should be $\\underline{\\hbox{dim}}_M$.\
+      \ In the last two bullet points, $\\delta^{-n-\\alpha - \\varepsilon}$ should be $\\delta^{-n-\\\
+      alpha+\\varepsilon}$."
+  - id: volume-i-0168
+    page: "?"
+    text: "Before Exercise 1.15.6, $d = \\mathrm{dim}_H$ should be $d = \\mathrm{dim}_H(E)$."
+  - id: volume-i-0169
+    page: '262'
+    text: "In (1.128) and (1.129), a logarithm is missing in the numerator. In Exercise 1.15.7, the phrase\
+      \ “and any $x_0 \\in X$” should be deleted."
+  - id: volume-i-0170
+    page: "?"
+    text: In the proof of Lemma 1.15.7, “Huausdorff” should be “Hausdorff”.
+  - id: volume-i-0171
+    page: '265'
+    text: In the first paragraph on this page of Section 1.15.2, “measre” should be “measure”.
+  - id: volume-i-0172
+    page: '266'
+    text: "In the paragraph before Exercise 1.15.9, “This quantity is increasing in $r$” should be “This\
+      \ quantity is decreasing in $r$“."
+  - id: volume-i-0173
+    page: '267'
+    text: "In the proof of Proposition 1.15.3, $A_l$ should be $A_{1/l}$ in the definition of $F_l$."
+  - id: volume-i-0174
+    page: '268'
+    text: "In the end of the proof of Lemma 1.15.4, $\\frac{\\varepsilon}{k r^n}$ should be $-\\frac{\\\
+      varepsilon}{kr^n}$, and the inequalities $c \\geq \\frac{1}{\\omega_n}$ and $c \\leq \\frac{1}{\\\
+      omega_n}$ should be swapped."
+  - id: volume-i-0175
+    page: '269'
+    text: "In Exercise 1.15.13, $0 \\leq d < d'$ should be $0 \\leq d' < d$."
+  - id: volume-i-0176
+    page: '271'
+    text: "In the proof of Lemma 1.15.7, “Huausdorff” should be “Hausdorff”. In the second bullet point,\
+      \ $\\sum_{i=1}^k$ should be $\\sum_{i=1}^\\infty$. In Exercise 1.15.17, “compact support there”\
+      \ should be “compact support and there”, and “dimension at most $d$” should be “dimension at least\
+      \ $d$” (two occurrences); similarly at the end of Lemma 1.15.7."
+  - id: volume-i-0177
+    page: '273'
+    text: "In Exercise 1.15.20, the measure $\\mu$ should not just be compactly supported, but should\
+      \ be supported in $E$; and the integrals should be on ${\\bf R}^n$ rather than ${\\bf R}^d$. Before\
+      \ this exercise, the accent on Caratheodory is in the wrong location."
+  - id: volume-i-0178
+    page: "?"
+    text: "Before Theorem 1.8.4, $\\{0,1\\}^\\infty$ should be $\\{0,1\\}^{\\bf N}$."
+  - id: volume-i-0179
+    page: "?"
+    text: "In Definition 1.8.18, $x', x \\in x$ should be $x',x \\in X$."
+  - id: volume-i-0180
+    page: "?"
+    text: "In the final paragraph of the proof of Theorem 1.8.23, “$f_\\alpha(x_m)$ takes” should be “the\
+      \ $f_n(x_m)$ take”, and in the final sentence, $f_n, F_n$ should be $f_{n_j}, F_{n_j}$."
+  - id: volume-i-0181
+    page: '286'
+    text: In the paragraph before 2.2.7, a right parenthesis is missing after “are amenable”.
+  - id: volume-i-0182
+    page: '287'
+    text: In the first paragraph of Section 2.2.2, G should be in math mode.
+  - id: volume-i-0183
+    page: '288'
+    text: "In Lemma 2.2.18, replace the parenthetical with “the existence of which follows from the fact\
+      \ that $G$ can be well-ordered”. In Exercise 2.2.11, the second part does not need to be in red."
+  - id: volume-i-0184
+    page: '289'
+    text: "In the proof of Proposition 2.2.19, the summation signs in and just after (2.6) should be union\
+      \ signs. Also add the sentence “By incrementing $K$ if necessary, we can take $v$ to be one of the\
+      \ $v_k$.”"
+  - id: volume-i-0185
+    page: '290'
+    text: add a right parenthesis to the end of Exercise 2.2.13.
+  - id: volume-i-0186
+    page: '291'
+    text: "In the proof of Corollary 2.2.26, $SO(3) \\backslash E$ should be $S^2 \\backslash E$."
+  - id: volume-i-0187
+    page: '293'
+    text: "In axiom (ii) at the start of 2.3, the second $A \\cup (B \\cap C)$ should be $(A \\cap B)\
+      \ \\cup (A \\cap C)$. “Because the ${\\mathcal B}$” should just be “Because ${\\mathcal B}$“."
+  - id: volume-i-0188
+    page: '296'
+    text: In the proof of Theorem 2.3.4, one of the B’s (in “map B to 1”) should be in math mode.
+  - id: volume-i-0189
+    page: "?"
+    text: Before Remark 2.3.5, “indictator” should be “indicator”.
+  - id: volume-i-0190
+    page: '298'
+    text: "In the proof of Theorem 2.3.10, omit “one” in “Boolean algebra isomorphism one instead”. A\
+      \ right parenthesis was omitted after “clopen algebra of $X$“. $B_1,B_2,\\cdots$ should be $B_1,B_2,\\\
+      dots$ (two occurrences)."
+  - id: volume-i-0191
+    page: "?"
+    text: In Exercise 2.3.3, “quotieting” should be “quotienting”, and “notion… is” should be “notions…
+      are”.
+  - id: volume-i-0192
+    page: '299'
+    text: "In Remark 2.3.11: N should be in math mode in “empty interior is in N”."
+  - id: volume-i-0193
+    page: '303'
+    text: "In (2.14), $x \\in X$ should be $x \\in A$. In Exercise 2.4.2, $Y$ should be $y$."
+  - id: volume-i-0194
+    page: '304'
+    text: "In Exercise 2.4.4, $\\mapsto$ should be $\\to$."
+  - id: volume-i-0195
+    page: '305'
+    text: "In Proposition 2.4.13, “$X$ and $Y$” should be “$X$ to $Y$“."
+  - id: volume-i-0196
+    page: '307'
+    text: In Remark 2.4.22, “Exercises 2.4.3 and 2.4.4” should be “Examples 2.4.6 and 2.4.7”.
+  - id: volume-i-0197
+    page: '308'
+    text: "In Exercise 2.4.10, $\\{\\beta,\\{\\beta\\}\\}$ should be $\\beta \\cup \\{\\beta\\}$."
+  - id: volume-i-0198
+    page: '311'
+    text: "In Definition 2.5.1, $\\pi$ should map from $\\overline{X}$ to $\\overline{X}'$, and $\\iota\
+      \ = \\pi \\circ \\iota'$ should be $\\iota' = \\pi \\circ \\iota$."
+  - id: volume-i-0199
+    page: "?"
+    text: "In Example 2.5.2, ${\\mathbf R}^2$ should be ${\\mathbf R}^3$."
+  - id: volume-i-0200
+    page: "?"
+    text: In Exercise 2.5.4, Theorem 1.2.2 should be Theorem 2.3.4.
+  - id: volume-i-0201
+    page: '317'
+    text: "in the second display after (2.17), the second $dx$ should be $d\\xi$."
+  - id: volume-i-0202
+    page: '319'
+    text: "In the last paragraph of 2.6.1, the term $e^{-i\\varepsilon e^{i\\varepsilon} z^{2+\\varepsilon}}$\
+      \ should be $e^{i\\varepsilon e^{i\\varepsilon} z^{2+\\varepsilon}}$."
+  - id: volume-i-0203
+    page: '320'
+    text: "The factors of $\\pi e/a$ should be $2 \\pi/ea$, and $\\pi/ea$ should be $2 \\pi e / a$."
+  - id: volume-i-0204
+    page: '333'
+    text: "“whenever the right-hand side is convergent” should be “whenever the right-hand side is absolutely\
+      \ convergent”."
+  - id: volume-i-0205
+    page: '334'
+    text: "In the proof of (i) implies (ii) in Theorem 2.8.1, $\\|\\nu -\\tau_x \\nu\\|_{L^1(G)} > \\\
+      varepsilon$ should be $\\sup_{x \\in S} \\|\\nu -\\tau_x \\nu\\|_{L^1(G)} > \\varepsilon$, and “and\
+      \ all $x \\in S$” should be omitted."
+  - id: volume-i-0206
+    page: "?"
+    text: "In the proof of Proposition 2.8.5, the definition of $A$ should involve $E_1$ rather than $E_{-1}$."
+- id: volume-ii
+  name: Volume II
+  errata:
+  - id: volume-ii-0001
+    page: '12'
+    text: "“a random complex number in ${\\bf C}$” should be “a random complex vector in ${\\bf C}^n$“."
+  - id: volume-ii-0002
+    page: "?"
+    text: "in the proof of Corollary 1.2.7, all occurrences of $R_j \\cdot P$ should be $R_j \\circ P$."
+  - id: volume-ii-0003
+    page: "?"
+    text: "Just before Theorem 1.4.5, $\\Gamma$ should contain $\\neg A_1$ rather than $A_1$."
+  - id: volume-ii-0004
+    page: '27'
+    text: "In the proof of Theorem 1.4.8, $\\bigcup_{\\phi \\in \\Gamma'} F_\\phi$ should be $\\bigcap_{\\\
+      phi \\in \\Gamma'} F_\\phi$."
+  - id: volume-ii-0005
+    page: "?"
+    text: "In Proposition 1.5.6, the dimension should be $n$ rather than $d$."
+  - id: volume-ii-0006
+    page: '40'
+    text: "In the statement of Proposition 1.5.7, a factor of 2 should be inserted in the right hand side,\
+      \ and the dimension should be $n$ rather than $d$. After that proposition, insert “and dividing\
+      \ into whether ${\\bf E} f(X)$ is larger than or smaller than $t/2$, and noting also that the claim\
+      \ is trivial for t small” before “…”."
+  - id: volume-ii-0007
+    page: '41'
+    text: "prefactor $\\pi/2$ should instead be $2/\\pi$ (and conversely, $2/\\pi$ should be $\\pi/2$),\
+      \ and the final bound of $\\exp(Ct)$ should instead be $\\exp(Ct^2)$."
+  - id: volume-ii-0008
+    page: '43'
+    text: In Lemma 1.6.1, add “Let P be a finite set of points in R^2” in the first sentence, and replace
+      “in the plane (which may or may not be in L)” with “in L, plus some additional open line segments
+      not containing any points in P”. In section 1.6.2, “carve out O(r^2) cell” should be “carve out
+      O(r^2) cells”. In the paragraph starting with “To fix the latter problem…”, add “Note that almost
+      surely the open line segments added will not contain any points of P.” after the parenthetical sentence.
+  - id: volume-ii-0009
+    page: '54'
+    text: 30.7% should be 30.1% .
+  - id: volume-ii-0010
+    page: '82'
+    text: "before (1.53): $F_p[X]$ should be $({\\bf Z}/N{\\bf Z})[X]$."
+  - id: volume-ii-0011
+    page: '90'
+    text: "in the display before (1.61): the final $O(1)$ should be $O(\\sqrt{x})$."
+  - id: volume-ii-0012
+    page: "?"
+    text: "In Section 1.10, “the bits of $A$ on the support of $s$” should be “the bits of $A'$ on the\
+      \ support of $s$“."
+  - id: volume-ii-0013
+    page: '112'
+    text: In Remark 1.15.20, “incompleteness theory” should be “incompleteness theorem”.
+  - id: volume-ii-0014
+    page: '177'
+    text: After (2.19), “existence of a quadratic residue” should be “existence of a quadratic nonresidue”.
+  - id: volume-ii-0015
+    page: "?"
+    text: "In the paragraph after (2.27), $x^p=p$ should be $x^p=x$."
+  - id: volume-ii-0016
+    page: '235'
+    text: The proof of Lemma 2.as stated, because it is not demonstrated that the embedding of the A’
+      free group into the A group is injective. The proof can be salvaged by constructing the semidirect
+      product first, and then constructing the isomorphism between that product and the free group. Details
+      can be found at this post.
+  - id: volume-ii-0017
+    page: '238'
+    text: "In the last display, $g_{[[c,b],c]}$ should be added at the end, and similarly for the first\
+      \ display on the next page; in the display after that, $g_{[[c,b],c]}^{n_{[[c,b],c]}}$ should also\
+      \ be appended."
+  - id: volume-ii-0018
+    page: '310'
+    text: "“all group elements $t \\in K$” should be “all group elements $t \\in H$“."

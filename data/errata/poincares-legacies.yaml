@@ -1,0 +1,449 @@
+# Imported from https://terrytao.wordpress.com/books/poincares-legacies-course-notes-expository-articles-and-lecture-series-from-a-mathematical-blog/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: "Poincaré’s legacies: pages from year two of a mathematical blog"
+  slug: poincares-legacies
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/poincares-legacies-course-notes-expository-articles-and-lecture-series-from-a-mathematical-blog/"
+  description: A sequel to Structure and Randomness (pages from year one of a mathematical blog), in two
+    volumes.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2009
+    isbn: "Volume I: 978-0-8218-4883-8; Volume II: 978-0-8218-4885-2"
+    note: Two volumes.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2009/01/whatsnew.pdf"
+  - title: Volume I (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=MBK-66"
+  - title: Volume II (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=MBK-67"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Ian Biringer
+    - Terry Bollinger
+    - Fransisc Bozgan
+    - Tim Carson
+    - Rex Cheung
+    - Paul-Olivier Dehaye
+    - Daoyuan Han
+    - Neil Hindman
+    - Asgar Jamneshan
+    - Abhishek Khetan
+    - Ioannis Kontoyiannis
+    - Sajjad Lakzian
+    - James Leng
+    - Jeff Lin
+    - Jun Ling
+    - Xiaochuan Liu
+    - Freddie Manners
+    - Mizar
+    - Ramis Movassagh
+    - Nazrul
+    - Hee Oh
+    - Oskar
+    - Pavel
+    - Robert Tu
+    - Siming Tu
+    - Mate Wierdl
+    - Yifan
+    - Qi Zhang
+    - Yunfeng Zhang
+    - Tamar Ziegler
+    - Yuming Zhang
+    - Pavel Zorin
+    - an anonymous commenter
+  migrated: '2026-07-09'
+editions:
+- id: volume-i
+  name: Volume I
+  errata:
+  - id: volume-i-0001
+    page: '9'
+    text: "In Section 1.3, the sketch of proof of Green’s theorem (Theorem 1.3.7) has a serious gap; the\
+      \ problem is that the quotiented orbit of $(g^{n+h} x, g^n x)$ may possibly have a constant image\
+      \ with respect to a horizontal character. It seems that to use this type of argument to obtain the\
+      \ full strength of Theorem 1.3.7 (and not just some special cases) one needs the more complicated\
+      \ quantitative van der Corput argument from [GrTa2009c]."
+  - id: volume-i-0002
+    page: '21'
+    text: "In the first display after (1.19), $\\sum_{j=1}^\\infty \\frac{1}{n_j} X_{\\leq n_j}$ should\
+      \ be $\\sum_{j=1}^\\infty \\frac{1}{n_j} |X_{\\leq n_j}|^2$."
+  - id: volume-i-0003
+    page: '23'
+    text: "In (1.23), $1 + \\mu dt$ should simply be $\\mu dt$."
+  - id: volume-i-0004
+    page: '24'
+    text: "After (1.30), $\\Theta_\\infty(x_\\infty)-1/x_\\infty$ should be $(\\Theta_\\infty(x_\\infty)-1)/x_\\\
+      infty$."
+  - id: volume-i-0005
+    page: '25'
+    text: "In (1.32), (1.33), (1.34), $k_\\infty$ should be $k_\\infty^\\times$."
+  - id: volume-i-0006
+    page: '27'
+    text: "In (1.37), $|t|$ should be $|t|_p$."
+  - id: volume-i-0007
+    page: '64'
+    text: In the two long displays the symbol P is missing just before the right bracket ] on most of
+      the lines of the displays.
+  - id: volume-i-0008
+    page: '69'
+    text: "In the final paragraph, “$(n-1)$-chain” should be “$(n+1)$-chain”."
+  - id: volume-i-0009
+    page: '70'
+    text: "In the final display, $\\rho(g,x)$ should be $\\rho(h,x)$. In the final paragraph, “$n$-cocycles\
+      \ and $n$-cochains” should be “$n$-cocycles and $n$-boundaries”."
+  - id: volume-i-0010
+    page: '76'
+    text: In Example 2.1.3, delete the parenthetical reference to Example 2.1.1.
+  - id: volume-i-0011
+    page: '87'
+    text: In Exercise 2.2.4, the last sentence should be phrased as a question, i.e. “Does there exist
+      analogous claims in the categories of dynamical systems and measure-preserving systems?”.
+  - id: volume-i-0012
+    page: '90'
+    text: "In the proof of Lemma 2.3.3, add “By passing to a subsequence and relabeling, we may assume\
+      \ $T^{n_m} x$ converges to $y$” before “But then one verifies…”."
+  - id: volume-i-0013
+    page: '95'
+    text: "Remark 2.3.7 is inaccurate regarding the left-continuity of $\\beta S$ (see this paper for\
+      \ the subtle issues arising here) and should be deleted."
+  - id: volume-i-0014
+    page: "?"
+    text: "In Corollary 2.3.9, $x,y$ should lie in $X$, not ${\\Bbb Z}$."
+  - id: volume-i-0015
+    page: "?"
+    text: "In Exercise 2.13.4, ${\\Bbb E}(f|Y)(y,z)$ should be ${\\Bbb E}(f|Y)(y)$."
+  - id: volume-i-0016
+    page: '99'
+    text: Exercise 2.4.5 is not relevant at this juncture and should be deleted.
+  - id: volume-i-0017
+    page: "?"
+    text: "In the paragraph before Exercise 2.4.10, $T^n V$ should be $T^n U$."
+  - id: volume-i-0018
+    page: '102'
+    text: "in the proof of Proposition 2.4.11, $p_*$ should lie in $*{\\Bbb N}\\backslash {\\Bbb N}$ rather\
+      \ than $*{\\Bbb Z}\\backslash {\\Bbb Z}$. In particular, the parenthetical remark about setting\
+      \ $p_*$ equal to $p$ should be deleted."
+  - id: volume-i-0019
+    page: '104'
+    text: "In the proof of Lemma 2.4.13, $V$ should be $U$."
+  - id: volume-i-0020
+    page: '110'
+    text: A similar ultrafilter proof also appears in Section 3 of N. Hindman’s paper “Problems and new
+      results in the algebra of Beta S and Ramsey Theory” in “Unsolved problems on mathematics for the
+      21st century”, J. Abe and S. Tanaka eds., IOS Press, Amsterdam (2001), 295-305.
+  - id: volume-i-0021
+    page: '113'
+    text: Lemma 2.5.14 should be called the Ellis-Numakura lemma rather than the Ellis-Namakura lemma.
+      (Similarly for the index entry for this lemma.)
+  - id: volume-i-0022
+    page: '127'
+    text: "In Definition 2.6.16, it should be stressed that the fibre metrics $d_y$ are compatible with\
+      \ (i.e. generate) the topology on the fibres inherited from the full space. (More generally, in\
+      \ this text, when we refer to a metric on a topological space, it should be understood that that\
+      \ metric generates the topology of that space unless otherwise specified.)"
+  - id: volume-i-0023
+    page: '128'
+    text: "In the first paragraph, $f(y_0)$ should be $f(x_0)$."
+  - id: volume-i-0024
+    page: '132'
+    text: "In Lemma 2.6.30, $Y \\times_\\sigma ({\\bf R}/{\\bf Z})$ should be $Y \\times_\\sigma ({\\\
+      bf R}/{\\bf Z})^d$."
+  - id: volume-i-0025
+    page: '134'
+    text: "In Example 2.7.2, $(0,1/2n)$ should be $(1/2n,0)$, and $(\\alpha, \\frac{n(n-1)}{2} \\alpha\
+      \ + \\frac{1}{2})$ should be $(n\\alpha, \\frac{n(n-1)}{2} \\alpha + \\frac{1}{2})$."
+  - id: volume-i-0026
+    page: '135'
+    text: In Exercise 2.7.2(5), it should be explicitly stated that X is assumed to be distal.
+  - id: volume-i-0027
+    page: "?"
+    text: "In Exercise 2.7.6(3), $F(y,z)$ should be $d(y,z)$."
+  - id: volume-i-0028
+    page: '137'
+    text: After Exercise 2.7.8, the reference to Exercise 2.7.5 should be to Exercise 2.7.3 instead.
+  - id: volume-i-0029
+    page: '139'
+    text: After (2.54), W should be K.
+  - id: volume-i-0030
+    page: '141'
+    text: Exercise 2.7.14 is the same as 2.9.13 and should be deleted.
+  - id: volume-i-0031
+    page: '143'
+    text: "The last sentence of the proof of Theorem 2.8.2 is redundant and should be deleted. In Exercise\
+      \ 2.8.3, $\\mu(X)$ should read $\\mu(E)$ (two occurrences), and “any smaller” should be “any larger”."
+  - id: volume-i-0032
+    page: '144'
+    text: "The first proof of von Neumann’s ergodic theorem is due to F. Riesz, rather than von Neumann,\
+      \ and the text should be edited accordingly. After (2.63), “uniformly in $n$” should be “uniformly\
+      \ in $N$“. Also $H^U + \\overline{W}$ should be $H^U + W$."
+  - id: volume-i-0033
+    page: '146'
+    text: "After (2.67), $\\frac{\\lambda^N-\\lambda}{\\lambda-1}$ should be $\\frac{\\lambda^N-1}{\\\
+      lambda-1}$."
+  - id: volume-i-0034
+    page: '149'
+    text: "In Exercise 2.8.6(1), “${\\mathcal X}$-valued” should be $latex {\\mathcal X}-measurable”."
+  - id: volume-i-0035
+    page: '150'
+    text: In Exercise 2.8.9, Corollary 2.8.12 should be Corollary 2.8.16.
+  - id: volume-i-0036
+    page: '152'
+    text: "In Theorem 2.9.1, in the definition of $Mf$, the summation should be from $0$ to $N-1$, rather\
+      \ than from $1$ to $N$."
+  - id: volume-i-0037
+    page: '153'
+    text: "In the first display, the equality sign should be a $\\leq$ sign instead."
+  - id: volume-i-0038
+    page: '157'
+    text: In Exercise 2.9.6, the probability space should be assumed to be standard Borel (in order to
+      define the countable product space properly).
+  - id: volume-i-0039
+    page: '158'
+    text: "In the first paragraph of Section 2.9.4, “Borel $\\sigma$-algebra of $T$” should be “Borel\
+      \ $\\sigma$-algebra of ${\\mathcal F}$“. In Exercise 2.9.10, “measure on $T$” should be measure\
+      \ on $X$“. For Exercise 2.9.9, “if and only if” should just be “only if”, and the additional hypothesis\
+      \ that $U$ has a boundary of measure zero should be added."
+  - id: volume-i-0040
+    page: '159'
+    text: "In Exercise 2.9.13, one needs to add the additional hypothesis that the support of the invariant\
+      \ measure $\\mu$ is equal to the whole space $X$."
+  - id: volume-i-0041
+    page: '160'
+    text: "In Example 2.9.17, “from $Y$ to $X$ and from $X$ to $Z$” should be “from $Y$ to $Z$ and from\
+      \ $X$ to $Y$“. Also, all integrals here should be over Y rather than over X."
+  - id: volume-i-0042
+    page: '162'
+    text: "In the right-hand side of (2.96), the factor $g(y)$ should be moved outside the inner integral\
+      \ (for clarity). In Exercise 2.9.14, $\\nu_y$ should be $\\mu_y$."
+  - id: volume-i-0043
+    page: '163'
+    text: In the final parenthetical of Exercise 2.9.15, add “, but I do not know of a way to prove Proposition
+      2.9.22 in full generality just from Choquet.”
+  - id: volume-i-0044
+    page: '167'
+    text: "After (2.100), the range $1 \\leq a \\leq N$ should be replaced with $1 \\leq a \\leq N/N_0$."
+  - id: volume-i-0045
+    page: '189'
+    text: "194: In Exercise 2.12.15, and also in the first paragraph of Section 2.12.4, Corollary 2.12.8\
+      \ should be Corollary 2.12.13. After Remark 2.12.24, Proposition 2.12.15 should be Proposition 2.12.14."
+  - id: volume-i-0046
+    page: '190'
+    text: In footnote 44 in Theorem 2.12.14, “always has full measure” should be “always has full (outer)
+      measure”.
+  - id: volume-i-0047
+    page: '191'
+    text: "Replace the first sentence in the paragraph preceding 2.12.17 by “Given a Hilbert space H,\
+      \ define its complex conjugate $\\overline{H}$ to be the set of formal conjugates $\\overline{H}\
+      \ = \\{ \\overline{v}: v \\in H \\}$ of elements of $H$, with the addition structure $\\overline{v}\
+      \ + \\overline{w} := \\overline{v + w}$, the conjugated scalar multiplication structure $\\overline{z\
+      \ \\overline{v}} := \\overline{\\overline{z} v}$ and the conjugated inner product $\\langle \\overline{z},\\\
+      overline{w} \\rangle_{\\overline H} := \\overline{\\langle z, w \\rangle_H} = \\langle w, z \\rangle_H$.”.\
+      \ In equation (2.130), $v \\otimes v'$ should then be $\\overline{v} \\otimes v'$, and the second\
+      \ inner product should be subscripted by $\\overline{H} \\otimes H'$."
+  - id: volume-i-0048
+    page: '195'
+    text: "In Exercise 2.12.22, $\\int_X (f\\ d\\mu)^2$ should be $(\\int_X f\\ d\\mu)^2$."
+  - id: volume-i-0049
+    page: '203'
+    text: "In (2.159), the $O(\\varepsilon)$ term is unnecessary, and (2.151) and”and relative Cauchy\
+      \ Schwarz again” may be deleted from the preceding line. After (2.160), the parenthetical remark\
+      \ can be deleted, and after (2.161), “again” may be deleted."
+  - id: volume-i-0050
+    page: '207'
+    text: "In (2.168), the second $f_1$ should be $f_d$."
+  - id: volume-i-0051
+    page: '208'
+    text: "the integration $\\int_X\\ d\\mu$ is missing from the summand."
+  - id: volume-i-0052
+    page: "?"
+    text: "In Remark 2.14.4, the hypothesis that $Y$ is ergodic needs to be added."
+  - id: volume-i-0053
+    page: '210'
+    text: "In Proposition 2.14.11, the “weak operator topology” should be clarified to “the weak operator\
+      \ topology of $L^2(X)$“, and it should also be parenthetically noted that the $S_{f,N}$ are uniformly\
+      \ bounded in the Hilbert space $L^2(X)$. In the statement of this proposition, “technology” should\
+      \ be “topology”. In Definition 2.14.13, $\\langle \\dots \\rangle_{X,Y}$ should be $\\langle \\\
+      dots \\rangle_{X|Y}$."
+  - id: volume-i-0054
+    page: '216'
+    text: "After (2.188), “on a set of measure $O_c(\\varepsilon^2)$” should be “outside of a set of measure\
+      \ $O_c(\\varepsilon^2)$“."
+  - id: volume-i-0055
+    page: '218'
+    text: In Exercise 2.16.1(7), “H/[H,K] and K/[H,K] become abelian” should be “the images of H and K
+      become groups that commute with each other”.
+  - id: volume-i-0056
+    page: '221'
+    text: "In Example 2.16.9, $[0,y+x \\hbox{ mod } 1]$ should just be $[0,y]$."
+  - id: volume-i-0057
+    page: '222'
+    text: In Example 2.16.13, the group element g should have a coefficient of -1 instead of 1 in the
+      third column, second row position.
+  - id: volume-i-0058
+    page: '223'
+    text: "In (2.203), $n+1$ should be $n-1$."
+  - id: volume-i-0059
+    page: "?"
+    text: "The statement and proof of Corollary 2.16.21 and Corollary 2.16.22 need to be modified, because\
+      \ the character $\\chi$ in the proof of the former need not be primitive. In Corollary 2.16.21(2),\
+      \ one needs to partition the orbit $(T^n x)_{n \\in {\\bf Z}}$ into finitely many suborbits $(T^n\
+      \ x)_{n \\in P}$ for various congruence classes $P$ before the claim holds separately for each suborbit,\
+      \ and similarly for Corollary 2.16.22."
+  - id: volume-i-0060
+    page: '231'
+    text: "The proof of Lemma 2.17.5 is incomplete, because U and D do not fully generate $SL_2({\\bf\
+      \ R})$. To finish the argument, observe that $d^t w^\\varepsilon d^{-t}$ converges to the identity\
+      \ as $t \\to +\\infty$, and thus $\\langle \\rho(d^t w^\\varepsilon d^{-t}) v, v \\rangle \\to \\\
+      langle v, v \\rangle$. Using the D-invariance we conclude that $\\rho(w^\\varepsilon) v, v \\rangle\
+      \ = \\langle v, v \\rangle$, and thus as before v is also invariant with respect to the group U’\
+      \ generated by the $w^\\varepsilon$. Since U and U’ (and D, if desired) generate $SL_2({\\Bbb R})$,\
+      \ the claim follows."
+  - id: volume-i-0061
+    page: 232-233
+    text: "The proof of Lemma 2.17.9 requires some changes. In the penultimate paragraph, “any g in L”\
+      \ should be “any g in L with $gx_0$ sufficiently close to $x_0$“. The final paragraph needs to be\
+      \ changed to the following: “Suppose that $Lx_0$ is not closed; then one can find a sequence $g_n\
+      \ x_0$ in $Lx_0$ that converges to $x_0$ but with the $g_m g_n^{-1}$ staying bounded away from the\
+      \ identity for $m \\neq n$. For a sufficiently small compact neighbourhood $K$ of the identity in\
+      \ $L$, the sets $K g_n x_0$ then are disjoint and all have the same measure for $n$ large enough;\
+      \ since $\\mu(Lx_0)=1$, this forces these sets to be null. But then the invariant measure $m$ annihilates\
+      \ $K$ and is thus null as well, a contradiction.”"
+  - id: volume-i-0062
+    page: '235'
+    text: "In Proposition 2.17.12, $x_n,y_n$ should lie in $G/\\Gamma$ rather than $G$. In the proof of\
+      \ that proposition, $g_*$ should be $g^*$."
+- id: volume-ii
+  name: Volume II
+  errata:
+  - id: volume-ii-0001
+    page: "?"
+    text: "In Footnote 36, $U^n$ should be $(U+E)^n$."
+  - id: volume-ii-0002
+    page: '40'
+    text: "After (1.17), “multiply $c_k$ by a scalar” should be “multiply $v_k$ by a scalar”. Two pages\
+      \ previously, the display for U+E has an extraneous space. In (1.18), all appearances of $w_j$ and\
+      \ $w_k$ should be $w_j^*$ and $w_k^*$ instead."
+  - id: volume-ii-0003
+    page: "?"
+    text: "In example (8) of Section 1.4, $x^2+y^2+z^2$ should be $x^2+y^2+z^2=1$."
+  - id: volume-ii-0004
+    page: '67'
+    text: "Before (2.11), $\\Gamma(M)$ should be $\\Gamma(TM)$."
+  - id: volume-ii-0005
+    page: "?"
+    text: "After (2.19), $\\gamma \\circ \\phi$ should be $\\phi \\circ\\gamma$."
+  - id: volume-ii-0006
+    page: '71'
+    text: "In (2.29), $\\nabla_\\beta \\nabla_\\alpha \\nabla_\\delta$ should be $\\nabla_\\beta \\nabla_\\\
+      delta \\nabla_\\alpha$."
+  - id: volume-ii-0007
+    page: '62'
+    text: After (2.32), “(2,0) tensor” should be “(0,2) tensor”.
+  - id: volume-ii-0008
+    page: '74'
+    text: "In Definition 2.1.14 II, $X_\\alpha Y_\\beta$ should be $X^\\alpha Y^\\beta$."
+  - id: volume-ii-0009
+    page: '77'
+    text: "Before (2.38): the heat equation $\\partial_t u + \\Delta u = F$ should be $\\partial_t u -\
+      \ \\overline{\\Delta} u = F$."
+  - id: volume-ii-0010
+    page: '78'
+    text: "In the second line of (2.45), the first negative sign should be positive, and the positive\
+      \ sign should be negative. In (2.48), the last two minus signs should be plus signs, and in (2.49),\
+      \ $\\hbox{Riem}^\\delta_{\\alpha \\gamma \\beta}$ should be $g^{\\sigma \\gamma} \\hbox{Riem}^\\\
+      delta_{\\sigma \\alpha \\beta}$."
+  - id: volume-ii-0011
+    page: "?"
+    text: In the discussion before (2.53), the manifold should be complete in addition to smooth and connected.
+  - id: volume-ii-0012
+    page: '81'
+    text: "After (2.60), $latex\\phi^*(t) \\dot \\phi(t)$ should be $\\phi_*(t) \\dot \\phi(t)$."
+  - id: volume-ii-0013
+    page: "?"
+    text: "In (2.67), $Riem^\\delta_{\\alpha \\gamma \\beta}$ should be $Riem^\\delta_{\\gamma \\alpha\
+      \ \\beta}$."
+  - id: volume-ii-0014
+    page: '115'
+    text: "In (2.121), $K_M$ should be $K_\\Sigma$."
+  - id: volume-ii-0015
+    page: '127'
+    text: "In (2.143), the factor of $1/2$ should be deleted."
+  - id: volume-ii-0016
+    page: '132'
+    text: "In (2.162), $\\nabla_T \\nabla_T k$ should be $\\nabla_T k$."
+  - id: volume-ii-0017
+    page: '136'
+    text: "After (2.170), “slows down the flow of time by $1/\\lambda$” should be “slows down the flow\
+      \ of time by $1/\\lambda^2$“."
+  - id: volume-ii-0018
+    page: '152'
+    text: On the last line, (2.72) should be (2.73).
+  - id: volume-ii-0019
+    page: "?"
+    text: "In Exercise 2.9.4, $-4\\Delta+4R$ should be $-4\\Delta+R$."
+  - id: volume-ii-0020
+    page: "?"
+    text: "In (2.247), $\\frac{1}{\\tau}$ should be $\\tau$."
+  - id: volume-ii-0021
+    page: "?"
+    text: "In (2.264), $\\frac{t}{2N}$ should be $\\frac{2t}{N}$; in (2.266), $\\frac{r^2}{4N^2}$ should\
+      \ be $\\frac{r^2}{N^2}$. In (2.274), $r_0^{N/2}$ should be $r_0^N$."
+  - id: volume-ii-0022
+    page: '160'
+    text: "Strictly speaking, the derivation given of the log-Sobolev inequality is only valid for those\
+      \ $\\phi$ for which $\\phi^2$ is the backwards time evolution of a non-negative test function $u_0$\
+      \ by the backwards heat equation for time $\\tau$. However, if one runs the argument with $u$ the\
+      \ backwards evolution of $\\phi^2$ starting from time $-\\tau$, rather than starting from time 0,\
+      \ one obtains the log-Sobolev inequality for all test functions $\\phi$. On the penultimate line,\
+      \ (2.239) should be (2.246)."
+  - id: volume-ii-0023
+    page: '175'
+    text: "In the second line, ${\\mathcal M}$ should be $\\tilde {\\mathcal M}$."
+  - id: volume-ii-0024
+    page: "?"
+    text: "In equations (2.303)-(2.305), $\\sqrt{2N}$ should be $\\frac{1}{\\sqrt{2N}}$."
+  - id: volume-ii-0025
+    page: '191'
+    text: "In (2.328), the two $\\leq$ signs should both be $\\geq$."
+  - id: volume-ii-0026
+    page: '205'
+    text: "“manifild” should be “manifold”."
+  - id: volume-ii-0027
+    page: '213'
+    text: "In (2.416) and immediately afterwards, $\\nabla_f f$ should be $\\nabla_{\\nabla f} f$."
+  - id: volume-ii-0028
+    page: '217'
+    text: "In the sentence after (2.437), “every $v$” should be “every $X$“."
+  - id: volume-ii-0029
+    page: '229'
+    text: "The formulation of the Hamilton compactness theorem given here needs an additional hypothesis,\
+      \ namely a uniform lower bound on the Ricci curvature. More precisely, for any compact interval\
+      \ J there exists a K such that for every radius r one has $\\hbox{Ric} \\geq -K$ on $J \\times B_{g_n(t_0)}(p_n,r)$\
+      \ for all sufficiently large n. This is needed to prevent the length of a geodesic going off to\
+      \ infinity from collapsing to a finite length, causing incompleteness. (It was recently shown by\
+      \ Topping that the formulation of the compactness theorem give in the text can fail without such\
+      \ a hypothesis. However, in the applications to the Poincare conjecture one has the uniform lower\
+      \ bound on curvature, so this is ultimately not a major issue.)"
+  - id: volume-ii-0030
+    page: '234'
+    text: "In Corollary 2.16.11, $\\frac{d}{d\\tau}$ should be $\\frac{d}{dt}$."
+  - id: volume-ii-0031
+    page: '257'
+    text: Before Proposition 2.18.15, the final “oriented” should be “unoriented”.
+  - id: volume-ii-0032
+    page: '263'
+    text: "In the sketch of proof of Proposition 2.19.9, $d_{\\tilde g_n(0)}(x_n,y_n)$ should be $d_{\\\
+      tilde g_n(0)}(x_n,\\tilde y_n)$."
+  - id: volume-ii-0033
+    page: '270'
+    text: "“width of the necks goes to infinity” should be “width of the necks goes to zero”."
+  - id: volume-ii-0034
+    page: '290'
+    text: The reference [Zhang2007] should be “Zhang, Qi S., Strong noncollapsing and uniform Sobolev
+      inequalities for Ricci flow with surgeries. Pacific J. Math. 239 (2009), no. 1, 179–200”.

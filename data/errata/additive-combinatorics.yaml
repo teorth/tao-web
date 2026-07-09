@@ -1,0 +1,1455 @@
+# Imported from https://terrytao.wordpress.com/books/additive-combinatorics/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Additive Combinatorics
+  slug: additive-combinatorics
+  authors:
+  - Terence Tao
+  - Van Vu
+  source: "https://terrytao.wordpress.com/books/additive-combinatorics/"
+  description: "This book covers the basic tools in additive combinatorics: sum set estimates, inverse\
+    \ theorems, graph theory techniques, crossing numbers, algebraic methods, and Szemerédi’s theorem."
+  publication:
+    publisher: Cambridge University Press
+    first_published: 2006
+    isbn: 978-0-521-85386-6 (hardback); 978-0-521-13656-3 (paperback)
+    note: Cambridge Studies in Advanced Mathematics 105. Hardback, 530 pages; paperback, 512 pages.
+  links:
+  - title: Sample chapters
+    url: "http://www.math.ucla.edu/~tao/preprints/additive_sample.dvi"
+  - title: Publisher (Cambridge University Press)
+    url: "http://www.cambridge.org/uk/catalogue/catalogue.asp?isbn=0521853869"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Eric Aas
+    - Ryan Alweiss
+    - Andrea
+    - Louigi Addario-Berry
+    - Khodakhast Bibak
+    - Thomas Bloom
+    - Lin Bo
+    - Richard Brent
+    - Walter Bridges
+    - Adam Brown
+    - Tom Brown
+    - Andres Caicedo
+    - Rafael Tesoro Carretero
+    - Kestutis Cesnavicius
+    - Mei-Chu Chang
+    - Sheng-Fu Chiu
+    - David Colvert
+    - Paul Delhanty
+    - RFZ
+    - Mikhail Gabdullin
+    - Moubariz Garaev
+    - Stephen Ge
+    - Marcel Goh
+    - Paul Hagelstein
+    - Le Thai Hoang
+    - Zach Hunter
+    - Ce Jin
+    - Tom Koornwinder
+    - Jarek Kuben
+    - Nitish Kumar
+    - Pham Lam
+    - Choongbum Lee
+    - Mark Lewko
+    - Victor Lie
+    - Chao-Ming Lin
+    - Yang Liu
+    - Isabel Lugo
+    - Freddie Manners
+    - Heiko Mattern
+    - Vicky Neale
+    - Danny Nguyen
+    - Lam Pham
+    - Gyan Prakash
+    - Firdavs Rakhmonov
+    - Aditya Guha Roy
+    - rrjmhn
+    - Juanjo Rué
+    - Sean
+    - Mark Sellke
+    - Tomer Shalev
+    - Olof Sisask
+    - Justin W. Smith
+    - Sai Teja Somu
+    - Srivastan
+    - Thomas
+    - Matthew Tointon
+    - Sam van Gool
+    - Marco Vitturi
+    - Mate Weirdl
+  migrated: '2026-07-09'
+editions:
+- id: revised-edition
+  name: Revised edition
+  errata:
+  - id: revised-edition-0001
+    page: '6'
+    text: "In Exercises 1.1.6, 1.1.7, $[0,1]^d$ should be $\\{0,1\\}^d$."
+  - id: revised-edition-0002
+    page: '7'
+    text: in the display after (1.10), add an additional right parenthesis before the equality sign.
+  - id: revised-edition-0003
+    page: '12'
+    text: In Example 1.12, “Legendre’s theorem” should be “Lagrange’s theorem”.
+  - id: revised-edition-0004
+    page: '15'
+    text: "In the final display, $\\kappa/2$ (or $\\kappa/16$) should be $16$ (this supersedes the previous\
+      \ erratum for this line)."
+  - id: revised-edition-0005
+    page: '16'
+    text: "In the final display, $8 \\log n$ should be $32 \\log n$. On the next line, “Corollary 1.10\
+      \ (or Corollary 1.8)” should read “Corollary 1.9”."
+  - id: revised-edition-0006
+    page: '17'
+    text: "In Exercise 1.3.4, $e^{\\lambda \\sigma/2\\sqrt{2}}$ should be $e^{-\\lambda \\sigma/2\\sqrt{2}}$.\
+      \ Also add “The variance of a complex variable $X$ is defined to be ${\\bf E}(|X|^2) - |{\\bf E}\
+      \ X|^2$."
+  - id: revised-edition-0007
+    page: '18'
+    text: "In Exercise 1.3.10, add “with $k, m$ not both equal to $1$” before the first comma."
+  - id: revised-edition-0008
+    page: '23'
+    text: "In (1.30), third summation, $v \\in V$ should be $i\\ in V$."
+  - id: revised-edition-0009
+    page: '26'
+    text: "In the penultimate paragraph, $x \\in S'$ should be $x+S'$."
+  - id: revised-edition-0010
+    page: '30'
+    text: "In the third display, $p \\geq n-2n^{2/3}$ should be $p \\geq n-n^{0.9}$ (say), and the third\
+      \ equality should be a $\\geq$ sign."
+  - id: revised-edition-0011
+    page: '35'
+    text: "first line: a right parenthesis ) missing before ${\\bf E}(Y)$."
+  - id: revised-edition-0012
+    page: 36-37
+    text: "The proof of Theorem 1.39 requires a number of significant changes. After the first paragraph,\
+      \ add “We will show first that with probability 1, that any natural number $n$ has at most a bounded\
+      \ number of representations as the sum of $k$ elements of $A$ between $n^\\varepsilon$ and $n$;\
+      \ the treatment of the remaining sums in which at least one term is less than $n^\\varepsilon$ is\
+      \ left as an exercise.” Then, in the definition of $Y_m$ and also in the computation of ${\\bf E}(Y_m)$,\
+      \ insert the lower bound $n^\\varepsilon \\leq n_1$ in the sum. On the first line of page 37, and\
+      \ in Exercise 1.7.2, replace $n^{-1/h}$ with $n^{-\\delta}$ for some $\\delta > 0$. Extend Exercise\
+      \ 1.7.2 by adding “Then complete the proof of Theorem 1.39 by using similar arguments to treat the\
+      \ contribution of sums in which some of the summands have size less than $n^\\varepsilon$ for some\
+      \ sufficiently small $\\varepsilon$, by using an induction hypothesis to bound the number of representations\
+      \ by sums of fewer than $k$ elements of size less than $n^\\varepsilon$.”"
+  - id: revised-edition-0013
+    page: '42'
+    text: "Exercise 1.8.1 contains a number of inaccuracies (namely, “$A \\in {\\bf Z}^+$” should be “$A\
+      \ \\subset {\\bf Z}^+$, and “no two elements” should be “no two distinct elements” (and so $2B$\
+      \ should really be $2^* B$ here)), and is in any case a consequence of Theorem 6.2, and so should\
+      \ probably be deleted (it is rather difficult to establish this exercise with the tools developed\
+      \ up to that point)."
+  - id: revised-edition-0014
+    page: '45'
+    text: "After equation (1.45), the assertion $p_k = k \\log k + O_\\epsilon(k^{1/2+\\epsilon})$ should\
+      \ instead be $p_k = Li^{-1}(k) + O_\\epsilon(k^{1/2+\\epsilon})$, where $Li(x) := p.v.\\int_0^x\
+      \ \\frac{dt}{\\log t}$ is the logarithmic integral."
+  - id: revised-edition-0015
+    page: '48'
+    text: "in the first bound of Exercise 1.10.3, the error term of $O(n^{1/2})$ should be $O(\\log n)$."
+  - id: revised-edition-0016
+    page: '54'
+    text: After the proof of Lemma 2.1, “Corollary 5.13” should be “Lemma 5.13”.
+  - id: revised-edition-0017
+    page: '57'
+    text: "In the example after Definition 2.7, $|A-A|$ should be $N(N-1)+1$ rather than $\\frac{N(N-1)}{2}+1$."
+  - id: revised-edition-0018
+    page: '58'
+    text: "In Exercise 2.2.6, $2\\sqrt{\\sigma(A) |A|}$ should be $\\sqrt{2\\sigma(A) |A|}$. (This error\
+      \ is not present in the first edition.)"
+  - id: revised-edition-0019
+    page: '61'
+    text: "In the penultimate bullet point of Proposition 2.7, add the requirement $n+m \\geq 1$. After\
+      \ Proposition 2.7, “$0$, $0$, or $1$ respectively” should be “$0$, $1$, or $1$ respectively”."
+  - id: revised-edition-0020
+    page: '62'
+    text: "In (2.7), after Definition 2.8, $\\hbox{min}(|A| |B| )$ should be $\\hbox{min}(|A|, |B| )$."
+  - id: revised-edition-0021
+    page: '63'
+    text: "In the sixth line of the first display, $a-b'=a'-b$ should be $a-b'=y$."
+  - id: revised-edition-0022
+    page: '66'
+    text: "In Exercise 2.3.2, $\\frac{1}{2} \\log 2$ should be $\\log 2$. In Exercise 2.3.7, replace the\
+      \ first bound with $\\sigma[A \\cup B] \\leq O( \\exp^{4d(A,B)})$ and the second bound with $d(A,B)\
+      \ \\leq O( \\log \\sigma[A \\cup B] + \\log \\frac{|A \\cup B|}{|A|} + \\log \\frac{|A \\cup B|}{|B|}$."
+  - id: revised-edition-0023
+    page: '70'
+    text: "In the statement of Ruzsa’s covering lemma, insert “at most” after “In particular, $B$ can\
+      \ be covered by”."
+  - id: revised-edition-0024
+    page: '71'
+    text: "In the proof of the Green-Ruzsa covering lemma, “the size of $|X+A|$” should be “the size $|X+A|$\
+      \ of $X+A$“."
+  - id: revised-edition-0025
+    page: '73'
+    text: "In Corollary 2.22, replace “covered by $\\delta[A]^5$” with “covered by at most $\\delta^5$“.\
+      \ Similarly in the proof of the corollary."
+  - id: revised-edition-0026
+    page: '74'
+    text: "In Corollary 2.23, add the hypothesis $n_1+n_2, n_3+n_4 > 0$, and replace the exponent $10$\
+      \ by $20$."
+  - id: revised-edition-0027
+    page: '76'
+    text: "In Exercise 2.4.5, $\\binom{K+n-1}{n}$ can be improved to $\\binom{K+n-2}{n-1}$. In the final\
+      \ inequality in Exercise 2.4.8, the quantities $d(G_1,G_2)$ and $d(G_1+G_3,G_2+G_3)$ should be swapped."
+  - id: revised-edition-0028
+    page: '83'
+    text: "In Exercise 2.5.5, the small K case is somewhat more difficult than the hint suggests, since\
+      \ if $K = 1 + \\varepsilon$ for some small $\\varepsilon$ then a direct application of Exercise\
+      \ 2.5.4 will give losses of $1 + O(\\varepsilon^{1/2})$ rather than $1 + O(\\varepsilon)$. One way\
+      \ to proceed is to first use the lossy argument, apply Exercise 2.4.4 to locate a relevant finite\
+      \ group, and then use ad hoc arguments to refine the error. In Exercises 2.5.6 and 2.5.7, the reference\
+      \ [80] should instead be to “G. Elekes, I. Ruzsa, The structure of sets with few sums along a graph”,\
+      \ J. Combin. Theory Ser. A 113 (2006), no. 7, 1476–1500. Finally, in Exercise 2.5.7, the graph G\
+      \ should be assumed to be symmetric."
+  - id: revised-edition-0029
+    page: '88'
+    text: "In the definition of $\\tilde O, \\tilde \\Omega$, $\\log L$ should be $(1+\\log L)$."
+  - id: revised-edition-0030
+    page: "?"
+    text: "Exercise 2.6.6 is false as stated; the conclusion needs to be weakened, in that the indicated\
+      \ translates of $H$ only cover $1-\\varepsilon$ of $A$ rather than all of $A$. Furthermore, the\
+      \ proof requires Exercise 6.5.1. Hence this exercise should be moved to Section 6.5, with a hint\
+      \ to use Exercise 6.5.1 and the Ruzsa covering lemma (Theorem 2.35 is not directly required, though\
+      \ the strategy of proof can still be useful)."
+  - id: revised-edition-0031
+    page: '100'
+    text: In Corollary 2.52, A should be assumed to be a finite subset, rather than a finite subfield.
+  - id: revised-edition-0032
+    page: '104'
+    text: "the last paragraph here (from “Now let $x$…” onwards) can be deleted, and replaced by the much\
+      \ shorter “Since $G= Q[A']$ and $A'$ contains both 0 and 1, we have $A' \\subset G$“."
+  - id: revised-edition-0033
+    page: '116'
+    text: "In the proof of Corollary 3.6, $\\{ n \\in {\\bf Z}^n: n \\cdot (v_1,\\ldots,v_n) = 0 \\}$\
+      \ should be $\\{ m \\in {\\bf Z}^n: m \\cdot (v_1,\\ldots,v_n) = 0 \\}$, and “for some $w \\in {\\\
+      bf Z}^d$” should be “for some $w \\in {\\bf Z}^n$."
+  - id: revised-edition-0034
+    page: '118'
+    text: In the proof of Corollary 3.9, some explanation should be added as to why the torsion group
+      is finite. This follows first from the observation that any subgroup of a finitely generated abelian
+      group is also finitely generated (this follows from viewing the group as the image of a lattice
+      and using Lemma 3.4), and that finitely generated abelian torsion groups are finite (because there
+      are only finitely many distinct ways to combine the generators together).
+  - id: revised-edition-0035
+    page: '121'
+    text: After Lemma 3.11, “exponentially in |A|” should be “exponentially in K”.
+  - id: revised-edition-0036
+    page: '128'
+    text: "In the proof of 3.19, the normalisation $\\int_{\\bf R} f = \\int_{\\bf R} g = 1$ should not\
+      \ be used; instead, one should normalise $\\sup f = \\sup g = 1$ (and the comment that it suffices\
+      \ to show $\\int_{\\bf R} h \\geq 1$ should be deleted). The second display should then be restricted\
+      \ to the range $0 < \\lambda < 1$ (note that Lemma 3.18 requires all sets involved to be non-empty),\
+      \ and one should also mention the weighted arithmetic mean-geometric mean inequality at the end\
+      \ of the proof."
+  - id: revised-edition-0037
+    page: '131'
+    text: "In the second paragraph of the proof of Lemma 3.21, “translates of $\\Gamma$” should be “translates\
+      \ of $\\Gamma'$“."
+  - id: revised-edition-0038
+    page: '132'
+    text: "In Lemma 3.23, the hypothesis that the cosets $p+\\Gamma$ for $p \\in P$ are disjoint should\
+      \ be added."
+  - id: revised-edition-0039
+    page: '133'
+    text: The Kronecker approximation theorem should more accurately be called a simultaneous Dirichlet
+      approximation theorem.
+  - id: revised-edition-0040
+    page: '134'
+    text: In the first line, “with” should be “within”.
+  - id: revised-edition-0041
+    page: '135'
+    text: "In the definition of $\\lambda_j$, $k$ should be $j$."
+  - id: revised-edition-0042
+    page: '136'
+    text: in the first line, “directional basis for A” should be “directional basis for B”.
+  - id: revised-edition-0043
+    page: '142'
+    text: "In the proof of Lemma 3.36, $L$ and $L_j$ should be $N$ and $N_j$ respectively (for consistency)."
+  - id: revised-edition-0044
+    page: '143'
+    text: "?: Exercise 3.5.3 is false. In its place, one can put the following example (from this reference):\
+      \ Let $A$ be the convex hull of the four points $(N,0,0), (-N,0,0), (0,N,1), (0,-N,1)$ for a natural\
+      \ number $N$. Show that $(A \\cap {\\bf Z}^3)$ has cardinality $4N+2$, but $2(A \\cap {\\bf Z}^3)$\
+      \ has cardinality at least $(N+1)^2$. Thus one cannot remove the symmetry hypotheses from Lemma\
+      \ 3.21."
+  - id: revised-edition-0045
+    page: '154'
+    text: In display (4.9) there is a full stop missing.
+  - id: revised-edition-0046
+    page: '155'
+    text: "In Exercise 4.1.5, “pairwise independent” should be “pairwise uncorrelated”. In Exercise 4.1.7,\
+      \ ${\\bf E}_{\\xi \\in H^\\perp} \\hat f(\\xi)$ should be $\\sum_{\\xi \\in H^\\perp} \\hat f(\\\
+      xi)$. In Exercise 4.1.8, $f((\\phi^\\dagger)^{-1}(x))$ should be $\\hat f((\\phi^\\dagger)^{-1}(x))$.\
+      \ In Exercise 4.1.4, “for all $c$” should be “for all $x$“."
+  - id: revised-edition-0047
+    page: '156'
+    text: "In the second display (defining $\\|f\\|_{L^\\infty(Z)}$), $=$ should be $:=$."
+  - id: revised-edition-0048
+    page: '158'
+    text: "In the proof of Lemma 4.10, in the final display, the last equals sign should be a $\\geq$\
+      \ sign. An additional sentence of explanation should be added: “The penultimate inequality follows\
+      \ from Plancherel’s theorem, followed by Minkowski’s inequality to estimate the $L^2$ norm of f.”"
+  - id: revised-edition-0049
+    page: '162'
+    text: In the last line, “sum of two elements” should be “sum of two squares”.
+  - id: revised-edition-0050
+    page: '163'
+    text: "In Exercise 4.3.4, “is contained in a coset” should read “is a coset”. In Exercise 4.3.14,\
+      \ Polya should be Pólya (and similarly for the corresponding entry in the index). In Exercise 4.3.2,\
+      \ $T^h A$ should be $h+A$. In the discussion of Lemma 4.16, the term $\\tau Z$ in the approximation\
+      \ for $\\|B\\|_u$ after the display should be deleted, and $O(\\sigma^2 \\log^{1/2} |Z|)$ should\
+      \ be $O(\\sigma \\log^{1/2} |Z|)$. In the statement of Lemma 4.16, $e^{-\\lambda \\sigma/2\\sqrt{2}}$\
+      \ should be $e^{-\\lambda \\sigma |Z|/2\\sqrt{2}}$."
+  - id: revised-edition-0051
+    page: '165'
+    text: "In Exercise 4.3.15, the transformation $M$ needs to be assumed to be symmetric."
+  - id: revised-edition-0052
+    page: '166'
+    text: "In Lemma 4.20, the additional hypothesis $\\rho \\leq 1$ should be added."
+  - id: revised-edition-0053
+    page: 168-169
+    text: "Before Proposition 4.23, “dispense with” should be “almost dispense with”. In Proposition 4.23,\
+      \ the proper progression $P$ should be the proper coset progression $P+H$, where $H$ is a subgroup\
+      \ of ${\\bf Z}_N$ (i.e. the multiples of $M$ for some factor $M$ of $N$). The last sentence of the\
+      \ proposition is redundant and can be deleted. In the proof, one first handles the case when $\\\
+      alpha$ has order $N$ in ${\\bf Z}^d$, in which case the first display of p.169 is an equality, and\
+      \ one obtains a progression of rank $d$. In the general case, when $\\alpha$ has order $M$ for some\
+      \ $M$ dividing $N$, one then passes from ${\\bf Z}_N$ to ${\\bf Z}_M$ by quotienting out the group\
+      \ $H$ generated by $M$, and then applies the previous case."
+  - id: revised-edition-0054
+    page: '170'
+    text: In the proof of Lemma 4.25, “find thus find” should be “thus find”.
+  - id: revised-edition-0055
+    page: '171'
+    text: In Exercise 4.4.7, “lower” should be “increase”.
+  - id: revised-edition-0056
+    page: '174'
+    text: In Remark 4.31, the sentence “The converse statement is true up to logarithmic factors; see
+      exercises.” should be deleted.
+  - id: revised-edition-0057
+    page: 176-177
+    text: "The denominator $4+\\varepsilon$ in (4.34) can be improved to $2+\\varepsilon$, by setting\
+      \ $\\sigma$ equal to $\\lambda$ instead of $\\lambda/2$ in page 177 (changing the fourth and fifth\
+      \ displays appropriately)."
+  - id: revised-edition-0058
+    page: '179'
+    text: "In Exercise 4.5.8, $|Z|^{1/h}$ should be $O(h |Z|^{1/h})$. In Exercise 4.5.7, $\\min$ should\
+      \ be $\\max$."
+  - id: revised-edition-0059
+    page: '180'
+    text: Exercise 4.5.11 does not work as stated and should be deleted.
+  - id: revised-edition-0060
+    page: '181'
+    text: "In Lemma 4.35, add “$k \\geq 0$ is an integer, ” after “where”. In the proof, “incrementing\
+      \ $k+1$” should be “incrementing $k$ to $k+1$“. “all dissociated subsets of $S$” should be “all\
+      \ dissociated subsets of $R$“."
+  - id: revised-edition-0061
+    page: '183'
+    text: "In the statement of Lemma 4.37, the second “an” should be “a”. In the proof, “convexity” should\
+      \ be “concavity”, and $e(x, \\xi+\\xi')$ should be $e((\\xi+\\xi') \\cdot x)$."
+  - id: revised-edition-0062
+    page: '187'
+    text: "In the statement of Theorem 4.41, the upper bound for $\\|H\\|_u$ should be $p^{-\\varepsilon}\
+      \ {\\bf P}_F(H)$ rather than just $p^{-\\varepsilon}$."
+  - id: revised-edition-0063
+    page: '188'
+    text: "At the end of the proof of Theorem 4.41, add the following parenthetical remark: “The upper\
+      \ bound on $|A|$ required for Corollary 2.62 is supplied by (4.37) and the lower bound on $|H|$.”\
+      \ In Exercise 4.6.2: $\\hbox{Sym}_0$ should be $\\hbox{Sym}_1$ (two occurrences)."
+  - id: revised-edition-0064
+    page: '189'
+    text: "In the discussion after Theorem 4.42, the bound $E(A,A) \\geq |A|^2$ should be $latex E(A,A)\
+      \ >= P(A) |A|^3$."
+  - id: revised-edition-0065
+    page: '191'
+    text: "In the third equation of the display, the $L^2(Z)$ norms should be $\\ell^2(Z)$ (and the final\
+      \ term $\\widehat{1_{A_3}}(\\xi)$ should just be $\\widehat{1_{A_3}}$."
+  - id: revised-edition-0066
+    page: '193'
+    text: Lemma 4.46 has a redundant “such that”.
+  - id: revised-edition-0067
+    page: '194'
+    text: "In Theorem 4.47, the $\\frac{(\\log \\log N)^3}{\\log N}$ should be $\\frac{(\\log \\log N)^{3/2}}{\\\
+      log^{1/2} N}$, and $(\\delta \\log N)^{1/3}$ should be $(\\delta^2 \\log N)^{1/3}$."
+  - id: revised-edition-0068
+    page: '196'
+    text: "A right parenthesis is missing after the reference to Green [149]. In the penultimate line\
+      \ in the proof of Theorem 4.47, as well as in the sentence immediately after this proof, and in\
+      \ the second sentence on page 197, $(\\delta \\log N)^{1/3}$ should be $(\\delta^2 \\log N)^{1/3}$."
+  - id: revised-edition-0069
+    page: '199'
+    text: In the second sentence in the paragraph before the statement of Lemma 5.3, “Lemma” should be
+      uncapitalised.
+  - id: revised-edition-0070
+    page: '201'
+    text: "In the second-t0-last displayed equation, $A_{(0)} + H \\backslash A_{(0)}$ should be $(A_{(0)}\
+      \ + H) \\backslash A_{(0)}$."
+  - id: revised-edition-0071
+    page: '208'
+    text: "The sixth line of the long display should be $|A| + 3 |\\phi_h(A)| |H| - (|H|-2) |\\phi_h(A)|\
+      \ - |\\phi_h(A)| - 2|H| + 2(|H|-2) - 2k + 1$ (here we use $|\\phi_h(A)| \\geq 2$). The seventh line\
+      \ should be $|A| + 2 |\\phi_h(A)| |H| + |\\phi_h(A)| - 2k - 3$. The eighth line should be $|A| +\
+      \ 2 (|A|+k-1) + |\\phi_h(A)| - 2k - 3$. The final line remains as $3|A|-3$ (here we again use $|\\\
+      phi_h(A)| \\geq 2$)."
+  - id: revised-edition-0072
+    page: '211'
+    text: In the statement of Lemma 5.13, “let suppose” should be just “suppose”.
+  - id: revised-edition-0073
+    page: '226'
+    text: "In Exercise 5.3.4, the hypothesis “$0 \\in A$” is missing. In exercise 5.3.2, $\\{0,1,n\\}$\
+      \ should be $\\{0,1,n+2\\}$."
+  - id: revised-edition-0074
+    page: '236'
+    text: "In the proof of Proposition 5.41, all occurrences of ${\\bf R}$ should be ${\\bf Z}$."
+  - id: revised-edition-0075
+    page: '239'
+    text: "The example in Exercise 5.5.17 is incorrect; the set $A$ should be $\\{ 2e_i, e_i + e_{i+1}:\
+      \ i=1,\\dots,5\\}$ in ${\\bf Z}^5$, where $e_1,\\dots,e_5$ is the standard basis and one adopts\
+      \ the convention $e_6 =1$; “quadrilateral” should be “pentagon” and ${\\bf Z}^4$ and ${\\bf Z}^2$\
+      \ should be replaced by ${\\bf Z}^5$ throughout."
+  - id: revised-edition-0076
+    page: '241'
+    text: "In the last line of the first display in the proof of Lemma 5.45, $(|X|+2n-2)|X|$ should be\
+      \ $(|X|+2n-2)^{|X|}$."
+  - id: revised-edition-0077
+    page: '242'
+    text: "Before (5.19), a right parenthesis should be inserted after $\\mathrm{Tor}(Z)$."
+  - id: revised-edition-0078
+    page: '248'
+    text: In the proof of Theorem 6.1, “probablistic” should be “probabilistic”.
+  - id: revised-edition-0079
+    page: '249'
+    text: "In the second paragraph of the proof of Theorem 6.2, all occurrences of $n-i$ should be $i-1$."
+  - id: revised-edition-0080
+    page: '254'
+    text: In exercise 6.2.8, the adjective “triangle-free” should be deleted. In Exercise 6.2.3, the final
+      period should be inside the parenthesis.
+  - id: revised-edition-0081
+    page: '260'
+    text: "In Exercise 6.3.5, $B+B$ should be replaced with $B \\hat + B$, with the note “where $B \\\
+      hat + B := \\{ b_1+b_2: b_1,b_2 \\in B, b_1 \\neq b_2\\}$ is the restricted sumset of $B$ with itself”\
+      \ added."
+  - id: revised-edition-0082
+    page: '263'
+    text: "In the final display, the right parenthesis after $(a,b) \\in E$ should be deleted. Similarly\
+      \ for the first display on page 264."
+  - id: revised-edition-0083
+    page: '271'
+    text: "In Section 6.5.2, $G_1 \\circ \\ldots \\circ G_k$ should be $G_k \\circ \\ldots \\circ G_1$\
+      \ (two occurrences)."
+  - id: revised-edition-0084
+    page: '272'
+    text: "The definition of $C_i^\\pm$ needs to be moved from page 273 to just before Lemma 6.34."
+  - id: revised-edition-0085
+    page: '273'
+    text: In Exercise 6.4.2, “Claim 6.31 and Claim 6.4” should be “equations (6.3) and (6.4)”.
+  - id: revised-edition-0086
+    page: '279'
+    text: "In Proposition 7.7, $\\lfloor (|X|+i)/2\\rfloor$ should be $\\lfloor |X|/2\\rfloor + i$."
+  - id: revised-edition-0087
+    page: '281'
+    text: "In the last paragraph, “$Z$ is odd” should be “$|Z|$ is odd”."
+  - id: revised-edition-0088
+    page: '285'
+    text: Corollary 5.25 should be Lemma 5.25.
+  - id: revised-edition-0089
+    page: '286'
+    text: "In the second paragraph, the condition $\\alpha \\geq {\\bf E}_{Z_p}(G)$ should be replaced\
+      \ by $\\alpha > \\min G$, and the phrase “by Markov’s inequality” should be dropped. Similarly,\
+      \ in the third and fifth displays, the first occurrence of ${\\bf E}_{Z_p}(G)$ in each should be\
+      \ $\\min G$."
+  - id: revised-edition-0090
+    page: '291'
+    text: "In the definition of $w(\\xi)$ after the first display, a $d\\xi_1$ is needed at the end of\
+      \ the integral. In the first paragraph, add “but still bounded” after “sufficiently large”."
+  - id: revised-edition-0091
+    page: '292'
+    text: In Exercise 7.3.4, the comma should be an apostrophe.
+  - id: revised-edition-0092
+    page: '293'
+    text: "$v_1,\\dots,v_n$ should be elements of $P$ rather than $V$. In Example 7.19, “which have volume”\
+      \ should be “which has volume”."
+  - id: revised-edition-0093
+    page: '294'
+    text: After the first proof of (7.20), “lower dimension its” should be “lower its dimension”.
+  - id: revised-edition-0094
+    page: '299'
+    text: "In the first display, $3 \\log_ 2 n$ should be $3n/\\log_2 n$."
+  - id: revised-edition-0095
+    page: "?"
+    text: In Section 7.7 and in reference [101], the accent in Esseen should be dropped.
+  - id: revised-edition-0096
+    page: '313'
+    text: "In Theorem 8.10, “at most $\\beta$ lines” should be “at most $\\beta$ curves”."
+  - id: revised-edition-0097
+    page: '315'
+    text: "In the proof of Theorem 8.14, $c \\in P$ should be $c \\in A$."
+  - id: revised-edition-0098
+    page: '316'
+    text: "In the third to last line, $|A|^{18/3}$ should be $|A|^{8/3}$."
+  - id: revised-edition-0099
+    page: '319'
+    text: "In the proof of Theorem 8.17, one should be counting the number of narrow isosceles triangles,\
+      \ rather than all isosceles triangles; and in the preceding sentence, “points in $p$” should be\
+      \ “points in $P$“."
+  - id: revised-edition-0100
+    page: '331'
+    text: "In the third and fifth displays, the summation should run up to $|S_n|-1$ rather than $|S_n|$.\
+      \ In the proof of Theorem 9.2, $t_{n-1}^{d_n-1}$ should be $t_{n-1}^{d_{n-1}}$."
+  - id: revised-edition-0101
+    page: '333'
+    text: In the proof of Lemma 9.3, “P vanishes on contains” should be “P vanishes on a set which contains”.
+  - id: revised-edition-0102
+    page: '346'
+    text: "“Cauchy’s theorem” should be “Lagrange’s theorem”."
+  - id: revised-edition-0103
+    page: '358'
+    text: "In the second display of the proof of Lemma 9.43, $s^{|G|}-4$ should be $s^{|G|}-r$."
+  - id: revised-edition-0104
+    page: '363'
+    text: "in the last paragraph “the finite field $F_p$” should be “the ring $F_p[z]$ of formal polynomials\
+      \ with coefficients in the finite field $F_p$“."
+  - id: revised-edition-0105
+    page: '370'
+    text: In the last paragraph, the reference “Meshulam [248]” should instead be “Brown and Buhler [BB]
+      (see also Frankl, Graham, and Rodl [FGR]”, where [BB] is “T. C. Brown and J. C. Buhler, Lines imply
+      spaces in density Ramsey theory, J. Combin. Theory Ser. A 36 (1984), 214-220.”, and [FGR] is “P.
+      Frankl, R. Graham, and V. Rodl, On subsets of abelian groups with no 3-term arithmetic progresion,
+      J. Combin. Theory Ser. A 45 (1987), 157-161.”
+  - id: revised-edition-0106
+    page: '371'
+    text: "In Exercise 10.0.3, add “The upper density of a subset $A$ of the integers is defined as $\\\
+      lim\\sup_{N \\to \\infty} \\frac{|A \\cap \\{-N,\\dots,N\\}|}{2N+1}$.”."
+  - id: revised-edition-0107
+    page: '372'
+    text: "In Exercise 10.0.8, add the hypothesis that no non-zero element of the groups containing $A$\
+      \ or $B$ has order less than $k$."
+  - id: revised-edition-0108
+    page: '386'
+    text: "In the first display, $\\alpha = o( |Z|^{-1/10})$ should be $\\alpha \\geq |Z|^{-1/10}$."
+  - id: revised-edition-0109
+    page: '388'
+    text: "In Lemma 10.25, there should be no absolute value signs around ${\\bf E}_{n \\in P'} f(n)$.\
+      \ In the last display, $\\delta N/4$ should be $\\delta/8$, and in the first display on page 389,\
+      \ $\\sigma |P_0|/4$ should be $\\sigma |P_0|/8$."
+  - id: revised-edition-0110
+    page: '388'
+    text: "390-391: The Kronecker approximation theorem should more accurately be called a simultaneous\
+      \ Dirichlet approximation theorem."
+  - id: revised-edition-0111
+    page: '391'
+    text: "In Lemma 10.29, $[1,n]$ should be $[1,N]$, there should be an additional hypothesis of ${\\\
+      bf E}_{n \\in [1,N]} |f(n)| \\leq \\delta$. The bound $\\Omega(\\sigma N^{1/(|S|+1)})$ should be\
+      \ $\\Omega(N^{1/(|S|+1)})$, and the bound $\\Omega(\\sigma)$ should be $\\Omega(\\sigma/\\delta)$.\
+      \ In the third display of the proof, the right-hand side of 1 should be $\\delta$, and in the fifth\
+      \ display, the right-hand side should be $\\Omega(\\sigma/\\delta)$."
+  - id: revised-edition-0112
+    page: '394'
+    text: "in the second display, $1_{\\mathrm{Bohr}(S,\\rho-\\rho_1)}(r)$ should be $1_{\\mathrm{Bohr}(S,\\\
+      rho-\\rho_1)}(x)$."
+  - id: revised-edition-0113
+    page: '396'
+    text: In each of the two displays after “From (10.16), we have”, there is an extra right parenthesis
+      on the right-hand side that should be deleted.
+  - id: revised-edition-0114
+    page: '397'
+    text: In Exercise 10.4.2, Lemma 10.15 should be Lemma 10.29.
+  - id: revised-edition-0115
+    page: '402'
+    text: "In (10.21), $\\in a+bi+\\alpha \\in B$ should be $- a-bi-\\alpha \\in B)$, and similarly in\
+      \ the folowing display."
+  - id: revised-edition-0116
+    page: "?"
+    text: "In the statement of Theorem 10.31, the bound for $\\Lambda(f,f,f)$ should be $\\Omega({\\bf\
+      \ E}_Z(f)^{O({\\bf E}_Z(f)^{-2})})$ rather than $\\Omega({\\bf E}_Z(f)^{-O({\\bf E}_Z(f)^{2})})$."
+  - id: revised-edition-0117
+    page: '405'
+    text: "In Exercise 10.5.1, $K^2$ should be $O_{K,\\sigma}(1)$."
+  - id: revised-edition-0118
+    page: '412'
+    text: In the second case of Corollary 10.50 the word ‘and’ should be inserted.
+  - id: revised-edition-0119
+    page: '413'
+    text: "In Exercise 10.7.2, $O(k)$ should be $O(k+r)$. In the second display, $O( \\frac{N}{d} )$ should\
+      \ similarly be $O( \\frac{N}{d} + v_i )$ (which is permissible since $\\sum_{i=1}^d v_i = O(N)$)."
+  - id: revised-edition-0120
+    page: '414'
+    text: In the first paragraph, “motivation” should be “motivations”.
+  - id: revised-edition-0121
+    page: '430'
+    text: "In the last line, a right parenthesis is missing after $\\exp(O(\\eta^{-O(1)})$."
+  - id: revised-edition-0122
+    page: '435'
+    text: "In the penultimate display, $V_2$ should be $V_1$."
+  - id: revised-edition-0123
+    page: '436'
+    text: "In the equation before (11.21), ${\\bf b}(y)$ should be ${\\bf b}(x+y+h)$, and the right brace\
+      \ should be deleted."
+  - id: revised-edition-0124
+    page: '437'
+    text: "In the definition of $W$, $h \\in W_1$ should be $x \\in W_1$."
+  - id: revised-edition-0125
+    page: '439'
+    text: "In proposition 11.12, In the last line, a right parenthesis is missing after $\\exp(O(\\eta_k^{-O_k(1)})$."
+  - id: revised-edition-0126
+    page: '449'
+    text: "In the sixth line from the bottom, “positive upper progressions” should be “positive upper\
+      \ density”. In the first display in the proof of Theorem 11.23, $((c_j))_{j=1}^\\infty$ should be\
+      \ $((c_j)_{j=1}^\\infty)$."
+  - id: revised-edition-0127
+    page: '450'
+    text: "In the last line of the proof, “non-zero $B$” should be “non-zero $n$“."
+  - id: revised-edition-0128
+    page: '452'
+    text: "In Theorem 11.25, ${\\bf Z}^d$ should be ${\\bf Z}$."
+  - id: revised-edition-0129
+    page: '465'
+    text: "In the definition of $P_{W,b,N}$, $Wp+b$ should be $Wq+b$; also, on the last line, “to order\
+      \ to” should be “in order to”."
+  - id: revised-edition-0130
+    page: '477'
+    text: In the top line, “an positive” should be “a positive”.
+  - id: revised-edition-0131
+    page: '492'
+    text: '[98] and [100] refer to the same article; [98] should be deleted and redirected to [100].'
+- id: first-edition
+  name: First edition
+  active: false
+  errata:
+  - id: first-edition-0001
+    page: xi
+    text: Reference [116] should be [113].
+  - id: first-edition-0002
+    page: xiv
+    text: "“Chevalley-Waring” should be “Chevalley-Warning”."
+  - id: first-edition-0003
+    page: '1'
+    text: "last display: $E(|X|^2)-E(|X|)^2$ should be $E(X^2)-E(X)^2$."
+  - id: first-edition-0004
+    page: '3'
+    text: "after Lemma 1.2: “with probability n” should be “with probability 1”."
+  - id: first-edition-0005
+    page: '4'
+    text: after Question 1.4, “Kleiman” should be “Kleitman”.
+  - id: first-edition-0006
+    page: '5'
+    text: "In Q. 1.1.3, $(-1)^k$ should be $(-1)^{|A|+1}$ (two occurrences). In Q. 1.1.5, $A \\cap (B+x)$\
+      \ and $A \\cap (B+y)$ should be $A \\cup (B+x)$ and $A \\cup (B+y)$ respectively."
+  - id: first-edition-0007
+    page: '6'
+    text: "Exercise 1.1.8 is missing. This exercise reads: “Let $A$ be an additive set. Show that there\
+      \ exists a subset $X \\subset 2A-A$ of cardinality $|X|= O( \\frac{|2A-A|}{|A|} (1 + \\log |A| )\
+      \ )$ such that $2A \\subset A+X$. (Hint: translate $A$ randomly by independent elements of $2A-A$,\
+      \ and use the first moment method.)”"
+  - id: first-edition-0008
+    page: '8'
+    text: "In the fourth display, $\\ln$ should be $\\log$. $|B|-10 \\leq \\nu(x) \\leq |B|$ should be\
+      \ $|B| \\leq \\nu(x) \\leq |B|+10$."
+  - id: first-edition-0009
+    page: '9'
+    text: In Exercise 1.2.4, the inequality should be reversed.
+  - id: first-edition-0010
+    page: '11'
+    text: "In the paragraph after (1.17), $\\ln$ should be $\\log$."
+  - id: first-edition-0011
+    page: '14'
+    text: "In the 9th line from below, $\\ln$ should be $\\log$ (two places); similarly before (1.23)\
+      \ on P. 15. In the final display, $\\kappa/2$ should be $16$ (not $\\kappa/16$ as stated previously)."
+  - id: first-edition-0012
+    page: '15'
+    text: "In the first display, the first $\\leq$ sign should be $\\geq$."
+  - id: first-edition-0013
+    page: '17'
+    text: "In the first line, Corollary 1.8 should be Corollary 1.9. In Exercise 1.3.1, n needs to be\
+      \ even and $\\lambda$ needs to be odd. In Exercise 1.3.4, the first expectation should be a probability.\
+      \ In Exercises 1.3.5 and 1.3.6, $\\lambda$ needs to be positive."
+  - id: first-edition-0014
+    page: '18'
+    text: "In Exercise 1.3.8, the expectation should be $2^{n-1} - 1/2$ and the variance should be $2^{n-2}\
+      \ - 1/4$. In Exercise 1.3.11, $E( |X|^p )^{1/p}$ should be $E( | X-E(X) |^p )^{1/p}$."
+  - id: first-edition-0015
+    page: '21'
+    text: "In Definition 1.21,”we say that $X$ is a $(1-\\epsilon)$-complementary base of $A$” should\
+      \ be”we say that $X$ is a $(1-\\epsilon)$-complementary base of order $k$ of $A$“."
+  - id: first-edition-0016
+    page: '22'
+    text: "before second display: Lemma 1.53 should be Theorem 1.53."
+  - id: first-edition-0017
+    page: '23'
+    text: "Near top: “the event that $x_j$ is good” should be “the event that $j$ is good”. In the last\
+      \ line of the proof of Lemma 1.24, $\\ln$ should be $\\log$."
+  - id: first-edition-0018
+    page: '24'
+    text: "In the last display, the third $\\overline{A_i}$ should be $\\overline{A_j}$."
+  - id: first-edition-0019
+    page: '25'
+    text: "In the first display, $\\geq$ should be $\\leq$."
+  - id: first-edition-0020
+    page: '36'
+    text: "In the first line of the proof of Theorem 1.39, add “Without loss of generality we may assume\
+      \ $\\epsilon <1/h$. In the third display on the last line, $O_h(n^{-he})$ should be $O_h(m^{-he})$."
+  - id: first-edition-0021
+    page: '37'
+    text: "In the first display, $F_h(g,N)$ should be |A|."
+  - id: first-edition-0022
+    page: '38'
+    text: "In the RHS of the display in Corollary 1.42 RHS of the formula, $D_{k,n}$ should be $(D_{k,n}-1)^k$."
+  - id: first-edition-0023
+    page: '40'
+    text: "In the RHS of the last display $D_n$ should be $(D_n-1)^k$."
+  - id: first-edition-0024
+    page: '41'
+    text: "In the first display, $D_n + 1$ should be $(D_n + 1)^k$."
+  - id: first-edition-0025
+    page: '44'
+    text: "One line before the third display, $m=[n^{1/k}]$ should be $m=[n^{1/r}]$."
+  - id: first-edition-0026
+    page: '47'
+    text: "In the penultimate equation in the proof of Proposition 1.51, the summation $\\sum_{p\\leq\
+      \ t}$ should be $\\sum_{p \\leq \\min(n,t)}$, and one should observe that the integrand vanishes\
+      \ for $t <2$. In the last equation, $\\int_1^\\infty (\\log t + O(1)) \\ldots$ should be $\\int_2^\\\
+      infty (\\log \\min(n,t) + O(1)) \\ldots$. The last sentence of the proof should then say “Direct\
+      \ computation then shows that $\\int_2^\\infty \\log \\min(n,t) \\frac{dt}{t \\log^2 t} = \\log\
+      \ \\log n + O(1)$ and $\\int_2^\\infty \\frac{dt}{t \\log^2 t} = O(1)$, and the claim follows”."
+  - id: first-edition-0027
+    page: '57'
+    text: "In the bounds for $\\delta[A]$, $\\frac{|A|-1}{2} + \\frac{1}{|A|}$ should be $|A|-1 + \\frac{1}{|A|}$\
+      \ (two occurrences). Similarly, $\\frac{N-1}{2}$ should be $N-1$ (two occurrences)."
+  - id: first-edition-0028
+    page: '58'
+    text: "In Exercise 2.2.5, $\\sqrt{\\sigma(A) |A|/2}$ should be $\\sqrt{\\sigma(A) |A|}$."
+  - id: first-edition-0029
+    page: '68'
+    text: "In Exercise 2.3.14, $A-A$ should be $A+A$, and $x+A$ should be $x-A$. Replace “though the set\
+      \ $F$ may be symmetric around a non-zero origin $x/2$” with “where by symmetry here we mean that\
+      \ $F=x-F$”. (The point is that $x/2$ might not actually exist and be unique for some groups.)"
+  - id: first-edition-0030
+    page: '69'
+    text: In Exercise 2.3.20, a square root is missing from the left-hand side.
+  - id: first-edition-0031
+    page: '76'
+    text: In Exercise 2.4.4, Corollary 2.19 should be Corollary 2.20.
+  - id: first-edition-0032
+    page: '77'
+    text: "In Exercise 2.4.7, $\\frac{1}{(KK')^3}$ should be $(KK')^3$."
+  - id: first-edition-0033
+    page: '78'
+    text: In, Exercise 2.4.11, Proposition 2.4.11 should be Proposition 2.27.
+  - id: first-edition-0034
+    page: '79'
+    text: "In (2.20), $K^4$ should be $K^5$."
+  - id: first-edition-0035
+    page: '80'
+    text: "In the first paragraph, $K^4$ should be $K^5$. In the second display of the proof of Lemma\
+      \ 2.30, the \\frac{}{} should be a / (and in particular should not enclose the left-hand side of\
+      \ the inequality). Near top: “the iterated sum and difference sets of $A''$ and $B''$” should be\
+      \ the iterated sum and difference sets of $A'$ and $B'$“."
+  - id: first-edition-0036
+    page: '82'
+    text: "In Exercise 2.5.3, add $|B''| \\geq 2|B|/K$ after $|A''| \\geq 2|A|/K$. In Exercise 2.5.4,\
+      \ “is can be used” should be “can be used”."
+  - id: first-edition-0037
+    page: '85'
+    text: "In, Lemma 2.23, “there exists a set $G \\subset |S|^2$” should be “there exists a set $G \\\
+      subset S^2$“."
+  - id: first-edition-0038
+    page: '86'
+    text: "In the first display of the proof of Lemma 2.34, $\\tilde G$ should be G."
+  - id: first-edition-0039
+    page: '87'
+    text: "In the fourth display, the $G'$ on the LHS and RHS should be $G_m$. In the last sentence in\
+      \ the statement of Theorem 2.35, $L^{\\epsilon}$ should be $L^{-\\epsilon}$."
+  - id: first-edition-0040
+    page: '95'
+    text: "Lemma 2.41, while correct, does not imply Corollary 2.42 as stated (since $d(A,A)$ does not\
+      \ control $|A^{-1} \\cdot A|$). Thanks to Mei-Chu Chang for pointing out the problem. Replace “As\
+      \ $d(A,A) \\leq 2d(A,B)$, this implies” by “A similar argument (see [Proposition 4.5, 362]) gives”.\
+      \ Rename Corollary 2.42 as Proposition 2.42, replace “$B$” by “$A$” in the first sentence, replace\
+      \ “$|S| \\geq \\Omega(K^{-O(1)} |A|)$” by “$|S| \\geq |A|/2K$” in the second sentence, and replace\
+      \ “$O(K)^{O(1+n)}$” by “$2^n K^{2n+1}$” in the display."
+  - id: first-edition-0041
+    page: '96'
+    text: "“verstion” should be “version”."
+  - id: first-edition-0042
+    page: '97'
+    text: "In Theorem 2.48 (ii), $G \\subset A \\cdot B$ should be $G \\subset A \\times B$."
+  - id: first-edition-0043
+    page: '107'
+    text: before Corollary 2.62, “Corollary 2.60” should be “Theorem 2.60”.
+  - id: first-edition-0044
+    page: '112'
+    text: "bottom: “in Section 4.4” should be “to Section 4.4”."
+  - id: first-edition-0045
+    page: '114'
+    text: "line 3: the last $Z$ should be an $X$."
+  - id: first-edition-0046
+    page: '115'
+    text: "fourth line of Lemma 3.4: ${\\Bbb R}^d$ should be ${\\Bbb R}^k$."
+  - id: first-edition-0047
+    page: '116'
+    text: "proof of Corollary 3.6: “induce” should be “induct”. In the last two sentences of this proof,\
+      \ $w$ should be $v$ (three occurrences)."
+  - id: first-edition-0048
+    page: '117'
+    text: "proof of Theorem 3.7: “induce” should be “induct”."
+  - id: first-edition-0049
+    page: '118'
+    text: "Exercise 3.1.1 $\\phi (Z')$ should be $\\phi (Z)$"
+  - id: first-edition-0050
+    page: '120'
+    text: "In the second display, $(m,m,\\ldots, m)$ should be $(m-1, m-1, \\ldots, m-1)$."
+  - id: first-edition-0051
+    page: '121'
+    text: after the proof of Lemma 3.11, “an progression” should be “a progression”.
+  - id: first-edition-0052
+    page: '122'
+    text: "after first display: “for all real $a,b \\geq 0$” should be “for all non-negative reals $a,b\
+      \ \\geq 0$“. In the next sentence, “for any integer $A$” should be “for any positive integer $n$“,\
+      \ and “$|n| \\cdot A$” should be “$n \\cdot A$“."
+  - id: first-edition-0053
+    page: '123'
+    text: "proof of Theorem 3.13: $|\\det(L)|$ should be $|\\det(L)| \\hbox{mes}(B_d)$. On the same line,\
+      \ “whch” should be “which”."
+  - id: first-edition-0054
+    page: '124'
+    text: "$\\hbox{arctan}(r^2-1)$ should be $\\hbox{arctan}(\\sqrt{r^2-1})$ (two occurrences). In the\
+      \ first display and two lines further down, $\\sqrt{d}$ should be $d$. In the second-to-last display,\
+      \ $L_{\\varepsilon,\\delta} \\ldots \\varepsilon e_1$ should be $\\{ L_{\\varepsilon,\\delta} \\\
+      ldots \\varepsilon e_1: (x_1,\\ldots,x_d) \\in B_d \\}$. In the last paragraph, $n \\cdot B_d$ should\
+      \ be $d \\cdot B_d$."
+  - id: first-edition-0055
+    page: '128'
+    text: "In the proof of Proposition 3.19, $\\sup_x f(x) = \\sup_y f(y) = 1$ should be $\\int_{\\Bbb\
+      \ R} f = \\int_{\\Bbb R} g = 1$. In the next paragraph, the inclusion $\\supseteq$ should be $\\\
+      subseteq$, and the constraint $1 > \\lambda > 0$ may be relaxed to $1 > \\lambda \\geq 0$."
+  - id: first-edition-0056
+    page: '129'
+    text: "In the proof of Proposition 3.20, “induce” should be “induct”. Remove the “that” before “(using\
+      \ Fatou’s lemma)”. In the next display, $f_d(y_d)$ should be $f_d(x_d)$."
+  - id: first-edition-0057
+    page: '130'
+    text: "In Exercise 3.4.5, “amd” should be “and”. In Exercise 3.4.6, all occurrences of $n$ should\
+      \ be $d$."
+  - id: first-edition-0058
+    page: '131'
+    text: Delete the sentence beginning with “The lower bound is trivial…” from the proof of Lemma 3.21.
+  - id: first-edition-0059
+    page: '132'
+    text: "In the statement of Lemma 3.24, one needs to add the hypothesis that all the sums in $\\Gamma+P$\
+      \ are distinct."
+  - id: first-edition-0060
+    page: '133'
+    text: "On the second display, $(x-V) \\cap (\\Gamma+P-P)$ should be $(x-V) \\cap (\\Gamma+P)$. Just\
+      \ before the third display, $R^d + O_{V,P,d}(R^{d-1})$ should be $(R^d + O_{V,P,d}(R^{d-1})) \\\
+      hbox{mes}(B)$. In Corollary 3.25, $N \\theta_1 \\dots \\theta_d \\leq 1$ should be $N \\theta_1\
+      \ \\dots \\theta_d \\geq 1$. In the next display, delete $+ {\\Bbb Z}^d$."
+  - id: first-edition-0061
+    page: '134'
+    text: In Lemma 3.27, Blichtfeld should be Blichfeldt.
+  - id: first-edition-0062
+    page: '139'
+    text: "In the last display, |B| should be $|B \\cap \\Gamma|$."
+  - id: first-edition-0063
+    page: '140'
+    text: "In the proof of Theorem 3.34, $\\Gamma \\cap V_{i-1} +W$ should be $\\Gamma \\cap V_i$."
+  - id: first-edition-0064
+    page: 141-142
+    text: "Throughout the statement and proof of Lemma 3.36, $r^{2r}$ should be replaced with $O(r)^{3r/2}$,\
+      \ and $d^{2d}$ replaced with $O(d)^{3d/2}$. In the last two equations in the display, replace $\\\
+      hbox{mes}({\\Bbb R}^d/\\Gamma)$ and $2d \\cdot d!$ both by $O(d)^{3d/2}$."
+  - id: first-edition-0065
+    page: '144'
+    text: In the last pragraph of the proof of Theorem 3.38, the superfluous ) should be deleted.
+  - id: first-edition-0066
+    page: '145'
+    text: "In Theorem 3.40, replace “If $d \\geq 2$ and $P$ is not proper” with “If $d \\geq 2$, $P$ is\
+      \ not proper, and $Z$ is torsion-free”. In the proof, “We induce on $d$” should be “We induct on\
+      \ $d$”. On the last line, “unless $Z$ is torsion-free” should be deleted."
+  - id: first-edition-0067
+    page: '147'
+    text: "In the second paragraph, “$M_1, \\ldots, M_{d-1}$” should be “$M := (M_1,\\ldots , M_{d-1})$“."
+  - id: first-edition-0068
+    page: '155'
+    text: "In Q 4.1.7, ${\\Bbb E}_{\\xi \\in H^\\perp}$ should be $\\sum_{\\xi \\in H^\\perp}$. In Q 4.1.10,\
+      \ the range of $\\tilde \\bullet$ should be ${\\Bbb R}/{\\Bbb Z}$ rather than C."
+  - id: first-edition-0069
+    page: '157'
+    text: "In (4.14), $E(1_A,1_B)$ should be $E_Z (1_A*1_B)^2$."
+  - id: first-edition-0070
+    page: '158'
+    text: "In the proof of Lemma 4.10, $\\xi/a$ should be $\\xi a$. Between the second-to-last and third-to-last\
+      \ lines of the long display in that proof, insert the lines “$= {\\Bbb P}_F(A)^3 - |F|^{-1/2} \\\
+      |f\\|_{L^2(F)}^2$” and “$\\geq {\\Bbb P}_F(A)^3 - |F|^{-1/2} [ {\\Bbb E}_{a \\in A} \\| 1_{a \\\
+      cdot A} \\|_{L^2(F)} ]^2$”."
+  - id: first-edition-0071
+    page: '159'
+    text: "In Exercise 4.2.2, “let $p'$ the dual exponent” should be “let $p'$ be the dual exponent”."
+  - id: first-edition-0072
+    page: '162'
+    text: "In the proof of Lemma 4.14, $F \\backslash 0$ should be $F \\backslash \\{0\\}$. In the third\
+      \ line of Corollary 4.15, $a_1, \\ldots, a_k$ should belong to $A$ rather than $F$, and $2^{1-k}$\
+      \ should be $2^{-k}(1 + |F|^{-1})$. (Remark: the order estimate only gives the qualitative result\
+      \ $kA=F$ for $|F|$ sufficiently large, but the small values of $|F|$ can be done by hand.) In the\
+      \ last word of the last sentence, $F$ should be $A$."
+  - id: first-edition-0073
+    page: '164'
+    text: "in Q. 4.3.10, “$A\\cdot 2A = A$” should be “$A \\cdot 2A=2A$“."
+  - id: first-edition-0074
+    page: '165'
+    text: "bottom paragraph: “combinatorialinformation” should be “combinatorial information”."
+  - id: first-edition-0075
+    page: '170'
+    text: "proof of Lemma 4.25: $\\log_2 5$ should be 2, and the condition $|a| \\leq 0.1$ should be $|a-a'|\
+      \ \\leq 0.1$."
+  - id: first-edition-0076
+    page: '171'
+    text: "in Q 4.4.6, $\\sqrt{2}$ should be $1/4$."
+  - id: first-edition-0077
+    page: '173'
+    text: "In the proof of Proposition 4.29, (4.31) should be (4.30). In the second and last displays,\
+      \ $e(x,\\xi)$ should be $e(\\xi \\cdot x)$."
+  - id: first-edition-0078
+    page: '174'
+    text: "In the third display, $\\|c_\\xi\\|_H^4$ should be $|c_\\xi|^4$."
+  - id: first-edition-0079
+    page: '175'
+    text: "In the four summations involving $r_{h_1,h_2}$, $\\xi$ should range over Z rather than S. After\
+      \ the second display, $e(x,\\xi)$ and $e(x,-\\xi)$ should be $e(\\xi \\cdot x)$ and $e(-\\xi \\\
+      cdot x)$ respectively, and similarly on the third display."
+  - id: first-edition-0080
+    page: '176'
+    text: "In the last display, $e(x,\\xi)$ should be $e(\\xi \\cdot x)$."
+  - id: first-edition-0081
+    page: '177'
+    text: "In the first display, $e(x,\\xi)$ should be $e(\\xi \\cdot x)$. In the third display, $e^{\\\
+      sigma^2/\\lambda}$ should be $e^{\\sigma^2/2}$. In the penultimate display, $(1-\\varepsilon^2)$\
+      \ should be $(1-\\varepsilon)^2$. “If take” should be “Taking”. In the last display, $\\leq$ should\
+      \ be =."
+  - id: first-edition-0082
+    page: '179'
+    text: "In Exercise 4.5.4, $e(x,\\xi)$ should be $e(\\xi \\cdot x)$."
+  - id: first-edition-0083
+    page: '181'
+    text: In the proof of Lemma 4.35, “incrementing k+1” should be “incrementing k”.
+  - id: first-edition-0084
+    page: '182'
+    text: "middle: “$S' \\in S_\\theta$” should be “$S' \\subset S_\\theta$“. After the fourth display,\
+      \ $e(x,\\xi)$ should be $e(\\xi \\cdot x)$. In the last display, the upper limit of the integral\
+      \ should be infinite."
+  - id: first-edition-0085
+    page: '183'
+    text: "In the last four displayed equations, all $\\geq$ signs should be $\\leq$. In (4.38), $(A)$\
+      \ is missing from the RHS. In the sixth display, $e(x,\\xi+\\xi')$ should be $e( (\\xi+\\xi') \\\
+      cdot x))$."
+  - id: first-edition-0086
+    page: '184'
+    text: "In the fourth and fifth displays, ${\\bf P}_Z(A)$ should appear on the right-hand side. (Also,\
+      \ to avoid ambiguity, one may wish to rewrite $\\alpha^2/2|S|^2$ in the fifth display as $\\frac{1}{2}\
+      \ \\alpha^2 |S|^2$.)"
+  - id: first-edition-0087
+    page: '185'
+    text: "In the proof of Proposition 4.39, $e(x,\\xi)$ should be $e(x\\cdot \\xi)$."
+  - id: first-edition-0088
+    page: '186'
+    text: "In Proposition 4.40, $\\sqrt{8 \\varepsilon K}$ can be improved to $\\sqrt{\\varepsilon K/2}$\
+      \ (though the existing bound is certainly correct). In the line before the last display, $|A| e(\\\
+      xi \\cdot(x-y))$ should be $|A|( e(\\xi \\cdot (x-y)) - 1 )$."
+  - id: first-edition-0089
+    page: '187'
+    text: "In Theorem 4.41, ${\\Bbb Z}_p \\backslash 0$ should be ${\\Bbb Z}_p \\backslash \\{0\\}$."
+  - id: first-edition-0090
+    page: '190'
+    text: In the first display, 1/2 should be 1/6.
+  - id: first-edition-0091
+    page: '191'
+    text: "The second equality in the third line should be an inequality $\\leq$."
+  - id: first-edition-0092
+    page: '193'
+    text: "In the third line of the first display, $\\sum_{h \\in H} \\|T^h f\\|_{L^p(Z)}^{1/p}$ should\
+      \ be $(\\sum_{h \\in H} \\|T^h f\\|_{L^p(Z)}^p){1/p}$. In the second and final displays (and in\
+      \ the first display of p194 and the second, third, and fourth displays in p195), $j \\in J$ should\
+      \ be $j \\leq J$ (seven occurrences)."
+  - id: first-edition-0093
+    page: '194'
+    text: "In the first display, $e(x+jr,\\xi)$ should be $e(\\xi \\cdot (x+jr))$. After the second display,\
+      \ ${\\Bbb E}_Z f$ should equal latex \\delta^2$ rather than $\\delta$."
+  - id: first-edition-0094
+    page: '195'
+    text: "first line: $S_{err}$ should be $\\Gamma_{err}$. In the first display, $10 \\log \\frac{1}{\\\
+      delta}$ should be M."
+  - id: first-edition-0095
+    page: '196'
+    text: "After the proof of Theorem 4.47, “, non-empty set E” should be “. One then considers a non-empty\
+      \ set E”. A few lines afterwards, “replace” should be “replaces”. In Exercise 4.7.1, $A_1+A_1$ should\
+      \ be $A_1+A_2$."
+  - id: first-edition-0096
+    page: '200'
+    text: "“induce” should be “induct” (four occurrences). In the fourth line of the proof, $|A_{(e)}|+|B_{(e)}|$\
+      \ should be $|A_{(e)}+B_{(e)}|$."
+  - id: first-edition-0097
+    page: '203'
+    text: "the subscript ${0}$ should be $(0)$ (three occurrences)."
+  - id: first-edition-0098
+    page: '208'
+    text: "In the sixth line of the last display, $2k$ should be replaced by $(|H|-2)$ (here we use the\
+      \ bound $|\\phi_h(A)| \\geq 2$), and similarly for the seventh through ninth lines (and the tenth\
+      \ line should be deleted). [Update: this is slightly inaccurate, see revised erratum below.]"
+  - id: first-edition-0099
+    page: '209'
+    text: In Exercise 5.1.2, Lemma 5.1 should be Lemma 5.2. In Exercise 5.1.6, “Schirelmann” should be
+      “Schnirelmann”.
+  - id: first-edition-0100
+    page: '210'
+    text: "In Exercise 5.1.9, $A_1+\\ldots + A_N$ should equal ${\\Bbb Z}_p$ rather than p."
+  - id: first-edition-0101
+    page: '211'
+    text: In the proof of Lemma 5.13, “induce” should be “induct” (two occurrences). “Frieman” should
+      be “Freiman”.
+  - id: first-edition-0102
+    page: '212'
+    text: "In the proof of Lemma 5.14, $(A \\cup B) \\backslash 0$ should be $(A \\cup B) \\backslash\
+      \ \\{0\\}$."
+  - id: first-edition-0103
+    page: '213'
+    text: "In the proof of Proposition 5.15, $A \\backslash a_0$ should be $A \\backslash \\{a_0\\}$,\
+      \ $B \\backslash b_0$ should be $B \\backslash \\{b_0\\}$, and $0 \\cup A'$ should be $\\{0\\} \\\
+      cup A'$."
+  - id: first-edition-0104
+    page: '214'
+    text: In the proof of Corollary 5.16, “induce” should be “induct”.
+  - id: first-edition-0105
+    page: '215'
+    text: middle, “closed unit interval” should be “closed unit ball”. In the proof of Lemma 5.18, “induce”
+      should be “induct”.
+  - id: first-edition-0106
+    page: '216'
+    text: "middle: “some origin $a=x/2$” should be “we see that $A \\cap H_+$ contains a set $F$ symmetric\
+      \ around some origin $a=x/2$“."
+  - id: first-edition-0107
+    page: '217'
+    text: In the first paragraph, P’ should be symmetric around a rather than around a’. In the proof
+      of Theorem 5.20, “induce” should be “induct”.
+  - id: first-edition-0108
+    page: '218'
+    text: "fourth line: $\\varepsilon/K|A|$ should be $\\frac{\\varepsilon}{K} |A|$. Similarly on the\
+      \ sixth line. Also, on that line, $|A''| \\leq \\varepsilon/K|A|$ should be $|A''| \\geq \\frac{\\\
+      varepsilon}{K}|A|$."
+  - id: first-edition-0109
+    page: '219'
+    text: Before the third display, (5.14) should be (5.13).
+  - id: first-edition-0110
+    page: '221'
+    text: "In the first example, $\\phi(Z)$ should be $\\phi(A)$. In the fourth line of the fifth example,\
+      \ $(P, {\\bf Z})$ should be $(P,Z)$."
+  - id: first-edition-0111
+    page: '225'
+    text: "In the first line, $j(\\lambda)<8$ should be $j(\\lambda)<n$. A period is missing before “Fortunately”\
+      \ in the sentence after the first display."
+  - id: first-edition-0112
+    page: '226'
+    text: "In Exercise 5.3.7, the range of $\\phi$ should be $A' \\uplus B'$ rather than $A' \\uplus B$."
+  - id: first-edition-0113
+    page: '229'
+    text: "In the proof of Theorem 5.30, Corollary 2.23 should be Lemma 5.26. In the last line of this\
+      \ proof, P should be Frieman isomorphic to Q, rather than to P. In Lemma 5.31, $2K(1+\\log_2(KK'))$\
+      \ should be $4K(1+\\log_2(KK'))$."
+  - id: first-edition-0114
+    page: '230'
+    text: "In the first display, $K' K^{n+1}$ should be $K' K^{n+1} |B|$. In the second display, $A_{N_1}$\
+      \ should be $A_{N-1}$."
+  - id: first-edition-0115
+    page: '231'
+    text: "In the fifth line, $w'_d$ should be $w_{d'}$. In Theorem 5.33, the hypothesis $|A| \\geq 100\
+      \ K^2$ should be included, and the first paragraph of the proof of Theorem 5.33 should be deleted.\
+      \ Throughout this proof, $\\exp(O(K^{O(1)})))$ should be $\\exp(O(K^{O(1)}))$."
+  - id: first-edition-0116
+    page: '236'
+    text: In Proposition 5.41, “Frieman” should be “Freiman”. In Corollary 5.42, K should be d.
+  - id: first-edition-0117
+    page: '237'
+    text: "In Exercise 5.5.1, Hom should be $\\hbox{Hom}_k$."
+  - id: first-edition-0118
+    page: '240'
+    text: In Theorem 5.44, “Then there a” should be “Then there is a”
+  - id: first-edition-0119
+    page: '241'
+    text: The end of proof box on the fourth line should be moved to the end of the first paragraph in
+      page 244.
+  - id: first-edition-0120
+    page: '243'
+    text: "In the last line, $B$ should be $B \\cap {\\Bbb Z}^d$."
+  - id: first-edition-0121
+    page: '247'
+    text: "In Exercise 6.1.2, “symmetruc” should be “symmetric”, and one should assume $0 \\not \\in A$."
+  - id: first-edition-0122
+    page: '248'
+    text: "In Exercise 6.1.4, the denominator $|V_1| |V_2|$ should be $|V_1|^2 |V_2|^2$."
+  - id: first-edition-0123
+    page: '249'
+    text: In the second line from the bottom, Ruzsa[297] should be Ruzsa[303].
+  - id: first-edition-0124
+    page: '250'
+    text: "In the first display, $r^2$ should be r (and in the previous line, $D_r$ should have radius\
+      \ $\\sqrt{r}$ rather than r)."
+  - id: first-edition-0125
+    page: '253'
+    text: In Remark 6.8, “We say that S” should be “We say that S is”.
+  - id: first-edition-0126
+    page: '255'
+    text: "In the proof of Theorem 6.9, “induce” should be “induct”, “vacuoust” should be “vacuous”, and\
+      \ “(with $R(1,m)=1$)” should be deleted. “$G_{red} = G_{red}$” should be “$G_{red} = G'_{red}$“.\
+      \ Shortly afterwards, “latter” should be “former”."
+  - id: first-edition-0127
+    page: '256'
+    text: "In the proof of Corollary 6.12, “induce” should be “induct”, and “$G$ contains a” should be\
+      \ “$G$ contains an” (two occurrences). “complete the induction and than the proof” should be “closes\
+      \ the induction and completes the proof”."
+  - id: first-edition-0128
+    page: '257'
+    text: "In the first line, “$E_r$ monochromatic” should be “$E_r$-monochromatic”. In Theorem 6.15,\
+      \ $d(|A|,m)$ should be $d(n,m)$. In Proposition 6.16, ${\\Bbb Z}^d$ should be ${\\Bbb Z}^{\\tilde\
+      \ d}$, “exists distinct classes” should be “exist distinct classes”, and “$v_1,\\ldots,v_s$” should\
+      \ be “non-zero $v_1,\\ldots,v_s$“. In the proof of Proposition 6.16, “induce” should be “induct”,\
+      \ and “inducing” should be “inducting”."
+  - id: first-edition-0129
+    page: '258'
+    text: "In the last paragraph of the proof of Proposition 6.16, $v \\in [0,1]^{d_2}$ should be $v_*\
+      \ \\in [0,1]^{d_2}$."
+  - id: first-edition-0130
+    page: '259'
+    text: "first paragraph: “the bound…which follow…are” should be “the bound…which follows…is”. “being\
+      \ of growing” should be “growing”."
+  - id: first-edition-0131
+    page: '260'
+    text: "in Exercise 6.3.3, $\\{x+y,xy\\}$ should be $\\{x,y,x+y,xy\\}$."
+  - id: first-edition-0132
+    page: '263'
+    text: "In the statement of Corollary 6.20, the $K^4$ in the denominator in the last line should be\
+      \ $K^5$. In the second paragraph of the proof. the denominator $8K^2$ should be $128 K^2$."
+  - id: first-edition-0133
+    page: '264'
+    text: "In the second paragraph, the denominator $8K^2$ should be $128 K^2$. In the penultimate display,\
+      \ $A \\stackrel{G}{+} B$ should be $(A \\stackrel{G}{+} B)^3$. In the proof of Corollary 6.20, $16\
+      \ \\sqrt{2} K$ should be $16 \\sqrt{2} K^2$ (two occurrences), and $K^4$ should be $K^5$ (one occurrence).\
+      \ In the proof of Theorem 2.29, $K^4$ should be $K^5$ (four occurrences)."
+  - id: first-edition-0134
+    page: '265'
+    text: "In Theorem 6.21, the first “then” should be an “and”. In the third display, $(a',b') \\in A\
+      \ \\times B$ should be $(a,b) \\in A \\times B$."
+  - id: first-edition-0135
+    page: '268'
+    text: "In the first line, “smallest” should be “largest”. In the line before Example 6.26, the right\
+      \ parenthesis should be deleted. In the fifth paragraph, $\\|H \\circ G\\| \\leq \\|G\\| \\|H \\\
+      |$ should be $\\|H \\circ G\\| \\geq \\|G\\| \\|H\\|$."
+  - id: first-edition-0136
+    page: '271'
+    text: "In the last paragraph of 6.5.2, $G_1 \\circ \\ldots \\circ G_k$ should be $G_k \\circ \\ldots\
+      \ \\circ G_1$ (two occurrences)."
+  - id: first-edition-0137
+    page: '272'
+    text: "first display: $\\frac{|X|}{|C_k|}$ should be $\\frac{|C_k|}{|X|}$."
+  - id: first-edition-0138
+    page: '276'
+    text: In the first bullet point, “can occur” should be “is”. In the second sentence after these bullet
+      points, “has” should be “have”.
+  - id: first-edition-0139
+    page: '278'
+    text: "In the proof of Corollary 7.4, $v_i > 1$ should be $v_i \\geq 1$. In the proof of Lemma 7.6,\
+      \ “induce” should be “induct”."
+  - id: first-edition-0140
+    page: '279'
+    text: In the third paragraph, Theorem 6.31 should be Theorem 6.32.
+  - id: first-edition-0141
+    page: '280'
+    text: In Exercise 7.1.4, Proposition 7.9 should be Lemma 7.9. In Exercise 7.1.1, Lemma 7.3 should
+      be Lemma 7.2.
+  - id: first-edition-0142
+    page: '286'
+    text: "In the first display, there should be no m on the LHS. In the proof of Lemma 7.14, $\\max$\
+      \ should be $\\min$ when applying Cauchy-Davenport."
+  - id: first-edition-0143
+    page: '289'
+    text: "In the third line, ${\\Bbb P}(X^{(\\mu/d)}_{w_1^k w_2^k \\ldots w_d^k})$ should be ${\\Bbb\
+      \ P}(X^{(\\mu/d)}_{w_1^k w_2^k \\ldots w_d^k} = 0)$."
+  - id: first-edition-0144
+    page: '290'
+    text: "In the display before (7.4), $e^{-\\pi |X|^2/2}$ should be $e^{-\\pi|X|^2/C}$."
+  - id: first-edition-0145
+    page: '292'
+    text: "In Exercise 7.3.2, ${\\Bbb P}$ should be ${\\Bbb E}$."
+  - id: first-edition-0146
+    page: '294'
+    text: "In statement of Proposition 7.21, add “Furthermore, each of the $w_i$ lies in the set $\\{v_1,\\\
+      ldots, v_n\\}$“."
+  - id: first-edition-0147
+    page: '295'
+    text: "After the third display, the $\\eta$s should be $\\epsilon$s."
+  - id: first-edition-0148
+    page: '298'
+    text: "In the last paragraph, ${\\Bbb P}(E_k)$ should be ${\\Bbb P}(E_k \\backslash E_{k-1})$."
+  - id: first-edition-0149
+    page: '300'
+    text: "In the fourth line of the proof of Corollary 7.28, $X_{i-1}$ should be $X_i$ (two occurrences)."
+  - id: first-edition-0150
+    page: '308'
+    text: In the third paragraph, Andrew’s should be Andrews’.
+  - id: first-edition-0151
+    page: '309'
+    text: In the second paragraph, the accent on Szemerédi is misplaced. The proof of Theorem 8.1 (as
+      well as the explicit choice of constants) is due to Chazelle, Sharir, and Welzl (see M. Aigner and
+      G. Ziegler, Proofs from the Book, Springer-Verlag, Heidelberg, (2004), viii+239 pp.)
+  - id: first-edition-0152
+    page: '310'
+    text: "In the second display, $p^{-2}$ should be $p^{-3}$."
+  - id: first-edition-0153
+    page: '312'
+    text: "In the dual formulation of Corollary 8.5, there is a “:” missing in the set notation."
+  - id: first-edition-0154
+    page: '314'
+    text: In Ex 8.2.6, “exactly two points” should be “at least two points”. (It is however an interesting
+      question as to whether the exercise is correct as stated.) In Exercise 8.2.10, a-a should be a-a’.
+  - id: first-edition-0155
+    page: '316'
+    text: "In Theorem 8.15, $\\Theta$ should be $\\Omega$ (two occurrences)."
+  - id: first-edition-0156
+    page: '318'
+    text: "On the sixth line, a right parenthesis is missing in $\\Omega ( \\frac{|A|^6}{|A \\cdot A|}\
+      \ )$. In Exercise 8.3.4, $|A|^{1/2} |B|^{1/2} |C|^{3/2}$ should be $|A|^{1/2} |B|^{3/2} |C|^{1/2}$.\
+      \ In Exercise 8.3.5, $\\Theta(|A|^{5/2})$ should be $\\Omega(|A|^{5/2})$."
+  - id: first-edition-0157
+    page: '322'
+    text: "In (8.6) $|P|^{3-\\frac{1}{d}}r^{-d}$ should be $O_d(|P|^{3-\\frac{1}{d}}r^{-d})$."
+  - id: first-edition-0158
+    page: '324'
+    text: "In Exercise 8.4.3, $|L \\cap P|$ should be $|l \\cap P|$."
+  - id: first-edition-0159
+    page: '325'
+    text: Exercise 8.4.7 is heuristically correct, but the rigorous implementation of this exercise is
+      somewhat subtle; see this post for details.
+  - id: first-edition-0160
+    page: '330'
+    text: In the proof of Theorem 9.2, “induce” should be “induct”.
+  - id: first-edition-0161
+    page: '331'
+    text: After the end of the proof, “Combinatorial Nullstelensatz” should be “combinatorial Nullstellensatz”.
+  - id: first-edition-0162
+    page: '332'
+    text: "In Exercise 9.1.2, the $d_j$ in $\\cup_{j=1}^{d_j}$ should be $d_i$. In Exercise 9.1.3, the\
+      \ Hilbert nullstellensatz of course only applies when F is algebraically closed. In Exercise 9.1.4,\
+      \ $P(x_1,\\ldots,x_n)=0$ should be $P(x_1,\\ldots,x_n) \\neq 0$."
+  - id: first-edition-0163
+    page: '333'
+    text: "In Lemma 9.3, $F_p$ should be $F$."
+  - id: first-edition-0164
+    page: '338'
+    text: In the proof of Theorem 9.11, “induce” should be “induct”.
+  - id: first-edition-0165
+    page: '341'
+    text: "In Question 9.2.6, $V$ should be $\\Delta_n$."
+  - id: first-edition-0166
+    page: '342'
+    text: "In Theorem 9.17, $|R_i|$ should be $|R_i|+1$, and $r_i$ should be $|R_i|$. In the last sentence\
+      \ of the proof of Theorem 9.16, “$s \\in S_i$” should be “$s \\in B$“."
+  - id: first-edition-0167
+    page: '343'
+    text: "In the first display, the right-hand side should just be $\\prod_{i, j \\in [1,k]: i \\neq\
+      \ j} \\prod_{r \\in R_i} (a_i+t_i-a_j-t_j-r)$. In the next paragraph, $x_i$ should be $t_i$, and\
+      \ in the paragraph after that, $r_i$ should be $|R_i|$. In the first line of the last display, $(a_{\\\
+      tau(i)}t_{\\tau(i)}^{i-1}$ should be $(a_{\\tau(i)}t_{\\tau(i)})^{i-1}$. In Lemma 9.18, the second\
+      \ sentence should start “Then” rather than “The”. In the 5th line (the line before 2nd display)\
+      \ $\\prod_{1 \\leq i \\neq j \\leq k} \\prod_{r \\in R_i}$ should be $\\prod_{1 \\leq i \\leq k}$."
+  - id: first-edition-0168
+    page: '344'
+    text: "In proof of Corollary 9.19, “the multiplicatively invertible” should be “the set of multiplicatively\
+      \ invertible”. After the end of the proof of Lemma 9.18, “additive group” should be “an additive\
+      \ group”. In Theorem 9.20, “be power of $p$” should be “be a power of $p$“."
+  - id: first-edition-0169
+    page: '345'
+    text: "In Exercise 9.3.3, “Let $P_{\\pi}$” should be “Set $P_{\\pi}$“, and $P(\\pi)$ should be $P_\\\
+      pi$."
+  - id: first-edition-0170
+    page: '348'
+    text: "In the proof of Theorem 9.24, $\\hbox{deg}(F)$ should be $\\hbox{deg}(P_i)$."
+  - id: first-edition-0171
+    page: '350'
+    text: "In Lemma 9.27, $s(|Z|)$ should be $s(Z)$."
+  - id: first-edition-0172
+    page: 352-353
+    text: "In the proof of Lemma 9.31: all occurrences of $g_1$ should be $a_1$, etc. Also, $g_{m+1},\\\
+      ldots,g_m$ should be $a_{m+1},\\ldots,a_n$. In Theorem 9.32, [266] should be [267]. In Exercise\
+      \ 9.5.3, $2n-1$ should be $2n^2 -1$."
+  - id: first-edition-0173
+    page: '354'
+    text: "Right before Theorem 9.36, “made a significant progress” should be “made significant progress”.\
+      \ In the third line of Exercise 9.5.4, $h$ should be $k$. In the RHS of (9.14), $s(n,d)$ should\
+      \ be $s(m,d)$. Right after Theorem 9.36, $\\frac{41}{11}$ should be $\\frac{41}{10}$."
+  - id: first-edition-0174
+    page: '355'
+    text: "In Remark 9.38, “combining” should be “combined”. In the first display, $(1 - \\sigma a_it_i)^{p-1}\
+      \ ((1 - \\sigma b_i t_i)^{p-1} -1)$ should be $(1- (\\sigma a_i t_i)^{p-1} )(1- (\\sigma b_i t_i)^{p-1}\
+      \ )$. In the last sentence of the proof of Theorem 9.36, $x_1 \\cdots x_m$ should be $t_1 \\cdots\
+      \ t_m$."
+  - id: first-edition-0175
+    page: '356'
+    text: "In Exercise 9.6.3, $\\frac{41}{11}n$ should be $\\frac{41}{10}n$, and “induce” should be “induct”."
+  - id: first-edition-0176
+    page: '358'
+    text: "In the 3rd display $s^{|G|} - 4$ should be $s^{|G|} - r$."
+  - id: first-edition-0177
+    page: '362'
+    text: "bottom line: “as follows” should be “are as follows”."
+  - id: first-edition-0178
+    page: '363'
+    text: "middle: delete “and using Exercise 9.4.1”. Somewhat further down, $f, g \\in {\\Bbb Z}[z]$\
+      \ should just be ${\\Bbb Z}[z]$."
+  - id: first-edition-0179
+    page: '364'
+    text: in the proof of Lemma 9.48, “least common multiple” should be “greatest common divisor”.
+  - id: first-edition-0180
+    page: '365'
+    text: "In Theorem 9.5.2, add the condition “$f$ is nonzero”."
+  - id: first-edition-0181
+    page: '366'
+    text: "In the last line of the proof of Theorem 9.53, max should be min. In the first paragraph of\
+      \ the proof of Corollary 9.54, “keeping $\\underline{x}$ fixed” should be “keeping $\\underline{\\\
+      xi}$ fixed”."
+  - id: first-edition-0182
+    page: '367'
+    text: "In Exercise 9.8.3 $\\phi_p(t-1)$ should be $\\phi_p(t+1)$ (two occurrences)."
+  - id: first-edition-0183
+    page: '368'
+    text: "In Exercise 9.8.8, delete “, and let $n_1,\\ldots,n_k$ be distinct integers in $[0,p)$“. In\
+      \ the second display of Exercise 9.8.11, the sup should be an inf."
+  - id: first-edition-0184
+    page: '370'
+    text: "In Examples 10.3, $k > n$ should be $k > p$. In Theorem 10.5, the phrase “… with $|Z|$ coprime\
+      \ to $(k-1)!$” should be added at the end of the first sentence."
+  - id: first-edition-0185
+    page: '371'
+    text: In Exercise 10.0.4, Exercise 6.3.7 should be Theorem 6.17. In the third line of Exercise 10.0.5,
+      “color class” should be “color classes”.
+  - id: first-edition-0186
+    page: '375'
+    text: "In the second and third displays, $\\Lambda$ should be $\\Lambda_3$. In the line afterwards,\
+      \ (4.3) should be (4.2)."
+  - id: first-edition-0187
+    page: '376'
+    text: In the second line before the exercises, one of the “that”s should be removed.
+  - id: first-edition-0188
+    page: '377'
+    text: In Exercise 10.1.6, “aproper” should be “a proper”.
+  - id: first-edition-0189
+    page: '378'
+    text: Corollary 10.10 should be Proposition 10.10, and similarly in page 380.
+  - id: first-edition-0190
+    page: '379'
+    text: "In the third display of the proof of Lemma 10.15, $e( \\xi \\cdot x + \\theta )$ should be\
+      \ $e( \\xi \\cdot (x+x_0) + \\theta )$ . In the third line of the proof of Theorem 10.12 (which\
+      \ should be Proposition 10.12), $3/n$ should be $3|Z|/n$. In the second line of the proof of Theorem\
+      \ 10.12, “induce” should be “induct”."
+  - id: first-edition-0191
+    page: '380'
+    text: "In the proof of Proposition 10.17, “induce” should be “induct”. In the line after the top display,\
+      \ it should say “$n > 3$” rather than “$n \\geq 3$“."
+  - id: first-edition-0192
+    page: '381'
+    text: "In the second line, $4$ should be $8$. (In the next two displays, the 4 is correct.) In the\
+      \ third line, add “and $x_0$ in $Z$” just before “, such that”. In the third and fourth displays,\
+      \ ${\\Bbb E}_Z(g)$ should be ${\\Bbb E}_{Z'}(g)$."
+  - id: first-edition-0193
+    page: '382'
+    text: "in the paragraph after statement of Theorem 10.20: replace”$\\delta$ and $M$” with just “$M$“."
+  - id: first-edition-0194
+    page: '383'
+    text: "in the third display, the first = sign should be $\\leq$, while $\\sup_{\\xi \\in V^\\perp\
+      \ \\ 0} |\\hat \\nu(\\xi)|$ should be $\\sup_{\\xi \\in V^\\perp} |\\hat \\nu(\\xi) - {\\Bbb I}(\\\
+      xi = 0)$|."
+  - id: first-edition-0195
+    page: '384'
+    text: "in Lemma 10.22, $\\eta$ needs to be between 0 and 1."
+  - id: first-edition-0196
+    page: '385'
+    text: "in third display, $\\xi-\\xi'$ should be $\\xi'-\\xi$, and similarly on the next two lines.\
+      \ In the next display, the sum $\\eta + {\\Bbb I}(\\xi-\\xi'=0)$ should be enclosed in parentheses."
+  - id: first-edition-0197
+    page: '386'
+    text: Exercise 10.2.1 is redundant (being essentially the union of 10.0.8 and 10.0.11) and should
+      be deleted.
+  - id: first-edition-0198
+    page: '387'
+    text: In the first line, Theorem 10.12 should be Proposition 10.12; in the fourth line, Corollary
+      10.10 should be Proposition 10.10.
+  - id: first-edition-0199
+    page: '388'
+    text: "fifth line of proof of Lemma 10.25: insert “, since” after “On the other hand”. In the third-to-last\
+      \ line, “the sum” should be “the summand”."
+  - id: first-edition-0200
+    page: '389'
+    text: "in top line, “$f$ is bounded” should be “$f$ is bounded by 1″. In third line, $P$ should be\
+      \ $P'$. In Exercise 10.3.1, add the hint “(You may want to first establish the weaker but easier\
+      \ bound $r_3(P) = o(|P|)$.)”"
+  - id: first-edition-0201
+    page: '390'
+    text: "In Proposition 10.28, one should have $|S| = O( \\delta^{-5} )$ rather than $|S| = O( \\delta^{-3}\
+      \ )$."
+  - id: first-edition-0202
+    page: '391'
+    text: "The conclusion of Lemma 10.29 should be ${\\Bbb E}_{n \\in P'} f(n) = \\Omega(\\sigma)$ rather\
+      \ than $|{\\Bbb E}_{n \\in P'} f(n)| =\\Omega(\\sigma)$ (one wants a density increment, not a density\
+      \ decrement). To get this, one has to add “also, observe that the expression inside the norm has\
+      \ mean zero” just before the final display, replace the $L^\\infty$ norm on the final display with\
+      \ a supremum (with no absolute values), and remove the absolute values on the first display of the\
+      \ next page."
+  - id: first-edition-0203
+    page: '394'
+    text: "In the second, third, and fourth display, the indicator functions should be applied to x instead\
+      \ of r. Also, in the fourth equation, $\\leq$ should be $\\geq$."
+  - id: first-edition-0204
+    page: '398'
+    text: About half-way down on the page, “to be introduce” should be “to be introduced”.
+  - id: first-edition-0205
+    page: '402'
+    text: "in the last two displays, $\\in a+bi+\\alpha \\in B$ should be $\\in a+bi+\\alpha+B)$."
+  - id: first-edition-0206
+    page: '407'
+    text: In Remark 10.44, “Gowers shown” should be “Gowers has shown”.
+  - id: first-edition-0207
+    page: '418'
+    text: "In “choices of $f_0,\\ldots,f_{k-1})$“, the parenthesis should be deleted."
+  - id: first-edition-0208
+    page: '439'
+    text: "In the second line, $\\xi \\in W$ should be $x \\in W$. In the fourth line, $Mx \\cdot x$ should\
+      \ be $Mx \\cdot x = 0$. In the proof of Proposition 11.12, “induce” should be “induct”."
+  - id: first-edition-0209
+    page: '454'
+    text: "In the line before Theorem 11.27, the brackets \\{ \\} around $v_{k+1}$ are missing."
+  - id: first-edition-0210
+    page: '462'
+    text: "In the last line, “in” should be $\\in$."
+  - id: first-edition-0211
+    page: '465'
+    text: "“and some k-pseudorandom measure $\\nu$, then” should be “for some k-pseudorandom measure $\\\
+      nu$. Then”."
+  - id: first-edition-0212
+    page: '474'
+    text: In the proof of Lemma 12.6, “induce” should be “induct”. In Theorem 12.5, “constants” should
+      be “constant”.
+  - id: first-edition-0213
+    page: '500'
+    text: In [288], “arithemtic” should be “arithmetic”.
+  - id: first-edition-0214
+    page: '503'
+    text: Reference [352] should be redirected to [380].
+  - id: first-edition-0215
+    page: '505'
+    text: "$o_n \\to \\infty$ should be $o_{n \\to \\infty}$, and O(f(n)) needs to be in math mode."
+  - id: first-edition-0216
+    page: '506'
+    text: "“Chevalley-Waring” should be “Chevalley-Warning”, and Blichtfeld should be Blichfeldt."

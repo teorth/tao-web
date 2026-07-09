@@ -1,0 +1,152 @@
+# Imported from https://terrytao.wordpress.com/books/whats-new-2007/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: "Structure and Randomness: pages from year one of a mathematical blog"
+  slug: structure-and-randomness
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/whats-new-2007/"
+  description: This is a book version of my blog, covering many (though not all) of my articles in 2007,
+    reworked into a publishable format (and in particular, with formal and updated references).
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2008
+    isbn: 978-0-8218-4695-7
+    note: 298 pages.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2008/04/whatsnew_onlineversion1.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=mbk-59"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Ravindra Bapat
+    - Alan Chang
+    - Dion
+    - Norman Hardy
+    - Matthew Kahle
+    - Chris Kimmel
+    - JamesL
+    - Avi Levy
+    - Russ Lyons
+    - Arturo Magadin
+    - Kirane Mokhtar
+    - David P. Moulton
+    - Kamil Rychlewicz
+    - David Speyer
+    - Caleb Stanford
+    - Nikodem Szpak
+    - Tobias and Tony
+    - Chao Weng
+    - Sheng-Peng Wu
+    - Yuncheng
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: '21'
+    text: "In Proposition 1.8, $k/\\varepsilon+1$ should be $k/\\varepsilon+k$."
+  - id: errata-0002
+    page: '22'
+    text: "In Proposition 1.10, $2^{1/\\varepsilon}+1$ should be $2^{1/\\varepsilon+1}$.Page 51: In Lemma\
+      \ 1.34(2), $hf'(x)$ should be $hL$."
+  - id: errata-0003
+    page: "?"
+    text: "In the start of Section 1.9, the requirement $a_d \\neq 0$ should be added to the definition\
+      \ of a linear recurrence sequence."
+  - id: errata-0004
+    page: '54'
+    text: "The phrase “nonstandard ultrafilter on ${*} {\\Bbb N}$” requires some clarification. It should\
+      \ be “ultrafilter on ${*}{\\Bbb N}$ that extends an ultraproduct of nonprincipal ultrafilters on\
+      \ ${\\Bbb N}$“."
+  - id: errata-0005
+    page: null
+    text: "Section 2.2, page ???: “need thus need” should be “thus need”."
+  - id: errata-0006
+    page: "?"
+    text: In the proof of Lemma 2.28, in the final two displays, the left absolute value and integral
+      signs should be interchanged.
+  - id: errata-0007
+    page: '86'
+    text: "In the final display, the exponent of $p$ on the LHS should be deleted. Similarly on the first\
+      \ display of page 87."
+  - id: errata-0008
+    page: '95'
+    text: "Figure 1: The graph of $K_{3,3}$ is missing two edges (namely, the long diagonal edges between\
+      \ opposite corners of the graph)."
+  - id: errata-0009
+    page: '96'
+    text: "The inequality $|E| \\leq 3|V| - 6$ is only valid for connected graphs with at least one cycle.\
+      \ In general, one only has $|E| \\leq 3|V|$. One must then delete all terms involving the number\
+      \ 6 in the rest of the section. One can then replace “To solve the optimisation problem exactly,\
+      \ one needs to solve a cubic; but we can perform a much cheaper computation” by “One can solve the\
+      \ optimisation problem exactly, but we can perform a cheaper computation”."
+  - id: errata-0010
+    page: '101'
+    text: Footnote 67 is incorrect and should be deleted.
+  - id: errata-0011
+    page: '102'
+    text: "$(A+A) \\times (A \\cdot A)$ should be $(A \\cdot A) \\times (A + A)$."
+  - id: errata-0012
+    page: '103'
+    text: "The sentence “More generally, any Riemannian manifold…” is incorrect and should be deleted,\
+      \ replaced instead with the sentence “Similarly, the hy0erbolic plane ${\\bf H}$ is isomorphic to\
+      \ $SL(2,{\\bf R})/SO(2)$“."
+  - id: errata-0013
+    page: '104'
+    text: "In first paragraph: the modular curve should be $SO(2,{\\mathbf R}) \\backslash SL(2,{\\mathbf\
+      \ R}) / SL(2,{\\mathbf Z})$. In the footnote, add “and an obvious left action of $SO(2,{\\mathbf\
+      \ R})$,” after the final comma."
+  - id: errata-0014
+    page: '128'
+    text: "In the second and third displays, $\\frac{1}{t^{p(1-p)}}$ should be $t^{p(1-p)}$."
+  - id: errata-0015
+    page: '129'
+    text: "“decaying faster” should be “decaying faster or having smaller amplitude”."
+  - id: errata-0016
+    page: '143'
+    text: "The proof that $1/\\alpha \\leq \\hbox{maxflow}$ is not correct as stated (the perturbations\
+      \ indicated do not preserve the property of being an $\\alpha$-flow). A correct argument is as follows.\
+      \ Call an edge of an $\\alpha$-flow unsaturated if it has weight strictly between 0 and $\\alpha$,\
+      \ and similarly call a vertex unsaturated if its net inflow or outflow is strictly less than $\\\
+      alpha$. Observe that if e is an unsaturated edge, then the final vertex u of e will either have\
+      \ an unsaturated edge leading out of it (if u is unsaturated) or another unsaturated edge leading\
+      \ into it (if u is saturated). Similarly, the initial vertex u’ of e will either have an unsaturated\
+      \ edge leading into it (if u is unsaturated) or another unsaturated edge leading out of it (if u\
+      \ is saturated). Thus, if there is at least one unsaturated edge, then by iterating the above observations,\
+      \ one can find an oriented cycle along unsaturated edges with the property that at any saturated\
+      \ vertex u, the number of edges flowing along the cycle into u equals the number of edges flowing\
+      \ against the cycle into u, and the number of edges flowing along the cycle out of u equals the\
+      \ number of edges flowing against the cycle out of u. For this cycle, one can modify the flow as\
+      \ indicated in the text to reduce the number of edges in the $\\alpha$-flow."
+  - id: errata-0017
+    page: '137'
+    text: "In the last line of Case 1, “multiply (1.47) by…” should be “raise (1.47) to the power $r'$\
+      \ and then multiply by…”, and $r+r'$ should be $(r+1)r'$."
+  - id: errata-0018
+    page: '148'
+    text: "In the first line, $\\overline{F_v} = \\overline{F_{-v}}$ should read $F_v = \\overline{F_{-v}}$."
+  - id: errata-0019
+    page: '180'
+    text: "In the second display, $x/\\xi$ should be $x \\xi$."
+  - id: errata-0020
+    page: '257'
+    text: "When selecting the large prime $p$, it is necessary that $p$ is larger than 2. This is needed\
+      \ in order for the binomial expansion of $(1+pB)^n$ to be expressible in the desired form $\\sum_{j=0}^\\\
+      infty p^j P_j(n)$ where the polynomials $P_j$ have coefficients in the p-adic integers, because\
+      \ the number of times $p$ divides $p^k / k!$ can be bounded below by $k - k/(p-1)$, which goes to\
+      \ infinity as $k \\to \\infty$ provided that $p$ is larger than 2."
+  - id: errata-0021
+    page: '267'
+    text: "In the third display, $\\sum_{d \\leq 2N} \\frac{\\mu(d)}{d} \\log^2 d$ should be $\\sum_{d\
+      \ \\leq N} \\frac{\\mu(d)}{d} \\log^2 \\frac{N}{d}$."
+  - id: errata-0022
+    page: null
+    text: "Section 2.9.4: The application of the tensor power trick to the Riesz-Thorin theorem is only\
+      \ valid in the regime $q \\geq p$."
+  - id: errata-0023
+    page: null
+    text: "Section 2.10?: In (2.8), $\\sum_d |\\lambda_d|$ should be $\\sum_d |c_d|$."

@@ -1058,7 +1058,7 @@ editions:
       \ that $x_0,y_0$ are limit points of $X,Y$ respectively."
   - id: corrected-third-edition-0097
     page: '262'
-    text: ". In the parenthetical ending in “$f^{-1}$ is a bijection”, a period should be added."
+    text: "In the parenthetical ending in “$f^{-1}$ is a bijection”, a period should be added."
   - id: corrected-third-edition-0098
     page: '263'
     text: In Exercise 10.4.1(a), Proposition 9.8.3 can be replaced by Proposition 9.4.11.
@@ -1485,7 +1485,7 @@ editions:
     text: "top: “to know how to to” –> “to know how to”."
   - id: second-edition-0003
     page: '19'
-    text: ". In footnote 2, add: “In the converse direction, if we have $n=m$, then we may deduce $n++=m++$;\
+    text: "In footnote 2, add: “In the converse direction, if we have $n=m$, then we may deduce $n++=m++$;\
       \ this is the axiom of substitution (see Appendix A.7) applied to the operation $++$.”"
   - id: second-edition-0004
     page: '24'

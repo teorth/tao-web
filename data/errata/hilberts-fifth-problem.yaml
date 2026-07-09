@@ -1,0 +1,117 @@
+# Imported from https://terrytao.wordpress.com/books/hilberts-fifth-problem-and-related-topics/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Hilbert’s fifth problem and related topics
+  slug: hilberts-fifth-problem
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/hilberts-fifth-problem-and-related-topics/"
+  description: This continues my series of books derived from my blog, and is based on the lecture notes
+    for my graduate course of the same name. It received the 2015 PROSE award in the mathematics category.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2014
+    isbn: 978-1-4704-1564-8
+    note: Graduate Studies in Mathematics 153. 338 pp., hardcover.
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2014/11/gsm-153.pdf"
+  - title: Publisher (AMS)
+    url: "http://www.ams.org/bookstore-getitem/item=gsm-153"
+  - title: Lecture notes
+    url: "http://www.math.ucla.edu/~tao/254a.1.11f/"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Michael Cowling
+    - Frederik vom Ende
+    - Mikhail Katz
+    - Zhigang Li
+    - Mohammed Mannan
+    - Hagen Papenburg
+    - Lam Pham
+    - Arturo Rodríguez Fanlo
+    - Fan Zheng
+    - an anonymous contributor
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: '16'
+    text: "In Example 1.2.5, the series $x - x^2 + x^3 -\\dots$ should be $-x + x^2 - x^3 + \\dots$."
+  - id: errata-0002
+    page: "?"
+    text: "In Exercise 1.2.11(viii), $xy$ should be $x*y$ (two occurrences)."
+  - id: errata-0003
+    page: '18'
+    text: In Definition 1.2.8, all occurrences of G should be replaced with M.
+  - id: errata-0004
+    page: '54'
+    text: "In Exercise 3.0.8, $G$ should be assumed to be Hausdorff."
+  - id: errata-0005
+    page: '105'
+    text: "After (5.9), “$\\|g^n\\| \\leq \\varepsilon$ and so $g^n \\in B(0,\\varepsilon)$” should be\
+      \ “for all $m \\leq n$, $\\|g^n\\| \\leq \\varepsilon$ and so $g^n \\in B(0,\\varepsilon)$” and\
+      \ similarly for $(g^y)^n \\in B(0,5\\varepsilon)$."
+  - id: errata-0006
+    page: '109'
+    text: "After (5.13), a “the” is missing in “takes values in $[0,1]$ obeys the Lipschitz bound”."
+  - id: errata-0007
+    page: 115-116
+    text: "After (5.20), $q$ should lie in $Q$ rather than $Q[V]$, so references to the latter should\
+      \ be replaced with the former. In the first display of page 116, an $\\eta$ is missing in the integrand,\
+      \ and the second $\\partial_{q^i}$ should just be $\\partial_q$."
+  - id: errata-0008
+    page: '117'
+    text: "In the proof of Proposition 5.5.1: “$\\varepsilon$ is small enough” should be “$U_1, B, \\\
+      varepsilon$ are small enough”."
+  - id: errata-0009
+    page: "?"
+    text: "For Exercise 6.1.2(ii), add the additional hint: “It is somewhat tricky to establish that $G/K$\
+      \ is NSS (and hence Lie). To do this, lift an NSS open neighbourhood of the identity in $G'/K'$\
+      \ to an open set $W'$ in $G'$ containing $K'$ with the property that any subgroup of $G'$ contained\
+      \ in $W'$ is in fact contained in $K'$. Use an intersection of finitely many conjugates of $W'$\
+      \ to establish the NSS property for $G/K$. For part (iii), add the additional hint: “Argue as in\
+      \ Exercise 4.2.9, but working with the NSS property instead of Cartan’s theorem, and the open mapping\
+      \ theorem for topological groups instead of the fact that a continuous injection from compact spaces\
+      \ to Hausdorff spaces is a homeomorphism onto the image”."
+  - id: errata-0010
+    page: "?"
+    text: "Replace Exercise 6.1.3 and the paragraph ensuing with “Exercise: Suppose we iterate the above\
+      \ maps and pass to the direct limit as sets (defined similarly to inverse limits, but with all arrows\
+      \ reversed), identified with $L(G)$ in the obvious fashion. Show that for all $n$, the canonical\
+      \ maps to the direct limit $L(L_n) \\to L(G)$ are continuous when $L(G)$ is given the compact-open\
+      \ topology. Use this together with the exponential map $\\exp: L(L_n) \\to L_n$ and the evaluation\
+      \ map from $L(G)$ to $G$ to show that there exists a continuous injective map $s_n$ from an open\
+      \ neighbourhood of the identity in $L_n$ to $G$ that is a right inverse of theq uotient map from\
+      \ $G$ to $L_n$ on this neighbourhood.”"
+  - id: errata-0011
+    page: '181'
+    text: "In remark 8.2.3, it should be added that in the more general non-symmetric case discussed here,\
+      \ $A^4$ needs to be replaced by $A^2 \\cdot (A^{-1})^2$. Also, in the analogue of Exercise 8.2.2\
+      \ in this more general case, $A^2$ needs to be replaced by an arbitrary translate $g \\cdot A$ of\
+      \ $A$."
+  - id: errata-0012
+    page: '270'
+    text: In the proof of Lemma 2.7.6, “dense subset of the preimage” should be “open subset of the preimage”.
+  - id: errata-0013
+    page: '302'
+    text: "In most of this section $\\rho_\\xi(g)$ should be $\\rho_\\xi(g)^*$ and vice versa (also the\
+      \ subscript of $\\rho$ by $\\xi$ is missing in several places)."
+- id: pre-errata
+  name: Pre-errata (to be corrected in the published version)
+  errata:
+  - id: pre-errata-0001
+    page: '5'
+    text: "In the proof of Theorem 1.1.2, $\\varepsilon$ should be taken to be $1/10n$, rather than $1/10d$."
+  - id: pre-errata-0002
+    page: '10'
+    text: "In Exercise 1.1.7, $(x+1,0)$ should be $(x+1,1)$, and $(x,1)$ should be $(x,0)$."
+  - id: pre-errata-0003
+    page: '20'
+    text: In Problem 1.1.14, the hypothesis that G has polynomial growth is missing and should be inserted.
+  - id: pre-errata-0004
+    page: '79'
+    text: In the last paragraph, a right parenthesis is missing after “Exercise 1.4.3”.

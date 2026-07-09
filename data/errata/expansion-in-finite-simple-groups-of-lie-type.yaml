@@ -1,0 +1,165 @@
+# Imported from https://terrytao.wordpress.com/books/expansion-in-finite-simple-groups-of-lie-type/ by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Expansion in finite simple groups of Lie type
+  slug: expansion-in-finite-simple-groups-of-lie-type
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/expansion-in-finite-simple-groups-of-lie-type/"
+  description: This continues my series of books derived from my blog, and is based on the lecture notes
+    for my graduate course of the same name.
+  publication:
+    publisher: American Mathematical Society
+    first_published: 2015
+    note: Graduate Studies in Mathematics 164 (Providence, RI, 2015).
+  links:
+  - title: Online draft
+    url: "https://terrytao.wordpress.com/wp-content/uploads/2021/05/expander-book.pdf"
+  - title: Lecture notes (254B)
+    url: "https://terrytao.wordpress.com/category/teaching/254b-expansion-in-groups/"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Jean-Phillipe Burelle
+    - Justin Ciecerbach
+    - Claudeh5
+    - Pietro Gheri
+    - Constantin Kogler
+    - Mohammed Mannan
+    - Sarah Peluse
+    - Doron Puder
+    - Daniel Raban
+    - Matthew Tointon
+    - an anonymous commenter
+  migrated: '2026-07-09'
+editions:
+- id: errata
+  errata:
+  - id: errata-0001
+    page: "?"
+    text: "at the end of the implication of (ii) from (i) in Proposition 1.2.1, “$\\varepsilon k |F|/2$\
+      \ pairs $v,w$” should be “$\\varepsilon k |F|/2$ ordered pairs $(v,w)$“, the right-hand side of\
+      \ $\\varepsilon |F|/2$ in the next display should be $\\varepsilon k |F|/4$, and the lower bound\
+      \ for $h(G_n)$ should be $\\varepsilon k/4$ rather than $\\varepsilon/2$."
+  - id: errata-0002
+    page: "?"
+    text: In Exercise 1.2.3(i), “two-sided” should be “one-sided”.
+  - id: errata-0003
+    page: "?"
+    text: "In the proof of Proposition 2.2.8, the Haar measure on $GL_d$ needs to be Lebesgue measure\
+      \ divided by $|v_1 \\wedge \\dots \\wedge v_d|$. The Haar measure of the $w_1,\\dots,w_{d-1}$ should\
+      \ then be $O(1)$ rather than $O(1/|v_d|)$, and similarly for the integral in the next display; but\
+      \ to compensate for this, the integral should be against $\\frac{dv_d}{|v_d|}$ rather than $dv_d$."
+  - id: errata-0004
+    page: "?"
+    text: "In Exercise 2.0.4, replace the hint with “you may assume without proof Petersen’s 2-factor\
+      \ theorem, which asserts that every $k$-regular graph with $k$ even can be decomposed into $k/2$\
+      \ edge-disjoint $2$-regular graphs. Now use the previous example.”."
+  - id: errata-0005
+    page: '51'
+    text: Before Exercise 2.3.2, “total mass” should be “total variation”,
+  - id: errata-0006
+    page: '74'
+    text: "Remark 3.3.7, second line: “(pseudo-)randomly sowing” should be “(pseudo-)randomly sewing”"
+  - id: errata-0007
+    page: '89'
+    text: "Lemma 4.1.3, fourth line: “$a\\in A$ and $b\\in B$” should be “$a\\in A'$ and $b\\in B'$”"
+  - id: errata-0008
+    page: '93'
+    text: "Lemma 4.1.7, last line: “$g\\in H$” should be “$g\\in G$”."
+  - id: errata-0009
+    page: '95'
+    text: "Proof of Lemma 4.1.7, last line: “$|gH\\cap A|\\ll K^{-O(1)}|A|$” should be “$|gH\\cap A|\\\
+      gg K^{-O(1)}|A|$”"
+  - id: errata-0010
+    page: '98'
+    text: "Proof of Lemma 4.2.2, eighth line: $\\mu^{*n} \\|)_\\infty$ should be $\\|\\mu^{*n} \\|)_\\\
+      infty$."
+  - id: errata-0011
+    page: '102'
+    text: "Exercise 5.0.1, seventh line: add right parenthesis after “should not actually depend on $d$“.\
+      \ Also, “Girth bound” should be “Diameter bound”."
+  - id: errata-0012
+    page: 103-104
+    text: "Proof of Theorem 5.0.2, last line of 103 and first two lines of 104: “If $h\\in H'$, then $A$\
+      \ and $Ah$ both lie in $H'$” should read “If $h\\in H'$, then $A$ and $Ah$ both lie in $gH'$“, and\
+      \ both occurrences of $AA^{-1}$ should be $A^{-1} A$."
+  - id: errata-0013
+    page: '109'
+    text: "paragraph 3, first line and third-to-last line: “Lemma 5.1.3” should be “Lemma 5.1.7”"
+  - id: errata-0014
+    page: '121'
+    text: "proof of Lemma 5.3.2:”$A^2$ can be covered by $K$ copies of $A$” should be “$A^2$ can be covered\
+      \ by $K$ translates $aA$ of $A$, and we can restrict to those $a$ in $A^3$ since otherwise $aA$\
+      \ will not intersect $A$“. Then, later in the proof, $a \\in A$ should be $a \\in A^3$, $A^7$ should\
+      \ be $A^{10}$, $K^6 |A|$ should be $K^9 |A|$, and $K^{-2C-11}$ should be $K^{-2C-14}$ (three occurrences).\
+      \ In Exercise 5.3.2, add the hypothesis that $V$ is not the one-dimensional space spanned by the\
+      \ identity element."
+  - id: errata-0015
+    page: '122'
+    text: "Proof of Proposition 5.3.3, third line: “$|A^2\\cap B|\\leq K^{-C}|B|$” should be “$|A^2\\\
+      cap B|\\leq K^{-C}|A|$“"
+  - id: errata-0016
+    page: '140'
+    text: "Exercise 6.1.3, part (ii): Add the hypothesis that $a$ is not the identity element of $\\Gamma$"
+  - id: errata-0017
+    page: '140'
+    text: "last paragraph, second line: The definition of $\\mu$ is missing a right parenthesis."
+  - id: errata-0018
+    page: '142'
+    text: "second paragraph, fifth line: “sufficiently small $\\mu$” should be “sufficiently small $c$“."
+  - id: errata-0019
+    page: '142'
+    text: "In (1.66), $D_+$ should be ${\\mathcal D}_+$."
+  - id: errata-0020
+    page: "?"
+    text: "In (7.10), $1_{n=p_1\\dots p_k}$ should be $1_{n=p_1 \\dots p_k m; (m,P(p_k))=1}$."
+  - id: errata-0021
+    page: '152'
+    text: "third line: “in the $\\mathcal{D}_{+}$” and “in the $\\mathcal{D}_{-}$ case”, should be interchanged."
+  - id: errata-0022
+    page: '155'
+    text: "Exercise 7.1.4, part (i), displayed equation: “$\\pi_2(x,z)$” should be “$\\pi_{*}(x,z)$“"
+  - id: errata-0023
+    page: '155'
+    text: "Exercise 7.1.4, part (i): $\\sum_{p\\leq x,p\\equiv 1\\pmod{4}} \\frac{1}{p}$ is $\\frac{1}{2}\\\
+      log\\log{x}+O(1)$, not $\\frac{1}{2}\\log{x}+O(1)$"
+  - id: errata-0024
+    page: '155'
+    text: "Exercise 7.1.4, part (ii): “infinitely natural numbers” should be “infinitely many natural\
+      \ numbers”"
+  - id: errata-0025
+    page: '157'
+    text: "Theorem 7.2.1, second-to-last line: $K_{\\phi(i+1)}/K_{\\phi(i)}$ should be $K_{\\sigma(i+1)}/K_{\\\
+      sigma(i)}$"
+  - id: errata-0026
+    page: 160-161
+    text: "after the proof of Corollary 7.2.3: All appearances of $\\Gamma$ and $\\Gamma'$ should instead\
+      \ be $\\Lambda$ and $\\Lambda'$."
+  - id: errata-0027
+    page: '162'
+    text: "last paragraph, first sentence: “Theorem 7.0.1” should be “Theorem 7.3.1”"
+  - id: errata-0028
+    page: '164'
+    text: "fourth line: “hyopthesis” should be “hypothesis”"
+  - id: errata-0029
+    page: '208'
+    text: In Exercise 10.1.2, “defined as the closure” should be “defined as the completion”.
+  - id: errata-0030
+    page: '213'
+    text: "In Exercise 10.2.1(i), “Liouville’s theorem” should be “the maximum principle”, and the phrase\
+      \ “viewed as a function of $x$ and $t$ should be added."
+  - id: errata-0031
+    page: "?"
+    text: "In the introduction to Chapter 11, ${\\mathfrak a}_1 . ({\\mathfrak a}_2 . \\ldots ({\\mathfrak\
+      \ a}_{k-1} . {\\mathfrak a}_k) \\ldots )$ should be $(\\dots ({\\mathfrak a}_k . {\\mathfrak a}_{k-1})\
+      \ \\dots . {\\mathfrak a}_2 ) . {\\mathfrak a}_1$."
+  - id: errata-0032
+    page: '252'
+    text: "In Corollary 11.7.2, the conclusions about certain combinations of $\\alpha,\\beta$ not being\
+      \ roots is incorrect and should be deleted."
+  - id: errata-0033
+    page: '254'
+    text: In Lemma 11.7.8, a fourth case needs to be excluded involving three chains of simple edges of
+      length 1,3,3, which can be treated by essentially the same argument as in (c) (or (b)).
