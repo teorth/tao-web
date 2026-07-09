@@ -63,6 +63,7 @@ body { font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, He
 a { color: var(--accent); }
 h1 { font-size: 1.9rem; margin: 0 0 .3rem; }
 h2 { font-size: 1.25rem; margin: 2.2rem 0 .2rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); }
+h3 { font-size: 1.05rem; margin: 1.5rem 0 .2rem; }
 .sub { color: var(--muted); margin: 0 0 1.5rem; }
 .count { color: var(--muted); font-size: .9rem; margin: .1rem 0 1rem; }
 ol.errata { list-style: none; margin: 0; padding: 0; }
@@ -137,7 +138,7 @@ def render_edition(ed: dict) -> list[str]:
     stubs = sum(1 for e in errata if e.get("page") == "?")
     out = []
     if ed.get("name"):
-        out.append(f'<h2>{html.escape(ed["name"])}</h2>')
+        out.append(f'<h3>{html.escape(ed["name"])}</h3>')
     cnt = f"{len(errata)} correction" + ("s" if len(errata) != 1 else "")
     if stubs:
         cnt += f" &middot; {stubs} awaiting a page number"
@@ -172,7 +173,7 @@ def build_book(doc: dict) -> tuple[str, str]:
     book = doc["book"]
     slug = book["slug"]
     parts = [f'<p><a href="index.html">&larr; All books</a></p>',
-             f'<h1>Errata &mdash; {html.escape(book["title"])}</h1>']
+             f'<h1>{html.escape(book["title"])}</h1>']
     authors = ", ".join(book.get("authors", [])) or "Terence Tao"
     parts.append(f'<p class="sub">{html.escape(authors)}'
                  + (f' &middot; <a href="{html.escape(book["source"])}">original page</a>'
@@ -207,24 +208,28 @@ def build_book(doc: dict) -> tuple[str, str]:
                         for l in links)
         parts.append(f'<ul class="links">{items}</ul>')
 
-    # Editions: active ones inline; older (active: false) ones collapsed together.
+    # Errata section (only when the book actually has corrections). Active editions
+    # render inline; older (active: false) ones collapse together.
     editions = doc.get("editions", [])
     active = [ed for ed in editions if ed.get("active", True)]
     older = [ed for ed in editions if not ed.get("active", True)]
-    if not editions:
-        parts.append('<p class="sub">No errata have been recorded for this book.</p>')
-    for ed in active:
-        parts.extend(render_edition(ed))
-    if older:
-        older_n = sum(len(ed.get("errata", [])) for ed in older)
-        summary = (f"Show errata for {len(older)} older edition"
-                   + ("s" if len(older) != 1 else "")
-                   + f" ({older_n} correction" + ("s" if older_n != 1 else "") + ")")
-        parts.append('<details class="older">')
-        parts.append(f'<summary>{summary}</summary>')
-        for ed in older:
+    total = sum(len(ed.get("errata", [])) for ed in editions)
+    if total:
+        parts.append('<h2>Errata</h2>')
+        for ed in active:
             parts.extend(render_edition(ed))
-        parts.append('</details>')
+        if older:
+            older_n = sum(len(ed.get("errata", [])) for ed in older)
+            summary = (f"Show errata for {len(older)} older edition"
+                       + ("s" if len(older) != 1 else "")
+                       + f" ({older_n} correction" + ("s" if older_n != 1 else "") + ")")
+            parts.append('<details class="older">')
+            parts.append(f'<summary>{summary}</summary>')
+            for ed in older:
+                parts.extend(render_edition(ed))
+            parts.append('</details>')
+    else:
+        parts.append('<p class="sub">No errata have been recorded for this book.</p>')
 
     # Contributors
     names = contributor_names(doc)
@@ -243,21 +248,22 @@ def build_book(doc: dict) -> tuple[str, str]:
     if updated:
         parts.append(f'<p class="updated">Last updated: {fmt_date(updated)}.</p>')
 
-    return slug, page(f"Errata — {book['title']}", "\n".join(parts))
+    return slug, page(book["title"], "\n".join(parts))
 
 
 def build_index(books: list[dict]) -> str:
     rows = []
     for doc in sorted(books, key=lambda d: d["book"]["title"].lower()):
         b = doc["book"]
-        n = sum(len(ed.get("errata", [])) for ed in doc["editions"] if ed.get("active", True))
+        n = sum(len(ed.get("errata", [])) for ed in doc.get("editions", []) if ed.get("active", True))
+        tag = (f"{n} correction" + ("s" if n != 1 else "")) if n else "book details"
         rows.append(f'<li><a href="{b["slug"]}.html">{html.escape(b["title"])}</a>'
-                    f' <span class="count">&mdash; {n} corrections</span></li>')
-    body = ('<h1>Errata</h1>'
-            '<p class="sub">Corrections to the books of Terence Tao, automatically generated from a '
-            'database maintained by the author.</p>'
+                    f' <span class="count">&mdash; {tag}</span></li>')
+    body = ('<h1>Books</h1>'
+            '<p class="sub">Book pages for the works of Terence Tao &mdash; bibliographic details and '
+            'errata, generated from a database maintained by the author.</p>'
             f'<ul class="book-list">{"".join(rows)}</ul>')
-    return page("Errata — Terence Tao", body)
+    return page("Books — Terence Tao", body)
 
 
 def main() -> None:
