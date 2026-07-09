@@ -1,0 +1,1261 @@
+# Imported from https://terrytao.wordpress.com/books/analysis-ii/ (+ .../analysis-ii-old-errata/) by scripts/import_wordpress.py and review -- maintain by hand.
+book:
+  title: Analysis II
+  slug: analysis-ii
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/analysis-ii/"
+  description: This is basically an expanded and cleaned up version of my lecture notes for Math 131B.
+    In the US, it is available through the American Mathematical Society. It is part of a two-volume series.
+  publication:
+    publisher: Hindustan Book Agency
+    first_published: 2006
+    isbn: 81-85931-62-3 (first edition); 978-981-19-7284-3 (Springer, fourth edition)
+    note: Hardcover, 236 pages. Fourth edition (2022). Also published by Springer, and distributed in
+      the US by the American Mathematical Society.
+  links:
+  - title: Analysis I (companion volume)
+    url: "https://terrytao.wordpress.com/books/analysis-i/"
+  - title: Lean formalization (optpku/ReasBook)
+    url: "https://github.com/optpku/ReasBook/tree/main/ReasBook/Books/Analysis2_Tao_2022"
+  contributors:
+    note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
+      were reported by the readers listed below over the years; individual per-erratum attributions for
+      these legacy entries were not preserved in migration.
+    legacy:
+    - Rona Alempour
+    - William Ballard
+    - Quentin Batista
+    - Biswaranjan Behera
+    - José Antonio Lara Benítez
+    - Dingjun Bian
+    - Petrus Bianchi
+    - Philip Blagoveschensky
+    - Carlos
+    - cebismellim
+    - William Clark
+    - William Deng
+    - Jonas Esser
+    - EO
+    - Florian
+    - Aditya Ghosh
+    - Gökhan Güçlü
+    - Yaver Gulusoy
+    - Kyle Hambrook
+    - Guo Hao
+    - Noel Hinton
+    - Minyoung Jeong
+    - Bart Kleijngeld
+    - Eric Koelink
+    - Wang Kunyang
+    - Brett Lane
+    - Matthis Lehmkühler
+    - Yingyuan Li
+    - Zijun Liu
+    - Rami Luisto
+    - lyyryan
+    - Jason M.
+    - Matthew
+    - Manoranjan Majji
+    - Geoff Mess
+    - Guillaume Olikier
+    - Jorge Peña-Vélez
+    - Cristina Pereyra
+    - Olli Pottonen
+    - Issa Rice
+    - Linda Riewe
+    - Walter Roberts
+    - Frédéric Santos
+    - SkysubO
+    - Jorge Silva
+    - Rafał Szlendak
+    - Yiğithan Tamer
+    - Winston Tsai
+    - Kent Van Vels
+    - Andrew Verras
+    - Murtaza Wani
+    - Xueping
+    - Sam Xu
+    - Christopher Yeh
+    - Zelin
+    - the students of Math 401/501 and Math 402/502 at the University of New Mexico
+  migrated: '2026-07-09'
+editions:
+- id: corrected-fourth-edition
+  name: Corrected fourth edition
+  errata:
+  - id: corrected-fourth-edition-0001
+    page: '34'
+    text: "“Theorem 1.2.10” should be “Proposition 1.2.10”."
+- id: fourth-edition
+  name: Fourth edition
+  errata:
+  - id: fourth-edition-0001
+    page: '2'
+    text: "Example 1.1.5: “is known the subspace” should be “is known as this subspace”. In example 1.1.6,\
+      \ note that we use the usual notation $\\sqrt{x}$ for $x^{1/2}$."
+  - id: fourth-edition-0002
+    page: '4'
+    text: "In Example 1.1.9, $\\sup(3,4)$ should be $\\sup\\{3,4\\}$."
+  - id: fourth-edition-0003
+    page: '7'
+    text: "Exercise 1.1.2: “Proposition 4.3.3” should be “Proposition 4.3.3 of Analysis I”."
+  - id: fourth-edition-0004
+    page: '10'
+    text: Expand Definition 1.2.9 to also define the notion of a limit point; similarly for Definition
+      2.5.6 on page 34. Before Proposition 1.2.10, “Definitions 9.1.8, 9.1.10” should be “Definitions
+      9.1.8, 9.1.10 of Analysis I”.
+  - id: fourth-edition-0005
+    page: '12'
+    text: "In Exercise 1.2.2, “Lemma 8.4.5” should be “Lemma 8.4.5 from Analysis I”; one can also add\
+      \ “For completeness, one can also argue using Lemma 1.4.9”. In Proposition 1.2.15(c), delete the\
+      \ word “then”. In the proof of Proposition 1.3.4, “Proposition 8.4.7” should be “Proposition 8.4.7\
+      \ from Analysis I”. In Definition 1.2.5: “We saythat” is missing a space."
+  - id: fourth-edition-0006
+    page: '15'
+    text: In Definition 1.4.1, “increasing” should be “strictly increasing”.
+  - id: fourth-edition-0007
+    page: "?"
+    text: In Exercise 1.4.8, one can swap the order of (e) and (f) to avoid duplication in the proof.
+  - id: fourth-edition-0008
+    page: '19'
+    text: In Case 1, “Proposition 8.4.7” should be “Proposition 8.4.7 from Analysis I”. In the start of
+      Section 1.5 (and subsequently), “Theorem 9.1.24” should be “Theorem 9.1.24 from Analysis I”.
+  - id: fourth-edition-0009
+    page: '20'
+    text: "In the analysis of Case 1 of the proof of Theorem 1.5.8, $n \\geq N$ should be $j \\geq N$\
+      \ (two occurrences)."
+  - id: fourth-edition-0010
+    page: '21'
+    text: In Exercise 1.5.2, “Lemma 8.4.5” should be “Lemma 8.4.5 from Analysis I”. In Exercise 1.5.3,
+      “Theorem 9.1.24” should be “Theorem 9.1.24 from Analysis I”, and similarly for Definition 9.1.22
+      in Remark 1.5.4. In the discussion after Theorem 1.5.7, clarify that the integers are closed as
+      a subset of the reals. In the first paragraph of Exercise 1.5.10, a right parenthesis is missing,
+      and in part (b), Exercise 8.5.20 should be from Analysis I.
+  - id: fourth-edition-0011
+    page: '22'
+    text: In the first paragraph of Section 2.1, Definition 9.4.1 sohuld be from Analysis I, and similarly
+      for Proposition 9.4.7 on the next page.
+  - id: fourth-edition-0012
+    page: '25'
+    text: "In Lemma 2.2.1, the hypothesis that $(X,d)$ is a metric space should be included. In the first\
+      \ sentence of Section 2.2, the word “defined” in “defined by” is redundant and can be deleted. Exercise\
+      \ 3.5.7 should be “Exercise 3.5.7 from Analysis I”."
+  - id: fourth-edition-0013
+    page: '26'
+    text: "In Corollary 2.2.3(b), the modifiers “at $x_0$” should be deleted. In Corollary 2.2.3(a), the\
+      \ modifier “at $x_0$” should be added after “$f/g: X \\to {\\bf R}$ is continuous” (and similarly\
+      \ when referring to continuity of $f+g$ in the proof), and Definition 9.2.1 should be “Definition\
+      \ 9.2.1 from Analysis I”. In Exercise 2.2.2, Theorem 6.1.19 should be from Analysis I."
+  - id: fourth-edition-0014
+    page: '28'
+    text: "Theorem 2.1.4: “Let$f: X rightarrow Y$” is missing a space. In Exercise 2.2.9, replace “Recall\
+      \ that” with “Here we define”, and Example 1.2.7 should be from Analysis I; and “whenever the limits\
+      \ on both sides exist” can be clarified with “for all choices of parameters $x,y$“. Definition 9.6.5\
+      \ and Proposition 9.6.7 should be from Analysis I"
+  - id: fourth-edition-0015
+    page: '29'
+    text: "in the proof of Theorem 2.3.5, one should first dispose of the case $X = \\emptyset$ separately\
+      \ (in which all functions are both continuous and uniformly continuous for vacuous reasons). Exercise\
+      \ 9.6.1, Lemma 9.6.3, Definition 9.9.2 should be from Analysis I"
+  - id: fourth-edition-0016
+    page: "?"
+    text: In Exercise 2.5.1, “from by placing” should just be “by placing”.
+  - id: fourth-edition-0017
+    page: '30'
+    text: Proposition 9.6.7 should be from Analysis I
+  - id: fourth-edition-0018
+    page: '31'
+    text: Definition 9.1.1 should be from Analysis I. One can note that the property (b) of Theorem 2.4.5
+      is being “connected” in the sense of Definition 11.1.1 of Analysis I
+  - id: fourth-edition-0019
+    page: '32'
+    text: Theorem 9.7.1 should be from Analysis I. Additionally, in Exercise 2.4.3, one can refer back
+      to Lemma 11.1.4 of Analysis I for the bounded case.
+  - id: fourth-edition-0020
+    page: '33'
+    text: "Corollary 9.7.4 should be from Analysis I. In definition 2.5.1, “$V_1,\\dots,V_n$ is elements”\
+      \ should read “are elements”"
+  - id: fourth-edition-0021
+    page: '36'
+    text: "In Exercise 2.5.4, when referring to the trivial topology being non-Hausdorff, add the hypothesis\
+      \ that the space contains at least two points. In Exercise 2.5.6, add “and ” after “if $x \\in X$“."
+  - id: fourth-edition-0022
+    page: '39'
+    text: "“For instance, we already have a notion of limiting values of functions…” can have the caveat\
+      \ “(in some cases)” added."
+  - id: fourth-edition-0023
+    page: '42'
+    text: "In Exercise 3.1.5, delete the redundant “and let $E$ be a set”. Proposition 9.3.14 should be\
+      \ from Analysis I. In Remark 3.2.2, replace “uniform convergence” with “uniform continuity”."
+  - id: fourth-edition-0024
+    page: '43'
+    text: "in Example 3.2.5, “we cannot always take limits conclude” should be “we cannot always take\
+      \ limits and/to/in order to conclude”. Furthermore, when showing the limits do not commute, $\\\
+      lim_{x \\to x_0; x \\in X}$ should be $\\lim_{x \\to x_0; x \\in E}$. Example 1.2.8 should be from\
+      \ Analysis I."
+  - id: fourth-edition-0025
+    page: '44'
+    text: Example 1.2.9 should be from Analysis I.
+  - id: fourth-edition-0026
+    page: '45'
+    text: In Exercise 3.2.2(c), Lemma 7.3.3 should be Lemma 7.3.3 from Analysis I.
+  - id: fourth-edition-0027
+    page: 47-48
+    text: In Remark 3.3.7, “it only works” should be “they only work”. In Exercise 3.3.2, replace “cannot
+      be used” with “cannot immediately be used” in the hint.
+  - id: fourth-edition-0028
+    page: '53'
+    text: "In Exercise 3.2.4, add “For every $y_0 \\in Y$” in the definition of a bounded (or uniformly\
+      \ bounded) function (this is needed to handle the edge case when $X,Y$ are both empty). Similarly\
+      \ for Exercise 3.3.5."
+  - id: fourth-edition-0029
+    page: '58'
+    text: "In Exercise 3.4.4, add the hypotheses that $X,Y$ are non-empty."
+  - id: fourth-edition-0030
+    page: '57'
+    text: "In Exercise 3.7.2, $d_\\infty(f'_n,f'_m)$ should be $\\sup_{x \\in [a,b]} |f'_n(x)-f'_m(x)|$\
+      \ (because we do not assume $f'_n, f'_m$ to be bounded)."
+  - id: fourth-edition-0031
+    page: '63'
+    text: In the third paragraph of Section 3.7, “Definintion” should be “Definition”.
+  - id: fourth-edition-0032
+    page: '66'
+    text: "In Theorem 4.1.6(e), the interval $[y,z]$ should be assumed to be non-empty. “Let$f: (a - R,\
+      \ a + R) \\to R$” is missing a space. Add the remark that we adopt the convention that $(a-R,a+R)$\
+      \ is the entire real line if $R = +\\infty$."
+  - id: fourth-edition-0033
+    page: '68'
+    text: "In Definition 4.2.4, it is slightly better to use $(f')^{(k-1)}$ rather than $(f^{(k-1)})'$\
+      \ (even though they can both be shown a posteriori to be well defined and equal to each other)."
+  - id: fourth-edition-0034
+    page: "?"
+    text: "In the proof of Corollary 4.2.7, replace “$k$-times differentiable at $a$” with “$k$-times\
+      \ differentiable on some neighborhood $(a-r,a+r)$ of $a$“."
+  - id: fourth-edition-0035
+    page: '71'
+    text: "In Exercise 4.2.7, “let $0 < x < r$ be real numbers” should be “$0 < r$ be a real number”,\
+      \ and “Lemma 7.3.3” should be “Lemma 7.3.3 from Analysis I”. $m$ should be a non-negative integer\
+      \ rather than a positive one."
+  - id: fourth-edition-0036
+    page: '72'
+    text: "onwards: any appearance of colons in limits, such as $\\lim_{x \\to a+R: x \\in (a-R,a+R)}$,\
+      \ should be replaced with semicolons for consistency."
+  - id: fourth-edition-0037
+    page: '83'
+    text: "In Exercise 4.2.8(d), replace $C$ with $C'$ (to avoid confusion with part (b))."
+  - id: fourth-edition-0038
+    page: '85'
+    text: "At the end of the paragraph following Definition 4.6.12, after “in the usual manner by the\
+      \ formula $z/w := z w^{-1}$“, add: “In the language of abstract algebra, this fact (together with\
+      \ Lemma 4.6.6) tells us that the complex numbers form a field, much like the rational numbers and\
+      \ real numbers.”"
+  - id: fourth-edition-0039
+    page: '86'
+    text: In the final display in Lemma 4.6.14, the parentheses should be matched in size.
+  - id: fourth-edition-0040
+    page: "?"
+    text: In Definition 4.6.10, Exercise 5.6.4 should be from Analysis I.
+  - id: fourth-edition-0041
+    page: '88'
+    text: "?: In the proof of Theorem 4.4.1, in the discussion of absolute convergence, replace the double\
+      \ series $\\sum_{n=0}^\\infty \\sum_{m=0}^\\infty$ with the single series $\\sum_{(n,m) \\in {\\\
+      bf N}^2}$. Similarly, when invoking Fubini’s theorem for series, refer to the absolute convergence\
+      \ of the single series rather than the double series."
+  - id: fourth-edition-0042
+    page: '89'
+    text: "In the proof of Lemma 4.7.3, “$\\sin$ increasing” should be “$\\sin$ is strictly increasing”."
+  - id: fourth-edition-0043
+    page: '92'
+    text: In Exercise 4.7.10(c), “Exercise 5.4.3” should be “Exercise 5.4.3 from Analysis I”. In 4.7.10(b),
+      the absolute value signs should be enlarged.
+  - id: fourth-edition-0044
+    page: '93'
+    text: replace “not real analytic” with “not real analytic everywhere”, and “do not have power series”
+      with “do not have power series around every point”.
+  - id: fourth-edition-0045
+    page: '95'
+    text: "replace $[0,1]$ with $[0,1)$."
+  - id: fourth-edition-0046
+    page: '98'
+    text: "In Exercise 5.2.3, $\\|\\|_{L^\\infty}$ should be $\\| \\|_\\infty$."
+  - id: fourth-edition-0047
+    page: '99'
+    text: "Expand Exercise 5.2.5 to “Find a sequence of continuous periodic functions $f_n$ which converge\
+      \ in $L^2$ to a discontinuous periodic function $f$ in the sense that $\\| f - f_n\\|_2 \\to 0$\
+      \ as $n \\to \\infty$ (extending the $\\| \\|_2$ (semi-)norm to discontinuous periodic functions\
+      \ in the obvious fashion), but which do not converge in $L^2$ to any continuous periodic function.”\
+      \ (and retain the same hint)."
+  - id: fourth-edition-0048
+    page: '100'
+    text: "In Lemma 5.3.5, $\\| \\|$ should be $\\| \\|_2$."
+  - id: fourth-edition-0049
+    page: '103'
+    text: "After the proof of Lemma 5.4.4: “Lemma 5.4.4(iii)” should be “Lemma 5.4.4(c)”. During this\
+      \ proof: in the long display, the final $\\hat f(n) e_n$ should be $\\hat f(n) e_n(x)$. Similarly,\
+      \ on the next page in the proof of Lemma 5.4.6, $\\frac{e_N-e_0}{e_1-e_0}$ should be $\\frac{e_N(x)-e_0(x)}{e_1(x)-e_0(x)}$.\
+      \ The upper limits $n=N$ in the summations should just be $N$."
+  - id: fourth-edition-0050
+    page: '104'
+    text: in the proof of Lemma 5.4.6, the reference to Lemma 7.3.3 should instead be Exercise 7.3.2 from
+      Analysis I.
+  - id: fourth-edition-0051
+    page: '105'
+    text: "Exercise 4.7.10 (b): Add space in “for any realnumbers x and y”."
+  - id: fourth-edition-0052
+    page: '93'
+    text: "“Napoleons” should be “Napoleon’s”. (This has already been corrected in some versions.)"
+  - id: fourth-edition-0053
+    page: "?"
+    text: "In the first line of the proof of Theorem 5.5.1, “sufficiently large $N$” should be “$N > N_0$“."
+  - id: fourth-edition-0054
+    page: "?"
+    text: In the proof of Theorem 5.5.3, “Lemma 5.1.5(iii)” should be “Lemma 5.1.5(c)”
+  - id: fourth-edition-0055
+    page: '108'
+    text: "In the proof of Theorem 5.5.4, $(\\|f\\|_2-\\varepsilon)^2$ should be $\\max(\\|f\\|_2-\\varepsilon,0)^2$\
+      \ (two occurrences)."
+  - id: fourth-edition-0056
+    page: "?"
+    text: "Exercise 5.5.2 should say $f(x) := (1-2x)^2$ rather than $f(x)=(1-2x)^2$."
+  - id: fourth-edition-0057
+    page: '110'
+    text: "In Definition 6.1.10, add that the $a_{ij}$ are real numbers, and add that to be completely\
+      \ formal, one could view a matrix $A$ as a function $(i,j) \\mapsto a_{ij}$ from the set $\\{(i,j):\
+      \ 1 \\leq i \\leq m; 1 \\leq j \\leq n\\}$ to ${\\bf R}$, though we will not use this notation in\
+      \ the text."
+  - id: fourth-edition-0058
+    page: '119'
+    text: "In Exercise 6.1.4, give the definition of the norm $\\| \\|$ (repeating the definition given\
+      \ in Definition 6.2.2)."
+  - id: fourth-edition-0059
+    page: '120'
+    text: "In Lemma 6.2.1, $x_0$ should be required to be an element of $E$. In example 6.2.3, all colons\
+      \ in the limits should be semicolons."
+  - id: fourth-edition-0060
+    page: '122'
+    text: "At the end of Section 6.2, remark that it is common to abbreviate $+\\infty$ as $\\infty$ when\
+      \ there is no chance of confusion. Add an exercise 6.2.3: “Let $E$ be a subset of ${\\bf R}^n$,\
+      \ let $f: E \\to {\\bf R}^m$ be a function, let $x_0$ be an interior point of $E$ and let $f_1,\\\
+      dots,f_m: E \\to {\\bf R}$ be the components of $f$. Show that $f$ is differentiable at $x_0$ if\
+      \ and only if all of the $f_1,\\dots,f_m$ are differentiable at $x_0$."
+  - id: fourth-edition-0061
+    page: '122'
+    text: "In the discussion after Lemma 6.2.4, replace $E = \\{x_0\\}$ with $E = \\{ (x,0): x \\in {\\\
+      bf R}\\}$, and remark instead that the derivative $f'$ of a function on $E$ is not uniquely defined\
+      \ (only the action of $f'$ on the x-axis is unique)."
+  - id: fourth-edition-0062
+    page: '128'
+    text: In the hint for Exercise 6.3.1, replace Exercise 6.2.1 with Exercise 6.2.2.
+  - id: fourth-edition-0063
+    page: "?"
+    text: "In the proof of Theorem 6.3.8, “an $0 < \\delta_j < r\" should be \"a$latex 0 < \\delta_j <\
+      \ r$”."
+  - id: fourth-edition-0064
+    page: '132'
+    text: "In the proof of Theorem 6.5.4, “the $e_i$ variable” should be “the $x_i$ variable”."
+  - id: fourth-edition-0065
+    page: 135-136
+    text: "In Exercise 6.6.1, Corollary 10.2.9 should be “Corollary 10.2.9 from Analysis I”. In Exercise\
+      \ 6.6.7, Lemma 7.3.3 should be Lemma 7.3.3 from Analysis I. In the second paragraph of Section 6.7,\
+      \ “$f$ is not invertible” should be “$f'(x_0)$ is not invertible”."
+  - id: fourth-edition-0066
+    page: '138'
+    text: "In Example 6.3.3, $D_{-1} f(x)$ should be the negative of the left-derivative, rather than\
+      \ the left-derivative."
+  - id: fourth-edition-0067
+    page: "?"
+    text: "In Exercise 6.4.5, add “Here we are interpreting $\\vec x'(t_0)$ as a vector in ${\\bf R}^3$\
+      \ in the obvious fashion.”."
+  - id: fourth-edition-0068
+    page: "?"
+    text: "At the start of Section 6.7, Theorem 10.4.2 should be from Analysis I, and “$f'$ is not invertible”\
+      \ should be “$f$ is not invertible”."
+  - id: fourth-edition-0069
+    page: '147'
+    text: "Before Theorem 7.1.1, in the parenthetical, add the clarification “, and will adopt the convention\
+      \ that $+\\infty+x = x + +\\infty = +\\infty$ for all $x \\in [0,\\infty]$.”"
+  - id: fourth-edition-0070
+    page: "?"
+    text: "In Exercise 6.7.4, add an extra closing parenthesis to $(f^{-1})'(f(x)$. “as necessarily” should\
+      \ be “as necessary”."
+  - id: fourth-edition-0071
+    page: "?"
+    text: "In Exercise 6.8.1: “hyophteses” should be “hypotheses”."
+  - id: fourth-edition-0072
+    page: '147'
+    text: "in the discussion of the boolean algebra property, add the remark that we adopt the convention\
+      \ that the empty intersection (i.e., the intersection with $J$ the empty set) is the whole space\
+      \ ${\\bf R}^n$"
+  - id: fourth-edition-0073
+    page: "?"
+    text: before Theorem 7.1.1, “wea dopt” should be “we adopt”.
+  - id: fourth-edition-0074
+    page: '148'
+    text: After Definition 7.2.1, “open intervals” should be “open bounded intervals”.
+  - id: fourth-edition-0075
+    page: '149'
+    text: "In the first sentence after Definition 7.2.4, $\\sum_{j=1}^\\infty \\mathrm{vol}(B_j)$ should\
+      \ be $\\sum_{j \\in J} \\mathrm{vol}(B_j)$. In Lemma 7.2.5(vi), the hypothesis of measurability\
+      \ should be dropped. After Definition 7.2.3, “for every box $j$” should be “for every box $B_j$“."
+  - id: fourth-edition-0076
+    page: '150'
+    text: "In Propsition 7.2.6, the hypotheses $b_i \\geq a_i$ should be added."
+  - id: fourth-edition-0077
+    page: '153'
+    text: The final claim of Corollary 7.2.7 is more logically placed as the final claim of Proposition
+      7.2.6.
+  - id: fourth-edition-0078
+    page: '154'
+    text: "In the proof of Corollary 7.2.7, “Corollary 6.4.14” should be “Corollary 6.4.14 from Analysis\
+      \ I”; in Example 7.2.9, “Corollary 8.3.4” should be “Corollary 8.3.4 from Analysis I”. In Example\
+      \ 7.2.11, “$m^*({\\bf R})$ has outer measure” should be “${\\bf R}$ has outer measure”."
+  - id: fourth-edition-0079
+    page: '155'
+    text: In Exercise 7.2.5, “Q1” should be “Exercise 7.2.3”.
+  - id: fourth-edition-0080
+    page: "?"
+    text: "In Exercise 7.2.2: Remove the upside-down exclamation point."
+  - id: fourth-edition-0081
+    page: '155'
+    text: "In Exercise 7.2.3(a), note that the notion of limit in the extended real number system is defined\
+      \ in Exercise 2.5.5. In Exercise 7.2.4, $q>1$ should be $q \\geq 1$, and “covering $(0,1)^n$ by\
+      \ some translates of $(0,1/q)^n$” should be “packing $[0,1]^n$ by disjoint translates of $(0,1/q)^n$“.\
+      \ In Exercise 7.2.1, $A_j$ should be $A_{j_i}$, and $2^j$ should be $2^i$."
+  - id: fourth-edition-0082
+    page: '156'
+    text: In the paragraph before the first display (after Proposition 7.3.1), “Section 8.4” should be
+      “Section 8.4 from Analysis I”.
+  - id: fourth-edition-0083
+    page: '160'
+    text: "in the proof of Lemma 7.4.8, just before “we see from Lemma 7.4.5”, $A \\cap E_{j_k}$ and $A\
+      \ \\cap F_N$ should be $E_{j_k}$ and $F_N$ respectively."
+  - id: fourth-edition-0084
+    page: '161'
+    text: "“… on our wish list is (a)” should be “… on our wish list is (i)”."
+  - id: fourth-edition-0085
+    page: "?"
+    text: In Exercise 7.4.9, insert a space in “rationals.Show”. The order of Exercise 7.4.5 and 7.4.6
+      can be swapped for logical consistency.
+  - id: fourth-edition-0086
+    page: '162'
+    text: In the proof of Lemma 7.4.10, first paragraph, “Corollaries 8.1.14, 8.1.15” should be “Corollaries
+      8.1.14, 8.1.15 from Analysis I”. In the proof of Lemma 7.4.11, the two occurrences of “countable”
+      be “countable or finite”.
+  - id: fourth-edition-0087
+    page: '164'
+    text: "In Lemma 7.5.3, specify that the box $B$ lies in ${\\mathbf R}^m$. In Corollary 7.5.7, “then\
+      \ so is” should be “then so are”."
+  - id: fourth-edition-0088
+    page: '166'
+    text: In the proof of Lemma 7.5.10, Definition 6.4.6 should be “Definition 6.4.6 from Analysis I”.
+  - id: fourth-edition-0089
+    page: '167'
+    text: "In the first sentence of Chapter 8, “In Chap. 11” should be “In Chap. 11 of Analysis I”. In\
+      \ the final sentence of Example 8.1.2, add the hypothesis that $\\Omega$ is non-empty. Then add\
+      \ “Of course, if $\\Omega$ is empty, then there is only one function from $\\Omega$ to ${\\bf R}$\
+      \ – the empty function – and it will also be simple since its image is empty.”"
+  - id: fourth-edition-0090
+    page: "?"
+    text: In Definition 8.1.6, add “(why are these sets measurable?)” after the display.
+  - id: fourth-edition-0091
+    page: 167-168
+    text: "In Example 8.1.7, all integrals should be over ${\\bf R}$ rather than $\\Omega$."
+  - id: fourth-edition-0092
+    page: '169'
+    text: In Example 8.1.7, “simple integral” should be “Lebesgue integral”.
+  - id: fourth-edition-0093
+    page: "?"
+    text: In Lemma 8.1.9, “br” should be “be”.
+  - id: fourth-edition-0094
+    page: '170'
+    text: "In the proof of Proposition 8.1.10, after the second and third displays, the two occurrences\
+      \ of “disjoint subsets” should be “disjoint measurable subsets”. Also, one should delete the $j=0,\
+      \ k=0$ cases from the summations computing the integrals, as these could encounter the indeterminate\
+      \ form $0 \\times \\infty$ (alternatively, one could adopt the convention that such products always\
+      \ are set to zero)."
+  - id: fourth-edition-0095
+    page: "?"
+    text: In Exercise 8.1.3, insert space in “whichdoes”.
+  - id: fourth-edition-0096
+    page: '172'
+    text: In Remark 8.2.3, “Definition 11.3.2” should be “Definition 11.3.2 from Analysis I”.
+  - id: fourth-edition-0097
+    page: '173'
+    text: In Remark 8.2.7, “the collective set of points” should be “collective sets of points of positive
+      measure”.
+  - id: fourth-edition-0098
+    page: "?"
+    text: In Theorem 8.2.9, “isincreasing” is missing a space.
+  - id: fourth-edition-0099
+    page: '176'
+    text: In the proof of Lemma 8.2.10, after the third display, “Proposition 8.1.10(db)” should be “Proposition
+      8.1.10(b)”, and “Proposition 8.1.9(d)” should be “Proposition 8.1.10(d)”. In the statement of Lemma
+      8.2.13, “non-negative functions” should be specified as “non-negative measurable functions”.
+  - id: fourth-edition-0100
+    page: '177'
+    text: "In the proof of Lemma 8.2.13, right after the first display, add a parenthetical remark: “noting\
+      \ that $\\inf_{m\\geq n}f_m$ is increasing with respect to $n$” . In Lemma 8.2.15, the subscript\
+      \ $n$ for $\\Omega_n$ should be changed to another symbol, e.g., $j$."
+  - id: fourth-edition-0101
+    page: "?"
+    text: "Just before Lemma 8.2.14, insert space in “$0$everywhere”."
+  - id: fourth-edition-0102
+    page: '178'
+    text: "In the hint of Exercise 8.2.6, “Corollary 11.6.5” should be “Corollary 7.3.7 from Analysis\
+      \ I”. In Exercise 8.2.7, $a$ should be an integer rather than a positive integer. In Exercise 8.2.8,\
+      \ the set $E$ can be taken in fact to be of measure zero. (Then one should add at the end of the\
+      \ hint “now send $\\varepsilon$ to zero”.) In Exercise 8.2.9, delete the reference to the independent\
+      \ variable $x$ when referring to uniform convergence."
+  - id: fourth-edition-0103
+    page: '179'
+    text: "In Exercise 8.2.9, “for all $n \\geq N$” should be “for some $n \\geq N$” in the set builder\
+      \ notation. In Exercise 8.2.10, ${\\bf R}^+$ should be $[0,+\\infty)$, and ${\\bf N}$ should be\
+      \ $\\{1,2,\\dots\\}$ (or have the sums start from $0$)."
+  - id: fourth-edition-0104
+    page: "?"
+    text: "Before Theorem 8.3.4, it should be the $|f_n|$ that are majorized rather than $f_n$."
+  - id: fourth-edition-0105
+    page: '181'
+    text: "In the first and third display of the proof of Theorem 8.3.4, parentheses can be enclosed around\
+      \ $F+f$, $F+f_n$, $F-f$, and $F - f_n$ for clarity. Similarly for the penultimate display in the\
+      \ proof of Lemma 8.3.6 on page 183. “woudl” should be “would” and “withotu” should be “without”."
+  - id: fourth-edition-0106
+    page: '182'
+    text: "before the third to last display in the proof of Lemma 8.3.6, “but” should be capitalised.\
+      \ In the second display, the upper bound $\\leq A - \\frac{1}{n}$ should instead be a lower bound\
+      \ $\\geq A - \\frac{1}{n}$. (This latter error has already been corrected in some versions of the\
+      \ text.)"
+  - id: fourth-edition-0107
+    page: '183'
+    text: "In Exercise 8.3.3, $\\int_R$ should be $\\int_{\\bf R}$. “measurable” is redundant and can\
+      \ be deleted."
+  - id: fourth-edition-0108
+    page: "?"
+    text: After the proof of Proposition 8.4.1, “Lebesgue integrable” should be “absolutely integrable”.
+  - id: fourth-edition-0109
+    page: '186'
+    text: "In Theorem 8.5.1, “Then there exists” should be “Then there exist”. Before the theorem, “absolutely\
+      \ integrable on $f$” should be “absolutely integrable on ${\\bf R}^2$“. In the proof, in the display\
+      \ before “but the left-hand side is equal to”, the parentheses should be larger."
+- id: third-edition
+  name: Third edition (hardcover)
+  active: false
+  errata:
+  - id: third-edition-0001
+    page: '18'
+    text: The proof of Lemma 1.4.3 should refer to Exercise 1.4.1, not Exercise 1.4.3.
+  - id: third-edition-0002
+    page: '21'
+    text: In Exercise 1.4.8(c), add “(This part of the exercise requires the axiom of choice.)”.
+  - id: third-edition-0003
+    page: '22'
+    text: "In Definition 1.5.3, add “We call $(X,d)$ bounded if $X$ is bounded”."
+  - id: third-edition-0004
+    page: '32'
+    text: "In Corollary 2.2.3(b), “$f/g: X \\rightarrow \\mathbb{R}$ is also continuous at $x_{0}$” should\
+      \ be “$f/g: X \\rightarrow \\mathbb{R}$ is also continuous”, and similarly for “$cf: X \\rightarrow\
+      \ \\mathbb{R}$ are also continuous at $x_0$“."
+  - id: third-edition-0005
+    page: '42'
+    text: "In Exercise 2.5.5, $V \\subset X$ should be $V \\subseteq X$. In Exercise 2.5.13, “topological\
+      \ space” should be “Hausdorff topological space”. In Exercise 2.5.4, after “the trivial topology\
+      \ is not Hausdorff” add “if the space contains at least two elements”."
+  - id: third-edition-0006
+    page: '43'
+    text: "In Exercise 2.5.6, insert “and” between “if $x \\in X$” and “$(V_n)_{n=1}^\\infty$ is any…”."
+  - id: third-edition-0007
+    page: '48'
+    text: "In Exercise 3.1.5, $\\lim_{x \\in x_0; x \\in E}$ should be $\\lim_{x \\to x_0; x \\in E}$."
+  - id: third-edition-0008
+    page: '71'
+    text: "In Corollaries 3.8.18 and 3.8.19, “supported on $[0,1]$” is redundant and may be deleted."
+  - id: third-edition-0009
+    page: '98'
+    text: "100: Exercises 4.6.10-4.6.13 may be deleted, and the paragraph after Lemma 4.6.13 may be replaced\
+      \ with “Observe that with our choice of definitions, the space ${\\bf C}$ of complex numbers is\
+      \ identical (as a metric space) to the Euclidean plane ${\\bf R}^2$, since the complex distance\
+      \ between two complex numbers $(a,b), (a',b')$ is exactly the same as the Euclidean distance $\\\
+      sqrt{(a-a')^2+(b-b')^2}$ between these points. Thus, every metric property that ${\\bf R}^2$ satisfies\
+      \ is also obeyed by ${\\bf C}$; for instance, ${\\bf C}$ is complete and connected, but not compact.”"
+  - id: third-edition-0010
+    page: '122'
+    text: In Remark 5.5.2, “continuously differentiable” may be relaxed to just “differentiable”, and
+      “twice continuously differentiable” may be relaxed to “continuously differentiable”.
+  - id: third-edition-0011
+    page: '123'
+    text: In the sixth line, “Corollary 5” should be “Corollary 5.3.6”.
+  - id: third-edition-0012
+    page: '140'
+    text: "In the last paragraph, “continuous on $F$” should be “continuous at $x_0$“."
+  - id: third-edition-0013
+    page: '146'
+    text: The definition of continuous differentiability needs to be detached from Definition 6.5.1 and
+      placed near the beginning of this page.
+  - id: third-edition-0014
+    page: '159'
+    text: "In the first line of the third display in the proof of Theorem 6.8.1, the $f$‘s should be $F$‘s."
+  - id: third-edition-0015
+    page: '161'
+    text: "“if some other derivative $\\frac{\\partial f}{\\partial x_j}$ is zero” should be “if some\
+      \ other derivative $\\frac{\\partial f}{\\partial x_j}$ is non-zero”."
+  - id: third-edition-0016
+    page: '176'
+    text: "In Proposition 7.3.3, $\\sum_{q \\in J} q+E$ should be $\\bigcup_{q \\in J} q+E$ (two occurrences)."
+  - id: third-edition-0017
+    page: '178'
+    text: "In Corollary 7.4.7, $m(B \\backslash A) = m(B) - m(A)$ should be $m(B \\backslash A) + m(A)\
+      \ = m(B)$."
+  - id: third-edition-0018
+    page: '10'
+    text: "In Exercise 1.1.8, a right parenthesis is missing at the end of the last sentence. In Exercise\
+      \ 1.1.11, ${\\mathbf R}^n$ should be $X$."
+  - id: third-edition-0019
+    page: '15'
+    text: "In Proposition 1.2.15, $\\supset$ should be $\\supseteq$ (two occurrences)."
+  - id: third-edition-0020
+    page: '16'
+    text: "In the first paragraph, the first parenthetical comment should be closed after “… and hence\
+      \ outside of $E$.” In the second parenthetical comment, the period should be outside the parenthesis.\
+      \ “The point 0” should be “The point $(0,0)$” (two occurrences)."
+  - id: third-edition-0021
+    page: '21'
+    text: "In Exercie 1.4.7 (b), ${\\bf R}^+$ should be $[0,+\\infty)$."
+  - id: third-edition-0022
+    page: '22'
+    text: "In Definition 1.5.3, insert “for every $x \\in X$” before “there exists a ball” (in order to\
+      \ keep the empty metric space bounded). Also, add the requirement that $r$ be finite."
+  - id: third-edition-0023
+    page: '23'
+    text: "In Theorem 1.5.8, $I$ should be $A$ in the statement of the theorem (four occurrences). In\
+      \ Case 2 of the proof, $B(y,r_0/2) \\in V_\\alpha$ should be $B(y,r_0/2) \\subset V_\\alpha$. One\
+      \ should in fact split into three cases, $r_0=0$, $0 < r_0 < \\infty$, and $r_0=\\infty$. For the\
+      \ last case, write “For this case we argue as in Case 2, but replacing the role of $r_0/2$ by (say)\
+      \ $1$“. In the proof of Theorem 1.5.8, $Y \\subset \\bigcup_{\\alpha \\in F} V_\\alpha$ should be\
+      \ $Y \\subseteq \\bigcup_{\\alpha \\in F} V_\\alpha$."
+  - id: third-edition-0024
+    page: '26'
+    text: "In Exercise 1.5.10, $n$ should be a natural number rather than a positive integer (in order\
+      \ to ensure that the empty set is totally bounded).Page 29: In Theorem 2.1.4(c), all occurrences\
+      \ of $\\subset$ should be $\\subseteq$."
+  - id: third-edition-0025
+    page: '30'
+    text: "In Exercise 2.1.7, $E \\subset Y$ should be $E \\subseteq Y$."
+  - id: third-edition-0026
+    page: '33'
+    text: "Add an additional Exercise 2.2.12 after Exercise 2.2.11: “Let $f: {\\bf R}^2 \\to {\\bf R}$\
+      \ be the function defined by $f(x,y) := x^2/y$ when $y \\neq 0$, and $f(x,y) := 0$ when $y = 0$.\
+      \ Show that $\\lim_{t \\to 0} f(tx, ty) = f(0,0)$ for every $(x,y) \\in {\\bf R}^2$, but that $f$\
+      \ is not continuous at the origin. Thus being continuous on every line through the origin is not\
+      \ enough to guarantee continuity at the origin!”"
+  - id: third-edition-0027
+    page: '34'
+    text: "In Proposition 2.3.2, replace “Furthermore, ” with “Furthermore, if $X$ is non-empty”,"
+  - id: third-edition-0028
+    page: '37'
+    text: "In Theorem 2.4.5, replace “Let $X$ be a subset…” with “Let $X$ be a non-empty subset…”."
+  - id: third-edition-0029
+    page: '38'
+    text: "In Exercise 2.4.7, “replace “every path-connected set” by “every non-empty path-connected set”.\
+      \ In Exercise 2.4.6, add the hypothesis that $I$ is non-empty. Exercise 2.4.2 can benefit from Theorem\
+      \ 2.4.6 and so should be moved to after Exercise 2.4.4."
+  - id: third-edition-0030
+    page: '43'
+    text: "Exercise 2.5.8 is incorrect (the space $\\omega_1+1$ is sequentially compact) and should be\
+      \ deleted."
+  - id: third-edition-0031
+    page: '44'
+    text: In Exercise 2.5.14, add “Hausdorff” before “topological space”.
+  - id: third-edition-0032
+    page: '46'
+    text: "In Definition 3.1.1, the domain of $f$ should be $E$ rather than $X$. Similarly for Proposition\
+      \ 3.1.5, Exercise 3.1.3, and Exercise 3.1.5. In Remark 3.1.2, $\\lim_{x \\in x_0; x \\in E} f(x)$\
+      \ should be $\\lim_{x \\to x_0; x \\in E} f(x)$."
+  - id: third-edition-0033
+    page: '47'
+    text: "In Proposition 3.1.5(c), all occurrences of $\\subset$ should be $\\subseteq$."
+  - id: third-edition-0034
+    page: '48'
+    text: "In Exercise 3.1.1, add the hypothesis “Assume that $x_0$ is an adherent point of $E \\backslash\
+      \ \\{x_0\\}$ (or equivalently, that $x_0$ is not an isolated point of $E$)”. In Exercise 3.1.3,\
+      \ replace the last three sentences with “If $X$ is a topological space and $Y$ is a Hausdorff topological\
+      \ space (see Exercise 2.5.4), prove the equivalence of Proposition 3.1.5(c) and 3.1.5(d) in this\
+      \ setting, as well as an analogue of Remark 3.1.6. What happens to these statements of $Y$ is not\
+      \ Hausdorff?”."
+  - id: third-edition-0035
+    page: '52'
+    text: "In the last paragraph of the section, $f|_Y$ should be $f|_E$."
+  - id: third-edition-0036
+    page: '56'
+    text: "In item (c) of Section 3.4, a right parenthesis is missing after Definition 3.2.1. In Definition\
+      \ 3.4.2, add “uniform metric” next to “sup norm metric” and $L^\\infty$ metric”, and restrict the\
+      \ definition of $d_\\infty$ to the case when $X$ is non-empty, then add “When $X$ is empty, we instead\
+      \ define $d_\\infty(f,g)=0$“; similarly for Definition 3.5.5. In Remark 3.4.1, “(b) is a special\
+      \ case of (a)” should be “(a) is a special case of (b)”. Finally, in Definition 3.4.2, use $[0,+\\\
+      infty)$ in place of ${\\bf R}^+$."
+  - id: third-edition-0037
+    page: '60'
+    text: "In Example 3.5.8, “ratio test” should be “root test”, and Theorem 7.5.1 should be “from Analysis\
+      \ I”. Also “$f^{(n)}$ converges uniformly” should be “$\\sum_{n=1}^\\infty f^{(n)}$ converges uniformly”."
+  - id: third-edition-0038
+    page: '61'
+    text: "In the second to last display, the factor $2$ in front of $2 \\varepsilon(b-a)$ should be deleted."
+  - id: third-edition-0039
+    page: '62'
+    text: In Example 3.6.3, Lemma 7.3.3 should be “from Analysis I”.
+  - id: third-edition-0040
+    page: '64'
+    text: At the end of the first paragraph, the period should be inside the parentheses.
+  - id: third-edition-0041
+    page: "?"
+    text: In Remark 3.8.7, add “However, we will remark that the Dirac delta function can be viewed as
+      an identity for the convolution operation that we will introduce shortly, after generalizing the
+      notion of convolution to such functions.”
+  - id: third-edition-0042
+    page: '76'
+    text: "In the first display of Example 4.1.5, $(-2^n)$ should be $(-2)^n$."
+  - id: third-edition-0043
+    page: '77'
+    text: In Remark 4.1.9, it is more appropriate to add “uniformly” after “assures us that the power
+      series will converge”.
+  - id: third-edition-0044
+    page: '78'
+    text: At the end of the Exercise 4.1.1, a right parenthesis should be added.
+  - id: third-edition-0045
+    page: '79'
+    text: "In Definition 4.2.4, add “with the property that every element of $E$ is a limit point of $E$”\
+      \ at the end of the first sentence. At the end of the second sentence, add “, in particular $f':\
+      \ E \\to {\\bf R}$ is also a function on $E$.”"
+  - id: third-edition-0046
+    page: '81'
+    text: In Corollary 4.2.12, “ecah” should be “each”.
+  - id: third-edition-0047
+    page: '82'
+    text: In Exercise 4.2.3, the period should be inside the parentheses. In the first paragraph, a right
+      parenthesis should be added.
+  - id: third-edition-0048
+    page: '83'
+    text: "At the end of Exercise 4.2.8(e), the period should be inside the parentheses. Also in the hint,\
+      \ Fubini’s theorem should be Theorem 8.2.2 of Analysis I, and a remark needs to be made that one\
+      \ may also need to study an analogue of the $d_m$ in which the $c_n$ are replaced by $|c_n|$. At\
+      \ the beginning of the exercise, “anaytic in $a$” should be “analytic at $a$“."
+  - id: third-edition-0049
+    page: '86'
+    text: "In the last two displays, $\\limsup_{n \\to \\infty}$ should be $\\limsup_{y \\to 1; y \\in\
+      \ [0,1)}$."
+  - id: third-edition-0050
+    page: '91'
+    text: Before Definition 4.5.5, “exp is increasing” should be “exp is strictly increasing”.
+  - id: third-edition-0051
+    page: '92'
+    text: At the end of Exercise 4.5.1, a right parenthesis should be added.
+  - id: third-edition-0052
+    page: '99'
+    text: "before the final paragraph, add “Inspired by Proposition 4.5.4, we shall use $\\exp(z)$ and\
+      \ $e^z$ interchangeably. It is also possible to define $a^z$ for complex $z$ and real $a>0$, but\
+      \ we will not need to do so in this text.”"
+  - id: third-edition-0053
+    page: '102'
+    text: In the second paragraph parenthetical, the period should be inside the parentheses.
+  - id: third-edition-0054
+    page: '103'
+    text: In the second paragraph, a period should be added before “In particular, we have…”.
+  - id: third-edition-0055
+    page: '105'
+    text: In the last paragraph of Exercise 4.7.9, the period should be inside the parentheses (two occurrences).
+  - id: third-edition-0056
+    page: '112'
+    text: "In Example 5.2.6, $\\sin(x)$ should be $\\sin(2\\pi x)$."
+  - id: third-edition-0057
+    page: '113'
+    text: In Exercise 5.2.3, “so that” should be “show that”. For more natural logical flow, the placing
+      of Exercises 5.2.2 and 5.2.4 should be swapped.
+  - id: third-edition-0058
+    page: '116'
+    text: "In Theorem 5.4.1, “trignometric” should be “trigonometric”. In the paragraph after Remark 5.3.8,\
+      \ the period should be inside the parenthesis. The triangle inequality for complex-valued Riemann\
+      \ integrals used in the proof has not been established previously, and should be stated and referenced\
+      \ as an exercise in this section (in two parts: first, to establish a triangle inequality for continuous\
+      \ real-valued functions, and then use the phase rotation trick $|z| = \\sup_\\theta \\mathrm{Re}\
+      \ e^{i\\theta} z$ to handle the complex-valued case.)."
+  - id: third-edition-0059
+    page: '125'
+    text: In the last sentence of Exercise 5.5.3, the period should be inside the parenthesis. In Exercise
+      5.5.4, add “Here the derivative of a complex-valued function is defined in exactly the same fashion
+      as for real-valued functions.”
+  - id: third-edition-0060
+    page: '129'
+    text: In Example 6.1.8, “clockwise” should be “counter-clockwise”.
+  - id: third-edition-0061
+    page: '133'
+    text: "At the end of the proof of Lemma 6.1.13, $1 \\leq j \\leq m$ should be $1 \\leq j \\leq n$.\
+      \ Expand the sentence “The composition of two linear transformations is again a linear transformation\
+      \ (Exercise 6.1.2).” to “The composition $T \\circ S$ of two linear transformations $T,S$ is again\
+      \ a linear transformation (Exercise 6.1.2). It is customary in linear algebra to abbreviate such\
+      \ compositions $T \\circ S$ of linear transformations by droppinng the $\\circ$ symbol, thus $T\
+      \ \\circ S = TS$.”"
+  - id: third-edition-0062
+    page: '134'
+    text: "In Lemma 6.2.1, “$x_0 \\in E$, and $L \\in {\\bf R}$” should be “$L \\in {\\bf R}$, and let\
+      \ $x_0$ be a limit point of $E$“. In the previous display, $E \\backslash \\{x_0\\}$ should be $E\
+      \ - \\{x_0\\}$."
+  - id: third-edition-0063
+    page: '135'
+    text: "In the first paragraph, the period should be inside the parenthesis. In Definition 6.2.2, $x_0$\
+      \ should be a limit point of $E$."
+  - id: third-edition-0064
+    page: '138'
+    text: In Example 6.3.3, “the left derivative” should be “the negative of the left derivative”. In
+      the last sentence, the period should be inside the parenthesis.
+  - id: third-edition-0065
+    page: '139'
+    text: "In the second paragraph, second sentence, the period should be inside the parenthesis; also\
+      \ in the final sentence. Expand the third display to “$\\frac{\\partial f}{\\partial x_j}(x_0) =\
+      \ D_{e_j} f(x_0) = -D_{-e_j} f(x_0) = f'(x_0) e_j$, and expand “From Lemma 6.3.5” to “From Lemma\
+      \ 6.3.5 (and Proposition 9.5.3 from Analysis I)”."
+  - id: third-edition-0066
+    page: '140'
+    text: "In the beginning of the proof of Theorem 6.3.8, $L(v_j)_{1 \\leq j \\leq m}$ should be $L(v_j)_{1\
+      \ \\leq j \\leq n}$, and similarly the sum on the RHS should be from $1$ to $n$ rather than from\
+      \ $1$ to $m$. “Because each partial derivative … is continuous on $F$” should be “Because each partial\
+      \ derivative … exists on $F$ and is continuous at $x_0$“."
+  - id: third-edition-0067
+    page: '141'
+    text: The period in the last line (before “and so forth”) should be deleted.
+  - id: third-edition-0068
+    page: '142'
+    text: "At the end of the page, $(\\sum_{j=1}^n v_{j}\\frac{\\partial f_i}{\\partial x_j}(x_0))_{i=1}^m$\
+      \ should be $(\\sum_{j=1}^n v_{j}\\frac{\\partial f_i}{\\partial x_j}(x_0))_{1\\leq i\\leq m}$."
+  - id: third-edition-0069
+    page: '144'
+    text: "In Exercise 6.3.2, $D_{e_j} f(x_0) = D_{-e_j} f(x_0)$ should be $D_{e_j} f(x_0) = -D_{-e_j}\
+      \ f(x_0)$."
+  - id: third-edition-0070
+    page: '146'
+    text: In the second paragraph, third sentence, the period should be inside the parenthesis.
+  - id: third-edition-0071
+    page: '148'
+    text: "In the proof of Clairaut’s theorem, $|x| \\leq 2\\delta$ should be $\\| x\\| \\leq 2\\delta$."
+  - id: third-edition-0072
+    page: '151'
+    text: "In Exercise 6.6.1, the range of $f$ should be $[a,b]$ rather than ${\\bf R}$."
+  - id: third-edition-0073
+    page: '153'
+    text: "In the second paragraph of the proof of Theorem 6.7.2, “$f(x_0)$ is not invertible” should\
+      \ be “$f'(x_0)$ is not invertible”."
+  - id: third-edition-0074
+    page: '154'
+    text: "In the last text line, $f(x)-x$ can be $g(x)=f(x)-x$ for clarity."
+  - id: third-edition-0075
+    page: '155'
+    text: In the proof of Theorem 6.7.2, after the display after “we have by the fundamental theorem of
+      calculus. add “where the integral of a vector-valued function is defined by integrating each component
+      separately.”
+  - id: third-edition-0076
+    page: '156'
+    text: "$V - 0$ should be $V - \\{0\\}$. The definition of $U$ should be $f^{-1}(V) \\cap B(0,r)$ rather\
+      \ than $f^{-1}(B(0,r/2))$ (and the later reference to $U = f^{-1}(V)$ can be replaced just by $U$)."
+  - id: third-edition-0077
+    page: '157'
+    text: "In the final paragraph of Section 6.7, “differentiable at $x_0$” should be “differentiable\
+      \ at $f(x_0)$“. Add the following Exercise 6.7.4 after Exercise 6.7.3: “Let the notation and hypotheses\
+      \ be as in Theorem 6.7.2. Show that, after shrinking the open sets $U, V$ if necessary (while still\
+      \ having $x_0 \\in U$, $f(x_0) \\in V$ of course), the derivative map $f'(x)$ is invertible for\
+      \ all $x \\in U$, and that the inverse map $f^{-1}$ is differentiable at every point of $V$ with\
+      \ $(f^{-1})'(f(x)) = (f'(x))^{-1}$ for all $x \\in U$. Finally, show that $f^{-1}$ is continuously\
+      \ differentiable on $V$.”"
+  - id: third-edition-0078
+    page: '158'
+    text: In the first paragraph, final sentence, the period should be inside the parentheses.
+  - id: third-edition-0079
+    page: '161'
+    text: "Add the following Exercise 6.8.1: “Let the notation and hypotheses be as in Theorem 6.8.1.\
+      \ Show that, after shrinking the open sets $U,V$ if necessary , that the function $g$ becomes continuously\
+      \ differentiable on all of $U$, and the equation (6.1) holds at all points of $U$.”"
+  - id: third-edition-0080
+    page: '163'
+    text: "after “if $A$ and $B$ are disjoint”, add “, and more generally, that $m(\\bigcup_{n=1}^\\infty\
+      \ A_n) = \\sum_{n=1}^\\infty m(A_n)$ when $A_1,A_2,\\dots$ are disjoint”."
+  - id: third-edition-0081
+    page: '164'
+    text: "In the first paragraph of Section 7.1, $\\Omega \\subset {\\bf R}^n$ should be $\\Omega \\\
+      subseteq {\\bf R}^n$."
+  - id: third-edition-0082
+    page: '165'
+    text: "Superfluous period in Theorem 7.1.1. “Since everything is positive” should be “Since everything\
+      \ is non-negative”, and in the preceding sentence, add “; for instance, in this chapter we adopt\
+      \ the convention that an infinite sum $\\sum_{j \\in J} a_j$ of non-negative quantities $a_j$ is\
+      \ equal to $+\\infty$ if the sum is not absolutely convergent.”"
+  - id: third-edition-0083
+    page: '169'
+    text: "After (7.1), $\\prod_{j=1}^n [a_i,b_i]$ should be $\\prod_{i=1}^n [a_i,b_i]$."
+  - id: third-edition-0084
+    page: '170'
+    text: "In the first paragraph “For all other values if $x$” should be “For all other values of $x$“."
+  - id: third-edition-0085
+    page: '172'
+    text: "$\\subset$ should be $\\subseteq$ (three occurrences). In Example 7.2.9, “each rational number\
+      \ ${\\bf Q}$” should be “each rational number $q$“."
+  - id: third-edition-0086
+    page: '173'
+    text: "In Exercise 7.2.2, final sentence: period should be inside parentheses. Also, add “Here we\
+      \ adopt the convention that $c \\times +\\infty = +\\infty \\times c$ is infinite for any $0 < c\
+      \ \\leq +\\infty$ and vanishes for $c = 0$.” In Example 7.2.12, “countable additivity” should be\
+      \ “countable sub-additivity”."
+  - id: third-edition-0087
+    page: '174'
+    text: "In the penultimate paragraph, “identical or distinct” should be “identical or disjoint”, and\
+      \ $\\subset$ should be $\\subseteq$. Also, “coset of ${\\bf R}$” should be “coset of ${\\bf Q}$“;\
+      \ in the next paragraph, “the rationals ${\\bf R}$” should be “the rationals ${\\bf Q}$“. In Exercise\
+      \ 7.2.5, “Q1” should be “Exercise 7.2.3”."
+  - id: third-edition-0088
+    page: '175'
+    text: "In the second paragraph, “constrution” should be “construction”. After the third paragraph,\
+      \ add “Note also that the translates $q+E$ for $q \\in {\\bf Q}$ are all disjoint. For, if there\
+      \ were two distinct $q,q' \\in {\\bf Q}$ with $q+E$ intersecting $q'+E$, then there would be $A,A'\
+      \ \\in {\\bf R}/{\\bf Q}$ such that $q+x_A = q'+x_{A'}$. But then $A = x_A + {\\bf Q} = x_{A'} +\
+      \ {\\bf Q} = A'$ and thus $x_A = x_{A'}$, which implies $q=q'$, contradicting the hypothesis.”"
+  - id: third-edition-0089
+    page: '176'
+    text: "In the proof of Proposition 7.3.3, “cardinality 3n” should be “cardinality $3n$“."
+  - id: third-edition-0090
+    page: '178'
+    text: "In Lemma 7.4.5, “and any set $A$” should be “then for any set $A$“."
+  - id: third-edition-0091
+    page: '180'
+    text: In the first paragraph, “Lemma 7.4.5” should be “Lemma 7.4.4(d)”. Also, in the display preceding
+      this paragraph, enclose the sum in parentheses in the middle and right-hand sides (so that the supremum
+      is taken over the sum rather than just the first term).
+  - id: third-edition-0092
+    page: '181'
+    text: "“… on our wish list is (a)” should be “… on our wish list is (i)”."
+  - id: third-edition-0093
+    page: '187'
+    text: In Example 8.1.2, the period should be inside the parentheses in the first parenthetical, and
+      the final right parenthsis should be deleted.
+  - id: third-edition-0094
+    page: '188'
+    text: "In Lemma 8.1.5 the function $f$ should take values in ${}[0,+\\infty]$ rather than ${\\bf R}$\
+      \ (and then the requirement that $f$ be non-negative can be deleted)."
+  - id: third-edition-0095
+    page: '189'
+    text: "In the parenthetical sentence before Remark 8.1.8, the period should be inside the parentheses.\
+      \ In the first display in Lemma 8.1.9, the right-hand side summation should be up to $N$ rather\
+      \ than $n$, and “are a finite number” should be “be a finite number”. In Example 8.1.7, “the integral”\
+      \ should be “the interval”."
+  - id: third-edition-0096
+    page: '190'
+    text: In the final display in the proof of Lemma 8.1.9, an equals sign should be inserted to the left
+      of the final line.
+  - id: third-edition-0097
+    page: '194'
+    text: "In Theorem 8.2.9, $f_n$ should take values in $[0,+\\infty]$ rather than ${\\bf R}$."
+  - id: third-edition-0098
+    page: '196'
+    text: "Before the second display, Proposition 8.2.6(cdf) should be Proposition 8.2.6(bce). Also add\
+      \ “It is not difficult to check that the $E_n$ are measurable”. In the first paragraph, all instances\
+      \ of $\\subset$ should be $\\subseteq$."
+  - id: third-edition-0099
+    page: '197'
+    text: After the third display. Proposition 8.1.9(b) should be Proposition 8.1.10(bd).
+  - id: third-edition-0100
+    page: '199'
+    text: Exercise 8.2.4 should be moved to Section 8.3 (as it uses the absolutely convergent integral).
+  - id: third-edition-0101
+    page: '200'
+    text: "In the hint to Exercise 8.2.10, the “for all $n \\geq N$” should be moved inside the set builder\
+      \ notation $\\{ x \\in [0,1]: f_n(x) > 1/m \\}$, thus using $\\{ x \\in [0,1]: f_n(x) > 1/m \\hbox{\
+      \ for all } n \\geq N \\}$ instead."
+  - id: third-edition-0102
+    page: '201'
+    text: "Before Definition 8.3.2, when Corollary 7.5.6 is invoked, add “(which can be extended to functions\
+      \ taking values in ${\\mathbf R}^*$ without difficulty)”."
+  - id: third-edition-0103
+    page: '202'
+    text: "In the start of the proof of Theorem 8.3.4, add “If $F$ was infinite on a set of positive measure\
+      \ then $F$ would not be absolutely integrable; thus the set where $F$ is infinite has zero measure.\
+      \ We may delete this set from $\\Omega$ (this does not affect any of the integrals) and thus assume\
+      \ without loss of generality that $F(x)$ is finite for every $x\\in \\Omega$, which implies the\
+      \ same assertion for the $f_n(x)$."
+  - id: third-edition-0104
+    page: '204'
+    text: "In the second display, $\\leq A - \\frac{1}{n}$ should be $\\geq A + \\frac{1}{n}$ instead."
+  - id: third-edition-0105
+    page: '205'
+    text: "In Proposition 8.4.1, add the hypothesis that $I$ is bounded."
+  - id: third-edition-0106
+    page: '206'
+    text: "In the last paragraph, last sentence, the period should be inside the parentheses. In the last\
+      \ two displays, $\\Omega$ should be $I$."
+  - id: third-edition-0107
+    page: '207'
+    text: In the third paragraph, “Secondly, we could fix” should be “Thirdly, we could fix”.
+  - id: third-edition-0108
+    page: '208'
+    text: In the last paragraph, Lemma 8.1.4 should be Lemma 8.1.5.
+- id: second-edition
+  name: Second edition (hardcover)
+  active: false
+  errata:
+  - id: second-edition-0001
+    page: '351'
+    text: "At the end of Example 12.1.6, add “Extending the convention from Example 12.1.4, if we refer\
+      \ to ${\\bf R}^n$ as a metric space, we assume that the metric is given by the Euclidean metric\
+      \ unless otherwise specified.”"
+  - id: second-edition-0002
+    page: '372'
+    text: "In Case 1 of the proof of Theorem 12.5.8, all occurrences of “$y^{(n)}$ should be $y^{(n_j)}$\
+      \ in the second paragraph."
+  - id: second-edition-0003
+    page: '374'
+    text: In Exercise 12.5.12(b), the phrase “with the Euclidean metric” should be deleted.
+  - id: second-edition-0004
+    page: '390'
+    text: "In Exercise 13.5.5, “there exist $a, b \\in X$ such that the “interval” $\\{ y \\in X: a <\
+      \ y < b \\}$” should be replaced with “there exists a set $I$ which is an interval $\\{y \\in X:\
+      \ a < y < b\\}$ for some $a, b \\in X$, a ray $\\{y \\in X: a < y \\}$ for some $a \\in X$, the\
+      \ ray $\\{ y \\in X: y < b\\}$ for some $b \\in X$, or the whole space $X$, which”. In Exercises\
+      \ 13.5.6 and 13.5.7, “Hausdorff” should be “not Hausdorff”."
+  - id: second-edition-0005
+    page: '390'
+    text: "Exercise 13.5.8 should be replaced as follows: “Show that there exists an uncountable well-ordered\
+      \ set $\\omega_1+1$ that has a maximal element $\\infty$, and such that the initial segments $\\\
+      { x \\in \\omega_1+1: x < y \\}$ are countable for all $y \\in \\omega_1+1 \\backslash \\{\\infty\\\
+      }$. (Hint: Well-order the real numbers using Exercise 8.5.19, take the union of all the countable\
+      \ initial segments, and then adjoin a maximal element $\\infty$.) If we give $\\omega_1+1$ the order\
+      \ topology (Exercise 13.5.5), show that $\\omega_1+1$ is compact; however, show that not every sequence\
+      \ has a convergent subsequence.”"
+  - id: second-edition-0006
+    page: '395'
+    text: "In Proposition 14.1.5(d), add “Furthermore, if $x_0 \\in E$, then $f(x_0)=L$.”"
+  - id: second-edition-0007
+    page: '396'
+    text: "In Exercise 14.1.5, $\\lim_{y \\to y_0; y \\in f(E)} g(x)$ should be $\\lim_{y \\to y_0; y\
+      \ \\in f(E)} g(y)$, and $\\lim_{x \\to x_0; x \\in E} g \\circ f(x_0)$ should be $\\lim_{x \\to\
+      \ x_0; x \\in E} g \\circ f(x)$."
+  - id: second-edition-0008
+    page: '425'
+    text: In Theorem 15.1.6(d), the summation should start from n=1 rather than n=0.
+  - id: second-edition-0009
+    page: '427'
+    text: "Just before Definition 15.2.4, “for some $a \\in {\\ bf R}$” should be “for some $r > 0$“."
+  - id: second-edition-0010
+    page: '431'
+    text: "In Exercise 15.2.8(e), “$d_m (x-b)^n$” should be “$d_m (x-b)^m$. In Exercise 15.2.8(d), $(s-\\\
+      varepsilon)^m$ should be $(s-\\varepsilon)^{-m}$."
+  - id: second-edition-0011
+    page: '433'
+    text: "(proof of Theorem 15.3.1): $s_N$ in the third display and $s_0$ in the next line should be$S_N$\
+      \ and $S_0$ respectively."
+  - id: second-edition-0012
+    page: '452'
+    text: "In Exercise 15.7.2, $x-y$ should be $x_0-y$. In Exercise 15.7.6, “complex real number” should\
+      \ be “complex number”."
+  - id: second-edition-0013
+    page: '473'
+    text: "In Exercise 16.5.4, $in \\hat f(n)$ should be $2\\pi i n \\hat f(n)$."
+  - id: second-edition-0014
+    page: '477'
+    text: "In Example 17.1.7, $x \\in {\\Bbb R}$ should be $c \\in {\\Bbb R}$."
+  - id: second-edition-0015
+    page: '486'
+    text: "In Definition 17.3.7, $1 \\leq j \\leq m$ should be $1 \\leq j \\leq n$, and $x_0+tv$ should\
+      \ be $x_0+te_j$."
+  - id: second-edition-0016
+    page: '488'
+    text: In the definition of L in the proof of Theorem 17.3.8, m should be n.
+  - id: second-edition-0017
+    page: '492'
+    text: In Exercise 17.3.1, Exercise 17.1.3 should be Exercise 17.2.1.
+  - id: second-edition-0018
+    page: '495'
+    text: "In the proof of Theorem 17.5.4, $a'$ should equal $\\frac{\\partial}{\\partial x_i} \\frac{\\\
+      partial}{\\partial x_j} f(0)$ rather than $\\frac{\\partial}{\\partial x_j} \\frac{\\partial}{\\\
+      partial x_i} f(0)$."
+  - id: second-edition-0019
+    page: '499'
+    text: "proof of Lemma 17.6.6: After “$F$ does indeed map $B(0,r)$ to itself.”, add “The same argument\
+      \ shows that for a sufficiently small $\\varepsilon > 0$, $F$ maps the closed ball $\\overline{B(0,r-\\\
+      varepsilon)}$ to itself. After “$F$ is a strict contraction”, add “on $B(0,r)$, and hence on the\
+      \ complete space $\\overline{B(0,r-\\varepsilon)}$“."
+  - id: second-edition-0020
+    page: '502'
+    text: "proof of Theorem 17.7.2: “$f^{-1}(y)={\\tilde f}^{-1}(y+f(x_0))$” should be “$f^{-1}(y)={\\\
+      tilde f}^{-1}(y-f(x_0))$“."
+  - id: second-edition-0021
+    page: '505'
+    text: "Section 17.8: $(0,1)$ should be $(-1,0)$. In the second paragraph, the function $f$ should\
+      \ be $g$ (for better compatibility with the discussion of the implicit function theorem)."
+  - id: second-edition-0022
+    page: '508'
+    text: "proof of Theorem 17.8.1, “U is open and contains $(y_1, \\dots,y_{n-1},0)$” should be “U is\
+      \ open and contains $(y_1, \\dots,y_{n-1})$“."
+  - id: second-edition-0023
+    page: '515'
+    text: "In the display before Definition 18.2.4, $j=\\in J$ should be $j \\in J$. In Definition 18.2.4,\
+      \ $\\sum_{j=1}^\\infty$ should be $\\sum_{j \\in J}$."
+  - id: second-edition-0024
+    page: '520'
+    text: "In Example 18.2.9, $\\sum_{q\\in\\mathbf{Q}} m*(\\mathbf{Q})$ should be $\\sum_{q\\in\\mathbf{Q}}\
+      \ m*(\\{q\\})$ in the display."
+  - id: second-edition-0025
+    page: '528'
+    text: "proof of Lemma 18.4.8: On the second line, “let $A$ be any other measurable set” should be\
+      \ “let $A$ be an arbitrary set (not necessarily measurable)”."
+  - id: second-edition-0026
+    page: '545'
+    text: In Corollary 19.2.11, “non-negative functions” should be “non-negative measurable functions”.
+  - id: second-edition-0027
+    page: '555'
+    text: "Remark 19.5.2: x and y should be swapped in “equals 1 when $x>0$ and y=0, equals -1 when $x<0$\
+      \ and y=0, and equals zero otherwise”."
+- id: first-edition
+  name: First edition (softcover)
+  active: false
+  errata:
+  - id: first-edition-0001
+    page: '392'
+    text: "example 12.1.7: $5+2=7$ should be $3+4=7$."
+  - id: first-edition-0002
+    page: '393'
+    text: "example 12.1.9: $\\sup(5,2)=7$ should be $\\sup(3,4)=4$."
+  - id: first-edition-0003
+    page: '394'
+    text: "example 12.1.13: (iii) should be (c)."
+  - id: first-edition-0004
+    page: '403'
+    text: "example 12.2.13: delete the redundant “, but not the other”."
+  - id: first-edition-0005
+    page: '404'
+    text: "line 4: “neither open and closed” should be “neither open nor closed”."
+  - id: first-edition-0006
+    page: '415'
+    text: "line 3: $\\alpha \\in A$ should be $\\alpha \\in I$."
+  - id: first-edition-0007
+    page: '416'
+    text: "line 11: “$k \\geq j$” should be “$k > j$“."
+  - id: first-edition-0008
+    page: '419'
+    text: "line -2: In Exercise 12.5.15, = should be $\\neq$. Also, “that by counterexample” should be\
+      \ “by counterexample that”"
+  - id: first-edition-0009
+    page: '426'
+    text: "Exercise 13.2.9: $X$ should be ${\\Bbb R}$ throughout. Also, the definition of limsup and liminf\
+      \ for functions has not been given; it can be reviewed here, e.g. by inserting “where we define\
+      \ $\\limsup_{x \\to x_0} f(x) := \\inf_{r>0} \\sup_{x: |x-x_0| \\leq r} f(x)$ and $\\liminf_{x \\\
+      to x_0} f(x) := \\sup_{r>0} \\inf_{x: |x-x_0| \\leq r} f(x)$.”"
+  - id: first-edition-0010
+    page: '435'
+    text: "Definition 13.5.6: “metric space” should be “topological space”."
+  - id: first-edition-0011
+    page: '438'
+    text: "Exercise 13.5.9: One needs to assume as an additional hypothesis that X is first countable,\
+      \ which means that for every x in X there exists a countable sequence V_n of neighborhoods of x,\
+      \ such that every neighbourhood of x contains one of the V_n."
+  - id: first-edition-0012
+    page: '452'
+    text: "Exercise 14.3.6: “Propositoin” should be “Proposition”."
+  - id: first-edition-0013
+    page: '452'
+    text: "Exercise 14.3.8: “$x \\in {\\Bbb R}$” should be “$x \\in X$“."
+  - id: first-edition-0014
+    page: '458'
+    text: Exercise 14.5.2 should be deleted and redirected to Exercise 14.2.2(c).
+  - id: first-edition-0015
+    page: '459'
+    text: "In line 11, $2 \\epsilon$ should be $\\epsilon$."
+  - id: first-edition-0016
+    page: '464'
+    text: ) missing at the end of Exercise 14.7.2. An additional exercise, Exercise 14.7.3 is missing;
+      it should state “Prove Corollary 14.7.3.”.
+  - id: first-edition-0017
+    page: '466'
+    text: Exercise 14.8.8 should be Exercise 14.8.2.
+  - id: first-edition-0018
+    page: '467'
+    text: Exercise 14.8.11 should be Exercise 14.8.4.
+  - id: first-edition-0019
+    page: '469'
+    text: "“Limits of integration” should be “Limits of summation”. In Lemma 14.8.14, $3M+2\\delta$ should\
+      \ be $1+4M$, and Exercise 14.8.14 should be Exercise 14.8.6."
+  - id: first-edition-0020
+    page: '470'
+    text: Exercise 14.8.15 should be Exercise 14.8.7. Exercise 14.8.16 should refer to a (currently non-existent)
+      Exercise 14.8.9, which of course would be to prove Lemma 14.8.16.
+  - id: first-edition-0021
+    page: '471'
+    text: "At the end of the proof of Corollary 14.8.19, $|P(y)-g(y)| \\leq \\varepsilon$ should be $|P(y)-f(y)|\
+      \ \\leq \\varepsilon$."
+  - id: first-edition-0022
+    page: '472'
+    text: In Exercise 14.8.2(c), Lemma 14.8.2 should be Lemma 14.8.8.
+  - id: first-edition-0023
+    page: '477'
+    text: In Exercise 15.1.1(e), Corollary 14.8.18 should be Corollary 14.6.2.
+  - id: first-edition-0024
+    page: '478'
+    text: "In Example 15.2.2, $\\frac{1}{x-1}$ should be $\\frac{1}{1-x}$."
+  - id: first-edition-0025
+    page: '482'
+    text: "In Exercise 15.2.5, the $(x-b)^n$ on the right-hand side should be $(x-b)^m$."
+  - id: first-edition-0026
+    page: '486'
+    text: "In second and third display, y should be in ${}[0,1]$ rather than $(-1,1)$."
+  - id: first-edition-0027
+    page: '493'
+    text: "In Exercise 15.5.4, $x < 0$ should be $x \\leq 0$."
+  - id: first-edition-0028
+    page: '501'
+    text: "In Theorem 17.7.2, “if $f(x_0)$ is not invertible” should be “if $f'(x_0)$ is not invertible”."
+  - id: first-edition-0029
+    page: '502'
+    text: In Exercise 15.6.6, Lemma 15.6.6 should be Lemma 15.6.11.
+  - id: first-edition-0030
+    page: '511'
+    text: "“Fourier… was, among other things, the governor of Egypt during the reign of Napoleon. After\
+      \ the Napoleonic wars, he returned to mathematics.” should be “Fourier… was, among other things,\
+      \ an administrator accompanying Napoleon on his invasion of Egypt, and then a Prefect in France\
+      \ during Napoleon’s reign.”"
+  - id: first-edition-0031
+    page: '556'
+    text: "In Theorem 17.5.4, f can take values in ${\\Bbb R}^m$ and not just in $R$; insert the line\
+      \ “By working with one component of $f$ at a time, we may assume $m=1$” as the first line of the\
+      \ proof. Also, $f(x-x_0)$ should be $f(x+x_0)$."
+  - id: first-edition-0032
+    page: '557'
+    text: "In the second display, $-f(0)$ should be $+f(0)$."
+  - id: first-edition-0033
+    page: '560'
+    text: "In Exercise 17.6.1, add the hypothesis “and $f'$ is continuous” before “, show that $f$ is\
+      \ a strict contraction”."
+  - id: first-edition-0034
+    page: '561'
+    text: "In Exercise 17.6.3, change “which is a strict contraction” to “such that $|f(x)-f(y)| < |x-y|$\
+      \ for all distinct $x,y$ in ${}[a,b]$“. In Exercise 17.6.8, $\\max(c,c')$ should be $\\min(c,c')$."
+  - id: first-edition-0035
+    page: '562'
+    text: "In Theorem 17.7.2, $T: E \\to {\\Bbb R}^n$ should be $f: E \\to {\\Bbb R}^n$."
+  - id: first-edition-0036
+    page: '565'
+    text: "line -7: $U$ should be $f^{-1}(B(0,r/2))$ rather than $f^{-1}(B(0,r))$."
+  - id: first-edition-0037
+    page: '570'
+    text: "first display: all partial derivatives should have a – sign (not just the first one). Last\
+      \ paragraph: “Thus $(x_1,\\ldots,x_{n-1})$ lies in W” should be “Thus $(x_1,\\ldots,x_{n-1})$ lies\
+      \ in U”."
+  - id: first-edition-0038
+    page: '571'
+    text: "second display: add “$=0$” at the end."
+  - id: first-edition-0039
+    page: '584'
+    text: "Corollary 18.2.7: “$x_i \\in [a_i,b_i]$” should be “$x_i \\in (a_i,b_i)$“."
+  - id: first-edition-0040
+    page: '599'
+    text: "Definition 18.5.9: $(a,\\infty)$ should be $(a,+\\infty]$."
+  - id: first-edition-0041
+    page: '600'
+    text: "In Lemma 18.5.10, $f: \\Omega \\to {\\Bbb R}$ should be $f: \\Omega \\to {\\Bbb R}^*$. In the\
+      \ second and fourth lines of the proof of this lemma, $(a,+\\infty)$ should be $(a,+\\infty]$."
+  - id: first-edition-0042
+    page: 616-617
+    text: "Exercise 19.2.10: ${\\Bbb R}$ should be ${}[0,1]$ throughout."

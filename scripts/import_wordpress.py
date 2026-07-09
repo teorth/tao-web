@@ -76,8 +76,11 @@ def list_items(region: str):
 
 
 # Edition separators are centered paragraphs like "-- Errata to the fourth edition --".
+# WordPress centers these either via a class (newer block editor) or an inline
+# style (older posts); match both.
 SEP_RE = re.compile(
-    r'<p class="has-text-align-center[^"]*"[^>]*>(.*?)</p>', re.S
+    r'<p (?:class="[^"]*has-text-align-center[^"]*"|style="[^"]*text-align:\s*center[^"]*")[^>]*>(.*?)</p>',
+    re.S,
 )
 
 
