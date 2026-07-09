@@ -24,7 +24,57 @@
           "description": "Canonical URL this data was migrated from (for reference)."
         },
         "publisher": { "type": "string" },
-        "notes": { "type": "string", "description": "Free text shown atop the page." }
+        "notes": { "type": "string", "description": "Free text shown atop the page." },
+        "description": {
+          "type": "string",
+          "description": "Introductory prose / comments about the book, shown above the errata."
+        },
+        "publication": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Bibliographic data for the book as a whole.",
+          "properties": {
+            "publisher": { "type": "string" },
+            "first_published": { "type": "integer" },
+            "series": { "type": "string" },
+            "isbn": { "type": "string" },
+            "note": { "type": "string" }
+          }
+        },
+        "links": {
+          "type": "array",
+          "description": "Related links (companion volumes, sample chapters, publisher pages, etc.).",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["title", "url"],
+            "properties": {
+              "title": { "type": "string", "minLength": 1 },
+              "url": { "type": "string", "minLength": 1 }
+            }
+          }
+        },
+        "contributors": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Legacy contributor pool. Per-erratum credit going forward lives in each erratum's reported_by; the rendered contributor list is the union of this legacy list and all reported_by names.",
+          "properties": {
+            "note": {
+              "type": "string",
+              "description": "Optional lead-in shown above the contributor list."
+            },
+            "legacy": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Names credited for corrections received on/before the `migrated` date. Never fabricate these."
+            }
+          }
+        },
+        "migrated": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO date (YYYY-MM-DD) before which all existing errata are treated as legacy contributions. Also the floor for the auto-computed last-updated date."
+        }
       }
     },
     "editions": {
@@ -41,6 +91,10 @@
             "description": "Stable edition id, e.g. fourth-edition."
           },
           "name": { "type": "string", "minLength": 1 },
+          "active": {
+            "type": "boolean",
+            "description": "Whether this edition's errata show in the main list. Defaults to true when omitted. Set false for superseded/older editions, which render in a collapsed 'older editions' section."
+          },
           "year": { "type": "integer" },
           "isbn": { "type": "string" },
           "note": { "type": "string" },
@@ -81,7 +135,16 @@
             "to": { "type": "string" }
           }
         },
-        "reported_by": { "type": "array", "items": { "type": "string" } },
+        "reported_by": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Contributor(s) of this correction. Going forward, set this on new errata; it feeds the auto-generated contributor list. Legacy errata leave it empty (credited via book.contributors.legacy)."
+        },
+        "date": {
+          "type": "string",
+          "format": "date",
+          "description": "ISO date (YYYY-MM-DD) this correction was contributed. Set on new errata going forward; feeds the auto-computed last-updated date. Legacy errata omit it (dated at book.migrated)."
+        },
         "status": {
           "type": "string",
           "enum": ["open", "fixed"],

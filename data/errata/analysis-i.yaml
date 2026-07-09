@@ -5,7 +5,148 @@ book:
   authors:
   - Terence Tao
   source: "https://terrytao.wordpress.com/books/analysis-i/"
+  description: "This is basically an expanded and cleaned up version of my lecture notes for Math 131A. In the US, it is available through the American Mathematical Society. It is part of a two-volume series, currently in its fourth edition. It will also be translated into French as «Le cours d’analyse de Terence Tao». There are no official solution guides for this text."
+  publication:
+    publisher: Hindustan Book Agency
+    first_published: 2006
+    isbn: "81-85931-62-3 (first edition); 978-981-19-7261-4 (Springer, fourth edition)"
+    note: "Hardcover, 368 pages. Fourth edition (2022). Also published by Springer, and distributed in the US by the American Mathematical Society."
+  links:
+  - title: "Analysis II (companion volume)"
+    url: "https://terrytao.wordpress.com/books/analysis-ii/"
+  - title: "Sample chapters (DVI)"
+    url: "http://www.math.ucla.edu/~tao/preprints/sample.dvi"
+  - title: "Lean companion (github.com/teorth/analysis)"
+    url: "https://github.com/teorth/analysis"
+  contributors:
+    note: "Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09 were reported by the readers listed below over the years; individual per-erratum attributions for these legacy entries were not preserved in migration."
+    legacy:
+    - aaron1110
+    - Adam
+    - Rona Alenpour
+    - James Ameril
+    - Paulo Argolo
+    - Paul Ashurov
+    - William Barnett
+    - José Antonio Lara Benítez
+    - Dingjun Bian
+    - Philip Blagoveschensky
+    - Tai-Danae Bradley
+    - Brian
+    - Eduardo Buscicchio
+    - Maurav Chandan
+    - Hanson Char
+    - Diego Cimadom
+    - Matheus Silva Costa
+    - Gonzales Castillo Cristhian
+    - Ck
+    - William Deng
+    - Kevin Doran
+    - Lorenzo Dragani
+    - Jonas Esser
+    - Tejomay Gadgil
+    - Evangelos Georgiadis
+    - Elie Goudout
+    - Ti Gong
+    - Cyao Gramm
+    - Christian Gz.
+    - Ulrich Groh
+    - Yaver Gulusoy
+    - Guanyuming He
+    - Noel Hinton
+    - Deniz İmge
+    - Minyoung Jeong
+    - Erik Koelink
+    - Brett Lane
+    - David Latorre
+    - Kyuil Lee
+    - Matthis Lehmkühler
+    - Bin Li
+    - Percy Li
+    - Matthew
+    - Ming Li
+    - Mufei Li
+    - Yingyuan Li
+    - Manoranjan Majji
+    - Mercedes Mata
+    - Simon Mayer
+    - Pieter Naaijkens
+    - Vineet Nair
+    - Cristina Pereyra
+    - Olli Pottonen
+    - Huaying Qiu
+    - David Radnell
+    - Tim Reijnders
+    - Issa Rice
+    - Eric Rodriguez
+    - Pieter Roffelsen
+    - Luke Rogers
+    - Feras Saad
+    - Gabriel Salmerón
+    - Vijay Sarthak
+    - Leopold Schlicht
+    - Marc Schoolderman
+    - Rainer aus dem Spring
+    - SkysubO
+    - sotpau
+    - Tim Smith
+    - Sundar
+    - suinwethilo
+    - Karim Taha
+    - Yigithan Tamer
+    - Chaitanya Tappu
+    - Winston Tsai
+    - Kent Van Vels
+    - Andrew Verras
+    - Daan Wanrooy
+    - John Waters
+    - Yandong Xiao
+    - Hongjiang Ye
+    - Luqing Ye
+    - Christopher Yeh
+    - Muhammad Atif Zaheer
+    - the students of Math 401/501 and Math 402/502 at the University of New Mexico
+  # All errata below predate this date and are treated as legacy contributions.
+  migrated: "2026-07-09"
 editions:
+- id: corrected-fourth-edition
+  name: Corrected fourth edition
+  errata:
+  - id: corrected-fourth-edition-0001
+    page: '52'
+    text: In Remark 3.3.9, “ontheir” is missing a space
+  - id: corrected-fourth-edition-0002
+    page: '54'
+    text: In Example 3.3.21, should “but also what its range is” be “but also what its codomain is”?
+  - id: corrected-fourth-edition-0003
+    page: 101, 133
+    text: "Definition 6.1.16 should require $M \\geq 0$ for compatibility with Definition 5.1.12."
+  - id: corrected-fourth-edition-0004
+    page: '205'
+    text: Ex. 8.4.2 “thesets” is missing a space
+  - id: corrected-fourth-edition-0005
+    page: '220'
+    text: Remark 9.1.25, Theorem 1.5.7 should be “of Analysis II”
+  - id: corrected-fourth-edition-0006
+    page: "?"
+    text: In Exercise 9.8.5 (b), add “Is f continuous from the left at r?
+  - id: corrected-fourth-edition-0007
+    page: "?"
+    text: "In Exercise 10.1.5, add “with the convention that $nx^{n-1}$ vanishes for $x=n=0$“."
+  - id: corrected-fourth-edition-0008
+    page: "?"
+    text: In Section 10.2, an exercise to prove Darboux’ theorem can be added.
+  - id: corrected-fourth-edition-0009
+    page: '283'
+    text: start of section 11.4, Proposition 8.3.3 should be “of Analysis II”
+  - id: corrected-fourth-edition-0010
+    page: null
+    text: Page 301 bottom, 2/3 of the way through proof of Theorem 11.9.4, “while from definition we have”
+      should refer to Definition 11.3.1.
+  - id: corrected-fourth-edition-0011
+    page: "?"
+    text: "In Exercise 11.9.1, add “is $F$ differentiable from the left at $r$?”. In Exercise 11.9.3,\
+      \ $x_0$ needs to lie in the interior interval $(a,b)$."
 - id: fourth-edition
   name: Fourth edition
   errata:
@@ -205,8 +346,7 @@ editions:
     text: "Pages 167-168: In Lemma 8.2.3 and Definition 8.2.4, $\\infty$ should be $+\\infty$."
   - id: fourth-edition-0054
     page: '136'
-    text: "In Lemma 7.1.4(a), the condition $n < p$ may be relaxed to $n \\leq p$ and $m \\leq n$ to $latex\
-      \ m \\leq n+1$, and in parts (b)-(f), the condition $m \\leq n$ may be deleted."
+    text: "In Lemma 7.1.4(a), the condition $n < p$ may be relaxed to $n \\leq p$ and $m \\leq n$ to $m \\leq n+1$, and in parts (b)-(f), the condition $m \\leq n$ may be deleted."
   - id: fourth-edition-0055
     page: "?"
     text: In Proposition 7.2.13(c), “series are convergent” should be “series is convergent”.
@@ -495,41 +635,1159 @@ editions:
     text: "General LaTeX issues: Use \\text instead of \\hbox for subscripted text. Some numbers (such\
       \ as 0) are not properly placed in math mode in certain places. Some instances of \\ldots should\
       \ be \\dots. \\lim \\sup should be \\limsup, and similarly for \\lim \\inf."
-- id: corrected-fourth-edition
-  name: Corrected fourth edition
+- id: corrected-third-edition
+  name: Corrected third edition
+  active: false
   errata:
-  - id: corrected-fourth-edition-0001
+  - id: corrected-third-edition-0001
+    page: '1'
+    text: "On the final line, $-2$ should be in math mode."
+  - id: corrected-third-edition-0002
+    page: '7'
+    text: In Example 1.2.6, Theorem 19.5.1 should be “Theorem 7.5.1 of Analysis II”.
+  - id: corrected-third-edition-0003
+    page: '8'
+    text: In Example 1.2.7, “Exercise 13.2.9” should be “Exercise 2.2.9 of Analysis II”. In Example 1.2.8,
+      “Proposition 14.3.3” should be “Proposition 3.3.3 of Analysis II”. In Example 1.2.9, “Theorem 14.6.1”
+      should be “Theorem 3.6.1 of Analysis II”.
+  - id: corrected-third-edition-0004
+    page: '9'
+    text: In Example 1.2.10, “Theorem 14.7.1” should be “Theorem 3.7.1 of Analysis II”.
+  - id: corrected-third-edition-0005
+    page: '11'
+    text: In the final line, the comma before “For instance” should be a period.
+  - id: corrected-third-edition-0006
+    page: '14'
+    text: "“without even aware” should be “without even being aware”."
+  - id: corrected-third-edition-0007
+    page: '17'
+    text: In Definition 2.1.3, add “This convention is actually an oversimplification. To see how to properly
+      merge the usual decimal notation for numbers with the natural numbers given by the Peano axioms,
+      see Appendix B.”
+  - id: corrected-third-edition-0008
+    page: '19'
+    text: "After Proposition 2.1.8: “Axioms 2.1 and 2.2” should be “Axioms 2.3 and 2.4”."
+  - id: corrected-third-edition-0009
+    page: '20'
+    text: In the proof of Proposition 2.1.11, the period should be inside the parentheses in both parentheticals.
+      Also, Proposition 2.1.11 should more accurately be called Proposition Template 2.1.11.
+  - id: corrected-third-edition-0010
+    page: '23'
+    text: "first paragraph: delete a right parenthesis in $f_3(a_3))$."
+  - id: corrected-third-edition-0011
+    page: '27'
+    text: "In the final sentence of Definition 2.2.7, the period should be inside the parentheses. In\
+      \ proposition 2.2.8, “$a$ is positive” should be “$a$ is a positive natural number”."
+  - id: corrected-third-edition-0012
+    page: '29'
+    text: "Add Exercise 2.2.7: “Let $n$ be a natural number, and let $P(m)$ be a property pertaining to\
+      \ the natural numbers such that whenever $P(m)$ is true, $P(m+\\!+)$ is true. Show that if $P(n)$\
+      \ is true, then $P(m)$ is true for all $m \\geq n$. This principle is sometimes referred to as the\
+      \ principle of induction starting from the base case $n$“."
+  - id: corrected-third-edition-0013
+    page: '31'
+    text: "“Euclidean algorithm” should be “Euclid’s division lemma”."
+  - id: corrected-third-edition-0014
+    page: '39'
+    text: in the sentence before Proposition 3.1.18, the word Proposition should not be capitalised.
+  - id: corrected-third-edition-0015
+    page: '41'
+    text: In the paragraph after Example 3.1.22, the final right parenthesis should be deleted.
+  - id: corrected-third-edition-0016
+    page: '45'
+    text: "at the end of the section, add “Formally, one can refer to ${\\bf N}$ as “the set of natural\
+      \ numbers”, but we will often abbreviate this to “the natural numbers” for short. We will adopt\
+      \ similar abbreviations later in the text; for instance the set of integers ${\\bf Z}$ will often\
+      \ be abbreviated to “the integers”.”"
+  - id: corrected-third-edition-0017
+    page: '47'
+    text: "In “In $\\Omega$ did contain itself, then by definition”, add “of $\\Omega$“. After “On the\
+      \ other hand, if $\\Omega$ did not contain itself,” add “then by definition of $P$“, and after “and\
+      \ hence”, add “by definition of $\\Omega$“."
+  - id: corrected-third-edition-0018
+    page: '48'
+    text: In the third to last sentence of Exercise 3.2.3, the period should be inside the parenthesis.
+  - id: corrected-third-edition-0019
+    page: '49'
+    text: "“unique object $f(x)$” should be “unique object $f(x) \\in Y$“, and similarly “exactly one\
+      \ $y$” should be “exactly one $y \\in {\\bf N}$“."
+  - id: corrected-third-edition-0020
+    page: '49'
+    text: "+: change all occurrences of “range” to “codomain” (including in the index). Before Example\
+      \ 3.3.2, add the following paragraph: “Implicit in the above definition is the assumption that whenever\
+      \ one is given two sets $X, Y$ and a property $P$ obeying the vertical line test, one can form a\
+      \ function object. Strictly speaking, this assumption of the existence of the function as a mathematical\
+      \ object should be stated as an explicit axiom; however we will not do so here, as it turns out\
+      \ to be redundant. (More precisely, in view of Exercise 3.5.10 below, it is always possible to encode\
+      \ a function $f$ as an ordered triple $(X, Y, \\{ (x,f(x)): x \\in X \\})$ consisting of the domain,\
+      \ codomain, and graph of the function, which gives a way to build functions as objects using the\
+      \ operations provided by the preceding axioms.)”"
+  - id: corrected-third-edition-0021
+    page: '51'
+    text: "Replace the first sentence of Definition 3.3.7 with “Two functions $f: X \\to Y$, $g: X' \\\
+      to Y'$ are said to be equal if and only if they have the same domain and codomain (i.e., $X=X'$\
+      \ and $Y=Y'$), and $f(x)=g(x)$ for <I>all</I> $x \\in X$.” Then add afterwards: “According to this\
+      \ definition, two functions that have different domains or different codomains are, strictly speaking,\
+      \ distinct functions. However, when it is safe to do so without causing confusion, it is sometimes\
+      \ useful to “abuse notation” by identifying together functions of different domains or codomains\
+      \ if their values agree on their common domain of definition; this is analogous to the practice\
+      \ of “overloading” an operator in software engineering. See the discussion [in the errata] after\
+      \ Definition 9.4.1 for an instance of this.”"
+  - id: corrected-third-edition-0022
     page: '52'
-    text: In Remark 3.3.9, “ontheir” is missing a space
-  - id: corrected-fourth-edition-0002
-    page: '54'
-    text: In Example 3.3.21, should “but also what its range is” be “but also what its codomain is”?
-  - id: corrected-fourth-edition-0003
-    page: 101, 133
-    text: "Definition 6.1.16 should require $M \\geq 0$ for compatibility with Definition 5.1.12."
-  - id: corrected-fourth-edition-0004
+    text: "In Example 3.3.9, replace “an arbitrary set $X$” with “a given set $X$“. Similarly, in Exercise\
+      \ 3.3.3 on page 55, replace “the empty function” with “the empty function into a given set $X$“."
+  - id: corrected-third-edition-0023
+    page: '56'
+    text: "After Definition 3.4.1, replace “a challenge to the reader” with “an exercise to the reader”.\
+      \ In Definition 3.4.1, “$S$ is a set in $X$” should be “latex S$ is a subset of $X$“."
+  - id: corrected-third-edition-0024
+    page: '62'
+    text: "Replace Remark 3.5.5 with “One can show that the Cartesian product $X \\times Y$ is indeed\
+      \ a set; see Exercise 3.5.1.”"
+  - id: corrected-third-edition-0025
+    page: '65'
+    text: "Split Exercise 3.5.1 into three parts. Part (a) encompasses the first definition of an ordered\
+      \ pair; part (b) encompasses the “additional challenge” of the second definition. Then add a part\
+      \ (c): “Show that regardless of the definition of ordered pair, the Cartesian product $X \\times\
+      \ Y$ is a set. (Hint: first use the axiom of replacement to show that for any $x \\in X$, the set\
+      \ $\\{ (x,y): y \\in Y \\}$ is a set, then apply the axioms of replacement and union.)”. In Exercise\
+      \ 3.5.2, add the following comment: “(Technically, this construction of ordered $n$-tuple is not\
+      \ compatible with the construction of ordered pair in Exercise 3.5.1, but this does not cause a\
+      \ difficulty in practice; for instance, one can use the definition of an ordered $2$-tuple here\
+      \ to replace the construction in Exercise 3.5.1, or one can make a rather pedantic distinction between\
+      \ an ordered $2$-tuple and an ordered pair in one’s mathematical arguments.)”"
+  - id: corrected-third-edition-0026
+    page: '66'
+    text: "In Exercise 3.5.3, replace “obey” with “are consistent with”, and at the end add “in the sense\
+      \ that if these axioms of equality are already assumed to hold for the individual components $x,y$\
+      \ of an ordered pair $(x,y)$, then they hold for an ordered pair itself”. Similarly replace “This\
+      \ obeys” with “This is consistent with” in Definition 3.5.1 on page 62."
+  - id: corrected-third-edition-0027
+    page: '67'
+    text: "In Exercise 3.5.12, add “Let $X$ be an arbitrary set” after the first sentence, and let $f$\
+      \ be a function from ${\\mathbf N} \\times X$ to $X$ rather than from ${\\mathbf N} \\times {\\\
+      mathbf N}$ to ${\\mathbf N}$; also $c$ should be an element of $X$ rather than a natural number.\
+      \ This generalisation will help for instance in establishing Exercise 3.5.13."
+  - id: corrected-third-edition-0028
+    page: '68'
+    text: In the first paragraph, the period should be inside the parenthetical; similarly in Example
+      3.6.2.
+  - id: corrected-third-edition-0029
+    page: '71'
+    text: "The proof of Theorem 3.6.12 can be replaced by the following, after the first sentence: ” By\
+      \ Lemma 3.6.9, ${\\bf N} \\backslash \\{0\\}$ would then have cardinality $n-1$. But ${\\bf N}$\
+      \ has equal cardinality with ${\\bf N} \\backslash \\{0\\}$ (using $x \\mapsto x+1$ as the bijection),\
+      \ hence $n = n-1$, which gives the desired contradiction. Then in Exercise 3.6.3, add “use this\
+      \ exercise to give an alternate proof of Theorem 3.6.12 that does not use Lemma 3.6.9.”."
+  - id: corrected-third-edition-0030
+    page: '73'
+    text: "In Exercise 3.6.8, add the hypothesis that $A$ is non-empty."
+  - id: corrected-third-edition-0031
+    page: '77'
+    text: "“negative times positive equals positive” should be “negative times positive equals negative”.\
+      \ Change “we call $-n$ a negative integer“, to “we call $n$ a positive integer and $-n$ a negative\
+      \ integer“."
+  - id: corrected-third-edition-0032
+    page: '89'
+    text: "In the first paragraph, insert “Note that when $n=1$, the definition of $x^{-1}$ provided by\
+      \ Definition 4.3.11 coincides with the reciprocal of $x$ defined previously, so there is no incompatibility\
+      \ of notation caused by this new definition.”"
+  - id: corrected-third-edition-0033
+    page: '94'
+    text: "bottom: “see Exercise 12.4.8” should be “see Exercise 1.4.8 of Analysis II”."
+  - id: corrected-third-edition-0034
+    page: '97'
+    text: In Example 5.1.10, “1-steady” should be “0.1-steady”, “0.1-steady” should be “0.01-steady”,
+      and “0.01-steady” should be “0.001-steady”.
+  - id: corrected-third-edition-0035
+    page: '104'
+    text: "In the proof of Lemma 5.3.7, after the mention of 0-closeness, add “(where we extend the notion\
+      \ of $\\varepsilon$-closeness to include $\\varepsilon=0$ in the obvious fashion)”, and after Proposition\
+      \ 4.3.7, add “(extended to cover the 0-close case)”."
+  - id: corrected-third-edition-0036
+    page: '113'
+    text: "In the second paragraph of the proof of Proposition 5.4.8, add “Suppose that $x>y$” after the\
+      \ first sentence."
+  - id: corrected-third-edition-0037
+    page: '122'
+    text: "Before Lemma 5.6.6: “$n^{th}$ root” should be $n^{th}$ roots”. In (e), add “Here $k$ ranges\
+      \ over the positive integers”, and after “decreasing”, add “(i.e., $x^{1/k} k$)”. One can also replace\
+      \ $x<1$ by $0 < x < 1$ for clarity."
+  - id: corrected-third-edition-0038
+    page: '123'
+    text: "near top: “is the following cancellation law” should be “is another proof of the cancellation\
+      \ law from Proposition 4.3.12(c) and Proposition 5.6.3”."
+  - id: corrected-third-edition-0039
+    page: '124'
+    text: "In Lemma 5.6.9, add “(f) $(xy)^q = x^q y^q$.”"
+  - id: corrected-third-edition-0040
+    page: "?"
+    text: "In Exercise 5.6.5, replace “positive rational $q$ with $q > 1$” with “rational $q$ with $q > 0$”, and at the end of the exercise, ask what happens if $q<0$ or $q=0$ (rather than $q<1$)."
+  - id: corrected-third-edition-0041
+    page: '130'
+    text: Before Corollary 6.1.17, “we see have” should be “we have”.
+  - id: corrected-third-edition-0042
+    page: '131'
+    text: "In Exercise 6.1.6, $LIM$ should be $\\mathrm{LIM}$."
+  - id: corrected-third-edition-0043
+    page: '134'
+    text: "In the paragraph after Definition 6.2.6, add right parenthesis after “greatest lower bound\
+      \ of $E$“."
+  - id: corrected-third-edition-0044
+    page: '138'
+    text: "In the second paragraph of Section 6.4, $-1$ should be in math mode (three instances). After\
+      \ $xL=L$ in the proof of Proposition 6.3.10, add “(here we use Exercise 6.1.3.)”."
+  - id: corrected-third-edition-0045
+    page: '140'
+    text: "In the first paragraph, $-1$ should be in math mode."
+  - id: corrected-third-edition-0046
+    page: '143'
+    text: "penultimate paragraph: add right parenthesis after “$L^+$ and $L^-$ are finite”."
+  - id: corrected-third-edition-0047
+    page: '144'
+    text: In Remark 6.4.16, “allows to compute” should be “allows one to compute”.
+  - id: corrected-third-edition-0048
+    page: '147'
+    text: "“(see Chapter 1)” should be “(see Chapter 1 of Analysis II)”."
+  - id: corrected-third-edition-0049
+    page: '148'
+    text: "In the first sentence of Section 6.6, replace $(a_n)_{n=1}^\\infty$ to $(a_n)_{n=m}^\\infty$.\
+      \ After Definition 6.6.1, add “More generally, we say that $(b_n)_{n=m'}^\\infty$ is a subsequence\
+      \ of $(a_n)_{n=m}^\\infty$ if there exists a strictly increasing function $f: \\{ n \\in {\\bf N}:\
+      \ n \\geq m'\\} \\to \\{ n \\in {\\bf N}: n \\geq m\\}$ such that $b_n = a_{f(n)}$ for all $n \\\
+      in {\\bf N}$.”."
+  - id: corrected-third-edition-0050
+    page: "?"
+    text: In the hint for Exercise 6.6.5, “each natural numbers” should be “each natural number”.
+  - id: corrected-third-edition-0051
+    page: '153'
+    text: Just before Proposition 6.7.3, “Section 6.7” should be “Section 5.6”.
+  - id: corrected-third-edition-0052
+    page: '157'
+    text: "At the end of Definition 7.1.6, add the sentence “In some cases we would like to define the\
+      \ sum $\\sum_{x \\in X} f(x)$ when $f: Y \\to {\\bf R}$ is defined on a larger set $Y$ than $X$.\
+      \ In such cases we use exactly the same definition as is given above.”"
+  - id: corrected-third-edition-0053
+    page: '161'
+    text: In Remark 7.1.12, change “the rule will fail” to “the rule may fail”.
+  - id: corrected-third-edition-0054
+    page: '163'
+    text: "In the proof of Corollary 7.1.14, the function $h$ should be replaced with its inverse (thus\
+      \ $h: Y \\times X \\to X \\times Y$ is defined by $h(y,x) := (x,y)$. In Exercise 7.1.5, “Exercise\
+      \ 19.2.11” should be “Exercise 7.2.11 of Analysis II“."
+  - id: corrected-third-edition-0055
+    page: '166'
+    text: In Remark 7.2.11 add “We caution however that in most other texts, the terminology “conditional
+      convergence” is meant in this latter sense (that is, of a series that converges but does not converge
+      absolutely).
+  - id: corrected-third-edition-0056
+    page: '172'
+    text: "In Corollary 7.3.7, $q$ can be taken to be a real number instead of rational, provided we mention\
+      \ Proposition 6.7.3 next to each mention of Lemma 5.6.9."
+  - id: corrected-third-edition-0057
+    page: '175'
+    text: A space should be inserted before the (why?) before the first display.
+  - id: corrected-third-edition-0058
+    page: '176'
+    text: "In Exercise 7.4.1, add “What happens if we assume $f$ is merely one-to-one, rather than increasing?”.\
+      \ Add a new Exercise 7.4.2.: “Obtain an alternate proof of Proposition 7.4.3 using Proposition 7.4.1,\
+      \ Proposition 7.2.14, and expressing $a_n$ as the difference of $a_n+|a_n|$ and $|a_n|$. (This proof\
+      \ is due to Will Ballard.)”"
+  - id: corrected-third-edition-0059
+    page: '177'
+    text: "In beginning of proof of Theorem 7.5.1, add “By Proposition 7.2.14(c), we may assume without\
+      \ loss of generality that $m \\geq 1$ (in particulaar $|a_n|^{1/n}$ is well-defined for any $n \\\
+      geq m$).”."
+  - id: corrected-third-edition-0060
+    page: '178'
+    text: "In the proof of Lemma 7.5.2, after selecting $N$, add “without loss of generality we may assume\
+      \ that $N \\geq 1$“. (This is needed in order to take n^th roots later in the proof.) One can also\
+      \ replace $|a_n|^{1/n} \\geq 1$ and $|a_n| \\geq 1$ with $|a_n|^{1/n} > 1$ and $|a_n| > 1$ respectively."
+  - id: corrected-third-edition-0061
+    page: '186'
+    text: In Exercise 8.1.4, Proposition 8.1.5 should be Corollary 8.1.6.
+  - id: corrected-third-edition-0062
+    page: '187'
+    text: After Definition 8.2.1, the parenthetical “(and Proposition 3.6.4)” may be deleted.
+  - id: corrected-third-edition-0063
+    page: '188'
+    text: "In the final paragraph, after the invocation of Proposition 6.3.8, “convergent for each $m$”\
+      \ should be “convergent for each $n$“."
+  - id: corrected-third-edition-0064
+    page: '189'
+    text: "middle: in “Why? use induction”, “use” should be capitalised."
+  - id: corrected-third-edition-0065
+    page: '190'
+    text: In the remark after Lemma 8.2.5, “countable set” should be “at most countable set”.
+  - id: corrected-third-edition-0066
+    page: '193'
+    text: "In Exercise 8.2.6, both summations $\\sum_{m=N}^\\infty$ should instead be $\\sum_{m=0}^N$."
+  - id: corrected-third-edition-0067
+    page: '198'
+    text: In Example 8.4.2, replace “the same set” with “essentially the same set (in the sense that there
+      is a canonical bijection between the two sets)”.
+  - id: corrected-third-edition-0068
+    page: '203'
+    text: "In Definition 8.5.8, “every non-empty subset of $Y$ has a minimal element $\\mathrm{min}(Y)$”\
+      \ should be “every non-empty subset $Z$ of $Y$ has a minimal element $\\mathrm{min}(Z)$“."
+  - id: corrected-third-edition-0069
+    page: '203'
+    text: "In Proposition 8.5.10, “Prove that $P(n)$ is true” should be “Then $P(n)$ is true”."
+  - id: corrected-third-edition-0070
+    page: '204'
+    text: "Before “Let us define a special class….”, add “Henceforth we fix a single such strict upper\
+      \ bound function $s$“."
+  - id: corrected-third-edition-0071
     page: '205'
-    text: Ex. 8.4.2 “thesets” is missing a space
-  - id: corrected-fourth-edition-0005
-    page: '220'
-    text: Remark 9.1.25, Theorem 1.5.7 should be “of Analysis II”
-  - id: corrected-fourth-edition-0006
-    page: "?"
-    text: In Exercise 9.8.5 (b), add “Is f continuous from the left at r?
-  - id: corrected-fourth-edition-0007
-    page: "?"
-    text: "In Exercise 10.1.5, add “with the convention that $nx^{n-1}$ vanishes for $x=n=0$“."
-  - id: corrected-fourth-edition-0008
-    page: "?"
-    text: In Section 10.2, an exercise to prove Darboux’ theorem can be added.
-  - id: corrected-fourth-edition-0009
+    text: "The assertion that $Y_\\infty \\cup \\{ s(Y_\\infty)\\}$ is good requires more explanation.\
+      \ Replace “Thus this set is good, and must therefore be contained in $Y_\\infty$” with : “We now\
+      \ claim that $Y_\\infty \\cup \\{ s(Y_\\infty)\\}$ is good. By the preceding discussion, it suffices\
+      \ to show that $x = s( \\{ y \\in Y_\\infty \\cup \\{ s(Y_\\infty)\\}: y < x \\}$ when $x \\in (Y_\\\
+      infty \\cup \\{s(Y_\\infty)\\}) \\backslash \\{x_0\\}$. If $x = s(Y_\\infty)$ this is clear since\
+      \ $\\{ y \\in Y_\\infty \\cup \\{ s(Y_\\infty)\\}: y < x \\} = Y_\\infty$ in this case. If instead\
+      \ $x \\in Y_\\infty$, then $x \\in Y$ for some good $Y$. Then the set $\\{ y \\in Y_\\infty \\cup\
+      \ \\{ s(Y_\\infty)\\}: y < x \\}$ is equal to $\\{ y \\in Y: y < x \\}$ (why? use the previous observation\
+      \ that every element of $Y' \\backslash Y$ is an upper bound for $x$ for every good $Y'$), and the\
+      \ claim then follows since $Y$ is good. By definition of $Y_\\infty$, we conclude that the good\
+      \ set $Y_\\infty \\cup \\{ s(Y_\\infty)\\}$ is contained in $Y_\\infty$“. In the statement of Lemma\
+      \ 8.5.15, add “non-empty” before “totally ordered subset”."
+  - id: corrected-third-edition-0072
+    page: '206'
+    text: "Remove the parenthetical “(also called the principle of transfinite induction)” (as well as\
+      \ the index reference), and in Exercise 8.5.15 use “Zorn’s lemma” in place of “principle of transfinite\
+      \ induction”. In Exercise 8.5.6, “every element of $x$” should be “every element of $X$“."
+  - id: corrected-third-edition-0073
+    page: '208'
+    text: "In Exercise 8.5.18, “Tthus” should be “Thus”. In Exercise 8.5.16, “total orderings of $P$”\
+      \ should be “total orderings of $X$“. In Exercise 8.5.19, the := should just be an =."
+  - id: corrected-third-edition-0074
+    page: '211'
+    text: "In Definition 9.1.1, the endpoints of an interval should only be defined when the interval\
+      \ is non-empty; similarly, in Examples 9.1.3, it is only the non-empty intervals with one or more\
+      \ endpoints infinite that should be called half-infinite or infinite. In Remark 9.1.2, add that\
+      \ for a non-empty interval $I$, the left endpoint can also be equivalently defined as $\\inf I$\
+      \ (why?), and similarly the right endpoint can be equivalently defined as $\\sup I$. In particular,\
+      \ this makes it clear that these notions of endpoint are well-defined (two non-empty intervals that\
+      \ are equal as sets, will have the same endpoints)."
+  - id: corrected-third-edition-0075
+    page: '215'
+    text: Exercise 9.1.1 should be moved to be after Exercise 9.1.6, as the most natural proof of the
+      former exercise uses the latter.
+  - id: corrected-third-edition-0076
+    page: '216'
+    text: "In Exercise 9.1.8, add the hypothesis that $I$ is non-empty. In Exercise 9.1.9, delete the\
+      \ hypothesis that $x$ be a real number."
+  - id: corrected-third-edition-0077
+    page: '221'
+    text: "At the end of Remark 9.3.7, $\\lim_{x \\in x_0; x \\in E \\backslash \\{x_0\\}}$ should be\
+      \ $\\lim_{x \\to x_0; x \\in E \\backslash \\{x_0\\}}$."
+  - id: corrected-third-edition-0078
+    page: '222'
+    text: "Replace the second sentence of proof of Proposition 9.3.14 by “Let $(a_n)_{n=0}^\\infty$ be\
+      \ an arbitrary sequence of elements in $E$ that converges to $x_0$.”"
+  - id: corrected-third-edition-0079
+    page: '223'
+    text: Near bottom, in “Why? use induction”, “use” should be capitalised.
+  - id: corrected-third-edition-0080
+    page: '224'
+    text: "In Example 9.3.17, (why) should be (why?). In Example 9.3.16, “drop the set $X$” should be\
+      \ “drop the set $E$“, and change $\\lim_{x \\in x_0; x \\in X}$ to $\\lim_{x \\to x_0; x \\in X}$."
+  - id: corrected-third-edition-0081
+    page: '225'
+    text: "In Example 9.3.20, all occurrences of ${\\bf R} - \\{1\\}$ should be ${\\bf R} - \\{-1\\}$."
+  - id: corrected-third-edition-0082
+    page: '226'
+    text: "After Definition 9.4.1, add “We also extend these notions to functions $f: X \\to Y$ that take\
+      \ values in a subset $Y$ of ${\\bf R}$, by identifying such functions (by abuse of notation) with\
+      \ the function $\\tilde f: X \\to {\\bf R}$ that agrees everywhere with $f$ (so $\\tilde f(x) =\
+      \ f(x)$ for all $x \\in X$) but where the codomain has been enlarged from $Y$ to ${\\bf R}$."
+  - id: corrected-third-edition-0083
+    page: '230'
+    text: In Exercise 9.4.1, “six equivalences” should be “six implications”. “Exercise 4.25.10” should
+      be “Exercise 4.25.10 of Analysis II“.
+  - id: corrected-third-edition-0084
+    page: '231'
+    text: "In the second paragraph after Example 9.5.2, Proposition 9.4.7 should be 9.3.9. In Example\
+      \ 9.5.2, all occurrences of $x_0$ should be $0$. In the sentence starting “Similarly, if $(b_n)_{n=0}^\\\
+      infty$…”, all occurrences of $a_n$ should be $b_n$."
+  - id: corrected-third-edition-0085
+    page: '232'
+    text: In the proof of Proposition 9.5.3, in the parenthetical (Why? the reason…), “the” should be
+      capitalised. Proposition 9.4.7 should be replaced by Definition 9.3.6 and Definition 9.3.3.
+  - id: corrected-third-edition-0086
+    page: 233-234
+    text: In Definition 9.6.1, replace “if” with “iff” in both occurrences.
+  - id: corrected-third-edition-0087
+    page: '235'
+    text: "In Definition 9.6.5, replace “Let …” with “Let $X$ be a subset of ${\\bf R}$, and let …”."
+  - id: corrected-third-edition-0088
+    page: '237'
+    text: "Add Exercise 9.6.2: If $f,g: X \\to {\\bf R}$ are bounded functions, show that $f+g, f-g$,\
+      \ and $f \\cdot g$ are also bounded functions. If we furthermore assume that $g(x) \\neq 0$ for\
+      \ all $x \\in X$, is it true that $f/g$ is bounded? Prove this or give a counterexample.”"
+  - id: corrected-third-edition-0089
+    page: '248'
+    text: Remark 9.9.17 is incorrect. The last sentence can be replaced with “Note in particular that
+      Lemma 9.6.3 follows from combining Proposition 9.9.15 and Theorem 9.9.16.”
+  - id: corrected-third-edition-0090
+    page: '252'
+    text: "In the third display of Example 10.1.6, both occurrences of $(0,\\infty)$ should be $(-\\infty,0)$."
+  - id: corrected-third-edition-0091
+    page: '253'
+    text: In the paragraph before Corollary 10.1.12, after “and the above definition”, add “, as well
+      as the fact that a function is automatically continuous at every isolated point of its domain”.
+  - id: corrected-third-edition-0092
+    page: '256'
+    text: "In Exercise 10.1.1, $Y \\subset X$ should be $Y \\subseteq X$, and “also limit point” should\
+      \ be “also a limit point”."
+  - id: corrected-third-edition-0093
+    page: '257'
+    text: "In Definition 10.2.1, replace “Let …” with “Let $X$ be a subset of ${\\bf R}$, and let …”.\
+      \ In Example 10.2.3, delete the final use of “local”. In Remark 10.2.5, $\\subset$ should be $\\\
+      subseteq$."
+  - id: corrected-third-edition-0094
+    page: '259'
+    text: In Exercise 10.2.4, delete the reference to Corollary 10.1.12.
+  - id: corrected-third-edition-0095
+    page: '260'
+    text: "In Exercise 10.3.5, $X \\subset {\\bf R}$ should be $X \\subseteq {\\bf R}$."
+  - id: corrected-third-edition-0096
+    page: '261'
+    text: "In Lemma 10.4.1 and Theorem 10.4.2, add the hypotheses that $X, Y \\subseteq {\\bf R}$, and\
+      \ that $x_0,y_0$ are limit points of $X,Y$ respectively."
+  - id: corrected-third-edition-0097
+    page: '262'
+    text: ". In the parenthetical ending in “$f^{-1}$ is a bijection”, a period should be added."
+  - id: corrected-third-edition-0098
+    page: '263'
+    text: In Exercise 10.4.1(a), Proposition 9.8.3 can be replaced by Proposition 9.4.11.
+  - id: corrected-third-edition-0099
+    page: '264'
+    text: "In Proposition 10.5.2, the hypothesis that $f,g$ be differentiable on $[a,b]$ may be weakened\
+      \ to being continuous on $[a,b]$ and differentiable on $(a,b]$, with $g'$ only assumed to be non-zero\
+      \ on $(a,b]$ rather than $[a,b]$. In the second paragraph of the proof “converges to $x$” should\
+      \ be “converges to $a$“."
+  - id: corrected-third-edition-0100
+    page: '265'
+    text: In Exercise 10.5.2, Exercise 1.2.12 should be Example 1.2.12.
+  - id: corrected-third-edition-0101
+    page: '266'
+    text: "“Riemann-Steiltjes” should be “Riemann-Stieltjes”."
+  - id: corrected-third-edition-0102
+    page: '267'
+    text: "In Definition 11.1.1, add “$X$ is nonempty and” before “the following property is true”, and\
+      \ delete the mention of the empty set in Example 11.1.3. In Lemma 11.1.4, impose the hypothesis\
+      \ that X be non-empty. (The reason for these changes is to be consistent with the notion of connectedness\
+      \ used in Analysis II and in other standard texts. -T.)"
+  - id: corrected-third-edition-0103
+    page: '276'
+    text: "In the proof of Lemma 11.3.3, the final inequality should involve $f$ on the RHS rather than\
+      \ $g$."
+  - id: corrected-third-edition-0104
+    page: '280'
+    text: "In Remark 11.4.2, add “We also observe from Theorem 11.4.1(h) and Remark 11.3.8 that if $f:\
+      \ [a,b] \\to {\\bf R}$ is Riemann integrable on a closed interval $[a,b]$, then $\\int_{[a,b]} f\
+      \ = \\int_{(a,b]} f = \\int_{[a,b)} f = \\int_{(a,b)} f$."
+  - id: corrected-third-edition-0105
+    page: '282'
+    text: "In Corollary 11.4.4, replace” $|f| = f_+ - f_-$” by “$|f|$, defined by $|f|(x) := |f(x)|$“,\
+      \ and add at the end “(To prove the last part, observe that $|f| = f_+ - f_-$.)”"
+  - id: corrected-third-edition-0106
     page: '283'
-    text: start of section 11.4, Proposition 8.3.3 should be “of Analysis II”
-  - id: corrected-fourth-edition-0010
-    page: null
-    text: Page 301 bottom, 2/3 of the way through proof of Theorem 11.9.4, “while from definition we have”
-      should refer to Definition 11.3.1.
-  - id: corrected-fourth-edition-0011
+    text: "In the penultimate display, $(\\overline{f_+}-\\underline{f_-}(x))$ should be $(\\overline{f_+}-\\\
+      underline{f_-})(x)$."
+  - id: corrected-third-edition-0107
+    page: '284'
+    text: Exercise 11.4.2 should be moved to Section 11.5, since it uses Corollary 11.5.2.
+  - id: corrected-third-edition-0108
+    page: '288'
+    text: In Exercise 11.5.1, (h) should be (g).
+  - id: corrected-third-edition-0109
     page: "?"
-    text: "In Exercise 11.9.1, add “is $F$ differentiable from the left at $r$?”. In Exercise 11.9.3,\
-      \ $x_0$ needs to lie in the interior interval $(a,b)$."
+    text: "At the start of the proof of Proposition 11.6.1, add “We may assume that $a \\leq b$, since\
+      \ the claim is vacuously true otherwise.”."
+  - id: corrected-third-edition-0110
+    page: '291'
+    text: "In the paragraph before Definition 11.8.1, remove the sentences after “defined as follows”.\
+      \ In Definition 11.8.1, add the hypothesis that $\\alpha$ be monotone increasing, and $X$ be an\
+      \ interval that is closed in the sense of Definition 9.1.15, and alter the definition of $\\alpha[I]$\
+      \ as follows. (i) If $I$ is empty, set $\\alpha[I]:=0$. (ii) If $I = \\{a\\}$ is a point, set $\\\
+      alpha[\\{a\\}] := \\lim_{x \\to a^+; x \\in X} \\alpha(x) - \\lim_{x \\to a^-; x \\in X} \\alpha(x)$,\
+      \ with the convention that $\\lim_{x \\to a^+; x \\in X} \\alpha(x)$ (resp. $\\lim_{x \\to a^-;\
+      \ x \\in X} \\alpha(x)$) is $\\alpha(a)$ when $a$ is the right (resp. left) endpoint of $X$. (iii)\
+      \ If $I = (a,b)$, set $\\alpha[(a,b)] := \\lim_{x \\to b^-; x \\in X} \\alpha(x) - \\lim_{x \\to\
+      \ a^+; x \\in X} \\alpha(x)$. (iv) If $I = [a,b)$, $(a,b]$, or $[a,b]$, set $\\alpha[I]$ equal to\
+      \ $\\alpha(\\{a\\}) + \\alpha((a,b))$, $\\alpha((a,b)) + \\alpha(\\{b\\})$, or $\\alpha(\\{a\\})\
+      \ + \\alpha((a,b)) + \\alpha(\\{b\\})$ respectively. After the definition, note that in the special\
+      \ case when $\\alpha$ is continuous, the definition of $\\alpha[I]$ for $I = (a,b), [a,b), (a,b],\
+      \ [a,b]$ simplifies to $\\alpha[I] = \\alpha(b) - \\alpha(a)$, and in this case one can extend the\
+      \ definition to functions $\\alpha$ that are continuous but not necessarily monotone increasing.\
+      \ In Example 11.8.2, restrict the domain of $\\alpha$ to $[0,+\\infty)$, and delete the example\
+      \ of $\\alpha[(-3,-2)]$."
+  - id: corrected-third-edition-0111
+    page: '292'
+    text: "In Example 11.8.6, restrict the domain of $\\alpha$ to $[0,+\\infty)$. In Lemma 11.8.4 and\
+      \ Definition 11.8.5, add the condition that $X$ be an interval that is closed, and $\\alpha$ be\
+      \ monotone increasing or continuous."
+  - id: corrected-third-edition-0112
+    page: '293'
+    text: After Example 11.8.7, delete the sentence “Up until now, our function… could have been arbitrary.”,
+      and replace “defined on a domain” with “defined on an interval that is closed” (two occurrences).
+  - id: corrected-third-edition-0113
+    page: '294'
+    text: The hint in Exercise 11.8.5 is no longer needed in view of other corrections and may be deleted.
+  - id: corrected-third-edition-0114
+    page: '295'
+    text: "In the proof of Theorem 11.9.1, after the penultimate display $|F(y)-F(x)| \\leq M|x-y|$, one\
+      \ can replace the rest of the proof of continuity of $F$ with “This implies that $F$ is uniformly\
+      \ continuous (in fact it is Lipschitz continuous, see Exercise 10.2.6), hence continuous.”"
+  - id: corrected-third-edition-0115
+    page: '297'
+    text: "In Definition 11.9.3, replace “all $x \\in I$” with “all limit points $x$ of $I$“. In the proof\
+      \ of Theorem 11.9.4, insert at the beginning “The claim is trivial when $b=a$, so assume $b > a$,\
+      \ so in particular all points of $[a,b]$ are limit points.”. When invoking Lemma 11.8.4, add “(noting\
+      \ from Proposition 10.1.10 that $F$ is continuous)”."
+  - id: corrected-third-edition-0116
+    page: '298'
+    text: "After the assertion $F[J] = F(d)-F(c)$, add “Note that $F$, being differentiable, is continuous,\
+      \ so we may use the simplified formula for the $F$-length as opposed to the more complicated one\
+      \ in Definition 11.8.1.”"
+  - id: corrected-third-edition-0117
+    page: '299'
+    text: "In Exercise 11.9.1, $q$ should lie in ${\\bf Q} \\cap (0,1)$ rather than ${\\bf Q} \\cap [0,1]$.\
+      \ In Exercise 11.9.3, $x_0$ should lie in $(a,b)$ rather than $[a,b]$. In the hint for Exercise\
+      \ 11.9.2, add “(or Proposition 10.3.3)” after “Corollary 10.2.9”."
+  - id: corrected-third-edition-0118
+    page: '300'
+    text: In the proof of Theorem 11.10.2, Theorem 11.2.16(h) should be Theorem 11.4.1(h).
+  - id: corrected-third-edition-0119
+    page: '310'
+    text: in the last line, “all logicallly equivalent” should be “all logically equivalent”.
+  - id: corrected-third-edition-0120
+    page: '311'
+    text: In Exercise A.1.2, the period should be inside the parentheses.
+  - id: corrected-third-edition-0121
+    page: '327'
+    text: "In the proof of Proposition A.6.2, $0 \\leq y \\leq x$ may be improved to $0 < y < x$; similarly\
+      \ for the first line of page 328. Also, the “mean value theorem” may be given a reference as Corollary\
+      \ 10.2.9."
+  - id: corrected-third-edition-0122
+    page: '329'
+    text: "At the end of Appendix A.7, add “We will use the notation $X \\equiv Y$ to indicate that a\
+      \ mathematical object $X$ is being identified with a mathematical object $Y$.”"
+  - id: corrected-third-edition-0123
+    page: '334'
+    text: "In the last paragraph of the proof of Theorem B.1.4, “the number $a_n \\dots a_0$ has only\
+      \ one decimal representation” should be “the number $a_n \\dots a_1$ has only one decimal representation”."
+- id: third-edition
+  name: Third edition (hardback)
+  active: false
+  errata:
+  - id: third-edition-0001
+    page: null
+    text: "General note: all references to “Analysis II” need to be renumbered to account for the new\
+      \ chapter numbering (basically, all chapter numbers need to be lowered by 11.)"
+  - id: third-edition-0002
+    page: '10'
+    text: "footnote: “$f(0,0) := (0,0)$” should be $f(0,0) := 0$“."
+  - id: third-edition-0003
+    page: '15'
+    text: In Section 2.1, “Guiseppe Peano” should be “Giuseppe Peano”.
+  - id: third-edition-0004
+    page: '21'
+    text: "In Remark 2.1.12, add the parenthetical comment “(augmented by adding a zero symbol $O$)” after\
+      \ the introduction of the Roman number system."
+  - id: third-edition-0005
+    page: '29'
+    text: "In the hint for Exercise 2.2.5, $n < m_0$ should be $n \\leq m_0$."
+  - id: third-edition-0006
+    page: '34'
+    text: "“not all objects are sets” should be “it is not necessarily the case that all objects are sets”."
+  - id: third-edition-0007
+    page: '35'
+    text: Definition 3.1.4 has to be given the status of an axiom (the axiom of extensionality) rather
+      than a definition, changing all references to this definition accordingly. This requires some changes
+      to the text discussing this definition. Firstly, in the preceding paragraph, “define the notion
+      of equality” will now be “seek to capture the notion of equality”, and “formalize this as a definition”
+      should be “formalize this as an axiom”. For the paragraph after Example 3.1.5, delete the first
+      two sentences, and remove the word “Thus” from the third sentence. Exercise 3.1.1 is now trivial
+      and can be deleted.
+  - id: third-edition-0008
+    page: '37'
+    text: In Example 3.1.10, “so is singleton set” should be “the singleton set”; also, a right parenthesis
+      is missing after (why?). In Axiom 3.4, “elements consists” should be “elements consist”.
+  - id: third-edition-0009
+    page: '46'
+    text: In the first paragraph of Section 3.2, the appearances of the word “both” should be deleted.
+  - id: third-edition-0010
+    page: '51'
+    text: "In Remark 3.3.5, “the argument $f(x)$ of a function” should be “the argument of a function\
+      \ $f(x)$“. In Remark 3.3.6, “functions are not sets” should be “functions are not necessarily sets”,\
+      \ and similarly for “sets are not functions”. After “describes the function completely”, add “once\
+      \ the domain $X$ and range $Y$ are specified”. In Definition 3.3.7, add “two functions $f: X \\\
+      to Y$ and $g: X' \\to Y'$ are considered to be unequal if they have different domains $X \\neq X'$\
+      \ or different ranges $Y \\neq Y'$ (or both)”."
+  - id: third-edition-0011
+    page: '52'
+    text: "The paragraph that “This notion of equality obeys the usual axioms (Exercise 3.3.1)” should\
+      \ be replaced by the following remark: “It is not immediately apparent that Definition 3.3.7 is\
+      \ compatible with the axioms of equality in Appendix A.7, although Exercise 3.3.1 below provides\
+      \ evidence towards this compatibility. There are at least three ways to address this issue. One\
+      \ is to regard Definition 3.3.7 as an axiom about equality of functions rather than a definition.\
+      \ Another is to provide a more explicit definition of a function in which Definition 3.3.7 becomes\
+      \ a theorem; for instance, one can define a function $f: X \\to Y$ to be an ordered triple $(X,Y,\
+      \ G)$ consisting of a domain set $X$, a range set $Y$, and a graph $G = \\{ (x,f(x)): x \\in X\\\
+      }$ that obeys the vertical line test, and use this latter graph to define the value of $f(x) \\\
+      in Y$ for each element $x$ of the domain (cf. Exercise 3.5.10). A third way is to start with a mathematical\
+      \ universe ${\\mathcal U}$ without any functions in it, and use Definition 3.3.7 to create a larger\
+      \ extension of this universe that contains function objects that behave as specified as in Definition\
+      \ 3.3.7. This final procedure however requires a bit more of the formalism of logic and model theory\
+      \ than is provided by this text, and so will not be detailed here.”"
+  - id: third-edition-0012
+    page: '54'
+    text: "In Definition 3.3.17, the remark that a function is onto if $f(X)=Y$ should be moved to the\
+      \ next section, because the image $f(X)$ is not defined until that section."
+  - id: third-edition-0013
+    page: '55'
+    text: In Example 3.3.22, “Axioms 2.2, 2.3, 2.4” should be “Lemma 2.2.10”. In Exercise 3.3.1, add “Of
+      course, these statements are immediate from the axioms of equality in Appendix A.7 applied directly
+      to the functions in question, but the point of the exercise is to show that they can also be established
+      by instead applying the axioms of equality to elements of the domain and range of these functions,
+      rather than to the functions itself.”.
+  - id: third-edition-0014
+    page: '60'
+    text: A space missing between “the” and “Zermelo” in Remark 3.4.12.
+  - id: third-edition-0015
+    page: '64'
+    text: "The justification that the product set $\\prod_{i=1}^n X_i$ given in Remark 3.5.8 is not quite\
+      \ correct if one is using the definition of an ordered n-tuple as defined in Exercise 3.5.2 (one\
+      \ has to restrict the range of the tuples to be surjective). As the correct version of this remark\
+      \ is part of Exercise 3.5.2, the second sentence of this remark should be replaced with a reference\
+      \ to that exercise. In Remark 3.5.10, $x_1,\\dots,x_n$ should be $(x_1,\\dots,x_n)$."
+  - id: third-edition-0016
+    page: '66'
+    text: "In Exercise 3.5.7, the direct sum $f \\oplus g$ should be replaced by the pairing $(f,g)$."
+  - id: third-edition-0017
+    page: '67'
+    text: "In Exercise 3.5.12, $a_N(n++) = f(n,a(n))$ should be $a_N(n++) = f(n,a_N(n))$."
+  - id: third-edition-0018
+    page: '68'
+    text: In Example 3.6.2, there is a superfluous period before the parenthetical (also the period after
+      the parenthetical should be inside).
+  - id: third-edition-0019
+    page: '70'
+    text: "In the proof of Lemma 3.6.9, “Now define the function $g: X - \\{x\\}$ to $\\{ i \\in {\\bf\
+      \ N}: 1 \\leq i \\leq n-1\\}$” should be “Now define the function $g: X - \\{x\\} \\to \\{ i \\\
+      in {\\bf N}: 1 \\leq i \\leq n-1\\}$” . In the 4th line of proof of Lemma 3.6.9: $1 \\leq i \\leq\
+      \ N$ should be $1 \\leq i \\leq n$."
+  - id: third-edition-0020
+    page: '72'
+    text: In Exercise 3.6.8, the additional hypothesis that A is non-empty should be added. Also, the
+      word “then” may be deleted.
+  - id: third-edition-0021
+    page: '82'
+    text: "In the footnote preceding Definition 4.2.1, add in the first sentence “… and $a$ is non-zero.\
+      \ Similarly, the identities $a/a = 1$ and $2*(a/a) = (2*a)/a$ cannot hold simultaneously if $0/0$\
+      \ is defined.”"
+  - id: third-edition-0022
+    page: '94'
+    text: In the footnote, “Zahlen” is the German for “numbers”, not “number”.
+  - id: third-edition-0023
+    page: '97'
+    text: "In Definition 5.1.6 and Definition 5.1.8, $d(a_j,a_k)$ should be $|a_j-a_k|$ (for consistency\
+      \ with later definitions)."
+  - id: third-edition-0024
+    page: '103'
+    text: Near Proposition 5.3.3, “laws of equality” should be “axioms of equality”, and “law of substitution”
+      should be “axiom of substitution”.
+  - id: third-edition-0025
+    page: '104'
+    text: "In the final line of the proof of Lemma 5.3.6, “eventually $\\varepsilon$-close” should be\
+      \ “eventually $\\varepsilon$-steady”."
+  - id: third-edition-0026
+    page: '106'
+    text: In the first paragraph, “On obvious” should be “One obvious”.
+  - id: third-edition-0027
+    page: '112'
+    text: In Definition 5.4.6, “if” should be “iff”.
+  - id: third-edition-0028
+    page: '123'
+    text: "Lemma 5.6.6(c) should read “$x^{1/n}$ is a non-negative real number, and is positive if and\
+      \ only if $x$ is positive”."
+  - id: third-edition-0029
+    page: '124'
+    text: "In the proof of Lemma 5.6.8, $(-a')/b$ should be $(-a')/b'$."
+  - id: third-edition-0030
+    page: '135'
+    text: "After Definition 6.2.6, add right parenthesis after “(also known as the greatest lower bound\
+      \ of $E$“."
+  - id: third-edition-0031
+    page: '136'
+    text: In Definition 6.3.1, replace “sequence of real numbers” with “sequence of extended real numbers”.
+  - id: third-edition-0032
+    page: '142'
+    text: Ellipsis is missing in the final display of Example 6.4.9.
+  - id: third-edition-0033
+    page: '143'
+    text: "In the penultimate paragraph, “$L^+$ and $L^-$ coincide” should be “$L^+$ and $L^-$ coincide\
+      \ and are finite”."
+  - id: third-edition-0034
+    page: '144'
+    text: "Below the proof of Proposition 6.4.12, a right parenthesis should be added after “(provided\
+      \ that $L^+$ and $L^-$ are finite”. Also, “(c) and (d)” should be “(d) and (e)”."
+  - id: third-edition-0035
+    page: '150'
+    text: "In Example 6.6.3, $0.001$ should be inserted between $1.001$ and $1.0001$."
+  - id: third-edition-0036
+    page: '152'
+    text: "In Exercise 6.6.3, add the following note: “To ensure the existence and uniqueness of the minimum,\
+      \ one either needs to invoke the well ordering principle (which we have placed in Proposition 8.1.4,\
+      \ but whose proof does not rely on any material not already presented), or the least upper bound\
+      \ principle (Theorem 5.5.9).” Similarly for Exercise 6.6.5."
+  - id: third-edition-0037
+    page: '153'
+    text: "In the proof of Lemma 6.7.1, the first equal sign in the display $d(x^{q_n}, x^{q_m}) = x^M\
+      \ (x^{q_n-q_m}-1) \\leq \\dots$ should be a $\\leq$ sign."
+  - id: third-edition-0038
+    page: '158'
+    text: "In Example 7.1.7, $h(3)=c$ should be $h(3)=a$."
+  - id: third-edition-0039
+    page: '160'
+    text: "In Remark 7.1.10, all occurrences of $f(x)$ here should be $f(n)$."
+  - id: third-edition-0040
+    page: '162'
+    text: In the third to last display, the small parenthesis near the end of the first term on the RHS
+      should be moved to the outside (also, this pair of parentheses should be made larger).
+  - id: third-edition-0041
+    page: '167'
+    text: "In the proof of Proposition 7.2.12, “the sequence $(-1)^n a_n$” should be “the sequence $((-1)^n\
+      \ a_n)_{n=m}^\\infty$“; similarly for “the sequence $S_n$” and “the sequence $a_N$“."
+  - id: third-edition-0042
+    page: '174'
+    text: "In the proof of Proposition 7.4.1, $(S_N)_{n=0}^\\infty$ and $(T_M)_{m=0}^\\infty$ should be\
+      \ $(S_N)_{N=0}^\\infty$ and $(T_M)_{M=0}^\\infty$ respectively."
+  - id: third-edition-0043
+    page: '175'
+    text: "In the first sentence, $m \\leq N$ should be $m \\leq M$."
+  - id: third-edition-0044
+    page: '176'
+    text: "In the proof of Proposition 7.4.3, “$\\varepsilon$-close to $L$” should be $\\varepsilon$-close\
+      \ to $L'$” in the last paragraph."
+  - id: third-edition-0045
+    page: '188'
+    text: "In the proof of Theorem 8.2.2, $X \\subset {\\bf N} \\times {\\bf N}$ should be $X \\subseteq\
+      \ {\\bf N} \\times {\\bf N}$. After definition 8.2.1, add “For finite sets $X$ we adopt the convention\
+      \ that series $\\sum_{x \\in X} f(x)$ are automatically considered to be absolutely convergent.”.\
+      \ “Taking suprema of this as $M \\to \\infty$” should be “Taking limits of this as $M \\to \\infty$“,\
+      \ and “by limit laws, and an induction on $N$” should be “by Exercise 7.1.5 and either Proposition\
+      \ 6.3.8 or Lemma 6.4.13”. In the preceding display, the first inequality should be an equality."
+  - id: third-edition-0046
+    page: '189'
+    text: "Before the final dusplay: “convergent for each $m$” should be “convergent for each $n$“."
+  - id: third-edition-0047
+    page: '191'
+    text: "In Lemma 8.2.3, $X$ should be assumed to be countable, rather than at most countable."
+  - id: third-edition-0048
+    page: '193'
+    text: "In Lemma 8.2.7, the last sentence should read “Then the series $\\sum_{n \\in A_+} a_n$ and\
+      \ $\\sum_{n \\in A_-} a_n$ are not absolutely convergent.”"
+  - id: third-edition-0049
+    page: '193'
+    text: "Near the end of proof of Theorem 8.2.8, it would be (slightly) better to have $\\lim_{j \\\
+      to \\infty} \\sum_{0 \\leq i \\leq j} a_n$ rather than $\\lim_{j \\to \\infty} \\sum_{0 \\leq i\
+      \ < j} a_n$."
+  - id: third-edition-0050
+    page: '202'
+    text: "In Exercise 8.4.3, “there exists an injection $f: A \\to B$; in other words…” should be “there\
+      \ exists an injection $f: A \\to B$ with $g \\circ f: A \\to A$ the identity map; in particular…”.\
+      \ (This is needed in order to establish the converse part of the question.)"
+  - id: third-edition-0051
+    page: '207'
+    text: "In Exercise 8.5.6, $(x) \\subset X$ should be $(x) \\subseteq X$."
+  - id: third-edition-0052
+    page: '209'
+    text: "In Exercise 8.5.16, “$x,y \\in P$” should be “$x,y \\in X$“. In Exercise 8.5.18: A right parenthesis\
+      \ is missing after “… which contains $Y$“. “Tthus” should be “Thus”. In Exercise 8.5.20, $\\Omega\
+      \ \\subset 2^X$ should be $\\Omega \\subseteq 2^X$."
+  - id: third-edition-0053
+    page: '212'
+    text: In Definition 9.1.1, “open intervals” should be “open interval”.
+  - id: third-edition-0054
+    page: '216'
+    text: "In Definition 9.1.22, $X \\subset [-M,M]$ should be $X \\subseteq [-M,M]$."
+  - id: third-edition-0055
+    page: '217'
+    text: "In Exercise 9.1.15, the hypothesis that $E$ is non-empty should be added."
+  - id: third-edition-0056
+    page: '225'
+    text: "In Example 9.3.17, “undefined (why)” should be “undefined (why?)”. Also, “in the textbook”\
+      \ should be “in some textbooks”. In Exampe 9.3.16, $\\lim_{x \\in x_0; x \\in X}$ should be $\\\
+      lim_{x \\to x_0; x \\in X}$."
+  - id: third-edition-0057
+    page: '226'
+    text: "In Example 9.3.21, all sequences here should start from $n=1$ rather than from $n=0$."
+  - id: third-edition-0058
+    page: '230'
+    text: Exercise 11.25.10 should be Exercise 4.25.10 of Analysis II.
+  - id: third-edition-0059
+    page: '237'
+    text: In Exercise 9.3.3, “Lemma 9.3.18” should be “Proposition 9.3.18”.
+  - id: third-edition-0060
+    page: '257'
+    text: "In Exercise 10.1.6, ${\\bf R} - \\{0\\}$ should be ${\\bf R} \\backslash \\{0\\}$, and “differentiable\
+      \ on ${\\bf R}$” should be “differentiable on ${\\bf R} \\backslash \\{0\\}$“. In Exercise 10.1.5,\
+      \ add “with the convention that $n x^{n-1} = 0$ when $n=0$“."
+  - id: third-edition-0061
+    page: '264'
+    text: "In Exercise 10.4.2(b), the limits should be over $(0,\\infty) - \\{-1\\}$ rather than $(0,\\\
+      infty)$."
+  - id: third-edition-0062
+    page: '265'
+    text: "In the proof of 10.5.2, “converges to $x$” should be “converges to $a$“."
+  - id: third-edition-0063
+    page: '289'
+    text: In Exercise 11.6.5, add “For this exercise, you may use the second Fundamental Theorem of Calculus
+      (Theorem 11.9.4); there is no circularity, because Corollary 11.6.5 is not used in the proof of
+      that theorem.”
+  - id: third-edition-0064
+    page: '295'
+    text: In the last paragraph of Section 11.8, a right parenthesis should be added at the end of the
+      penultimate sentence.
+  - id: third-edition-0065
+    page: '316'
+    text: "In the proof of Proposition A.2.6, “$\\sin(x)$ is increasing for $0 < x < \\pi/2$” should be\
+      \ “$\\sin(x)$ is increasing for $0 \\leq x \\leq \\pi/2$“."
+  - id: third-edition-0066
+    page: '330'
+    text: "In Example A.7.3, “the substitution axiom” should read “the first form of the substitution\
+      \ axiom”. Then, at the end of the example, add “One can also obtain the conclusion $x=\\sin(z^2)$\
+      \ more directly by using the second form of the substitution axiom.”. At the end of the section,\
+      \ add “For most applications in analysis, one should not need to compare objects of different types:\
+      \ for instance, if $x$ is a set, and $y$ is a number, then one should not need to consider the question\
+      \ of whether $x=y$ is true or false. But for the purposes of doing set theory, it is convenient\
+      \ to adopt the convention that the statement $x=y$ is automatically false if $x,y$ are of different\
+      \ types; for instance, if one is treating natural numbers and vectors as objects of different types,\
+      \ then a natural number would not be equal to a vector. But sometimes we override this convention\
+      \ by identifying objects of one type with some objects of another type, e.g. when we identified\
+      \ natural numbers with their counterparts in the integers, or integers with their counterparts in\
+      \ the rationals, and so forth. This is technically an “abuse of notation”, but can be tolerated\
+      \ as long as one verifies that no violation of the axioms of equality occur by doing so.”"
+- id: second-edition
+  name: Second edition (hardback)
+  active: false
+  errata:
+  - id: second-edition-0001
+    page: xii
+    text: "bottom: “solidifed” –> “solidified”."
+  - id: second-edition-0002
+    page: xiv
+    text: "top: “to know how to to” –> “to know how to”."
+  - id: second-edition-0003
+    page: '19'
+    text: ". In footnote 2, add: “In the converse direction, if we have $n=m$, then we may deduce $n++=m++$;\
+      \ this is the axiom of substitution (see Appendix A.7) applied to the operation $++$.”"
+  - id: second-edition-0004
+    page: '24'
+    text: "after Definition 2.2.1: “defined $n+m$ for every integer $n$” should be “defined $n+m$ for\
+      \ every natural number $n$“."
+  - id: second-edition-0005
+    page: '26'
+    text: "after Proposition 2.2.6: “these notes” should be “this text”."
+  - id: second-edition-0006
+    page: '28'
+    text: "Proposition 2.2.14: “and Let” should be “and let”."
+  - id: second-edition-0007
+    page: '30'
+    text: "Lemma 2.3.3: “Natural numbers have no zero divisors” should read “Positive natural numbers\
+      \ have no zero divisors”."
+  - id: second-edition-0008
+    page: '32'
+    text: "Definition 2.3.11: Add the remark “In particular, we define $0^0$ to equal $1$.”"
+  - id: second-edition-0009
+    page: '37'
+    text: "Example 3.1.10: “(why?)” should be “(why?))”."
+  - id: second-edition-0010
+    page: '45'
+    text: "“8-m, where n is a…” should be “8-m, where m is a…”. In Exercise 3.1.2, add Axiom 3.1 to the\
+      \ list of permitted axioms. In Exercise 3.1.1: (3.1.4) should be Definition 3.1.4."
+  - id: second-edition-0011
+    page: '50'
+    text: "In the first line, $h(2n+3)=h(2n+2)$ should be $h(2n+3)=2n+2$, and $N \\backslash \\{0\\}$\
+      \ should be ${\\bf N} \\backslash \\{0\\}$."
+  - id: second-edition-0012
+    page: '55'
+    text: "Exercise 3.3.1: $f \\circ g$ and $\\tilde f \\circ \\tilde g$ should be $g \\circ f$ and $\\\
+      tilde g \\circ \\tilde f$ respectively."
+  - id: second-edition-0013
+    page: '59'
+    text: "In Lemma 3.4.9, “Then the set … is a set” should read “Then there is a unique set of the form\
+      \ … . That is to say, there is a set $A$ such that for any $Y$, $Y \\in A$ if and only if $Y$ is\
+      \ a subset of $X$."
+  - id: second-edition-0014
+    page: '61'
+    text: In Exercise 3.4.8, Axiom 3.1 should be added to the list of permitted axioms.
+  - id: second-edition-0015
+    page: '64'
+    text: "In Example 3.5.9, “$(x_2,x_3) \\in X_3$” should be “$(x_2,x_3) \\in X_2 \\times X_3$“."
+  - id: second-edition-0016
+    page: '70'
+    text: "4th line of proof of Lemma 3.6.9: $1 \\leq i \\leq N$ should be $1 \\leq i \\leq n$. In the\
+      \ 6th line of proof of Proposition 3.6.8: Proposition 3.6.4 should be Lemma 3.6.9. After Lemma 3.6.9,\
+      \ add the following remark: “Strictly speaking, the expression $n-1$ has not yet been defined. For\
+      \ the purposes of this lemma, we temporarily define it to be the unique natural number $m$ such\
+      \ that $m++=n$ (which exists and is unique by Lemma 2.2.10).”"
+  - id: second-edition-0017
+    page: '81'
+    text: "before Lemma 4.2.3: “product of a rational number” -> “product of two rational numbers”."
+  - id: second-edition-0018
+    page: '84'
+    text: "before Definition 4.2.6: a space is missing between “Proposition 4.2.4” and “allows”. Before\
+      \ this paragraph, add “In a similar spirit, we define subtraction on the rationals by the formula\
+      \ $x-y := x + (-y)$, just as we did with the integers.”"
+  - id: second-edition-0019
+    page: '86'
+    text: "In Definition 4.3.2, “real numbers” should be “rational numbers”. In definition 4.3.4, “be\
+      \ a rational number” should be added after “Let $\\varepsilon>0$“."
+  - id: second-edition-0020
+    page: '88'
+    text: In Proposition 4.3.10(b), the hypothesis n>0 should be added.
+  - id: second-edition-0021
+    page: '104'
+    text: "proof of Lemma 5.3.7; after invoking Proposition 4.3.7, add “(extended in the obvious manner\
+      \ to the $\\delta=0$ case)”."
+  - id: second-edition-0022
+    page: '105'
+    text: "after Proposition 5.3.10: $\\lim_{n \\to\\infty} a_n$ should be $\\hbox{LIM}_{n \\to \\infty}\
+      \ a_n$."
+  - id: second-edition-0023
+    page: '108'
+    text: "proof of Lemma 5.3.15: $n \\geq N$ should be $n, m \\geq N$. “This shows that $|a_n-a_m| \\\
+      leq \\varepsilon$” should read “This shows that $|a_n^{-1}-a_m^{-1}| \\leq \\varepsilon$“."
+  - id: second-edition-0024
+    page: '115'
+    text: In the hint for Exercise 5.4.8, add “or Corollary 5.4.10” after “use Proposition 5.4.9”.
+  - id: second-edition-0025
+    page: '120'
+    text: "Add an additional exercise, Exercise 5.5.5: “Establish an analogue of Proposition 5.4.14, in\
+      \ which “rational” is replaced by “irrational”.”"
+  - id: second-edition-0026
+    page: '124'
+    text: "Exercise 5.6.3: Add the hypothesis that x is non-zero (since the roots of 0 are not yet defined)."
+  - id: second-edition-0027
+    page: '126'
+    text: "proof of Proposition 6.1.4: Proposition 5.4.14 should be Proposition 5.4.12."
+  - id: second-edition-0028
+    page: '134'
+    text: "In Definition 6.2.6(c) (and also on the first line of p. 135), $E - \\{-\\infty\\}$ should\
+      \ be $E \\backslash \\{-\\infty\\}$."
+  - id: second-edition-0029
+    page: '135'
+    text: "Theorem 6.2.11(b), (c): Replace “Suppose that $M$” with “Suppose that $M \\in {\\Bbb R}^*$”\
+      \ (two occurrences). Exercise 6.2.2: Proposition 6.2.11 should be Theorem 6.2.11."
+  - id: second-edition-0030
+    page: '144'
+    text: "Cor. 6.4.14: line 4: ” .. for all $n \\geq M$” should be ” .. for all $n \\geq m$“"
+  - id: second-edition-0031
+    page: '146'
+    text: "proof of Theorem 6.4.18: Replace “from Corollary 6.1.17” here by “from Lemma 5.1.15 (or more\
+      \ precisely, the extension of that lemma to the real numbers, which is proven in exactly the same\
+      \ fashion)”."
+  - id: second-edition-0032
+    page: '151'
+    text: "Exercise 6.6.5: Replace “the formula $n_j := \\min\\{n \\in {\\Bbb N}: |a_n-L| \\leq 1/j\\\
+      }$, explaining why the set $\\{n \\in {\\Bbb N}: |a_n-L| \\leq 1/j\\}$ is non-empty” with “the recursive\
+      \ formula $n_j := \\min\\{n > n_{j-1}: |a_n-L| \\leq 1/j\\}$, with the convention $n_0=0$, explaining\
+      \ why the set $\\{n > n_{j-1}: |a_n-L| \\leq 1/j\\}$ is non-empty”."
+  - id: second-edition-0033
+    page: '164'
+    text: "Definition 7.2.2: $(S_N)_{n=m}^\\infty$ should be $(S_N)_{N=m}^\\infty$."
+  - id: second-edition-0034
+    page: '169'
+    text: "Exercise 7.2.6: Add “How does the proposition change if we assume that $a_n$ does not converge\
+      \ to zero, but instead converges to some other real number $L$?”. After Corollary 7.3.2: “conditionally\
+      \ divergent” should be “not conditionally convergent”, similarly in Exercise 7.2.13."
+  - id: second-edition-0035
+    page: '176'
+    text: "“absolutely divergent series” should be “series that is not absolutely convergent”."
+  - id: second-edition-0036
+    page: '177'
+    text: "Theorem 7.5.1: “conditionally divergent” should be “not conditionally convergent”, and similarly\
+      \ “absolutely divergent” should be “not absolutely convergent”. Similarly for Corollary 7.5.3 on\
+      \ page 179."
+  - id: second-edition-0037
+    page: '186'
+    text: "Exercise 8.1.1: This exercise requires the axiom of choice, Axiom 8.1. In Exercise 8.1.4. $f(0),\
+      \ f(1), \\ldots, f(n)$ should be $f(0), f(1),\\ldots,f(n-1)$."
+  - id: second-edition-0038
+    page: '192'
+    text: "proof of Theorem 8.2.8: “absolutely divergent” should be “not absolutely convergent” (two occurrences)."
+  - id: second-edition-0039
+    page: '196'
+    text: "Remark 8.3.6: “Paul Cohen (1934-)” should now be “Paul Cohen (1934-2007)”. :-("
+  - id: second-edition-0040
+    page: '197'
+    text: "Exercise 8.3.2: $f$ should be an injection rather than a bijection. In the definition of $g$,\
+      \ $\\bigcup_{n=0}^\\infty D_n$ should be $\\bigcup_{n=1}^\\infty D_n$ (two occurrences)."
+  - id: second-edition-0041
+    page: '200'
+    text: "Exercise 8.4.1: $y \\in y$ should be $y \\in Y$."
+  - id: second-edition-0042
+    page: '206'
+    text: "Exercise 8.5.5: “$f(x) \\leq_Y f(x')$” should be “$f(x) <_Y f(x')$ or $x=x'$“."
+  - id: second-edition-0043
+    page: '208'
+    text: "Exercise 8.5.19: $Y := \\{y \\in Y': y < x \\}$ should be $Y = \\{ y \\in Y': y <' x \\}$.\
+      \ In Exercise 8.5.20, the additional hypothesis “Assume that $\\Omega$ does not contain the empty\
+      \ set $\\emptyset$” should be added."
+  - id: second-edition-0044
+    page: '214'
+    text: "Lemma 9.1.21. One needs the additional hypothesis “We assume that $a<b$.”"
+  - id: second-edition-0045
+    page: '220'
+    text: "Definition 9.3.6: “$f$ is $\\varepsilon$-close to $L$ near $x_0$” should be “$f$, after restricting\
+      \ to $E$, is $\\varepsilon$-close to $L$ near $x_0$“."
+  - id: second-edition-0046
+    page: '228'
+    text: "Proposition 9.4.7: change “three items” to “four items”, and add “(d): For every $\\varepsilon\
+      \ > 0$, there exists a $\\delta > 0$ such that $|f(x)-f(x_0)| \\leq \\varepsilon$ for all $x \\\
+      in X$ with $|x-x_0| \\leq \\delta$."
+  - id: second-edition-0047
+    page: '232'
+    text: "proof of Proposition 9.5.3: after “Proposition 9.4.7”, add “(applied to the restriction of\
+      \ $f$ to the subdomain $X \\cap (x_0,+\\infty)$)”."
+  - id: second-edition-0048
+    page: '252'
+    text: "Proposition 10.1.7: One needs the additional hypothesis $x_0 \\in X$. Similarly for Proposition\
+      \ 10.1.10, Theorem 10.1.13, and Proposition 10.3.1."
+  - id: second-edition-0049
+    page: '253'
+    text: "Definition 10.1.11: “For every $x_0 \\in X$” should be “For every limit point $x_0 \\in X$“."
+  - id: second-edition-0050
+    page: '254'
+    text: "Remark 10.1.14: Leibnitz should be Leibniz (two occurrences)."
+  - id: second-edition-0051
+    page: '256'
+    text: "Exercise 10.1.1: “$x_0$ is also limit point of $Y$” should be “$x_0 \\in Y$, and $x_0$ is also\
+      \ a limit point of $Y$“."
+  - id: second-edition-0052
+    page: '257'
+    text: "Definition 10.2.1: $x \\in X$ should be $x_0 \\in X$."
+  - id: second-edition-0053
+    page: '262'
+    text: "In the proof of Theorem 10.4.2,”$x_n = f^{-1}(y_0)$” should be “$x_n = f^{-1}(y_n)$“."
+  - id: second-edition-0054
+    page: '271'
+    text: "Remark 11.2.2: “constant on $f$” should be “constant on $E$“."
+  - id: second-edition-0055
+    page: '290'
+    text: In Exercise 11.6.5, add “For this exercise, you may use the second Fundamental Theorem of Calculus
+      (Theorem 11.9.4); there is no circularity, because Corollary 11.6.5 is not used in the proof of
+      that theorem.”
+  - id: second-edition-0056
+    page: '290'
+    text: "In the proof of Proposition 11.7.1, in the third display, $[0,1]$ should be $|[0,1]|$."
+  - id: second-edition-0057
+    page: '299'
+    text: In Exercise 11.9.1, the hint is misleading (it requires the mean value theorem for integrals
+      rather than for derivatives, which is not covered in this text) and should be deleted.
+- id: first-edition
+  name: First edition
+  active: false
+  errata:
+  - id: first-edition-0001
+    page: '2'
+    text: "item 3: “can you add” should be “Can you add”."
+  - id: first-edition-0002
+    page: '9'
+    text: "line 5: “right-hand side” should be “left-hand side”."
+  - id: first-edition-0003
+    page: '10'
+    text: "first display: $\\frac{\\partial^2}{\\partial x \\partial y}$ should be $\\frac{\\partial^2}{\\\
+      partial y \\partial x}$."
+  - id: first-edition-0004
+    page: '5'
+    text: "line 6 from bottom: $\\sin(\\pi/2-2)$ should be $\\sin(\\pi/2-z)$. (Actually, for pedagogical\
+      \ reasons, it may be slightly better to use $\\pi/2+z$ throughout this example instead of $\\pi/2-z$.)"
+  - id: first-edition-0005
+    page: '59'
+    text: "Lemma 3.3.12: f should map Z to W, and h should map X to Y. In the proof of this lemma (on\
+      \ page 60): $g \\circ h$ is a function from X to Z, and $f \\circ g$ is a function from Y to W."
+  - id: first-edition-0006
+    page: '67'
+    text: "last paragraph: $\\alpha \\in A$ should be $\\alpha \\in I$."
+  - id: first-edition-0007
+    page: '98'
+    text: "In Exercise 4.2.1, Corollary 2.3.7 should be Corollary 4.1.9. In Exercise 4.2.6, $x,y,z$ should\
+      \ be rational numbers, not real."
+  - id: first-edition-0008
+    page: '101'
+    text: "In Definition 4.3.9, after “$x^0 := 1$“, add “; in particular, we define $0^0 := 1$“."
+  - id: first-edition-0009
+    page: '127'
+    text: "In Exercise 5.3.4: add “(Hint: use Exercise 5.2.2.)”."
+  - id: first-edition-0010
+    page: '131'
+    text: "line 12 from bottom: “they cannot be than” should be “they cannot be larger than”."
+  - id: first-edition-0011
+    page: '175'
+    text: "Exercise 6.6.3: In the hint, replace “introduce” by “recursively introduce”, and insert “;\
+      \ $n > n_{j-1}$” after “$|a_n| \\geq j$” (two occurrences), with the parenthetical “(omitting the\
+      \ $n > n_{j-1}$ condition when $j=0$)” inserted after the recursive definition of $n_j$."
+  - id: first-edition-0012
+    page: '181'
+    text: "In Lemma 7.1.4(c), a period is missing at the end of $(\\sum_{i=m}^n b_i)$."
+  - id: first-edition-0013
+    page: '183'
+    text: "In the proof of Proposition 7.1.8, $x$ should be replaced by $f(x)$ in every display of the\
+      \ proof in which it appears."
+  - id: first-edition-0014
+    page: '197'
+    text: "in second line of proof of Proposition 7.3.4: the second sum should be $\\sum_{k=0}^\\infty$\
+      \ rather than $\\sum_{k=0}^K$."
+  - id: first-edition-0015
+    page: '216'
+    text: "Exercise 8.1.9: It needs to be noted that this exercise requires the axiom of choice from Section\
+      \ 8.4."
+  - id: first-edition-0016
+    page: '220'
+    text: "Lemma 8.2.5: It needs to be noted that this lemma requires the axiom of choice from Section\
+      \ 8.4. Similarly, the case in Proposition 8.2.6 in which X is uncountable requires the axiom of\
+      \ choice also."
+  - id: first-edition-0017
+    page: '227'
+    text: "Exercise 8.3.2: $g(x) := f(x)$ should be $g(x) := f^{-1}(x)$."
+  - id: first-edition-0018
+    page: '236'
+    text: "last line: “for any good set Y'” should be “for any good set Y’ with $A \\cap Y'$ non-empty”."
+  - id: first-edition-0019
+    page: '250'
+    text: "In Definition 9.10.3, “there exists an $M$” should be “there exists a real number $M$“. Also\
+      \ add “let $L$ be a real number” to the first sentence of the definition."
+  - id: first-edition-0020
+    page: '255'
+    text: "Proposition 9.3.9(b): $f(x_0)$ should be $L$."
+  - id: first-edition-0021
+    page: '303'
+    text: "Exercise 10.4.3(a): The limit should be in the set $(0,\\infty) \\backslash \\{1\\}$ rather\
+      \ than $(0,\\infty)$."
+  - id: first-edition-0022
+    page: '336'
+    text: "line 13: replace “we have made no assumption on $\\alpha$” with “the function $\\alpha: {\\\
+      Bbb R} \\to {\\Bbb R}$ could have been arbitrary”."
+  - id: first-edition-0023
+    page: '337'
+    text: "Exercise 11.8.1: Lemma 11.8.1 should be Lemma 11.8.4."
+  - id: first-edition-0024
+    page: '337'
+    text: "Exercise 11.8.5: In the last display, $f(0)$ should be $2f(0)$."
+  - id: first-edition-0025
+    page: '342'
+    text: "Exercise 11.9.1: “the function f is not differentiable” should be “the function $F(x) := \\\
+      int_{[0,x]} f$ is not differentiable."
+  - id: first-edition-0026
+    page: '383'
+    text: "first display: $a_n \\times \\hbox{ten}^i$ should be $a_n \\times \\hbox{ten}^n$."
+  - id: first-edition-0027
+    page: '387'
+    text: "fourth display: $a_n$ should be $a_{n+1}$."
