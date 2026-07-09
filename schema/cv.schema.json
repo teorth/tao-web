@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrytao.github.io/tao-web/schema/cv.schema.json",
+  "title": "Curriculum vitae data",
+  "description": "Structured CV data (the categories not already covered by the papers, books, and teaching datasets). Rendered into bio/short-CV/long-CV pages.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["profile"],
+  "properties": {
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "institution": { "type": "string" },
+        "email": { "type": "string" },
+        "homepage": { "type": "string" },
+        "bio": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": { "short": { "type": "string" }, "long": { "type": "string" } }
+        },
+        "interests": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "primary": { "type": "array", "items": { "$ref": "#/$defs/interest" } },
+            "secondary": { "type": "array", "items": { "$ref": "#/$defs/interest" } }
+          }
+        }
+      }
+    },
+    "education": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["degree", "year", "institution"],
+      "properties": {
+        "degree": { "type": "string" }, "year": { "type": "string" }, "institution": { "type": "string" },
+        "advisor": { "type": "string" }, "field": { "type": "string" }, "thesis": { "$ref": "#/$defs/titled" }
+      } } },
+    "appointments": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["start", "institution", "title"],
+      "properties": {
+        "start": { "type": "string" }, "end": { "type": "string" },
+        "institution": { "type": "string" }, "title": { "type": "string" }
+      } } },
+    "awards": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["year", "organization", "award"],
+      "properties": {
+        "year": { "type": "string" }, "organization": { "type": "string" }, "award": { "type": "string" },
+        "url": { "type": "string" }, "highlight": { "type": "boolean" }
+      } } },
+    "students": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["name", "level", "years"],
+      "properties": {
+        "name": { "type": "string" }, "level": { "type": "string" }, "institution": { "type": "string" },
+        "years": { "type": "string" }, "thesis": { "$ref": "#/$defs/titled" }
+      } } },
+    "lectures": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["name", "venue", "date"],
+      "properties": {
+        "name": { "type": "string" }, "venue": { "type": "string" }, "date": { "type": "string" },
+        "topic": { "type": "string" }, "url": { "type": "string" }
+      } } },
+    "service": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["start", "organization", "role"],
+      "properties": {
+        "start": { "type": "string" }, "end": { "type": "string" },
+        "organization": { "type": "string" }, "role": { "type": "string" },
+        "url": { "type": "string" }, "highlight": { "type": "boolean" }
+      } } },
+    "patents": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["title"],
+      "properties": {
+        "inventors": { "type": "array", "items": { "type": "string" } },
+        "title": { "type": "string" }, "number": { "type": "string" },
+        "date": { "type": "string" }, "url": { "type": "string" }
+      } } },
+    "contact": {
+      "type": "object", "description": "Private overlay (from gitignored private.yaml); never required.",
+      "additionalProperties": true
+    }
+  },
+  "$defs": {
+    "titled": {
+      "type": "object", "additionalProperties": false, "required": ["title"],
+      "properties": { "title": { "type": "string" }, "url": { "type": "string" } }
+    },
+    "interest": {
+      "type": "object", "additionalProperties": false, "required": ["name"],
+      "properties": { "name": { "type": "string" }, "tag": { "type": "string" } }
+    }
+  }
+}

@@ -21,6 +21,8 @@ TEACHING_SCHEMA = ROOT / "schema" / "teaching.schema.json"
 TEACHING = ROOT / "data" / "teaching"
 PAPERS_SCHEMA = ROOT / "schema" / "papers.schema.json"
 PAPERS = ROOT / "data" / "papers"
+CV_SCHEMA = ROOT / "schema" / "cv.schema.json"
+CV = ROOT / "data" / "cv"
 
 
 def validate_links() -> int:
@@ -82,6 +84,22 @@ def validate_papers() -> int:
     return problems
 
 
+def validate_cv() -> int:
+    """Validate the CV data file against cv.schema.json (skips private.yaml)."""
+    path = CV / "cv.yaml"
+    if not path.exists():
+        return 0
+    validator = Draft7Validator(yaml.safe_load(CV_SCHEMA.read_text(encoding="utf-8")))
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+    for err in errors[:40]:
+        loc = "/".join(str(p) for p in err.path) or "(root)"
+        print(f"{path.name}: {loc}: {err.message}")
+    counts = {k: len(v) for k, v in doc.items() if isinstance(v, list)}
+    print(f"  {path.name}: {counts} -> {'OK' if not errors else 'INVALID'}")
+    return len(errors)
+
+
 def main() -> int:
     validator = Draft7Validator(yaml.safe_load(SCHEMA.read_text(encoding="utf-8")))
     files = sorted(DATA.glob("*.yaml"))
@@ -121,6 +139,7 @@ def main() -> int:
     problems += validate_links()
     problems += validate_teaching()
     problems += validate_papers()
+    problems += validate_cv()
 
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)

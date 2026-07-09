@@ -11,3 +11,4 @@ venv/
 .DS_Store
 *.swp
 .vscode/
+/data/cv/private.yaml
