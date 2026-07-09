@@ -1,4 +1,4 @@
-# Imported from the UCLA home page teaching tables -- maintain by hand.
+# Imported from the UCLA home page teaching tables + CV -- maintain by hand.
 title: Teaching
 courses:
 - year: 2026
@@ -237,11 +237,6 @@ courses:
   url: "http://www.math.ucla.edu/~tao/245b.1.04w/"
 - year: 2003
   quarter: S
-  number: Maths 3228
-  title: Complex analysis
-  url: "http://www.math.ucla.edu/~tao/resource/general/3228"
-- year: 2003
-  quarter: S
   number: Math 131BH
   title: Honors real analysis
   url: "http://www.math.ucla.edu/~tao/resource/general/131bh.1.03s"
@@ -290,3 +285,54 @@ courses:
   number: Math 254A
   title: Oscillatory integrals
   url: "http://www.math.ucla.edu/~tao/254a.1.99w/"
+- year: 1996
+  quarter: F
+  number: Math 132
+  title: Complex analysis
+- year: 1997
+  quarter: W
+  number: Math 31B
+  title: Calculus and analytic geometry (Honors)
+- year: 1997
+  quarter: S
+  number: Math 132
+  title: Complex analysis
+- year: 1997
+  quarter: S
+  number: Math 121
+  title: Introduction to topology
+- year: 1998
+  quarter: W
+  number: Math 32A
+  title: Calculus of several variables
+- year: 1998
+  quarter: S
+  number: Math 32A
+  title: Calculus of several variables
+- year: 1998
+  quarter: S
+  number: Math 132
+  title: Complex analysis
+- year: 1998
+  quarter: F
+  number: Math 132
+  title: Complex analysis
+- year: 1999
+  quarter: F
+  number: Math 2620
+  title: Higher complex analysis
+  institution: UNSW
+  term: Semester 2
+- year: 2000
+  quarter: F
+  number: Math 2620
+  title: Higher complex analysis
+  institution: UNSW
+  term: Semester 2
+- year: 2003
+  quarter: F
+  number: Math 3228
+  title: Complex variables (Honors)
+  institution: ANU
+  term: Semester 2
+  url: "http://www.math.ucla.edu/~tao/resource/general/3228"

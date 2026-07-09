@@ -24,6 +24,8 @@
           },
           "number": { "type": "string", "minLength": 1, "description": "Course number, e.g. \"Math 246A\"." },
           "title": { "type": "string", "minLength": 1, "description": "Course subject, e.g. \"Complex analysis\"." },
+          "institution": { "type": "string", "description": "Institution if not UCLA (e.g. \"UNSW\", \"ANU\")." },
+          "term": { "type": "string", "description": "Display override for non-quarter terms, e.g. \"Semester 2\" (quarter is still used for sorting)." },
           "url": { "type": "string", "description": "Link to the course page (optional; some old courses have none)." }
         }
       }

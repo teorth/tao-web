@@ -53,6 +53,7 @@ DATA = ROOT / "data" / "errata"
 LINKS = ROOT / "data" / "links"
 TEACHING = ROOT / "data" / "teaching"
 PAPERS = ROOT / "data" / "papers"
+CV = ROOT / "data" / "cv"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -147,6 +148,29 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .tg:hover { text-decoration: underline; }
 .wl { display: block; margin-top: .1rem; font-size: .85rem; }
 .wl .lk { margin-right: .7rem; }
+.cv-head h1 { margin-bottom: .1rem; }
+.cv-head .role { margin: 0; }
+.cv-contact { color: var(--muted); font-size: .9rem; margin: .35rem 0 0; }
+.cv-nav { margin: .8rem 0 1.6rem; font-size: .9rem; display: flex; gap: 1rem; flex-wrap: wrap; }
+.cv-nav a.here { font-weight: 600; color: var(--fg); }
+.cv section { margin: 0 0 1.4rem; }
+.cv h2 { font-size: 1.15rem; }
+.cv-list { margin: .4rem 0 0; }
+.cv-list .row { display: grid; grid-template-columns: 7.5rem 1fr; gap: .2rem .9rem; padding: .18rem 0; }
+.cv-list .dt { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .9rem; }
+.cv-list .dd { margin: 0; overflow-wrap: anywhere; }
+.cv-list .dd .meta { color: var(--muted); }
+.cv-bio p { max-width: 42rem; }
+.cv-more { color: var(--muted); font-size: .9rem; }
+@media print {
+  .cv-nav, footer, .wrap > p:first-child { display: none; }
+  .wrap { max-width: none; padding: 0; }
+  body { font-size: 10.5pt; color: #000; background: #fff; }
+  a { color: inherit; text-decoration: none; }
+  h1 { font-size: 20pt; } .cv h2 { font-size: 13pt; border-color: #999; break-after: avoid; }
+  .cv-list .row, .cv-pub { break-inside: avoid; }
+  .cv-list .dt { color: #444; }
+}
 footer { margin-top: 1.5rem; color: var(--muted); font-size: .82rem; }
 """
 
@@ -445,12 +469,237 @@ def build_papers_page(doc: dict) -> tuple[str, str]:
     return "papers", page("Papers and preprints — Terence Tao", "\n".join(parts))
 
 
+def _cv_rows(items: list) -> str:
+    rows = "".join(f'<div class="row"><span class="dt">{dt}</span>'
+                   f'<span class="dd">{dd}</span></div>' for dt, dd in items)
+    return f'<div class="cv-list">{rows}</div>'
+
+
+def _cv_section(title: str, inner: str) -> str:
+    return f'<section><h2>{html.escape(title)}</h2>{inner}</section>' if inner else ""
+
+
+def _cv_pub(w: dict) -> str:
+    ordered = sorted(w.get("links", []), key=lambda l: _LINK_PRIO.get(l["type"], 9))
+    t = html.escape(w["title"])
+    if ordered:
+        t = f'<a href="{html.escape(ordered[0]["url"])}">{t}</a>'
+    bits = [t]
+    if w.get("coauthors"):
+        bits.append("with " + html.escape(", ".join(w["coauthors"])))
+    if w.get("venue"):
+        bits.append(f'<span class="meta">{html.escape(w["venue"])}</span>')
+    return ". ".join(bits)
+
+
+def _cv_header(cv: dict, here: str) -> str:
+    p = cv.get("profile", {})
+    parts = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv-head">',
+             f'<h1>{html.escape(p.get("name", ""))}</h1>']
+    if p.get("title"):
+        parts.append(f'<p class="role sub">{html.escape(p["title"])}, {html.escape(p.get("institution", ""))}</p>')
+    contact = []
+    if p.get("email"):
+        contact.append(f'<a href="mailto:{html.escape(p["email"])}">{html.escape(p["email"])}</a>')
+    if p.get("homepage"):
+        contact.append(f'<a href="{html.escape(p["homepage"])}">{html.escape(p["homepage"])}</a>')
+    if contact:
+        parts.append(f'<p class="cv-contact">{" &middot; ".join(contact)}</p>')
+    parts.append("</div>")
+    nav = [("bio", "Biography"), ("cv-short", "Short CV"), ("cv-long", "Full CV")]
+    links = "".join(f'<a href="{s}.html" class="{"here" if s == here else ""}">{html.escape(l)}</a>'
+                    for s, l in nav)
+    parts.append(f'<nav class="cv-nav">{links}</nav>')
+    return "".join(parts)
+
+
+def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, list]:
+    """Return ([(slug, html)], [(filename, text)]) for the CV variant pages + plain-text bios."""
+    prof = cv.get("profile", {})
+    bio = prof.get("bio", {})
+    by_arxiv = {w.get("arxiv"): w for w in works if w.get("arxiv")}
+    papers = [w for w in works if w["kind"] == "paper"]
+
+    def interests_block(long: bool) -> str:
+        it = prof.get("interests", {})
+        def fmt(lst):
+            out = []
+            for i in lst:
+                n = html.escape(i["name"])
+                out.append(f'<a href="papers.html?tag={html.escape(i["tag"])}">{n}</a>' if i.get("tag") else n)
+            return out
+        rows = []
+        if it.get("primary"):
+            rows.append(("Primary", "; ".join(fmt(it["primary"]))))
+        if long and it.get("secondary"):
+            rows.append(("Secondary", "; ".join(fmt(it["secondary"]))))
+        return _cv_rows(rows)
+
+    def education_block() -> str:
+        rows = []
+        for e in cv.get("education", []):
+            dd = f'<strong>{html.escape(e["degree"])}</strong>, {html.escape(e["institution"])}'
+            if e.get("advisor"):
+                dd += f' <span class="meta">(advisor: {html.escape(e["advisor"])})</span>'
+            if e.get("thesis"):
+                th = e["thesis"]; tt = html.escape(th["title"])
+                if th.get("url"):
+                    tt = f'<a href="{html.escape(th["url"])}">{tt}</a>'
+                dd += f'<br><span class="meta">Thesis: {tt}</span>'
+            rows.append((html.escape(e["year"]), dd))
+        return _cv_rows(rows)
+
+    def appts_block() -> str:
+        rows = []
+        for a in cv.get("appointments", []):
+            yr = a["start"] + ("&ndash;" + a["end"] if a.get("end") else "&ndash;")
+            rows.append((yr, f'{html.escape(a["title"])}, {html.escape(a["institution"])}'))
+        return _cv_rows(rows)
+
+    def awards_block(long: bool) -> str:
+        items = cv.get("awards", [])
+        if not long:
+            items = [a for a in items if a.get("highlight")]
+        rows = [(html.escape(a["year"]),
+                 f'{html.escape(a["award"])} <span class="meta">&mdash; {html.escape(a["organization"])}</span>')
+                for a in items]
+        return _cv_rows(rows)
+
+    def books_block() -> str:
+        rows = []
+        for doc in sorted(books, key=lambda d: (d["book"].get("publication") or {}).get("first_published") or 0,
+                          reverse=True):
+            b = doc["book"]; y = (b.get("publication") or {}).get("first_published")
+            t = f'<a href="{b["slug"]}.html">{html.escape(b["title"])}</a>'
+            co = [a for a in b.get("authors", []) if a != "Terence Tao"]
+            if co:
+                t += " (with " + html.escape(", ".join(co)) + ")"
+            pub = (b.get("publication") or {}).get("publisher")
+            if pub:
+                t += f' <span class="meta">&mdash; {html.escape(pub)}</span>'
+            rows.append((str(y) if y else "", t))
+        return _cv_rows(rows)
+
+    def pubs_block(long: bool) -> str:
+        if long:
+            rows = [(str(w.get("year") or ""), _cv_pub(w))
+                    for w in sorted(papers, key=lambda w: (w.get("year") or 0), reverse=True)]
+            head = f'<p class="cv-more">{len(papers)} papers; the full, searchable list is on the ' \
+                   '<a href="papers.html">papers page</a>.</p>'
+            return head + _cv_rows(rows)
+        sel = [by_arxiv[a] for a in (cv.get("selected", {}).get("publications") or []) if a in by_arxiv]
+        rows = [(str(w.get("year") or ""), _cv_pub(w)) for w in sel]
+        return _cv_rows(rows) + '<p class="cv-more">Selected from ' \
+               f'<a href="papers.html">{len(papers)} papers</a>.</p>'
+
+    def teaching_block() -> str:
+        rows = []
+        for c in sorted(courses, key=lambda c: (c["year"], _QUARTER_ORDER.get(c["quarter"], 0)), reverse=True):
+            term = (c.get("term") or _QUARTER_NAME.get(c["quarter"], c["quarter"])) + f' {c["year"]}'
+            inst = c.get("institution")
+            dd = f'{html.escape(c["number"])}: {html.escape(c["title"])}'
+            if inst and inst != "UCLA":
+                dd += f' <span class="meta">({html.escape(inst)})</span>'
+            rows.append((term, dd))
+        return _cv_rows(rows)
+
+    def students_block(long: bool) -> str:
+        studs = cv.get("students", [])
+        if not long:
+            return f'<p>{len(studs)} doctoral and undergraduate students supervised (full list on the ' \
+                   '<a href="cv-long.html">full CV</a>).</p>'
+        rows = []
+        for s in studs:
+            dd = f'{html.escape(s["name"])} <span class="meta">({html.escape(s["level"])}'
+            dd += f', {html.escape(s["institution"])})</span>' if s.get("institution") else ")</span>"
+            if s.get("thesis"):
+                th = s["thesis"]; tt = html.escape(th["title"])
+                if th.get("url"):
+                    tt = f'<a href="{html.escape(th["url"])}">{tt}</a>'
+                dd += f'<br><span class="meta">{tt}</span>'
+            rows.append((html.escape(s["years"]), dd))
+        return _cv_rows(rows)
+
+    def service_block(long: bool) -> str:
+        items = cv.get("service", [])
+        if not long:
+            items = [s for s in items if s.get("highlight")]
+        rows = []
+        for s in sorted(items, key=lambda s: s["start"], reverse=True):
+            yr = s["start"] + ("&ndash;" + s["end"] if s.get("end") else "&ndash;")
+            rows.append((yr, f'{html.escape(s["role"])} <span class="meta">&mdash; {html.escape(s["organization"])}</span>'))
+        return _cv_rows(rows)
+
+    def lectures_block() -> str:
+        rows = []
+        for l in cv.get("lectures", []):
+            dd = f'<strong>{html.escape(l["name"])}</strong>, {html.escape(l["venue"])}'
+            if l.get("topic"):
+                dd += f'<br><span class="meta">{html.escape(l["topic"])}</span>'
+            rows.append((html.escape(l["date"]), dd))
+        return _cv_rows(rows)
+
+    def patents_block() -> str:
+        rows = []
+        for p in cv.get("patents", []):
+            dd = html.escape(p["title"])
+            if p.get("inventors"):
+                dd += f' <span class="meta">({html.escape(", ".join(p["inventors"]))})</span>'
+            meta = ", ".join(x for x in (p.get("number"), p.get("date")) if x)
+            rows.append((html.escape(meta), dd))
+        return _cv_rows(rows)
+
+    def cv_page(short: bool) -> str:
+        here = "cv-short" if short else "cv-long"
+        body = [_cv_header(cv, here), '<div class="cv">']
+        if bio.get("short"):
+            body.append(_cv_section("Biography", f'<div class="cv-bio"><p>{html.escape(bio["short"])}</p></div>'))
+        body.append(_cv_section("Research interests", interests_block(not short)))
+        body.append(_cv_section("Education", education_block()))
+        body.append(_cv_section("Appointments", appts_block()))
+        body.append(_cv_section("Awards and honors" + ("" if not short else " (selected)"), awards_block(not short)))
+        body.append(_cv_section("Books", books_block()))
+        body.append(_cv_section("Publications" if not short else "Selected publications", pubs_block(not short)))
+        if not short:
+            body.append(_cv_section("Teaching", teaching_block()))
+        body.append(_cv_section("Students", students_block(not short)))
+        body.append(_cv_section("Professional service and editorial" + ("" if not short else " (selected)"),
+                                service_block(not short)))
+        if not short:
+            body.append(_cv_section("Selected lectures", lectures_block()))
+            body.append(_cv_section("Patents", patents_block()))
+        body.append("</div>")
+        title = f'{prof.get("name", "CV")} &mdash; {"Short CV" if short else "Curriculum Vitae"}'
+        return page(title, "\n".join(body))
+
+    def bio_page() -> str:
+        body = [_cv_header(cv, "bio"), '<div class="cv cv-bio">']
+        if bio.get("short"):
+            body.append(_cv_section("Short biography",
+                        f'<p>{html.escape(bio["short"])}</p>'
+                        '<p class="cv-more">Plain text: <a href="bio-short.txt">bio-short.txt</a></p>'))
+        if bio.get("long"):
+            paras = "".join(f"<p>{html.escape(p)}</p>" for p in bio["long"].split("\n\n"))
+            body.append(_cv_section("Extended biography",
+                        paras + '<p class="cv-more">Plain text: <a href="bio-long.txt">bio-long.txt</a></p>'))
+        body.append("</div>")
+        return page(f'{prof.get("name", "")} &mdash; Biography', "\n".join(body))
+
+    pages = [("bio", bio_page()), ("cv-short", cv_page(True)), ("cv-long", cv_page(False))]
+    texts = []
+    if bio.get("short"):
+        texts.append(("bio-short.txt", bio["short"] + "\n"))
+    if bio.get("long"):
+        texts.append(("bio-long.txt", bio["long"] + "\n"))
+    return pages, texts
+
+
 _QUARTER_NAME = {"F": "Fall", "W": "Winter", "S": "Spring", "Su": "Summer"}
 _QUARTER_ORDER = {"W": 1, "S": 2, "Su": 3, "F": 4}  # chronological within a year
 
 
 def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None,
-                papers: dict | None = None) -> str:
+                papers: dict | None = None, cv: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -475,6 +724,9 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
     if nworks:
         body += ('<p class="desc"><a href="papers.html"><strong>Papers and preprints</strong></a> '
                  f'&mdash; a searchable, tag-organized database of {nworks} works.</p>')
+    if cv:
+        body += ('<p class="desc"><a href="bio.html"><strong>Biography and CV</strong></a> '
+                 '&mdash; short and extended bios, plus short and full curriculum vitae.</p>')
     body += ('<details class="section">'
              f'<summary>Books <span class="count">({len(books)})</span></summary>'
              f'<ul class="book-list">{"".join(rows)}</ul></details>')
@@ -484,11 +736,14 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         # Reverse chronological: newest term first.
         for c in sorted(courses, key=lambda c: (c["year"], _QUARTER_ORDER.get(c["quarter"], 0)),
                         reverse=True):
-            term = f'{_QUARTER_NAME.get(c["quarter"], c["quarter"])} {c["year"]}'
+            termname = c.get("term") or _QUARTER_NAME.get(c["quarter"], c["quarter"])
+            term = f'{termname} {c["year"]}'
             num = html.escape(c["number"])
             num = f'<a href="{html.escape(c["url"])}">{num}</a>' if c.get("url") else num
+            inst = c.get("institution")
+            title = html.escape(c["title"]) + (f" ({html.escape(inst)})" if inst and inst != "UCLA" else "")
             crows.append(f'<li><span class="year">{term}</span> {num}'
-                         f'<span class="coauth"> &middot; {html.escape(c["title"])}</span></li>')
+                         f'<span class="coauth"> &middot; {title}</span></li>')
         body += ('<details class="section">'
                  f'<summary>Teaching <span class="count">({len(courses)})</span></summary>'
                  f'<ul class="book-list">{"".join(crows)}</ul></details>')
@@ -522,13 +777,28 @@ def main() -> None:
     if papers:
         slug, htmltext = build_papers_page(papers)
         (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
-    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers),
+    cv_path = CV / "cv.yaml"
+    cv = None
+    if cv_path.exists():
+        cv = yaml.safe_load(cv_path.read_text(encoding="utf-8"))
+        # Merge the gitignored private overlay locally (never rendered on public pages).
+        priv = CV / "private.yaml"
+        if priv.exists():
+            overlay = yaml.safe_load(priv.read_text(encoding="utf-8")) or {}
+            cv.update({k: v for k, v in overlay.items() if k not in cv})
+        cv_pages, cv_texts = build_cv(cv, (papers or {}).get("works") or [], books,
+                                      (teaching or {}).get("courses") or [])
+        for slug, htmltext in cv_pages:
+            (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
+        for name, text in cv_texts:
+            (SITE / name).write_text(text, encoding="utf-8", newline="\n")
+    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers, cv),
                                      encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
     ncourses = len((teaching or {}).get("courses") or [])
     nworks = len((papers or {}).get("works") or [])
     print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) + {nworks} works "
-          f"+ index ({ncourses} courses) into {SITE}")
+          f"+ {'CV + ' if cv else ''}index ({ncourses} courses) into {SITE}")
 
 
 if __name__ == "__main__":

@@ -76,6 +76,16 @@
         "title": { "type": "string" }, "number": { "type": "string" },
         "date": { "type": "string" }, "url": { "type": "string" }
       } } },
+    "selected": {
+      "type": "object", "additionalProperties": false,
+      "description": "Curated selections for the short CV.",
+      "properties": {
+        "publications": {
+          "type": "array", "items": { "type": "string" },
+          "description": "arXiv ids of papers to feature on the short CV (looked up in the papers dataset)."
+        }
+      }
+    },
     "contact": {
       "type": "object", "description": "Private overlay (from gitignored private.yaml); never required.",
       "additionalProperties": true

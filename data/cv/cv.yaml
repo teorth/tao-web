@@ -820,3 +820,17 @@ patents:
   title: A computer-implemented method for correcting transmission errors using linear programming
   number: US Patent 7,890,942 B2
   date: issued Feb 15, 2011
+selected:
+  publications:
+  - math.RT/9807160
+  - math.CO/0301343
+  - math.NT/0404188
+  - math.MG/0502327
+  - math.NT/0610050
+  - "1006.0205"
+  - "1110.5008"
+  - "1201.6656"
+  - "1402.0290"
+  - "1909.03562"
+  - "2311.05762"
+  - "1407.4897"
