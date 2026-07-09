@@ -1,0 +1,4 @@
+# Normalize to LF in the repo; matches CI (Ubuntu) and the LF-only writers in scripts/.
+* text=auto eol=lf
+*.png binary
+*.pdf binary
