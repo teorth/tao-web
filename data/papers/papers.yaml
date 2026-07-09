@@ -540,7 +540,7 @@ works:
   - Dimitris Koukoulopoulos
   year: 2023
   status: published
-  venue: "Proc LMS 127, December 2023, 1865-1885http://dx.doi.org/10.1112/plms.12572"
+  venue: "Proc LMS 127, December 2023, 1865–1885 http://dx.doi.org/10.1112/plms.12572"
   arxiv: '2308.11987'
   tags:
   - additive-combinatorics-number-theory
@@ -844,7 +844,7 @@ works:
   - Lillian Pierce et al.
   year: 2021
   status: published
-  venue: Not. Amer. Math. Soc. 68 (2021), 546-563
+  venue: Not. Amer. Math. Soc. 68 (2021), 546–563
   tags:
   - misc
   links:
@@ -894,7 +894,7 @@ works:
   - Tamar Ziegler
   year: 2020
   status: published
-  venue: Annals Math Pages 739-857 from Volume 197 (2023), Issue 2
+  venue: Annals Math Pages 739–857 from Volume 197 (2023), Issue 2
   arxiv: '2007.15644'
   tags:
   - additive-combinatorics-number-theory
@@ -986,7 +986,7 @@ works:
   - Mariusz Mirek
   year: 2020
   status: published
-  venue: Annals Math. Pages 997-1109 from Volume 195 (2022), Issue 3
+  venue: Annals Math. Pages 997–1109 from Volume 195 (2022), Issue 3
   arxiv: '2008.00857'
   tags:
   - harmonic-analysis
@@ -1054,7 +1054,7 @@ works:
   - Asgar Jamneshan
   year: 2020
   status: published
-  venue: Fundamenta Mathematicae 261 (2023), 1-98
+  venue: Fundamenta Mathematicae 261 (2023), 1–98
   arxiv: '2010.00681'
   tags:
   - misc
@@ -1068,7 +1068,7 @@ works:
   title: "Sendov's conjecture for sufficiently high degree polynomials"
   year: 2020
   status: published
-  venue: Acta Mathematica, Vol. 229, No. 2 (2022), pp. 347-392
+  venue: Acta Mathematica, Vol. 229, No. 2 (2022), pp. 347–392
   arxiv: '2012.04125'
   tags:
   - misc
@@ -1181,7 +1181,7 @@ works:
   title: Sharp bounds for multilinear curved Kakeya, restriction and oscillatory integral estimates away from the endpoint
   year: 2019
   status: published
-  venue: Mathematika 66 (2020), 517--576
+  venue: Mathematika 66 (2020), 517–576
   arxiv: '1907.11342'
   tags:
   - kakeya-restriction
@@ -1198,7 +1198,7 @@ works:
   title: "A Close Call: How a Near Failure Propelled Me to Succeed"
   year: 2019
   status: published
-  venue: "Living Proof: Stories of Resilience Along the Mathematical Journey, American Math. Society, Math. Assoc. America, 2019. A. Henderson, E. Lawrence, M. Pons, D. Taylor eds., 96--99."
+  venue: "Living Proof: Stories of Resilience Along the Mathematical Journey, American Math. Society, Math. Assoc. America, 2019. A. Henderson, E. Lawrence, M. Pons, D. Taylor eds., 96–99."
   tags:
   - misc
   links:
@@ -1317,7 +1317,7 @@ works:
   - Joni Teräväinen
   year: 2018
   status: published
-  venue: Algebra & Number Theory 13-9 (2019), 2103--2150. DOI 10.2140/ant.2019.13.2103
+  venue: Algebra & Number Theory 13-9 (2019), 2103–2150. DOI 10.2140/ant.2019.13.2103
   arxiv: '1809.02518'
   tags:
   - additive-combinatorics-number-theory
@@ -1382,7 +1382,7 @@ works:
   - Ben Green
   year: 2017
   status: published
-  venue: Mathematika Volume 63, Issue 3 2017 , pp. 944-1040
+  venue: Mathematika Volume 63, Issue 3 2017 , pp. 944–1040
   arxiv: '1705.01703'
   tags:
   - additive-combinatorics-number-theory
@@ -1507,7 +1507,7 @@ works:
   - Maksym Radziwiłł
   year: 2017
   status: published
-  venue: Math. Ann. 374 (2019), no. 1-2, 793–840.
+  venue: Math. Ann. 374 (2019), no. 1–2, 793–840.
   arxiv: '1712.08840'
   tags:
   - additive-combinatorics-number-theory
@@ -1526,7 +1526,7 @@ works:
   - Apoorva Khare
   year: 2017
   status: published
-  venue: "Amer. J. Math. 143 (2021), 1863-1929.Extended abstract: FPSAC 2018, Volume 80B of Seminaire Lotharingien de Combinatoire (2018)"
+  venue: "Amer. J. Math. 143 (2021), 1863–1929.Extended abstract: FPSAC 2018, Volume 80B of Seminaire Lotharingien de Combinatoire (2018)"
   arxiv: '1708.05197'
   tags:
   - misc
@@ -1540,7 +1540,7 @@ works:
   title: On the universality of potential well dynamics
   year: 2017
   status: published
-  venue: Dynamics of PDE 14 (2017), 219--238.
+  venue: Dynamics of PDE 14 (2017), 219–238.
   arxiv: '1707.02389'
   tags:
   - pde
@@ -1554,7 +1554,7 @@ works:
   title: On the universality of the incompressible Euler equation on compact manifolds
   year: 2017
   status: published
-  venue: Disc. Cont. Dynam. Sys. 38 (2018), 1553-1565
+  venue: Disc. Cont. Dynam. Sys. 38 (2018), 1553–1565
   arxiv: '1707.07807'
   tags:
   - pde
@@ -1571,7 +1571,7 @@ works:
   - Van Vu
   year: 2016
   status: published
-  venue: "Discrete Analysis 2016:15, 31 pp.Survey: J. Comb. 8n3, 2017, 541--552"
+  venue: "Discrete Analysis 2016:15, 31 pp.Survey: J. Comb. 8n3, 2017, 541–552"
   arxiv: '1603.03068'
   tags:
   - additive-combinatorics-number-theory
@@ -1694,7 +1694,7 @@ works:
   title: Finite time blowup for a supercritical defocusing nonlinear Schrödinger system
   year: 2016
   status: published
-  venue: Analysis & PDE 11-2 (2018), 383--438. DOI 10.2140/apde.2018.11.383
+  venue: Analysis & PDE 11-2 (2018), 383–438. DOI 10.2140/apde.2018.11.383
   arxiv: '1612.00526'
   tags:
   - pde
@@ -1712,7 +1712,7 @@ works:
   - Maksym Radziwiłł
   year: 2015
   status: published
-  venue: Algebra & Number Theory 9-9 (2015), 2167--2196. DOI 10.2140/ant.2015.9.2167
+  venue: Algebra & Number Theory 9-9 (2015), 2167–2196. DOI 10.2140/ant.2015.9.2167
   arxiv: '1503.05121'
   tags:
   - additive-combinatorics-number-theory
@@ -1730,7 +1730,7 @@ works:
   - Hoi Nguyen
   year: 2015
   status: published
-  venue: Probab. Theory Related Fields 167 (2017), no. 3-4, 777–816.
+  venue: Probab. Theory Related Fields 167 (2017), no. 3–4, 777–816.
   arxiv: '1504.00396'
   tags:
   - additive-combinatorics-number-theory
@@ -1841,7 +1841,7 @@ works:
   title: Cancellation in the multilinear Hilbert transform
   year: 2015
   status: published
-  venue: Collectanea Mathematica 67 (2016), 1-16
+  venue: Collectanea Mathematica 67 (2016), 1–16
   arxiv: '1505.06479'
   tags:
   - multilinear
@@ -1857,7 +1857,7 @@ works:
   - D.H.J. Polymath
   year: 2014
   status: published
-  venue: Algebra & Number Theory 8-9 (2014), 2067--2199
+  venue: Algebra & Number Theory 8-9 (2014), 2067–2199
   arxiv: '1402.0811'
   tags:
   - additive-combinatorics-number-theory
@@ -1893,7 +1893,7 @@ works:
   - Sergei Konyagin
   year: 2014
   status: published
-  venue: Annals Math. 183 (2016), 935--974.
+  venue: Annals Math. 183 (2016), 935–974.
   arxiv: '1408.4505'
   tags:
   - additive-combinatorics-number-theory
@@ -1928,7 +1928,7 @@ works:
   - D.H.J. Polymath
   year: 2014
   status: published
-  venue: Newsletter of the European Mathematical Society, Dec 2014. Issue 94, 13--23
+  venue: Newsletter of the European Mathematical Society, Dec 2014. Issue 94, 13–23
   arxiv: '1409.8361'
   tags:
   - additive-combinatorics-number-theory
@@ -1945,7 +1945,7 @@ works:
   title: The Elliott-Halberstam conjecture implies the Vinogradov least quadratic nonresidue conjecture
   year: 2014
   status: published
-  venue: Algebra & Number Theory 9-4 (2015), 1005--1034. DOI 10.2140/ant.2015.9.1005
+  venue: Algebra & Number Theory 9-4 (2015), 1005–1034. DOI 10.2140/ant.2015.9.1005
   arxiv: '1410.7073'
   tags:
   - additive-combinatorics-number-theory
@@ -2017,7 +2017,7 @@ works:
   - Bob Guralnick
   year: 2013
   status: published
-  venue: J. Europ. Math. Soc. 17 (2015), 1367-1434
+  venue: J. Europ. Math. Soc. 17 (2015), 1367–1434
   arxiv: '1309.1975'
   tags:
   - additive-combinatorics-number-theory
@@ -2085,7 +2085,7 @@ works:
   title: "Algebraic combinatorial geometry: the polynomial method in arithmetic combinatorics, incidence combinatorics, and number theory"
   year: 2013
   status: published
-  venue: EMS surveys in the mathematical sciences 1 (2014), 1--46
+  venue: EMS surveys in the mathematical sciences 1 (2014), 1–46
   arxiv: '1310.6482'
   tags:
   - additive-combinatorics-number-theory
@@ -2101,7 +2101,7 @@ works:
   title: Concentration compactness for critical wave maps, by Joachim Krieger and Wilhelm Schlag
   year: 2013
   status: published
-  venue: Bull. Amer. Math. Soc. 50 (2013), 655-662
+  venue: Bull. Amer. Math. Soc. 50 (2013), 655–662
   tags:
   - pde
   - wave-maps
@@ -2134,7 +2134,7 @@ works:
   title: Every odd number greater than 1 is the sum of at most five primes
   year: 2012
   status: published
-  venue: Mathematics of Computation 83 (2014), 997-1038
+  venue: Mathematics of Computation 83 (2014), 997–1038
   arxiv: '1201.6656'
   tags:
   - additive-combinatorics-number-theory
@@ -2153,7 +2153,7 @@ works:
   - Van Vu
   year: 2012
   status: published
-  venue: "In: Modern Aspects of Random Matrix Theory, Proceedings of Symposia in Applied Mathematics 72 (2013), V. Vu Editor, 121--172."
+  venue: "In: Modern Aspects of Random Matrix Theory, Proceedings of Symposia in Applied Mathematics 72 (2013), V. Vu Editor, 121–172."
   arxiv: '1202.0068'
   tags:
   - additive-combinatorics-number-theory
@@ -2168,7 +2168,7 @@ works:
   title: The asymptotic distribution of a single eigenvalue gap of a Wigner matrix
   year: 2012
   status: published
-  venue: Probability Theory and Related Fields 157 (2013), 81-106
+  venue: Probability Theory and Related Fields 157 (2013), 81–106
   arxiv: '1203.1605'
   tags:
   - additive-combinatorics-number-theory
@@ -2212,7 +2212,7 @@ works:
   - Van Vu
   year: 2012
   status: published
-  venue: Annals of Prob. 43 (2015), 782-874
+  venue: Annals of Prob. 43 (2015), 782–874
   arxiv: '1206.1893'
   tags:
   - additive-combinatorics-number-theory
@@ -2229,7 +2229,7 @@ works:
   - Ben Green
   year: 2012
   status: published
-  venue: Disc. Comp. Geom. 50 (2013), 409-468
+  venue: Disc. Comp. Geom. 50 (2013), 409–468
   arxiv: '1208.4714'
   tags:
   - additive-combinatorics-number-theory
@@ -2261,7 +2261,7 @@ works:
   - Vitaly Bergelson
   year: 2012
   status: published
-  venue: Geom. Func. Anal. 24 (2014), 1-48
+  venue: Geom. Func. Anal. 24 (2014), 1–48
   arxiv: '1211.6372'
   tags:
   - additive-combinatorics-number-theory
@@ -2313,7 +2313,7 @@ works:
   - Van Vu
   year: 2011
   status: published
-  venue: Acta Mathematica Vietnamica 36 (2011), 431--449
+  venue: Acta Mathematica Vietnamica 36 (2011), 431–449
   tags:
   - additive-combinatorics-number-theory
   - random-matrices
@@ -2329,7 +2329,7 @@ works:
   - Tamar Ziegler
   year: 2011
   status: published
-  venue: Annals of Combinatorics 16 (2012), 121-188
+  venue: Annals of Combinatorics 16 (2012), 121–188
   arxiv: '1101.1469'
   tags:
   - additive-combinatorics-number-theory
@@ -2366,7 +2366,7 @@ works:
   - Van Vu
   year: 2011
   status: published
-  venue: Electronic Journal of Probability 16 (2011), 2104-2121
+  venue: Electronic Journal of Probability 16 (2011), 2104–2121
   arxiv: '1101.5707'
   tags:
   - additive-combinatorics-number-theory
@@ -2404,7 +2404,7 @@ works:
   - Jozsef Solymosi
   year: 2011
   status: published
-  venue: Disc. Comp. Geom. 48 (2012), 255-280
+  venue: Disc. Comp. Geom. 48 (2012), 255–280
   arxiv: '1103.2926'
   tags:
   - additive-combinatorics-number-theory
@@ -2420,7 +2420,7 @@ works:
   title: Noncommutative sets of small doubling
   year: 2011
   status: published
-  venue: European Journal of Combinatorics 34 (2013), 1459-1465
+  venue: European Journal of Combinatorics 34 (2013), 1459–1465
   arxiv: '1106.2267'
   tags:
   - additive-combinatorics-number-theory
@@ -2438,7 +2438,7 @@ works:
   - Christian Elsholtz
   year: 2011
   status: published
-  venue: J. Aust. Math. Soc. 94 (2013), 50-105
+  venue: J. Aust. Math. Soc. 94 (2013), 50–105
   arxiv: '1107.1010'
   tags:
   - additive-combinatorics-number-theory
@@ -2476,7 +2476,7 @@ works:
   - Van Vu
   year: 2011
   status: published
-  venue: Adv. Math. 231 (2012), 74-101
+  venue: Adv. Math. 231 (2012), 74–101
   arxiv: '1111.6300'
   tags:
   - additive-combinatorics-number-theory
@@ -2513,7 +2513,7 @@ works:
   - Ben Green
   year: 2011
   status: published
-  venue: European Journal of Combinatorics 34 (2013), 1287-1292
+  venue: European Journal of Combinatorics 34 (2013), 1287–1292
   arxiv: '1112.4174'
   tags:
   - additive-combinatorics-number-theory
@@ -2532,7 +2532,7 @@ works:
   - Igor Rodnianski
   year: 2011
   status: published
-  venue: Comm. Math. Phys. 333 (2015), 1-95
+  venue: Comm. Math. Phys. 333 (2015), 1–95
   arxiv: '1105.0873'
   tags:
   - pde
@@ -2548,7 +2548,7 @@ works:
   title: Localisation and compactness properties of the Navier-Stokes global regularity problem
   year: 2011
   status: published
-  venue: Analysis & PDE 6 (2013), 25-107
+  venue: Analysis & PDE 6 (2013), 25–107
   arxiv: '1108.1165'
   tags:
   - pde
@@ -2568,7 +2568,7 @@ works:
   - Ben Green
   year: 2010
   status: published
-  venue: Electronic research announcements 17 (2010), 57-67
+  venue: Electronic research announcements 17 (2010), 57–67
   arxiv: '1001.4570'
   tags:
   - additive-combinatorics-number-theory
@@ -2587,7 +2587,7 @@ works:
   - Ben Green
   year: 2010
   status: published
-  venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 261-334"
+  venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 261–334"
   arxiv: '1002.2028'
   tags:
   - additive-combinatorics-number-theory
@@ -2603,7 +2603,7 @@ works:
   - Ben Green
   year: 2010
   status: published
-  venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 335-342"
+  venue: "An Irregular Mind: Szemeredi is 70, Bolyai Society Mathematical Studies, 335–342"
   arxiv: '1002.2254'
   tags:
   - additive-combinatorics-number-theory
@@ -2620,7 +2620,7 @@ works:
   - Van Vu
   year: 2010
   status: published
-  venue: Combinatorica, 32 (2012), 363-372
+  venue: Combinatorica, 32 (2012), 363–372
   arxiv: '1002.5028'
   tags:
   - additive-combinatorics-number-theory
@@ -2659,7 +2659,7 @@ works:
   - Ben Green
   year: 2010
   status: published
-  venue: GAFA 21 (2011), 774-819
+  venue: GAFA 21 (2011), 774–819
   arxiv: '1005.1881'
   tags:
   - additive-combinatorics-number-theory
@@ -2680,7 +2680,7 @@ works:
   - Bob Guralnick
   year: 2010
   status: published
-  venue: Israel J. Math. 192 (2012), 347-379
+  venue: Israel J. Math. 192 (2012), 347–379
   arxiv: '1010.4259'
   tags:
   - additive-combinatorics-number-theory
@@ -2723,7 +2723,7 @@ works:
   - Harald Helfgott
   year: 2010
   status: published
-  venue: Mathematics of Computation 81 (2012), 1233-1246
+  venue: Mathematics of Computation 81 (2012), 1233–1246
   arxiv: '1009.3956'
   tags:
   - additive-combinatorics-number-theory
@@ -2742,7 +2742,7 @@ works:
   - Tanja Eisner
   year: 2010
   status: published
-  venue: J. d’Analyse Mathematique 117 (2012), 133-186
+  venue: J. d’Analyse Mathematique 117 (2012), 133–186
   arxiv: '1012.3509'
   tags:
   - additive-combinatorics-number-theory
@@ -2760,7 +2760,7 @@ works:
   title: Outliers in the spectrum of iid matrices with bounded rank permutations
   year: 2010
   status: published
-  venue: Probability theory and related fields155 (2013), 231-263
+  venue: Probability theory and related fields155 (2013), 231–263
   arxiv: '1012.4818'
   tags:
   - additive-combinatorics-number-theory
@@ -2778,7 +2778,7 @@ works:
   - Assaf Naor
   year: 2010
   status: published
-  venue: Israel J. Math. 192 (2012), 489-504
+  venue: Israel J. Math. 192 (2012), 489–504
   arxiv: '1003.4013'
   tags:
   - harmonic-analysis
@@ -2796,7 +2796,7 @@ works:
   - Hans Lindblad
   year: 2010
   status: published
-  venue: Analysis & PDE 5 (2012), 411--422.
+  venue: Analysis & PDE 5 (2012), 411–422.
   arxiv: '1011.0949'
   tags:
   - pde
@@ -2815,7 +2815,7 @@ works:
   - Tamar Ziegler
   year: 2009
   status: published
-  venue: Geom. Funct. Anal. 19 (2010), no. 6, 1539--1596.
+  venue: Geom. Funct. Anal. 19 (2010), no. 6, 1539–1596.
   arxiv: '0901.2602'
   tags:
   - additive-combinatorics-number-theory
@@ -2832,7 +2832,7 @@ works:
   - Van Vu
   year: 2009
   status: published
-  venue: Random Structures and Algorithms37 (2010), 525-539
+  venue: Random Structures and Algorithms37 (2010), 525–539
   arxiv: '0902.2357'
   tags:
   - additive-combinatorics-number-theory
@@ -2850,7 +2850,7 @@ works:
   - Van Vu
   year: 2009
   status: published
-  venue: GAFA, 20 (2010), 260-297
+  venue: GAFA, 20 (2010), 260–297
   arxiv: '0903.0614'
   tags:
   - additive-combinatorics-number-theory
@@ -2869,7 +2869,7 @@ works:
   - Van Vu
   year: 2009
   status: published
-  venue: Acta Math 206 (2011), 127-204
+  venue: Acta Math 206 (2011), 127–204
   arxiv: '0906.0510'
   tags:
   - additive-combinatorics-number-theory
@@ -2888,7 +2888,7 @@ works:
   - Ben Green
   year: 2009
   status: published
-  venue: Math. Proc. Camb. Phil. Soc. 149 (2010), 1-19
+  venue: Math. Proc. Camb. Phil. Soc. 149 (2010), 1–19
   arxiv: '0906.3100'
   tags:
   - additive-combinatorics-number-theory
@@ -2922,7 +2922,7 @@ works:
   title: Sumset and inverse sumset theorems for Shannon entropy
   year: 2009
   status: published
-  venue: Combinatorics, Probability, and Computing 19 (2010), 603-639
+  venue: Combinatorics, Probability, and Computing 19 (2010), 603–639
   arxiv: '0906.4387'
   tags:
   - additive-combinatorics-number-theory
@@ -2946,7 +2946,7 @@ works:
   - Jose Ramírez
   year: 2009
   status: published
-  venue: Math. Res. Lett. 17 (2010), 793-794
+  venue: Math. Res. Lett. 17 (2010), 793–794
   arxiv: '0906.4400'
   tags:
   - additive-combinatorics-number-theory
@@ -2965,7 +2965,7 @@ works:
   - Van Vu
   year: 2009
   status: published
-  venue: Communications in Mathematical Physics, 298 (2010), 549-572
+  venue: Communications in Mathematical Physics, 298 (2010), 549–572
   arxiv: '0908.1982'
   tags:
   - additive-combinatorics-number-theory
@@ -2982,7 +2982,7 @@ works:
   title: A remark on partial sums involving the Mobius function
   year: 2009
   status: published
-  venue: Bull. Aust. Math. Soc. 81 (2010), 343-349
+  venue: Bull. Aust. Math. Soc. 81 (2010), 343–349
   arxiv: '0908.4323'
   tags:
   - additive-combinatorics-number-theory
@@ -3001,7 +3001,7 @@ works:
   - D.H.J. Polymath
   year: 2009
   status: published
-  venue: Annals of Math. 175 (2012), 1283-1327.
+  venue: Annals of Math. 175 (2012), 1283–1327.
   arxiv: '0910.3926'
   tags:
   - additive-combinatorics-number-theory
@@ -3055,7 +3055,7 @@ works:
   - Van Vu
   year: 2009
   status: published
-  venue: Annals of Probability 40 (2012), 1283--1315.
+  venue: Annals of Probability 40 (2012), 1283–1315.
   arxiv: '0912.0966'
   tags:
   - additive-combinatorics-number-theory
@@ -3073,7 +3073,7 @@ works:
   - Tanja Eisner
   year: 2009
   status: published
-  venue: Pacific Journal of Mathematics 250-1 (2011), 1--60. DOI 10.2140/pjm.2011.250.1
+  venue: Pacific Journal of Mathematics 250-1 (2011), 1–60. DOI 10.2140/pjm.2011.250.1
   arxiv: '0912.5093'
   tags:
   - additive-combinatorics-number-theory
@@ -3092,7 +3092,7 @@ works:
   - Assaf Naor
   year: 2009
   status: published
-  venue: J. Funct. Anal. 259 (2010), 731-779
+  venue: J. Funct. Anal. 259 (2010), 731–779
   arxiv: '0912.1140'
   tags:
   - harmonic-analysis
@@ -3111,7 +3111,7 @@ works:
   - Richard Oberlin
   year: 2009
   status: published
-  venue: Mathematika 56 (2010) 1-25
+  venue: Mathematika 56 (2010) 1–25
   arxiv: '0903.1879'
   tags:
   - kakeya-restriction
@@ -3133,7 +3133,7 @@ works:
   - Jim Wright
   year: 2009
   status: published
-  venue: J. Europ. Math. Soc. 14 (2012), 421-464.
+  venue: J. Europ. Math. Soc. 14 (2012), 421–464.
   arxiv: '0910.1555'
   tags:
   - multilinear
@@ -3149,7 +3149,7 @@ works:
   title: The high exponent limit p to infty for the one-dimensional nonlinear wave equation
   year: 2009
   status: published
-  venue: Anal. PDE 2 (2009), no. 2, 235--259.
+  venue: Anal. PDE 2 (2009), no. 2, 235–259.
   arxiv: '0901.3548'
   tags:
   - pde
@@ -3210,7 +3210,7 @@ works:
   title: Global regularity for a logarithmically supercritical hyperdissipative Navier-Stokes equation
   year: 2009
   status: published
-  venue: Analysis & PDE 2 (2009), 361-366
+  venue: Analysis & PDE 2 (2009), 361–366
   arxiv: '0906.3070'
   tags:
   - pde
@@ -3231,7 +3231,7 @@ works:
   - Nils Risebro
   year: 2009
   status: published
-  venue: Math. Comp. 80 (2011) 821-846.
+  venue: Math. Comp. 80 (2011) 821–846.
   arxiv: '0906.4902'
   tags:
   - pde
@@ -3251,7 +3251,7 @@ works:
   - Tristan Roy
   year: 2009
   status: published
-  venue: Discrete Cont. Dynam. Systems 30 (2011), 573-621
+  venue: Discrete Cont. Dynam. Systems 30 (2011), 573–621
   arxiv: '0910.1850'
   tags:
   - pde
@@ -3290,7 +3290,7 @@ works:
   - Ben Green
   year: 2008
   status: published
-  venue: Annals of Math., 175 (2012), 541--566
+  venue: Annals of Math., 175 (2012), 541–566
   arxiv: '0807.1736'
   tags:
   - additive-combinatorics-number-theory
@@ -3310,7 +3310,7 @@ works:
   - Tim Austin
   year: 2008
   status: published
-  venue: Random Structures and Algorithms 36 (2010), 373-463
+  venue: Random Structures and Algorithms 36 (2010), 373–463
   arxiv: '0801.2179'
   tags:
   - additive-combinatorics-number-theory
@@ -3326,7 +3326,7 @@ works:
   title: A remark on primality testing and decimal expansions
   year: 2008
   status: published
-  venue: J. Aust. Math. Soc. 91 (2011), 405-413
+  venue: J. Aust. Math. Soc. 91 (2011), 405–413
   arxiv: '0802.3361'
   tags:
   - additive-combinatorics-number-theory
@@ -3364,7 +3364,7 @@ works:
   - Van Vu
   year: 2008
   status: published
-  venue: Mathematics of Computation, 79 (2010), 2333-2352
+  venue: Mathematics of Computation, 79 (2010), 2333–2352
   arxiv: '0805.3167'
   tags:
   - additive-combinatorics-number-theory
@@ -3381,7 +3381,7 @@ works:
   title: The sum-product phenomenon in arbitrary rings
   year: 2008
   status: published
-  venue: Contrib. Discrete Math. 4 (2009), no. 2, 59--82.
+  venue: Contrib. Discrete Math. 4 (2009), no. 2, 59–82.
   arxiv: '0806.2497'
   tags:
   - additive-combinatorics-number-theory
@@ -3399,7 +3399,7 @@ works:
   - Manjunath Krishnapur
   year: 2008
   status: published
-  venue: Annals of Probability 38 (2010), no. 5, 2023--2065.
+  venue: Annals of Probability 38 (2010), no. 5, 2023–2065.
   arxiv: '0807.4898'
   tags:
   - additive-combinatorics-number-theory
@@ -3416,7 +3416,7 @@ works:
   - Van Vu
   year: 2008
   status: published
-  venue: Bull. Amer. Math. Soc. 46 (2009), 377-396
+  venue: Bull. Amer. Math. Soc. 46 (2009), 377–396
   arxiv: '0810.2994'
   tags:
   - additive-combinatorics-number-theory
@@ -3435,7 +3435,7 @@ works:
   - Tamar Ziegler
   year: 2008
   status: published
-  venue: Analysis & PDE 3 (2010), 1-20
+  venue: Analysis & PDE 3 (2010), 1–20
   arxiv: '0810.5527'
   tags:
   - additive-combinatorics-number-theory
@@ -3470,7 +3470,7 @@ works:
   title: Why are solitons stable?
   year: 2008
   status: published
-  venue: Bull. Amer. Math. Soc. 46 (2009), 1-33.
+  venue: Bull. Amer. Math. Soc. 46 (2009), 1–33.
   arxiv: '0802.2408'
   tags:
   - pde
@@ -3533,7 +3533,7 @@ works:
   title: Global existence and uniqueness results for weak solutions of the focusing mass-critical non-linear Schrödinger equation
   year: 2008
   status: published
-  venue: Anal. PDE 2 (2009), no. 1, 61--81.
+  venue: Anal. PDE 2 (2009), no. 1, 61–81.
   arxiv: '0807.2676'
   tags:
   - pde
@@ -3553,7 +3553,7 @@ works:
   - Hideo Takaoka
   year: 2008
   status: published
-  venue: Inventiones Math.181 (2010), 39-113
+  venue: Inventiones Math.181 (2010), 39–113
   arxiv: '0808.1742'
   tags:
   - pde
@@ -3587,7 +3587,7 @@ works:
   - Emmanuel Candes
   year: 2008
   status: published
-  venue: IEEE Information Theory Society Newsletter, Dec 2008 58 (4), 20-23
+  venue: IEEE Information Theory Society Newsletter, Dec 2008 58 (4), 20–23
   tags:
   - compressed-sensing
   links:
@@ -3617,7 +3617,7 @@ works:
   - Ben Green
   year: 2007
   status: published
-  venue: J. Aust. Math. Soc. 86 (2009), 61-74.
+  venue: J. Aust. Math. Soc. 86 (2009), 61–74.
   arxiv: math.CO/0701585
   tags:
   - additive-combinatorics-number-theory
@@ -3636,7 +3636,7 @@ works:
   - Van Vu
   year: 2007
   status: published
-  venue: Proceedings of the thirty-ninth annual ACM symposium on Theory of computing (STOC) 2007, 248-255
+  venue: Proceedings of the thirty-ninth annual ACM symposium on Theory of computing (STOC) 2007, 248–255
   arxiv: math.PR/0703307
   tags:
   - additive-combinatorics-number-theory
@@ -3654,7 +3654,7 @@ works:
   - Ben Green
   year: 2007
   status: published
-  venue: Combin. Probab. Comput. 18 (2009), no. 3, 335--355
+  venue: Combin. Probab. Comput. 18 (2009), no. 3, 335–355
   arxiv: math.CO/0703668
   tags:
   - additive-combinatorics-number-theory
@@ -3669,7 +3669,7 @@ works:
   title: Norm convergence of multiple ergodic averages for commuting transformations
   year: 2007
   status: published
-  venue: Ergodic Theory and Dynamical Systems 28 (2008), 657-688
+  venue: Ergodic Theory and Dynamical Systems 28 (2008), 657–688
   arxiv: '0707.1117'
   tags:
   - additive-combinatorics-number-theory
@@ -3686,7 +3686,7 @@ works:
   title: Structure and randomness in combinatorics
   year: 2007
   status: published
-  venue: Proceedings of the 48th annual symposium on Foundations of Computer Science (FOCS) 2007, 3-18
+  venue: Proceedings of the 48th annual symposium on Foundations of Computer Science (FOCS) 2007, 3–18
   arxiv: '0707.4269'
   tags:
   - additive-combinatorics-number-theory
@@ -3706,7 +3706,7 @@ works:
   - Van Vu
   year: 2007
   status: published
-  venue: Communications in Contemporary Mathematics, 10 (2008), 261--307
+  venue: Communications in Contemporary Mathematics, 10 (2008), 261–307
   arxiv: '0708.2895'
   tags:
   - additive-combinatorics-number-theory
@@ -3725,7 +3725,7 @@ works:
   - Ben Green
   year: 2007
   status: published
-  venue: Annals of Math. Volume 175 (2012), Issue 2, 465-540.
+  venue: Annals of Math. Volume 175 (2012), Issue 2, 465–540.
   arxiv: '0709.3562'
   tags:
   - additive-combinatorics-number-theory
@@ -3746,7 +3746,7 @@ works:
   - Ben Green
   year: 2007
   status: published
-  venue: Contrib. Discrete Math. 4 (2009), no. 2, 1--36.
+  venue: Contrib. Discrete Math. 4 (2009), no. 2, 1–36.
   arxiv: '0711.3191'
   tags:
   - additive-combinatorics-number-theory
@@ -3763,7 +3763,7 @@ works:
   title: A quantitative version of the Besicovitch projection theorem via multiscale analysis
   year: 2007
   status: published
-  venue: Proc. Lond. Math. Soc. 98 (2009), 559-584.
+  venue: Proc. Lond. Math. Soc. 98 (2009), 559–584.
   arxiv: '0706.2646'
   tags:
   - harmonic-analysis
@@ -3779,7 +3779,7 @@ works:
   title: What is good mathematics?
   year: 2007
   status: published
-  venue: Mathematical Perspectives, Bull. Amer. Math. Soc. 44 (2007), 623-634.
+  venue: Mathematical Perspectives, Bull. Amer. Math. Soc. 44 (2007), 623–634.
   arxiv: math.HO/0702396
   tags:
   - misc
@@ -3816,7 +3816,7 @@ works:
   - Christoph Thiele
   year: 2007
   status: published
-  venue: Revista Mat. Iber. 24 (2008), 721-744
+  venue: Revista Mat. Iber. 24 (2008), 721–744
   arxiv: '0712.1295'
   tags:
   - multilinear
@@ -3837,7 +3837,7 @@ works:
   - Hideo Takaoka
   year: 2007
   status: published
-  venue: Disc. Cont. Dynam. Systems A 21 (2008), 665-686
+  venue: Disc. Cont. Dynam. Systems A 21 (2008), 665–686
   arxiv: '0704.2730'
   tags:
   - pde
@@ -3857,7 +3857,7 @@ works:
   - Monica Visan
   year: 2007
   status: published
-  venue: J. Eur. Math. Soc. (JEMS) 11 (2009), no. 6, 1203--1258.
+  venue: J. Eur. Math. Soc. (JEMS) 11 (2009), no. 6, 1203–1258.
   arxiv: '0707.3188'
   tags:
   - pde
@@ -3872,7 +3872,7 @@ works:
   title: A quantitative formulation of the global regularity problem for the periodic Navier-Stokes equation
   year: 2007
   status: published
-  venue: Dynamics of PDE 4 (2007), 293--302.
+  venue: Dynamics of PDE 4 (2007), 293–302.
   arxiv: '0710.1604'
   tags:
   - pde
@@ -3891,7 +3891,7 @@ works:
   - Ben Green
   year: 2006
   status: published
-  venue: "Analytic number theory: essays in honour of Klaus Roth, W. W. L. Chen, W. T. Gowers, H. Halberstam, W. M. Schmidt, R. C. Vaughan, eds, Cambridge University Press, 2009. 180-204."
+  venue: "Analytic number theory: essays in honour of Klaus Roth, W. W. L. Chen, W. T. Gowers, H. Halberstam, W. M. Schmidt, R. C. Vaughan, eds, Cambridge University Press, 2009. 180–204."
   arxiv: math.NT/0610604
   tags:
   - additive-combinatorics-number-theory
@@ -3923,7 +3923,7 @@ works:
   - Ben Green
   year: 2006
   status: published
-  venue: Annals of Math. 171 (2010), 1753-1850
+  venue: Annals of Math. 171 (2010), 1753–1850
   arxiv: math.NT/0606088
   tags:
   - additive-combinatorics-number-theory
@@ -3938,7 +3938,7 @@ works:
   title: Product set estimates in noncommutative groups
   year: 2006
   status: published
-  venue: Combinatorica 28 (2008), 547-594
+  venue: Combinatorica 28 (2008), 547–594
   arxiv: math.CO/0601431
   tags:
   - additive-combinatorics-number-theory
@@ -3952,7 +3952,7 @@ works:
   title: A correspondence principle between (hyper)graph theory and probability theory, and the (hyper)graph removal lemma
   year: 2006
   status: published
-  venue: J. d’Analyse Mathematique 103 (2007), 1--45.
+  venue: J. d’Analyse Mathematique 103 (2007), 1–45.
   arxiv: math.CO/0602037
   tags:
   - additive-combinatorics-number-theory
@@ -3968,7 +3968,7 @@ works:
   title: "The ergodic and combinatorial approaches to Szemerédi's theorem"
   year: 2006
   status: published
-  venue: Centre de Recerches Mathématiques, CRM Proceedings and Lecture Notes Vol. 43 (2007), 145--193
+  venue: Centre de Recerches Mathématiques, CRM Proceedings and Lecture Notes Vol. 43 (2007), 145–193
   arxiv: math.CO/0604456
   tags:
   - additive-combinatorics-number-theory
@@ -3984,7 +3984,7 @@ works:
   - Tamar Ziegler
   year: 2006
   status: published
-  venue: "Acta Math. 201 (2008), 213—305.Errata: Acta Math. 210, (2013), Page 403-404"
+  venue: "Acta Math. 201 (2008), 213—305.Errata: Acta Math. 210, (2013), Page 403–404"
   arxiv: math.NT/0610050
   tags:
   - additive-combinatorics-number-theory
@@ -4017,7 +4017,7 @@ works:
   - Christoph Thiele
   year: 2006
   status: published
-  venue: Duke Math. J. 143 (2008), 281-355
+  venue: Duke Math. J. 143 (2008), 281–355
   arxiv: math.DS/0601455
   tags:
   - multilinear
@@ -4031,7 +4031,7 @@ works:
   title: Spacetime bounds for the energy-critical nonlinear wave equation in three spatial dimensions
   year: 2006
   status: published
-  venue: Dynamics of PDE 3 (2006), 93-110
+  venue: Dynamics of PDE 3 (2006), 93–110
   arxiv: math.AP/0601164
   tags:
   - pde
@@ -4060,7 +4060,7 @@ works:
   title: Global regularity for a logarithmically supercritical defocusing nonlinear wave equation for spherically symmetric data
   year: 2006
   status: published
-  venue: J. Hyperbolic Diff. Eq. 4 (2007), 259-266
+  venue: J. Hyperbolic Diff. Eq. 4 (2007), 259–266
   arxiv: math.AP/0606145
   tags:
   - pde
@@ -4074,7 +4074,7 @@ works:
   title: Two remarks on the generalised Korteweg-de Vries equation
   year: 2006
   status: published
-  venue: Discrete Cont. Dynam. Systems 18 (2007), 1-14
+  venue: Discrete Cont. Dynam. Systems 18 (2007), 1–14
   arxiv: math.AP/0606236
   tags:
   - pde
@@ -4089,7 +4089,7 @@ works:
   title: A pseudoconformal compactification of the nonlinear Schrodinger equation and applications
   year: 2006
   status: published
-  venue: New York J. Math. 15 (2009), 265--282.
+  venue: New York J. Math. 15 (2009), 265–282.
   arxiv: math.AP/0606254
   tags:
   - pde
@@ -4102,7 +4102,7 @@ works:
   title: Global behaviour of nonlinear dispersive and wave equations
   year: 2006
   status: published
-  venue: Current Developments in Mathematics 2006, International Press. 255-340.
+  venue: Current Developments in Mathematics 2006, International Press. 255–340.
   arxiv: math.AP/0608293
   tags:
   - pde
@@ -4117,7 +4117,7 @@ works:
   - Xiaoyi Zhang
   year: 2006
   status: published
-  venue: Forum Mathematicum 20 (2008), 881-919
+  venue: Forum Mathematicum 20 (2008), 881–919
   arxiv: math.AP/0609690
   tags:
   - pde
@@ -4135,7 +4135,7 @@ works:
   - Xiaoyi Zhang
   year: 2006
   status: published
-  venue: Duke Math J. 140 (2007), 165-202
+  venue: Duke Math J. 140 (2007), 165–202
   arxiv: math.AP/0609692
   tags:
   - pde
@@ -4166,7 +4166,7 @@ works:
   title: A (concentration-)compact attractor for high-dimensional non-linear Schrödinger equations
   year: 2006
   status: published
-  venue: Dynamics of PDE 4 (2007), 1-53
+  venue: Dynamics of PDE 4 (2007), 1–53
   arxiv: math.AP/0611402
   tags:
   - pde
@@ -4184,7 +4184,7 @@ works:
   - Jim Colliander
   year: 2006
   status: published
-  venue: J. Funct. Anal 254 (2007), 368-395
+  venue: J. Funct. Anal 254 (2007), 368–395
   arxiv: math.AP/0612457
   tags:
   - pde
@@ -4215,7 +4215,7 @@ works:
   - Ben Green
   year: 2005
   status: published
-  venue: Proc. Lond. Math. Soc. 98 (2009), 365-392
+  venue: Proc. Lond. Math. Soc. 98 (2009), 365–392
   arxiv: math.NT/0509560
   tags:
   - additive-combinatorics-number-theory
@@ -4230,7 +4230,7 @@ works:
   - Van Vu
   year: 2005
   status: published
-  venue: J. Amer. Math. Soc. 20 (2007), 603-628
+  venue: J. Amer. Math. Soc. 20 (2007), 603–628
   arxiv: math.CO/0501313
   tags:
   - additive-combinatorics-number-theory
@@ -4244,7 +4244,7 @@ works:
   title: The Gaussian primes contain arbitrarily shaped constellations
   year: 2005
   status: published
-  venue: J. d’Analyse Mathematique 99 (2006), 109-176
+  venue: J. d’Analyse Mathematique 99 (2006), 109–176
   arxiv: math.CO/0501314
   tags:
   - additive-combinatorics-number-theory
@@ -4261,7 +4261,7 @@ works:
   - Ben Green
   year: 2005
   status: published
-  venue: Proc. Edin. Math. Soc. 51 (2008), 73-153
+  venue: Proc. Edin. Math. Soc. 51 (2008), 73–153
   arxiv: math.NT/0503014
   tags:
   - additive-combinatorics-number-theory
@@ -4276,7 +4276,7 @@ works:
   title: A variant of the hypergraph removal lemma
   year: 2005
   status: published
-  venue: J. Combin. Thy. A 113 (2006), 1257--1280
+  venue: J. Combin. Thy. A 113 (2006), 1257–1280
   arxiv: math.CO/0503572
   tags:
   - additive-combinatorics-number-theory
@@ -4290,7 +4290,7 @@ works:
   title: "Szemeredi's regularity lemma revisited"
   year: 2005
   status: published
-  venue: Contrib. Discrete Math. 1 (2006), 8-28
+  venue: Contrib. Discrete Math. 1 (2006), 8–28
   arxiv: math.CO/0504472
   tags:
   - additive-combinatorics-number-theory
@@ -4308,7 +4308,7 @@ works:
   - Kevin Costello
   year: 2005
   status: published
-  venue: Duke Math. J. 135 (2006), 395-413
+  venue: Duke Math. J. 135 (2006), 395–413
   arxiv: math.PR/0505156
   tags:
   - additive-combinatorics-number-theory
@@ -4322,7 +4322,7 @@ works:
   title: Obstructions to uniformity, and arithmetic patterns in the primes
   year: 2005
   status: published
-  venue: "Quarterly J. Pure Appl. Math. 2 (2006), 199-217 [Special issue in honour of John H. Coates, Vol. 1 of 2]"
+  venue: "Quarterly J. Pure Appl. Math. 2 (2006), 199–217 [Special issue in honour of John H. Coates, Vol. 1 of 2]"
   arxiv: math.NT/0505402
   tags:
   - additive-combinatorics-number-theory
@@ -4339,7 +4339,7 @@ works:
   - Ben Green
   year: 2005
   status: published
-  venue: Quarterly J. Math. 57 (2006), 495-504
+  venue: Quarterly J. Math. 57 (2006), 495–504
   arxiv: math.NT/0511069
   tags:
   - additive-combinatorics-number-theory
@@ -4356,7 +4356,7 @@ works:
   - Van Vu
   year: 2005
   status: published
-  venue: Annals of Math. 169 (2009), 595-632
+  venue: Annals of Math. 169 (2009), 595–632
   arxiv: math.PR/0511215
   tags:
   - additive-combinatorics-number-theory
@@ -4370,7 +4370,7 @@ works:
   title: The dichotomy between structure and randomness, arithmetic progressions, and the primes
   year: 2005
   status: published
-  venue: 2006 ICM proceedings, Vol. I., 581--608
+  venue: 2006 ICM proceedings, Vol. I., 581–608
   arxiv: math.NT/0512114
   tags:
   - additive-combinatorics-number-theory
@@ -4389,7 +4389,7 @@ works:
   - Jon Bennett
   year: 2005
   status: published
-  venue: GAFA 17 (2008), 1343-1415
+  venue: GAFA 17 (2008), 1343–1415
   arxiv: math.MG/0505065
   tags:
   - harmonic-analysis
@@ -4407,7 +4407,7 @@ works:
   - Jon Bennett
   year: 2005
   status: published
-  venue: Math. Res. Letters, 17 (2010), 647-666
+  venue: Math. Res. Letters, 17 (2010), 647–666
   arxiv: math.CA/0505691
   tags:
   - harmonic-analysis
@@ -4445,7 +4445,7 @@ works:
   - Christoph Thiele
   year: 2005
   status: published
-  venue: Trans. Amer. Math. Soc., 360 (2008), 4989-5042
+  venue: Trans. Amer. Math. Soc., 360 (2008), 4989–5042
   arxiv: math.CA/0510581
   tags:
   - multilinear
@@ -4461,7 +4461,7 @@ works:
   - Monica Visan
   year: 2005
   status: published
-  venue: Electron. J. Diff. Eq. Vol. 2005 (2005), No. 118, 1-28.
+  venue: Electron. J. Diff. Eq. Vol. 2005 (2005), No. 118, 1–28.
   arxiv: math.AP/0507005
   tags:
   - pde
@@ -4478,7 +4478,7 @@ works:
   - Ioan Bejenaru
   year: 2005
   status: published
-  venue: J. Funct. Anal. Vol. 233 (2006), 228-259
+  venue: J. Funct. Anal. Vol. 233 (2006), 228–259
   arxiv: math.AP/0508210
   tags:
   - pde
@@ -4495,7 +4495,7 @@ works:
   - Eitan Tadmor
   year: 2005
   status: published
-  venue: CPAM 61 (2007), 1-34
+  venue: CPAM 61 (2007), 1–34
   arxiv: math.AP/0511054
   tags:
   - pde
@@ -4512,7 +4512,7 @@ works:
   - Xiaoyi Zhang
   year: 2005
   status: published
-  venue: Comm. PDE 32 (2007), 1281-1343.
+  venue: Comm. PDE 32 (2007), 1281–1343.
   arxiv: math.AP/0511070
   tags:
   - pde
@@ -4529,7 +4529,7 @@ works:
   - Emmanuel Candes
   year: 2005
   status: published
-  venue: IEEE Inf. Theory 51 (2005), 4203-4215
+  venue: IEEE Inf. Theory 51 (2005), 4203–4215
   arxiv: math.MG/0502327
   tags:
   - compressed-sensing
@@ -4546,7 +4546,7 @@ works:
   - Justin Romberg
   year: 2005
   status: published
-  venue: Comm. Pure Appl. Math. 59 (2006), 1207-1223
+  venue: Comm. Pure Appl. Math. 59 (2006), 1207–1223
   arxiv: math.NA/0503066
   tags:
   - compressed-sensing
@@ -4564,7 +4564,7 @@ works:
   - Roman Vershynin
   year: 2005
   status: published
-  venue: Proc. 46th Annual IEEE Symposium on Foundations of Computer Science (FOCS05), IEEE, 2005. pp. 295-308
+  venue: Proc. 46th Annual IEEE Symposium on Foundations of Computer Science (FOCS05), IEEE, 2005. pp. 295–308
   tags:
   - compressed-sensing
   links:
@@ -4577,7 +4577,7 @@ works:
   - Emmanuel Candes
   year: 2005
   status: published
-  venue: Annals of Statistics 35 (2007), 2313-2351
+  venue: Annals of Statistics 35 (2007), 2313–2351
   arxiv: math.ST/0506081
   tags:
   - compressed-sensing
@@ -4593,7 +4593,7 @@ works:
   - Ben Green
   year: 2004
   status: published
-  venue: Annals of Math. 167 (2008), 481-547
+  venue: Annals of Math. 167 (2008), 481–547
   arxiv: math.NT/0404188
   tags:
   - additive-combinatorics-number-theory
@@ -4632,7 +4632,7 @@ works:
   title: "A quantitative ergodic theory proof of Szemerédi's theorem"
   year: 2004
   status: published
-  venue: Electron. J. Combin. 13 (2006). 1 No. 99, 1-49.
+  venue: Electron. J. Combin. 13 (2006). 1 No. 99, 1–49.
   arxiv: math.CO/0405251
   tags:
   - additive-combinatorics-number-theory
@@ -4664,7 +4664,7 @@ works:
   title: Arithmetic progressions and the primes
   year: 2004
   status: published
-  venue: "Collectanea Mathematica (2006), Vol. Extra., 37-88.[Proceedings, 7th International Conference on Harmonic Analysis and Partial Differential Equations]"
+  venue: "Collectanea Mathematica (2006), Vol. Extra., 37–88.[Proceedings, 7th International Conference on Harmonic Analysis and Partial Differential Equations]"
   arxiv: math.NT/0411246
   tags:
   - additive-combinatorics-number-theory
@@ -4700,7 +4700,7 @@ works:
   - Christoph Thiele
   year: 2004
   status: published
-  venue: Revista Mat. Iber. 22 (2006), 963-976
+  venue: Revista Mat. Iber. 22 (2006), 963–976
   arxiv: math.CA/0411607
   tags:
   - multilinear
@@ -4719,7 +4719,7 @@ works:
   - Hideo Takaoka
   year: 2004
   status: published
-  venue: Acta Math. 195 (2005), 197-252
+  venue: Acta Math. 195 (2005), 197–252
   arxiv: math.AP/0412381
   tags:
   - pde
@@ -4739,7 +4739,7 @@ works:
   - Hideo Takaoka
   year: 2004
   status: published
-  venue: "Annals of Math. 167 (2007), 767-865[A survey article is in Contemp. Math. 439, \"Recent Developments in Nonlinear Partial Differential Equations: The second symposium on Analysis and PDEs June 7-10 2004, Purdue University, West Lafayette Indiana\", D. Danielli, Ed., pp. 69-80. American Mathematial Society, Providence RI 2007]"
+  venue: "Annals of Math. 167 (2007), 767–865[A survey article is in Contemp. Math. 439, \"Recent Developments in Nonlinear Partial Differential Equations: The second symposium on Analysis and PDEs June 7–10 2004, Purdue University, West Lafayette Indiana\", D. Danielli, Ed., pp. 69–80. American Mathematial Society, Providence RI 2007]"
   arxiv: math.AP/0402129
   tags:
   - pde
@@ -4756,7 +4756,7 @@ works:
   - Igor Rodnianski
   year: 2004
   status: published
-  venue: Mathematical aspects of nonlinear dispersive equations, 223-253, Ann. of Math. Stud. 163, Princeton University Press, Princeton NJ 2007
+  venue: Mathematical aspects of nonlinear dispersive equations, 223–253, Ann. of Math. Stud. 163, Princeton University Press, Princeton NJ 2007
   arxiv: math.AP/0412416
   tags:
   - pde
@@ -4769,7 +4769,7 @@ works:
   title: Global well-posedness and scattering for the higher-dimensional energy-critical non-linear Schrodinger equation for radial data
   year: 2004
   status: published
-  venue: New York Journal of Mathematics 11 (2005), 57-80
+  venue: New York Journal of Mathematics 11 (2005), 57–80
   arxiv: math.AP/0402130
   tags:
   - pde
@@ -4802,7 +4802,7 @@ works:
   title: Geometric renormalization of large energy wave maps
   year: 2004
   status: published
-  venue: Journees “Equations aux derives partielles”, Forges les Eaux, 7-11 June 2004, XI 1-32
+  venue: Journees “Equations aux derives partielles”, Forges les Eaux, 7–11 June 2004, XI 1–32
   arxiv: math.AP/0411354
   tags:
   - pde
@@ -4817,7 +4817,7 @@ works:
   - Emmanuel Candes
   year: 2004
   status: published
-  venue: IEEE Inf. Theory 52 (2006), 5406-5425
+  venue: IEEE Inf. Theory 52 (2006), 5406–5425
   arxiv: math.CA/0410542
   tags:
   - compressed-sensing
@@ -4834,7 +4834,7 @@ works:
   - Nets Katz
   year: 2003
   status: published
-  venue: GAFA 14 (2004), 27-57
+  venue: GAFA 14 (2004), 27–57
   arxiv: math.CO/0301343
   tags:
   - additive-combinatorics-number-theory
@@ -4849,7 +4849,7 @@ works:
   title: "Fuglede's conjecture is false in 5 and higher dimensions"
   year: 2003
   status: published
-  venue: Math. Res. Letters 11 (2004), 251-258
+  venue: Math. Res. Letters 11 (2004), 251–258
   arxiv: math.CA/0306134
   tags:
   - harmonic-analysis
@@ -4863,7 +4863,7 @@ works:
   title: An uncertainty principle for cyclic groups of prime order
   year: 2003
   status: published
-  venue: Math. Res. Letters 12 (2005), 121-127
+  venue: Math. Res. Letters 12 (2005), 121–127
   arxiv: math.CA/0308286
   tags:
   - harmonic-analysis
@@ -4896,7 +4896,7 @@ works:
   title: Some recent progress on the Restriction conjecture
   year: 2003
   status: published
-  venue: Fourier analysis and convexity, 217-243, Appl. Numer. Harmon. Anal., Birkhäuser Boston, Boston,MA, 2004.
+  venue: Fourier analysis and convexity, 217–243, Appl. Numer. Harmon. Anal., Birkhäuser Boston, Boston,MA, 2004.
   arxiv: math.CA/0303136
   tags:
   - kakeya-restriction
@@ -4965,7 +4965,7 @@ works:
   - Hideo Takaoka
   year: 2003
   status: published
-  venue: CPAM 57 (2004), 987-1014
+  venue: CPAM 57 (2004), 987–1014
   arxiv: math.AP/0301260
   tags:
   - pde
@@ -4982,7 +4982,7 @@ works:
   - Igor Rodnianski
   year: 2003
   status: published
-  venue: Comm. Math. Phys. 251 (2004), 377-426
+  venue: Comm. Math. Phys. 251 (2004), 377–426
   arxiv: math.AP/0309353
   tags:
   - pde
@@ -5016,7 +5016,7 @@ works:
   - Jared Wunsch
   year: 2003
   status: published
-  venue: Comm. PDE 30 (2004), 157-205
+  venue: Comm. PDE 30 (2004), 157–205
   arxiv: math.AP/0312225
   tags:
   - pde
@@ -5032,7 +5032,7 @@ works:
   title: Global well-posedness of the Benjamin-Ono equation in H^1(R)
   year: 2003
   status: published
-  venue: J. Hyperbolic Diff. Eq. 1 (2004) 27-49
+  venue: J. Hyperbolic Diff. Eq. 1 (2004) 27–49
   arxiv: math.AP/0307289
   tags:
   - pde
@@ -5062,7 +5062,7 @@ works:
   title: On the asymptotic behavior of large radial data for a focusing non-linear Schrödinger equation
   year: 2003
   status: published
-  venue: Dynamics of PDE 1 (2004), 1-48
+  venue: Dynamics of PDE 1 (2004), 1–48
   arxiv: math.AP/0309428
   tags:
   - pde
@@ -5080,7 +5080,7 @@ works:
   - Jim Wright
   year: 2002
   status: published
-  venue: J. Institut Math. Jussieu 2 (2003) 1, 109-144
+  venue: J. Institut Math. Jussieu 2 (2003) 1, 109–144
   arxiv: math.CA/0205153
   tags:
   - harmonic-analysis
@@ -5095,7 +5095,7 @@ works:
   - Jim Wright
   year: 2002
   status: published
-  venue: Mt. Holyoke Proceedings (2001), Contemporary Mathematics (2003), 341-352
+  venue: Mt. Holyoke Proceedings (2001), Contemporary Mathematics (2003), 341–352
   arxiv: math.CA/0205154
   tags:
   - harmonic-analysis
@@ -5110,7 +5110,7 @@ works:
   - Jim Wright
   year: 2002
   status: published
-  venue: Amer. J. Math. 126 (2004), 607-647.
+  venue: Amer. J. Math. 126 (2004), 607–647.
   arxiv: math.CA/0205156
   tags:
   - harmonic-analysis
@@ -5124,7 +5124,7 @@ works:
   title: Weak-type (1,1) bounds for Fourier integral operators
   year: 2002
   status: published
-  venue: J. Aust. Math. Soc. 75 (2003), 1-21.
+  venue: J. Aust. Math. Soc. 75 (2003), 1–21.
   arxiv: math.CA/0201220
   tags:
   - harmonic-analysis
@@ -5138,7 +5138,7 @@ works:
   title: On the Maximal Bochner-Riesz conjecture in the plane, for p<2
   year: 2002
   status: published
-  venue: Trans. Amer. Math. Soc. 354 (2002), 1947-1959
+  venue: Trans. Amer. Math. Soc. 354 (2002), 1947–1959
   tags:
   - kakeya-restriction
   - bochner-riesz
@@ -5152,7 +5152,7 @@ works:
   - Gerd Mockenhaupt
   year: 2002
   status: published
-  venue: Duke Math. J. 121 (2004), 35-74
+  venue: Duke Math. J. 121 (2004), 35–74
   arxiv: math.CA/0204234
   tags:
   - kakeya-restriction
@@ -5172,7 +5172,7 @@ works:
   - Adam Sikora
   year: 2002
   status: published
-  venue: Comm. Anal. Geom. 12 (2004), 43-57
+  venue: Comm. Anal. Geom. 12 (2004), 43–57
   arxiv: math.CA/0207225
   tags:
   - kakeya-restriction
@@ -5187,7 +5187,7 @@ works:
   title: A new bound for finite field Besicovitch sets in four dimensions
   year: 2002
   status: published
-  venue: Pacific J. Math 222 (2005), 337-363
+  venue: Pacific J. Math 222 (2005), 337–363
   arxiv: math.CA/0204251
   tags:
   - kakeya-restriction
@@ -5201,7 +5201,7 @@ works:
   title: A sharp bilinear restriction estimate for paraboloids
   year: 2002
   status: published
-  venue: GAFA 13 (2003), 1359-1384
+  venue: GAFA 13 (2003), 1359–1384
   arxiv: math.CA/0210084
   tags:
   - kakeya-restriction
@@ -5219,7 +5219,7 @@ works:
   - Peter Hall
   year: 2002
   status: published
-  venue: J. R. Stat. Soc. Ser. B Stat. Methodol. 64 (2002), 537-547
+  venue: J. R. Stat. Soc. Ser. B Stat. Methodol. 64 (2002), 537–547
   tags:
   - misc
 - id: a-discrete-model-for-the-bi-carleson-operator
@@ -5230,7 +5230,7 @@ works:
   - Christoph Thiele
   year: 2002
   status: published
-  venue: Geom. Func. Anal. 12 (2002), 1324-1364
+  venue: Geom. Func. Anal. 12 (2002), 1324–1364
   arxiv: math.CA/0201060
   tags:
   - multilinear
@@ -5247,7 +5247,7 @@ works:
   - Christoph Thiele
   year: 2002
   status: published
-  venue: Nonlinearity 19 (2003), 219-246
+  venue: Nonlinearity 19 (2003), 219–246
   arxiv: math.CA/0205139
   tags:
   - multilinear
@@ -5264,7 +5264,7 @@ works:
   - Erin Terwilleger
   year: 2002
   status: published
-  venue: Math. Z. 246 (2004), 321-337
+  venue: Math. Z. 246 (2004), 321–337
   arxiv: math.CA/0212164
   tags:
   - multilinear
@@ -5283,7 +5283,7 @@ works:
   - Hideo Takaoka
   year: 2002
   status: published
-  venue: Math. Res. Letters 9 (2002), 659-682.
+  venue: Math. Res. Letters 9 (2002), 659–682.
   arxiv: math.AP/0203218
   tags:
   - pde
@@ -5305,7 +5305,7 @@ works:
   - Hideo Takaoka
   year: 2002
   status: published
-  venue: Discrete Cont. Dynam. Systems 9 (2003), 31-54
+  venue: Discrete Cont. Dynam. Systems 9 (2003), 31–54
   arxiv: math.AP/0206218
   tags:
   - pde
@@ -5325,7 +5325,7 @@ works:
   - Hideo Takaoka
   year: 2002
   status: published
-  venue: Comm. Pure Appl. Anal. 2 (2003), 33-50
+  venue: Comm. Pure Appl. Anal. 2 (2003), 33–50
   arxiv: math.AP/0212113
   tags:
   - pde
@@ -5342,7 +5342,7 @@ works:
   - Gang Tian
   year: 2002
   status: published
-  venue: J. Amer. Math. Soc. 17 (2004), 557-593.
+  venue: J. Amer. Math. Soc. 17 (2004), 557–593.
   arxiv: math.DG/0209352
   tags:
   - pde
@@ -5360,7 +5360,7 @@ works:
   - Jim Colliander
   year: 2002
   status: published
-  venue: Amer. J. Math. 125 (2003), 1235-1293
+  venue: Amer. J. Math. 125 (2003), 1235–1293
   arxiv: math.AP/0203044
   tags:
   - pde
@@ -5376,7 +5376,7 @@ works:
   - Andrew Hassell
   year: 2002
   status: published
-  venue: Math. Res. Letters 9 (2002), 289-305
+  venue: Math. Res. Letters 9 (2002), 289–305
   arxiv: math.AP/0202140
   tags:
   - pde
@@ -5392,7 +5392,7 @@ works:
   title: Local and global well-posedness for nonlinear dispersive equations
   year: 2002
   status: published
-  venue: Proc. Centre Math. Appl. Austral. Nat. Univ. 40 (2002), 19-48
+  venue: Proc. Centre Math. Appl. Austral. Nat. Univ. 40 (2002), 19–48
   tags:
   - pde
 - id: existence-globale-et-diffusion-pour-l-quation-de-schr-dinger
@@ -5421,7 +5421,7 @@ works:
   - Jim Wright
   year: 2001
   status: published
-  venue: J. Amer. Math. Soc. 16 (2003), 605-638
+  venue: J. Amer. Math. Soc. 16 (2003), 605–638
   arxiv: math.CA/0108137
   tags:
   - harmonic-analysis
@@ -5438,7 +5438,7 @@ works:
   - Nets Katz
   year: 2001
   status: published
-  venue: Math. Res. Letters 10 (2003), 559-570
+  venue: Math. Res. Letters 10 (2003), 559–570
   arxiv: math.CA/0104087
   tags:
   - harmonic-analysis
@@ -5457,7 +5457,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: Publications Matematiques Barcelona 46 (2002), 257-325
+  venue: Publications Matematiques Barcelona 46 (2002), 257–325
   arxiv: math.CA/0108138
   tags:
   - harmonic-analysis
@@ -5475,7 +5475,7 @@ works:
   - Chris Woodward
   year: 2001
   status: published
-  venue: J. Amer. Math. Soc. 17 (2004), 19-48.
+  venue: J. Amer. Math. Soc. 17 (2004), 19–48.
   arxiv: math.CO/0107011
   tags:
   - honeycombs
@@ -5491,7 +5491,7 @@ works:
   - Allen Knutson
   year: 2001
   status: published
-  venue: Duke Math. J. 119 (2003), 221-260
+  venue: Duke Math. J. 119 (2003), 221–260
   arxiv: math.AT/0112150
   tags:
   - honeycombs
@@ -5509,7 +5509,7 @@ works:
   - Nets Katz
   year: 2001
   status: published
-  venue: New York J. Math. 7 (2001), 148-187
+  venue: New York J. Math. 7 (2001), 148–187
   arxiv: math.CA/0101195
   tags:
   - kakeya-restriction
@@ -5525,7 +5525,7 @@ works:
   - Nets Katz
   year: 2001
   status: published
-  venue: "Journal d'Analyse de Jerusalem, 87 (2002), 231-263"
+  venue: "Journal d'Analyse de Jerusalem, 87 (2002), 231–263"
   arxiv: math.CA/0102135
   tags:
   - kakeya-restriction
@@ -5543,7 +5543,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: "Journal d'Analyse de Jerusalem 87 (2002), 369-384"
+  venue: "Journal d'Analyse de Jerusalem 87 (2002), 369–384"
   arxiv: math.CA/0106092
   tags:
   - multilinear
@@ -5558,7 +5558,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: "Journal d'Analyse de Jerusalem 88 (2002), 255-309"
+  venue: "Journal d'Analyse de Jerusalem 88 (2002), 255–309"
   arxiv: math.CA/0107059
   tags:
   - multilinear
@@ -5573,7 +5573,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: Math. Annalen 329 (2004), 401-426
+  venue: Math. Annalen 329 (2004), 401–426
   arxiv: math.CA/0102083
   tags:
   - multilinear
@@ -5590,7 +5590,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: Math. Annalen 329 (2004), 427-461
+  venue: Math. Annalen 329 (2004), 427–461
   arxiv: math.CA/0102084
   tags:
   - multilinear
@@ -5607,7 +5607,7 @@ works:
   - Christoph Thiele
   year: 2001
   status: published
-  venue: Math. Res. Letters 10 (2003), 237-246
+  venue: Math. Res. Letters 10 (2003), 237–246
   arxiv: math.CA/0108156
   tags:
   - multilinear
@@ -5623,7 +5623,7 @@ works:
   - Loukas Grafakos
   year: 2001
   status: published
-  venue: J. Funct. Anal. 199 (2003), 379-385
+  venue: J. Funct. Anal. 199 (2003), 379–385
   arxiv: math.FA/0111141
   tags:
   - multilinear
@@ -5642,7 +5642,7 @@ works:
   - Hideo Takaoka
   year: 2001
   status: published
-  venue: EJDE 2001 (2001) No 26, 1-7
+  venue: EJDE 2001 (2001) No 26, 1–7
   arxiv: math.AP/0101261
   tags:
   - pde
@@ -5662,7 +5662,7 @@ works:
   - Hideo Takaoka
   year: 2001
   status: published
-  venue: J. Amer. Math. Soc. 16 (2003), 705-749.
+  venue: J. Amer. Math. Soc. 16 (2003), 705–749.
   arxiv: math.AP/0110045
   tags:
   - pde
@@ -5682,7 +5682,7 @@ works:
   - Hideo Takaoka
   year: 2001
   status: published
-  venue: J. Funct. Anal. 211 (2004), 173-218
+  venue: J. Funct. Anal. 211 (2004), 173–218
   arxiv: math.AP/0110049
   tags:
   - pde
@@ -5702,7 +5702,7 @@ works:
   - Hideo Takaoka
   year: 2001
   status: published
-  venue: Siam J. Math. 33 (2001), 649-669
+  venue: Siam J. Math. 33 (2001), 649–669
   arxiv: math.AP/0101263
   tags:
   - pde
@@ -5722,7 +5722,7 @@ works:
   - Hideo Takaoka
   year: 2001
   status: published
-  venue: Siam J. Math. 34 (2002), 64-86.
+  venue: Siam J. Math. 34 (2002), 64–86.
   arxiv: math.AP/0110026
   tags:
   - pde
@@ -5757,7 +5757,7 @@ works:
   - Brani Vidakovic
   year: 2000
   status: published
-  venue: ACHA 9 (2000), 72-82
+  venue: ACHA 9 (2000), 72–82
   tags:
   - harmonic-analysis
   links:
@@ -5770,7 +5770,7 @@ works:
   - Jim Wright
   year: 2000
   status: published
-  venue: Revista Mat. Iber. 17 (2001), 521-558
+  venue: Revista Mat. Iber. 17 (2001), 521–558
   arxiv: math.CA/0001050
   tags:
   - harmonic-analysis
@@ -5786,7 +5786,7 @@ works:
   - Michael Cowling
   year: 2000
   status: published
-  venue: Math. Annalen 321 (2001) 4, 885-888
+  venue: Math. Annalen 321 (2001) 4, 885–888
   arxiv: math.CA/0011246
   tags:
   - harmonic-analysis
@@ -5802,7 +5802,7 @@ works:
   - Allen Knutson
   year: 2000
   status: published
-  venue: Notices Amer. Math. Soc. 48 (2001) No. 2, 175-186
+  venue: Notices Amer. Math. Soc. 48 (2001) No. 2, 175–186
   arxiv: math.RT/0009048
   tags:
   - honeycombs
@@ -5820,7 +5820,7 @@ works:
   - Ana Vargas
   year: 2000
   status: published
-  venue: GAFA 10 (2000), 185-215
+  venue: GAFA 10 (2000), 185–215
   tags:
   - kakeya-restriction
   - multilinear
@@ -5835,7 +5835,7 @@ works:
   - Ana Vargas
   year: 2000
   status: published
-  venue: GAFA10 (2000), 216-258
+  venue: GAFA10 (2000), 216–258
   tags:
   - kakeya-restriction
   - multilinear
@@ -5849,7 +5849,7 @@ works:
   - Izabella Laba
   year: 2000
   status: published
-  venue: GAFA 11 (2001), 773-806
+  venue: GAFA 11 (2001), 773–806
   arxiv: math.CA/0004015
   tags:
   - kakeya-restriction
@@ -5863,7 +5863,7 @@ works:
   title: "From rotating needles to stability of waves: emerging connections between combinatorics, analysis, and PDE."
   year: 2000
   status: published
-  venue: Notices Amer. Math. Soc. 48 (2001) No 3, 294-303
+  venue: Notices Amer. Math. Soc. 48 (2001) No 3, 294–303
   arxiv: math.CA/0008098
   tags:
   - kakeya-restriction
@@ -5881,7 +5881,7 @@ works:
   - Nets Katz
   year: 2000
   status: published
-  venue: Publicacions Matematiques, Proceedings of the 6th International Conference on Harmonic Analysis and Partial Differential Equations, U. Barcelona 2002, 161-180
+  venue: Publicacions Matematiques, Proceedings of the 6th International Conference on Harmonic Analysis and Partial Differential Equations, U. Barcelona 2002, 161–180
   arxiv: math.CA/0010069
   tags:
   - kakeya-restriction
@@ -5894,7 +5894,7 @@ works:
   title: Local well-posedness for the Yang-Mills equation below the energy norm
   year: 2000
   status: published
-  venue: JDE 189 (2003), 366-382
+  venue: JDE 189 (2003), 366–382
   arxiv: math.AP/0005064
   tags:
   - pde
@@ -5909,7 +5909,7 @@ works:
   title: Multilinear weighted convolution of L^2 functions, and applications to non-linear dispersive equations
   year: 2000
   status: published
-  venue: Amer. J. Math. 123 (2001), 839-908
+  venue: Amer. J. Math. 123 (2001), 839–908
   arxiv: math.AP/0005001
   tags:
   - pde
@@ -5924,7 +5924,7 @@ works:
   title: Global regularity of wave maps I. Small critical Sobolev norm in high dimension
   year: 2000
   status: published
-  venue: IMRN 7 (2001), 299-328
+  venue: IMRN 7 (2001), 299–328
   arxiv: math.AP/0010068
   tags:
   - pde
@@ -5943,7 +5943,7 @@ works:
   title: Global regularity of wave maps II. Small energy in two dimensions
   year: 2000
   status: published
-  venue: Comm. Math. Phys. 224 (2001), 443-544
+  venue: Comm. Math. Phys. 224 (2001), 443–544
   arxiv: math.AP/0011173
   tags:
   - pde
@@ -5960,7 +5960,7 @@ works:
   title: The weak-type (1,1) of L log L homogeneous convolution operators
   year: 1999
   status: published
-  venue: Indiana U. Math. J. 48 (1999), 1547-1584
+  venue: Indiana U. Math. J. 48 (1999), 1547–1584
   arxiv: math.CA/9903165
   tags:
   - harmonic-analysis
@@ -5977,7 +5977,7 @@ works:
   - Nets Katz
   year: 1999
   status: published
-  venue: Amer. J. Math. 123 (2001), 115-120
+  venue: Amer. J. Math. 123 (2001), 115–120
   arxiv: math.CA/9911167
   tags:
   - harmonic-analysis
@@ -5993,7 +5993,7 @@ works:
   - Andreas Seeger
   year: 1999
   status: published
-  venue: Math. Annalen 320 (2001) 2, 381-415
+  venue: Math. Annalen 320 (2001) 2, 381–415
   arxiv: math.CA/9912098
   tags:
   - harmonic-analysis
@@ -6007,7 +6007,7 @@ works:
   title: A converse extrapolation theorem for translation-invariant operators
   year: 1999
   status: published
-  venue: J. Funct. Anal. 180 (2001), 1-10
+  venue: J. Funct. Anal. 180 (2001), 1–10
   arxiv: math.FA/9912001
   tags:
   - harmonic-analysis
@@ -6021,7 +6021,7 @@ works:
   title: The Bochner-Riesz conjecture implies the restriction conjecture
   year: 1999
   status: published
-  venue: Duke Math. J. 96 (1999), 363-376
+  venue: Duke Math. J. 96 (1999), 363–376
   tags:
   - kakeya-restriction
   - restriction
@@ -6039,7 +6039,7 @@ works:
   - Izabella Laba
   year: 1999
   status: published
-  venue: Annals of Math. 152 (2000), 383-446
+  venue: Annals of Math. 152 (2000), 383–446
   arxiv: math.CA/9903166
   tags:
   - kakeya-restriction
@@ -6055,7 +6055,7 @@ works:
   title: Endpoint bilinear restriction theorems for the cone, and some sharp null form estimates
   year: 1999
   status: published
-  venue: Math. Z. 238 (2001), 215-268
+  venue: Math. Z. 238 (2001), 215–268
   arxiv: math.CA/9909066
   tags:
   - kakeya-restriction
@@ -6073,7 +6073,7 @@ works:
   - Nets Katz
   year: 1999
   status: published
-  venue: Math. Res. Letters 6 (1999), 625-630
+  venue: Math. Res. Letters 6 (1999), 625–630
   arxiv: math.CO/9906097
   tags:
   - kakeya-restriction
@@ -6090,7 +6090,7 @@ works:
   - Izabella Laba
   year: 1999
   status: published
-  venue: Revista Mat. Iber. 17 (2001), 375-408
+  venue: Revista Mat. Iber. 17 (2001), 375–408
   arxiv: math.CA/9909032
   tags:
   - kakeya-restriction
@@ -6107,7 +6107,7 @@ works:
   - Christoph Thiele
   year: 1999
   status: published
-  venue: J. Amer. Math. Soc. 15 (2002), 469-496
+  venue: J. Amer. Math. Soc. 15 (2002), 469–496
   arxiv: math.CA/9910039
   tags:
   - multilinear
@@ -6123,7 +6123,7 @@ works:
   - Mark Keel
   year: 1999
   status: published
-  venue: Amer. J. Math. 121 (1999), 629-669
+  venue: Amer. J. Math. 121 (1999), 629–669
   tags:
   - pde
   links:
@@ -6136,7 +6136,7 @@ works:
   - Allen Knutson
   year: 1998
   status: published
-  venue: J. Amer. Math. Soc.12 (1999), 1055--1090
+  venue: J. Amer. Math. Soc.12 (1999), 1055–1090
   arxiv: math.RT/9807160
   tags:
   - honeycombs
@@ -6150,7 +6150,7 @@ works:
   title: The weak-type endpoint Bochner-Riesz conjecture and related topics
   year: 1998
   status: published
-  venue: Indiana U. Math. J. 47 (1998), 1097-1124
+  venue: Indiana U. Math. J. 47 (1998), 1097–1124
   tags:
   - kakeya-restriction
   - bochner-riesz
@@ -6165,7 +6165,7 @@ works:
   - Luis Vega
   year: 1998
   status: published
-  venue: J. Amer. Math. Soc. 11 (1998), 967-1000
+  venue: J. Amer. Math. Soc. 11 (1998), 967–1000
   arxiv: math.CA/9807163
   tags:
   - kakeya-restriction
@@ -6184,7 +6184,7 @@ works:
   - Mark Keel
   year: 1998
   status: published
-  venue: Amer. J. Math., 120 (1998), 955-980
+  venue: Amer. J. Math., 120 (1998), 955–980
   tags:
   - pde
   - strichartz
@@ -6198,7 +6198,7 @@ works:
   - Mark Keel
   year: 1998
   status: published
-  venue: IMRN 21 (1998), 1117-1156
+  venue: IMRN 21 (1998), 1117–1156
   arxiv: math.AP/9807171
   tags:
   - pde
@@ -6217,7 +6217,7 @@ works:
   title: Spherically averaged endpoint Strichartz estimates for the two-dimensional Schrödinger equation
   year: 1998
   status: published
-  venue: Comm. PDE 25 (2000), 1471-1485
+  venue: Comm. PDE 25 (2000), 1471–1485
   arxiv: math.AP/9811168
   tags:
   - pde
@@ -6233,7 +6233,7 @@ works:
   title: Ill-posedness for one-dimensional wave maps at the critical regularity
   year: 1998
   status: published
-  venue: Amer. J. Math., 122 (2000), 451-463
+  venue: Amer. J. Math., 122 (2000), 451–463
   arxiv: math.AP/9811169
   tags:
   - pde
@@ -6262,7 +6262,7 @@ works:
   title: On the almost-everywhere convergence of wavelet summation methods
   year: 1996
   status: published
-  venue: ACHA 3 (1996), 384-387
+  venue: ACHA 3 (1996), 384–387
   tags:
   - harmonic-analysis
   links:
@@ -6273,7 +6273,7 @@ works:
   title: Harmonic convolution operators on Lipschitz graphs
   year: 1996
   status: published
-  venue: Adv. Appl. Clifford Alg. 6 (1996), 207-218
+  venue: Adv. Appl. Clifford Alg. 6 (1996), 207–218
   tags:
   - harmonic-analysis
   links:
@@ -6284,7 +6284,7 @@ works:
   title: Weak-type endpoint bounds for Riesz means
   year: 1996
   status: published
-  venue: Proc. Amer. Math. Soc. 124 (1996), 2797-2805
+  venue: Proc. Amer. Math. Soc. 124 (1996), 2797–2805
   tags:
   - kakeya-restriction
   links:
@@ -6297,7 +6297,7 @@ works:
   - Andrew Millard
   year: 1996
   status: published
-  venue: J. Math. Phys. 37 (1996), 5848-5857
+  venue: J. Math. Phys. 37 (1996), 5848–5857
   tags:
   - misc
   links:
