@@ -120,6 +120,7 @@ details.section > summary:hover { color: var(--fg); }
 details.section > summary .count { color: var(--muted); font-weight: 400; font-size: .85rem; }
 ul.linklist { list-style: none; padding: .2rem 0 .9rem; margin: 0; }
 ul.linklist > li { padding: .35rem 0 .35rem 1.1rem; text-indent: -1.1rem; }
+h2.linkgroup { margin: 2.4rem 0 .2rem; }
 footer { margin-top: 1.5rem; color: var(--muted); font-size: .82rem; }
 """
 
@@ -287,6 +288,8 @@ def build_links_page(doc: dict) -> tuple[str, str]:
     if doc.get("description"):
         parts.append(f'<p class="desc">{md_links(doc["description"])}</p>')
     for sec in doc["sections"]:
+        if sec.get("heading"):
+            parts.append(f'<h2 class="linkgroup">{html.escape(sec["heading"])}</h2>')
         entries = sec.get("entries", [])
         cnt = f' <span class="count">({len(entries)})</span>' if entries else ""
         parts.append('<details class="section">')

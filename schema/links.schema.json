@@ -26,6 +26,10 @@
         "additionalProperties": false,
         "required": ["title"],
         "properties": {
+          "heading": {
+            "type": "string",
+            "description": "Optional group divider rendered as a heading ABOVE this section, to separate blocks of sections (e.g. \"Older media items\")."
+          },
           "title": { "type": "string", "minLength": 1, "description": "Collapsible section heading." },
           "description": {
             "type": "string",
