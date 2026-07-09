@@ -1,0 +1,287 @@
+# Imported from the UCLA home page teaching tables -- maintain by hand.
+title: Teaching
+courses:
+- year: 2025
+  quarter: F
+  number: Math 245A
+  title: Measure theory
+  url: "https://bruinlearn.ucla.edu/courses/216030"
+- year: 2025
+  quarter: W
+  number: Math 254A
+  title: Analytic number theory
+  url: "https://bruinlearn.ucla.edu/courses/200955"
+- year: 2024
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/193504"
+- year: 2024
+  quarter: W
+  number: Math 246B
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/77068"
+- year: 2023
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/171372"
+- year: 2023
+  quarter: S
+  number: Math 246C
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/162694"
+- year: 2022
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+- year: 2022
+  quarter: S
+  number: Math 246C
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/131502"
+- year: 2022
+  quarter: W
+  number: Math 246B
+  title: Complex analysis
+  url: "https://bruinlearn.ucla.edu/courses/77068"
+- year: 2021
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+  url: "https://ccle.ucla.edu/course/view/21F-MATH246A-1"
+- year: 2021
+  quarter: W
+  number: Math 246B
+  title: Complex analysis
+  url: "https://ccle.ucla.edu/course/view/21W-MATH246B-1"
+- year: 2020
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+  url: "https://ccle.ucla.edu/course/view/20F-MATH246A-1"
+- year: 2020
+  quarter: S
+  number: Math 247B
+  title: Graduate Fourier analysis
+  url: "https://ccle.ucla.edu/course/view/20S-MATH247B-1"
+- year: 2019
+  quarter: F
+  number: Math 254A
+  title: Analytic number theory
+  url: "https://ccle.ucla.edu/course/view/19F-MATH254A-1"
+- year: 2019
+  quarter: W
+  number: Math 255B
+  title: Incompressible Euler equations
+  url: "https://terrytao.wordpress.com/category/teaching/255b-incompressible-euler-equations/"
+- year: 2018
+  quarter: F
+  number: Math 254A
+  title: Incompressible fluids
+  url: "https://terrytao.wordpress.com/category/teaching/254a-incompressible-fluid-equations/"
+- year: 2018
+  quarter: S
+  number: Math 246C
+  title: Complex analysis
+  url: "https://terrytao.wordpress.com/category/teaching/246c-complex-analysis/"
+- year: 2017
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "https://ccle.ucla.edu/course/view/17S-MATH245C-1"
+- year: 2016
+  quarter: F
+  number: Math 246A
+  title: Complex analysis
+  url: "https://terrytao.wordpress.com/category/teaching/246a-complex-analysis/"
+- year: 2016
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245c-real-analysis/"
+- year: 2015
+  quarter: F
+  number: Math 275A
+  title: Probability
+  url: "https://terrytao.wordpress.com/category/teaching/275a-probability-theory/"
+- year: 2015
+  quarter: W
+  number: Math 254A
+  title: Analytic prime number theory
+  url: "https://terrytao.wordpress.com/category/teaching/254a-analytic-prime-number-theory/"
+- year: 2014
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245c-real-analysis/"
+- year: 2014
+  quarter: W
+  number: Math 245B
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245b-real-analysis/"
+- year: 2013
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245c-real-analysis/"
+- year: 2013
+  quarter: W
+  number: Math 245B
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245b-real-analysis/"
+- year: 2012
+  quarter: W
+  number: Math 254B
+  title: Expansion in groups of Lie type
+  url: "https://terrytao.wordpress.com/category/teaching/254b-expansion-in-groups/"
+- year: 2011
+  quarter: F
+  number: Math 254A
+  title: "Hilbert's fifth problem"
+  url: "https://terrytao.wordpress.com/category/teaching/254a-hilberts-fifth-problem/"
+- year: 2011
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245c-real-analysis/"
+- year: 2010
+  quarter: F
+  number: Math 245A
+  title: Real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245a-real-analysis/"
+- year: 2010
+  quarter: S
+  number: Math 254B
+  title: Higher order Fourier analysis
+  url: "https://terrytao.wordpress.com/category/teaching/254b-higher-order-fourier-analysis/"
+- year: 2010
+  quarter: W
+  number: Math 254A
+  title: Random matrices
+  url: "https://terrytao.wordpress.com/category/teaching/254a-random-matrices/"
+- year: 2009
+  quarter: S
+  number: Math 245C
+  title: Graduate real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245c-real-analysis/"
+- year: 2009
+  quarter: W
+  number: Math 245B
+  title: Graduate real analysis
+  url: "https://terrytao.wordpress.com/category/teaching/245b-real-analysis/"
+- year: 2008
+  quarter: S
+  number: Math 285G
+  title: Poincaré conjecture
+  url: "https://terrytao.wordpress.com/category/teaching/285g-poincare-conjecture/"
+- year: 2008
+  quarter: W
+  number: Math 254A
+  title: Ergodic theory
+  url: "https://terrytao.wordpress.com/category/teaching/254a-ergodic-theory/"
+- year: 2007
+  quarter: W
+  number: Math 247B
+  title: Graduate Fourier analysis
+  url: "http://www.math.ucla.edu/~tao/247b.1.07w"
+- year: 2006
+  quarter: F
+  number: Math 247A
+  title: Graduate Fourier analysis
+  url: "http://www.math.ucla.edu/~tao/247a.1.06f"
+- year: 2006
+  quarter: S
+  number: Math 251B
+  title: Introduction to PDE
+  url: "http://www.math.ucla.edu/~tao/251b.1.06s/"
+- year: 2006
+  quarter: W
+  number: Math 251A
+  title: Introduction to PDE
+  url: "http://www.math.ucla.edu/~tao/251a.1.06w/"
+- year: 2005
+  quarter: S
+  number: Math 245C
+  title: Real analysis
+  url: "http://www.math.ucla.edu/~tao/245c.1.05s"
+- year: 2005
+  quarter: W
+  number: Math 33A
+  title: Linear algebra
+  url: "http://www.math.ucla.edu/~tao/resource/general/33a.2.05w/index.html"
+- year: 2005
+  quarter: W
+  number: Math 245B
+  title: Real analysis
+  url: "http://www.math.ucla.edu/~tao/245b.1.05w/index.html"
+- year: 2004
+  quarter: F
+  number: Math 245A
+  title: Real analysis
+  url: "http://www.math.ucla.edu/~tao/245a.1.04f"
+- year: 2004
+  quarter: W
+  number: Math 133
+  title: Fourier analysis
+  url: "http://www.math.ucla.edu/~tao/resource/general/133.1.04w/"
+- year: 2004
+  quarter: W
+  number: Math 245B
+  title: Real analysis
+  url: "http://www.math.ucla.edu/~tao/245b.1.04w/"
+- year: 2003
+  quarter: S
+  number: Maths 3228
+  title: Complex analysis
+  url: "http://www.math.ucla.edu/~tao/resource/general/3228"
+- year: 2003
+  quarter: S
+  number: Math 131BH
+  title: Honors real analysis
+  url: "http://www.math.ucla.edu/~tao/resource/general/131bh.1.03s"
+- year: 2003
+  quarter: W
+  number: Math 131AH
+  title: Honors real analysis
+  url: "http://www.math.ucla.edu/~tao/resource/general/131ah.1.03w"
+- year: 2003
+  quarter: W
+  number: Math 254A
+  title: Additive combinatorics
+  url: "http://www.math.ucla.edu/~tao/254a.1.03w"
+- year: 2002
+  quarter: F
+  number: Math 115A
+  title: Linear algebra
+  url: "http://www.math.ucla.edu/~tao/resource/general/115a.3.02f"
+- year: 2001
+  quarter: W
+  number: Math 254A
+  title: Time-frequency analysis
+  url: "http://www.math.ucla.edu/~tao/254a.1.01w/"
+- year: 2000
+  quarter: S
+  number: Math 199
+  title: Problem solving
+  url: "http://www.math.ucla.edu/~tao/putnam"
+- year: 2000
+  quarter: S
+  number: Math 121
+  title: Introduction to topology
+  url: "http://www.math.ucla.edu/~tao/resource/general/121.1.00s/"
+- year: 2000
+  quarter: W
+  number: Math 132
+  title: Complex analysis
+  url: "http://www.math.ucla.edu/~tao/resource/general/132.1.00w/"
+- year: 1999
+  quarter: S
+  number: Math 254B
+  title: Restriction/Kakeya
+  url: "http://www.math.ucla.edu/~tao/254b.1.99s/"
+- year: 1999
+  quarter: W
+  number: Math 254A
+  title: Oscillatory integrals
+  url: "http://www.math.ucla.edu/~tao/254a.1.99w/"

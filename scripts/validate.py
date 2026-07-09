@@ -17,6 +17,8 @@ SCHEMA = ROOT / "schema" / "errata.schema.json"
 DATA = ROOT / "data" / "errata"
 LINKS_SCHEMA = ROOT / "schema" / "links.schema.json"
 LINKS = ROOT / "data" / "links"
+TEACHING_SCHEMA = ROOT / "schema" / "teaching.schema.json"
+TEACHING = ROOT / "data" / "teaching"
 
 
 def validate_links() -> int:
@@ -34,6 +36,24 @@ def validate_links() -> int:
             problems += 1
         n = sum(len(s.get("entries", [])) for s in doc.get("sections", []))
         print(f"  {path.name}: {len(doc.get('sections', []))} sections, {n} links "
+              f"-> {'OK' if not errors else 'INVALID'}")
+    return problems
+
+
+def validate_teaching() -> int:
+    """Validate the teaching course list against teaching.schema.json."""
+    if not TEACHING.exists():
+        return 0
+    validator = Draft7Validator(yaml.safe_load(TEACHING_SCHEMA.read_text(encoding="utf-8")))
+    problems = 0
+    for path in sorted(TEACHING.glob("*.yaml")):
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+        for err in errors:
+            loc = "/".join(str(p) for p in err.path) or "(root)"
+            print(f"{path.name}: {loc}: {err.message}")
+            problems += 1
+        print(f"  {path.name}: {len(doc.get('courses', []))} courses "
               f"-> {'OK' if not errors else 'INVALID'}")
     return problems
 
@@ -75,6 +95,7 @@ def main() -> int:
         print(f"  {path.name}: {n} errata, {stubs} stubs -> {status}")
 
     problems += validate_links()
+    problems += validate_teaching()
 
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)

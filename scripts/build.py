@@ -51,6 +51,7 @@ def contributor_names(doc: dict) -> list[str]:
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data" / "errata"
 LINKS = ROOT / "data" / "links"
+TEACHING = ROOT / "data" / "teaching"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -299,7 +300,11 @@ def build_links_page(doc: dict) -> tuple[str, str]:
     return slug, page(doc["title"], "\n".join(parts))
 
 
-def build_index(books: list[dict], links: list[dict] = ()) -> str:
+_QUARTER_NAME = {"F": "Fall", "W": "Winter", "S": "Spring", "Su": "Summer"}
+_QUARTER_ORDER = {"W": 1, "S": 2, "Su": 3, "F": 4}  # chronological within a year
+
+
+def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -323,6 +328,20 @@ def build_index(books: list[dict], links: list[dict] = ()) -> str:
             '<details class="section">'
             f'<summary>Books <span class="count">({len(books)})</span></summary>'
             f'<ul class="book-list">{"".join(rows)}</ul></details>')
+    courses = (teaching or {}).get("courses") or []
+    if courses:
+        crows = []
+        # Reverse chronological: newest term first.
+        for c in sorted(courses, key=lambda c: (c["year"], _QUARTER_ORDER.get(c["quarter"], 0)),
+                        reverse=True):
+            term = f'{_QUARTER_NAME.get(c["quarter"], c["quarter"])} {c["year"]}'
+            num = html.escape(c["number"])
+            num = f'<a href="{html.escape(c["url"])}">{num}</a>' if c.get("url") else num
+            crows.append(f'<li><span class="year">{term}</span> {num}'
+                         f'<span class="coauth"> &middot; {html.escape(c["title"])}</span></li>')
+        body += ('<details class="section">'
+                 f'<summary>Teaching <span class="count">({len(courses)})</span></summary>'
+                 f'<ul class="book-list">{"".join(crows)}</ul></details>')
     if links:
         lrows = "".join(
             f'<li><a href="{l["slug"]}.html">{html.escape(l["title"])}</a></li>'
@@ -346,9 +365,14 @@ def main() -> None:
     for doc in linkdocs:
         slug, htmltext = build_links_page(doc)
         (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
-    (SITE / "index.html").write_text(build_index(books, linkdocs), encoding="utf-8", newline="\n")
+    teaching_files = sorted(TEACHING.glob("*.yaml")) if TEACHING.exists() else []
+    teaching = yaml.safe_load(teaching_files[0].read_text(encoding="utf-8")) if teaching_files else None
+    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching),
+                                     encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
-    print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) + index into {SITE}")
+    ncourses = len((teaching or {}).get("courses") or [])
+    print(f"Built {len(books)} book page(s) + {len(linkdocs)} link page(s) "
+          f"+ index ({ncourses} courses) into {SITE}")
 
 
 if __name__ == "__main__":
