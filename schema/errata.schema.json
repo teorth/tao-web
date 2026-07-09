@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrytao.github.io/tao-web/schema/errata.schema.json",
+  "title": "Book errata file",
+  "description": "Ground-truth errata for one book, source of truth for the generated errata page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["book", "editions"],
+  "properties": {
+    "book": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["title", "slug"],
+      "properties": {
+        "title": { "type": "string", "minLength": 1 },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+          "description": "URL slug; matches the WordPress path, e.g. analysis-i."
+        },
+        "authors": { "type": "array", "items": { "type": "string" } },
+        "source": {
+          "type": "string",
+          "description": "Canonical URL this data was migrated from (for reference)."
+        },
+        "publisher": { "type": "string" },
+        "notes": { "type": "string", "description": "Free text shown atop the page." }
+      }
+    },
+    "editions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "errata"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+            "description": "Stable edition id, e.g. fourth-edition."
+          },
+          "name": { "type": "string", "minLength": 1 },
+          "year": { "type": "integer" },
+          "isbn": { "type": "string" },
+          "note": { "type": "string" },
+          "errata": { "type": "array", "items": { "$ref": "#/$defs/erratum" } }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "erratum": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["text"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable within-file id for cross-reference, e.g. fourth-edition-0042."
+        },
+        "page": {
+          "type": ["string", "null"],
+          "description": "Page token exactly as printed: \"9\", \"x\" (front matter), \"101, 133\" (spans). Use \"?\" for a KNOWN-location-but-unknown-page stub; null for entries with no page concept (e.g. \"General:\" notes)."
+        },
+        "location": {
+          "type": "string",
+          "description": "Optional structured locator, e.g. \"Example 1.2.12\" or \"Exercise 11.9.1\". Enrichment field; may be empty during migration."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The correction. Inline math in $...$ (LaTeX). This is the human-readable ground truth."
+        },
+        "change": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "Optional machine-readable from/to; enrichment only.",
+          "properties": {
+            "from": { "type": "string" },
+            "to": { "type": "string" }
+          }
+        },
+        "reported_by": { "type": "array", "items": { "type": "string" } },
+        "status": {
+          "type": "string",
+          "enum": ["open", "fixed"],
+          "description": "Defaults to open. 'fixed' means resolved in a later printing/edition."
+        },
+        "fixed_in": {
+          "type": "string",
+          "description": "Edition/printing where this was corrected, when status is fixed."
+        }
+      }
+    }
+  }
+}

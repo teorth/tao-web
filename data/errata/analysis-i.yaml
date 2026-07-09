@@ -1,0 +1,535 @@
+# Imported from https://terrytao.wordpress.com/books/analysis-i/ by scripts/import_wordpress.py -- review, then maintain by hand.
+book:
+  title: Analysis I
+  slug: analysis-i
+  authors:
+  - Terence Tao
+  source: "https://terrytao.wordpress.com/books/analysis-i/"
+editions:
+- id: fourth-edition
+  name: Fourth edition
+  errata:
+  - id: fourth-edition-0001
+    page: null
+    text: "General: all instances of “supercede” should be “supersede”, and “maneuvre” should be “manoeuvre”.\
+      \ Colons in maps should be spaced using the \\colon LaTeX macro."
+  - id: fourth-edition-0002
+    page: x
+    text: “Chapter 5 (on Fourier Series)” should be “Chapter 5 of Analysis II (on Fourier Series)”.
+  - id: fourth-edition-0003
+    page: '5'
+    text: “theirbooks” should be “their books”.
+  - id: fourth-edition-0004
+    page: '9'
+    text: "In Example 1.2.12, final paragraph, $4 x^{-2}$ should be $4 x^{-3}$. In footnote 1, “also continuous\
+      \ and differentiable” should be “also continuous and partially differentiable in the x,y directions”"
+  - id: fourth-edition-0005
+    page: '12'
+    text: “carry of digits” should be “carry digits”.
+  - id: fourth-edition-0006
+    page: '14'
+    text: the computing language C should not be italicised.
+  - id: fourth-edition-0007
+    page: '15'
+    text: The hyperlinks in Footnote 4 should point to Appendix A. (This only affects certain electronic
+      versions of the text.)
+  - id: fourth-edition-0008
+    page: '16'
+    text: "The semicolon before $5 \\times 3$ should be a colon."
+  - id: fourth-edition-0009
+    page: '16'
+    text: In Remark 2.1.10, “axi” should be “axiom”. (This only affects some versions of the text.)
+  - id: fourth-edition-0010
+    page: '17'
+    text: "In the parenthetical, “$n$ “is not a half-integer”” should be “”$n$ is not a half-integer””,\
+      \ i.e., the $n$ should be inside the quotes."
+  - id: fourth-edition-0011
+    page: "?"
+    text: In the reference to Lemma 8.5.15, “transfinite induction” should be “Zorn’s lemma”.
+  - id: fourth-edition-0012
+    page: '19'
+    text: In Remark 2.1.5, the first “For instance” may be deleted.
+  - id: fourth-edition-0013
+    page: "?"
+    text: In Remark 2.1.14, “as to argue about” should be “to argue about”.
+  - id: fourth-edition-0014
+    page: "?"
+    text: In Proposition 2.1.16, “assign a unique natural number” can be rephrased as “uniquely assign
+      a natural number” to reduce ambiguity.
+  - id: fourth-edition-0015
+    page: '29'
+    text: "In Axiom 3.3, both versions of the emptyset should be $\\emptyset$. (This only affects some\
+      \ versions of the text.)"
+  - id: fourth-edition-0016
+    page: '30'
+    text: "In Example 3.1.10: “lie on” should be “lie in”."
+  - id: fourth-edition-0017
+    page: '31'
+    text: In the last part of Definiton 3.1.14, “if” should be “iff”.
+  - id: fourth-edition-0018
+    page: '40'
+    text: In Remark 3.1.26, “elementsof” should be “elements of”.
+  - id: fourth-edition-0019
+    page: '42'
+    text: In Definition 3.3.8, the first “if” should be “if and only if”.
+  - id: fourth-edition-0020
+    page: '46'
+    text: In the parenthetical to Exercise 3.3.1, replace “are immediate from … in question, but the point”
+      with “would be immediate from … in question, but as discussed in Remark 3.3.8, the axioms of equality
+      for functions require justification. The point…”
+  - id: fourth-edition-0021
+    page: "?"
+    text: In Exercise 3.4.3, “next section” should be “next chapter”.
+  - id: fourth-edition-0022
+    page: '49'
+    text: In the statement of Lemma 3.4.10, replace “Then the set” with “Then”.
+  - id: fourth-edition-0023
+    page: '51'
+    text: Delete the second part of Exercise 3.4.6 (it is redundant in view of Exercise 3.5.11), and replace
+      “see also Exercise 3.5.11” with “see Exercise 3.5.11 for a converse to this exercise, which also
+      helps explain why we refer to Axiom 3.11 as the “power set axiom”.” Also, “can be deduced the preceding
+      axioms” should be “can be deduced from the preceding axioms”.
+  - id: fourth-edition-0024
+    page: '51'
+    text: In Remark 3.4.13, “Ernest” should be “Ernst”.
+  - id: fourth-edition-0025
+    page: '55'
+    text: The spelling “rôles” is no longer in common use and can be replaced with “roles”.
+  - id: fourth-edition-0026
+    page: '56'
+    text: "In Exercise 3.5.6, “the $A,B,C,D$” should be “the sets $A,B,C,D$“. In Exercise 3.5.12, $a$\
+      \ should be a function from ${\\bf N}$ to $X$, and $a_N(n++) = f(n,a(n))$ should be $a_N(n++) =\
+      \ f(n,a_N(n))$. In Exercise 3.5.13, the function $f$ can be renamed $a$ for notational consistency\
+      \ with Exercise 3.5.12."
+  - id: fourth-edition-0027
+    page: '62'
+    text: "In the hint for Exercise 3.6.12(i), the codomain for $\\phi$ should involve the range $1 \\\
+      leq i \\leq n++$ rather than $1 \\leq i \\leq n$, and the set after “from the set” should be $S_{n++}$\
+      \ rather than $\\{ i \\in {\\mathbf N}: 1 \\leq i \\leq n++ \\}$. Also, two of the left parentheses\
+      \ in this exercise need to be closed up with matching right parentheses."
+  - id: fourth-edition-0028
+    page: '64'
+    text: In footnote 1, “two applications of the axiom of replacement” should be “the axiom of replacement”,
+      and “role” should be “rôle”.
+  - id: fourth-edition-0029
+    page: '69'
+    text: "In the paragraph before Definition 3.6.5, $N$ should be ${\\bf N}$."
+  - id: fourth-edition-0030
+    page: '70'
+    text: "In the fifth line of the proof of Lemma 3.6.9, $1 \\leq i \\leq N$ should be $1 \\leq i \\\
+      leq n$."
+  - id: fourth-edition-0031
+    page: "?"
+    text: "Add an exercise to Section 4.1: “Suppose we define the integers set-theoretically as $a -\\\
+      !- b := \\{ (c,d) \\in {\\mathbf N}^2: a+d=b+c \\}$ as suggested in Footnote 1. Show that this definition\
+      \ is consistent with Definition 4.1.1 in the sense that, when one adopts this definition, one has\
+      \ $a -\\!- b = c -\\!- d$ if and only if $a+d=b+c$."
+  - id: fourth-edition-0032
+    page: '74'
+    text: "In Proposition 4.3.7(b), add the following parenthetical: “Because of this equivalence, we\
+      \ will also use “$x$ and $y$ are $\\varepsilon$-close” synonymously with either “$x$ is $\\varepsilon$-close\
+      \ to $y$” or “$y$ is $\\varepsilon$-close to $x$“."
+  - id: fourth-edition-0033
+    page: '79'
+    text: Delete the last sentence of Exercise 4.4.3 (as the axiom of choice has not yet been formally
+      introduced.)
+  - id: fourth-edition-0034
+    page: '87'
+    text: In Remark 5.2.4 “Oepsilon-close” should be “epsilon-close”.
+  - id: fourth-edition-0035
+    page: '88'
+    text: In the sixth line from the bottom of the proof of Proposition 5.2.8, delete the first “yet”.
+  - id: fourth-edition-0036
+    page: '89'
+    text: In the statement of Lemma 5.3.6, delete the space before the close parenthesis.
+  - id: fourth-edition-0037
+    page: '94'
+    text: "In the top paragraph (after Proposition 5.3.11), “On obvious guess” should be “One obvious\
+      \ guess”. In the proof of Lemma 5.3.15, after “$|a_m - a_n| \\leq c^2 \\varepsilon$“, “for all $n\
+      \ \\geq N$“, should be “for all $m,n \\geq N$“."
+  - id: fourth-edition-0038
+    page: "?"
+    text: In Exercise 5.3.3, “equivalent” should be “are equivalent”.
+  - id: fourth-edition-0039
+    page: '97'
+    text: After Proposition 5.4.9, “Section 1.2” should be “Section 1.7 of Analysis II”.
+  - id: fourth-edition-0040
+    page: '98'
+    text: The paragraph after Remark 5.4.11 may be deleted, since it is essentially replicated near Definition
+      6.1.1.
+  - id: fourth-edition-0041
+    page: "?"
+    text: In Exercise 5.4.9(ii), add “If”.
+  - id: fourth-edition-0042
+    page: "?"
+    text: "In the proof of Proposition 5.5.8, $M_1$ and $M_2$ are introduced twice; one of these redundant\
+      \ introductions may be deleted."
+  - id: fourth-edition-0043
+    page: '103'
+    text: In Remark 5.5.15 “the greatestlower bound” is missing a space.
+  - id: fourth-edition-0044
+    page: "?"
+    text: "In Lemma 5.6.5, delete the requirement that $q > 1$, and in the final part, ask instead what\
+      \ happens when $q$ is negative."
+  - id: fourth-edition-0045
+    page: "?"
+    text: "After Definition 6.2.1, the proposed choices for $+\\infty$ and $-\\infty$ can be simplified\
+      \ slightly to $+\\infty := {\\mathbf R}$ and $-\\infty := {\\mathbf R} \\cup \\{+\\infty\\}$ if\
+      \ desired."
+  - id: fourth-edition-0046
+    page: "?"
+    text: In Definition 6.4.6, one needs to extend the notion of supremum and infimum to cover sequences
+      that take values in the extended reals, not just the reals.
+  - id: fourth-edition-0047
+    page: "?"
+    text: In Example 6.4.9, “infimumof” is missing a space.
+  - id: fourth-edition-0048
+    page: "?"
+    text: In the proof of Corollary 6.5.1, “Lemma 5.6.6” should be “Lemma 5.6.9(d)”.
+  - id: fourth-edition-0049
+    page: '128'
+    text: "After Definition 6.6.1, “for all $n \\in {\\bf N}$” should be “for all $n \\geq m'$“."
+  - id: fourth-edition-0050
+    page: '131'
+    text: In the proof of Lemma 6.7.1, remove absolute values from second display for consistency.
+  - id: fourth-edition-0051
+    page: "?"
+    text: "In the displays in the proof of Proposition 7.1.8, $x$ should be $f(x)$ in several places."
+  - id: fourth-edition-0052
+    page: "?"
+    text: "In Proposition 7.1.11(e), “$f: X \\cup Y \\to {\\mathbf R}$ is a function” should be “$f: X\
+      \ \\cup Y \\to {\\mathbf R}$ be a function”. In Exercise 7.1.4, one can refer to Exercise 3.6.12(ii)\
+      \ for the definition of the factorial function."
+  - id: fourth-edition-0053
+    page: null
+    text: "Pages 167-168: In Lemma 8.2.3 and Definition 8.2.4, $\\infty$ should be $+\\infty$."
+  - id: fourth-edition-0054
+    page: '136'
+    text: "In Lemma 7.1.4(a), the condition $n < p$ may be relaxed to $n \\leq p$ and $m \\leq n$ to $latex\
+      \ m \\leq n+1$, and in parts (b)-(f), the condition $m \\leq n$ may be deleted."
+  - id: fourth-edition-0055
+    page: "?"
+    text: In Proposition 7.2.13(c), “series are convergent” should be “series is convergent”.
+  - id: fourth-edition-0056
+    page: "?"
+    text: Replace Exercise 7.2.1 with “In view of Example 7.2.7, can you now resolve the difficulty in
+      Example 1.2.2”?
+  - id: fourth-edition-0057
+    page: '152'
+    text: "In Exercise 7.3.2, add the requirement $x \\neq 1$ to the geometric series formula."
+  - id: fourth-edition-0058
+    page: "?"
+    text: In the proof of Corollary 7.3.7, Lemma 6.7.3 should be Proposition 6.7.3.
+  - id: fourth-edition-0059
+    page: "?"
+    text: Exercise 7.3.3 can be moved to Section 7.2.
+  - id: fourth-edition-0060
+    page: '152'
+    text: "In Proposition 7.4.1, $(S_N)_{n=0}^\\infty$ should be $(S_N)_{N=0}^\\infty$, and similarly\
+      \ $(T_M)_{m=0}^\\infty$ should be $(T_M)_{M=0}^\\infty$ (two occurrences)."
+  - id: fourth-edition-0061
+    page: '153'
+    text: At the end of Example 7.4.2, “Exercise 5.5.2” should be “Exercise 5.5.2 of Analysis II”.
+  - id: fourth-edition-0062
+    page: '154'
+    text: In Example 7.4.4, “see Example 4.5.7” should be “see Example 4.5.7 of Analysis II”.
+  - id: fourth-edition-0063
+    page: "?"
+    text: In the last sentence of Exercise 7.4.1, “f” is not in math mode.
+  - id: fourth-edition-0064
+    page: "?"
+    text: In the proof of Lemma 7.5.2 (third paragraph, third sentence), “without” should be “Without”.
+      The parenthetical “(why? prove by contradiction)” can be replaced by “(see Exercise 5.4.7)”.
+  - id: fourth-edition-0065
+    page: "?"
+    text: "In Definition 8.2.1, = should be :=."
+  - id: fourth-edition-0066
+    page: '166'
+    text: "In the proof of Theorem 8.2.2 just before the second display, “convergent for each $m$” should\
+      \ be “convergent for each $n$“.. In the second display, the first $\\leq$ sign can be replaced with\
+      \ equality. Two lines later, “Takingsuprema of this” is missing a space. The parenthetical “(Why\
+      \ will this be enough? prove by contradiction)” can be replaced by “(see Exercise 5.4.7)”."
+  - id: fourth-edition-0067
+    page: "?"
+    text: In Proposition 8.2.6, permute part (a) to follow after parts (b) and (c), rather than before,
+      since parts (b), (c) can be helpful to prove (a).
+  - id: fourth-edition-0068
+    page: "?"
+    text: At the end of the statement of Lemma 8.2.7, add “and in fact diverge”.
+  - id: fourth-edition-0069
+    page: "?"
+    text: "In the proof of Theorem 8.2.8, in the paragraph after (II), delete “$n_j := \\min$” before\
+      \ $\\{ n \\in A_-: n \\neq n_i \\hbox{ for all } i < j \\}$."
+  - id: fourth-edition-0070
+    page: '170'
+    text: "At the end of Section 8.2, add the following exercise (Exercise 8.2.7): “Let $f: {\\bf N} \\\
+      times {\\bf N} \\to {\\bf R}$ be a function. Show that $\\sum_{(n,m) \\in {\\bf N}^2} f(n,m)$ is\
+      \ absolutely convergent if and only if $\\sum_{n=0}^\\infty \\sum_{m=0}^\\infty |f(n,m)|$ is convergent.”"
+  - id: fourth-edition-0071
+    page: "?"
+    text: "In the proof of Corollary 8.3.4, next to $n \\in A,B$, add a footnote “Here we adopt the common\
+      \ convention of using $n \\in A,B$ as an abbreviation for “$n \\in A$ and $n \\in B$“, and similarly\
+      \ for $n \\not \\in A,B$.”"
+  - id: fourth-edition-0072
+    page: '173'
+    text: In Remark 8.3.5, “Exercise 7.2.6” should be “Exercise 7.2.6 of Analysis II“. In Exercise 8.3.2,
+      “a injection” should be “an injection”. In Remark 8.3.6,, replace Exercise 3.6.7 with Exercise 8.3.4.
+  - id: fourth-edition-0073
+    page: '174'
+    text: "In Example 8.4.2, replace “For any sets $I$ and $X$” with “For any set $X$ and non-empty set\
+      \ $I$“."
+  - id: fourth-edition-0074
+    page: '174'
+    text: In the first paragraph of Section 8.4, “Section 7.3” should be “Section 7.3 of Analysis II“.
+  - id: fourth-edition-0075
+    page: "?"
+    text: "In Definition 8.4.1, = should be :=."
+  - id: fourth-edition-0076
+    page: "?"
+    text: In Remark 8.4.6, “Definition 1.2.12” should be “Definition 1.2.12 of Analysis II”. In Exercise
+      8.4.2, “choice of sets” should be “choice of set”, and “trick by” should be “trick of”.
+  - id: fourth-edition-0077
+    page: "?"
+    text: In Exercise 8.5.7, “maximum” and “minimum” can be replaced by “maximal element” and “minimal
+      element”. Then add “In view of this result, for totally ordered sets, one can refer to “the maximum”
+      instead of “maximal element” (if it exists), and similarly for “minimum”.
+  - id: fourth-edition-0078
+    page: '178'
+    text: "In Proposition 8.5.10, replace $<_X$ with $<$."
+  - id: fourth-edition-0079
+    page: '180'
+    text: "In the proof of Lemma 8.5.14, a right parenthesis is missing for $s(\\{y \\in Y_\\infty\\cup\
+      \ \\{s(Y_\\infty)\\}: y < x \\}$ in the paragraph starting with “We now claim that…”."
+  - id: fourth-edition-0080
+    page: "?"
+    text: "In Exercise 8.5.10, the set $Y$ in the hint can be replaced with the simpler $\\{ n \\in X:\
+      \ P(n) \\hbox{ false} \\}$."
+  - id: fourth-edition-0081
+    page: '181'
+    text: "In Exercise 8.5.15, replace the hint with “Apply Zorn’s lemma to the set of pairs $(X, \\iota)$,\
+      \ where $X$ is a subset of $B$ and $\\iota: X \\to A$ is an injection, after giving this set a suitable\
+      \ partial ordering.”"
+  - id: fourth-edition-0082
+    page: '182'
+    text: "In Exercise 8.5.20, “a subcollection $\\Omega' \\subset \\Omega$” is missing a space."
+  - id: fourth-edition-0083
+    page: null
+    text: "Chapter 9 in general: many references to $\\infty$ should be to $+\\infty$."
+  - id: fourth-edition-0084
+    page: '186'
+    text: "In the final paragraph of the proof of Lemma 9.1.12, $(a-b)$ should be $(a,b)$."
+  - id: fourth-edition-0085
+    page: "?"
+    text: In the hint for Exercise 9.1.4, “axiom of choice” should be “the axiom of choice”.
+  - id: fourth-edition-0086
+    page: '187'
+    text: In Remark 9.1.25, “Theorem 1.5.7” should be “Theorem 1.5.7 of Analysis II“, and “Section 1.5”
+      should be “Section 1.5 of Analysis II”.
+  - id: fourth-edition-0087
+    page: "?"
+    text: "In the final claim of Proposition 9.3.14, add “with the convention that $f(x)/g(x)$ is set\
+      \ to some arbitrary value when $g(x)=0$ (which can happen for $x \\not \\in E$)”."
+  - id: fourth-edition-0088
+    page: '194'
+    text: "In Remark 9.3.15, for completeness one can also include “$\\lim_{x \\rightarrow x_0} c f(x)\
+      \ = c \\lim_{x \\rightarrow x_0} f(x)$”."
+  - id: fourth-edition-0089
+    page: "?"
+    text: In Exercise 9.4.1, “(a),(b)” needs a space.
+  - id: fourth-edition-0090
+    page: '197'
+    text: "In Example 9.4.3, in the second limit, $x_0 \\in x$ should be $x \\to x_0$."
+  - id: fourth-edition-0091
+    page: '199'
+    text: In the paragraph after Proposition 9.4.11, “see Exercise 4.5.10” should be “see Exercise 4.5.10
+      of Analysis II”. To improve the logical ordering, Proposition 9.4.13 (and the preceding paragraph)
+      can be moved to before Proposition 9.4.10 (and similarly Exercise 9.4.5 should be moved to before
+      Exercise 9.4.3, 9.4.4).
+  - id: fourth-edition-0092
+    page: "?"
+    text: In Exercise 9.4.1, the hint should be updated to account for part (d).
+  - id: fourth-edition-0093
+    page: "?"
+    text: In Exercise 9.6.1(c), the period at the end should be a semicolon.
+  - id: fourth-edition-0094
+    page: '203'
+    text: "In the proof of Lemma 9.6.3, it would be slightly more logical to have $|f(x)| > M$ rather\
+      \ than $|f(x)| \\geq M$."
+  - id: fourth-edition-0095
+    page: '205'
+    text: In the proof of Proposition 9.6.7, “in Proposition 2.3.2” should be “… Proposition 2.3.2 of
+      Analysis II”.
+  - id: fourth-edition-0096
+    page: '206'
+    text: At the start of Section 9.7, “a continuous function attains” should be “a continuous function
+      on a closed interval attains”.
+  - id: fourth-edition-0097
+    page: "?"
+    text: "In the hint for Exercise 9.8.5(c), the argument for $f_n$ should be changed from $x$ to $y$\
+      \ to avoid collision."
+  - id: fourth-edition-0098
+    page: '211'
+    text: "In the second paragraph of Section 9.9, the “island of stability” can be defined as a closed\
+      \ interval rather than an open one for consistency with the rest of the text. In the first paragraph\
+      \ of Section 9.9, “continuous at $(0,2)$” should be “continuous on $(0,2)$“."
+  - id: fourth-edition-0099
+    page: '212'
+    text: The note that we no longer require the sequences to be Cauchy can be safely deleted.
+  - id: fourth-edition-0100
+    page: '214'
+    text: "In the first display of the proof of Theorem 9.9.16, $n \\in N$ should be $n \\in {\\bf N}$."
+  - id: fourth-edition-0101
+    page: '215'
+    text: In the first paragraph of Section 9.10, “see Section 11.12” should be “see Section 2.5 of Analysis
+      II”.
+  - id: fourth-edition-0102
+    page: '216'
+    text: "In Example 9.10.4, $(0, \\infty)$ should be $(0, +\\infty)$ (two occurrences)."
+  - id: fourth-edition-0103
+    page: '220'
+    text: "In Theorem 10.1.13(h), enlarge the parentheses around $\\frac{f}{g}$."
+  - id: fourth-edition-0104
+    page: "?"
+    text: In the last sentence above Proposition 10.3.3, “if function” should be “if a function”.
+  - id: fourth-edition-0105
+    page: '227'
+    text: "In Exercises 10.4.1-10.4.3, replace $\\infty$ with $+\\infty$ throughout."
+  - id: fourth-edition-0106
+    page: '232'
+    text: In Remark 11.1.2, “Section 2.4” should be “Section 2.4 of Analysis II“.
+  - id: fourth-edition-0107
+    page: 233-234
+    text: "In the proof of Theorem 11.1.13, $I-K$ can be $I \\backslash K$ for consistency."
+  - id: fourth-edition-0108
+    page: '235'
+    text: "In Exercise 11.1.3, $c \\leq b$ should be $c<b$ (two occurrences), and “$I_j$ is not of the\
+      \ form” should be “none of the $I_j$ are of the form”. In the hint for Exercise 11.1.2, add “if\
+      \ nonempty” after “is automatically connected”."
+  - id: fourth-edition-0109
+    page: "?"
+    text: "After Definition 11.3.4, add that an alternate notation for $\\int_{[a,b]}$ is $\\int_a^b$."
+  - id: fourth-edition-0110
+    page: '240'
+    text: In Remark 11.3.5, replace “this is the purpose of the next section” with “see Proposition 11.3.12”.
+      (Also one can mention that this definition of the Riemann integral is also known as the Darboux
+      integral.) In Remark 11.3.8, “Chapter 8” should be “Chapter 8 of Analysis II“.
+  - id: fourth-edition-0111
+    page: 246-247
+    text: In the proof of Theorem 11.5.1, the strict inequalities involving epsilon and delta can be replaced
+      with non-strict inequalities for consistency with the rest of the book.
+  - id: fourth-edition-0112
+    page: '251'
+    text: "Delete Corollary 11.6.5, and replace Exercise 11.6.5 with “Use Proposition 11.6.4 to provide\
+      \ an alternate proof of Corollary 7.3.7 in the case $q \\neq 1$, using the fundamental theorem of\
+      \ calculus (Theorem 11.9.4). The $q=1$ case can also be treated by this method, but requires the\
+      \ theory of the natural logarithm function, which is postponed to Analysis II“. This exercise should\
+      \ also be moved to Section 11.9."
+  - id: fourth-edition-0113
+    page: '252'
+    text: In Remark 11.7.2, “Chapter 8” should be “Chapter 8 of Analysis II“.
+  - id: fourth-edition-0114
+    page: '253'
+    text: "In Definition 11.8.1, “a interval” should be “an interval”. In (ii), “$X$ is the right endpoint”\
+      \ should be “$a$ is the right endpoint”, and the final right parenthesis should be deleted. In (iii),\
+      \ $b^+$ should be $a^+$, and the colons in the limits should be semicolons. In (iv), all occurrences\
+      \ of $\\alpha(\\dots)$ should be $\\alpha[\\dots]$ for notational consistency. Add an exercise to\
+      \ the effect that the limits in (ii), (iii) are well-defined, and refer to this exercise in the\
+      \ definition."
+  - id: fourth-edition-0115
+    page: '253'
+    text: "In Lemma 11.8.4, “interval $X$ is closed and which contains $I$” should be “closed interval\
+      \ $X$ containing $I$“. After mentioning the continuous case, add as a parenthetical comment that\
+      \ while in this section one will only need the monotone case of this lemma, the continuous case\
+      \ will be useful in the next section."
+  - id: fourth-edition-0116
+    page: '254'
+    text: "After Example 11.8.7, $\\alpha(I)$ should be $\\alpha[I]$ (two occurrences)."
+  - id: fourth-edition-0117
+    page: '255'
+    text: At the end of Section 11.8, the reference to the breakdown of Theorem 11.4.1(g) should be deleted.
+  - id: fourth-edition-0118
+    page: '257'
+    text: "In Definition 11.9.3, “all limit points $x$ of $I$” should be “all limit points $x$ of $I$\
+      \ that are contained in $I$“."
+  - id: fourth-edition-0119
+    page: "?"
+    text: "In the statement of Proposition 11.10.1, the notation $I$ can be safely removed."
+  - id: fourth-edition-0120
+    page: "?"
+    text: In the proof of Theorem 11.10.2, replace “why is this generalization true?” with “see Exercise
+      11.4.2.”.
+  - id: fourth-edition-0121
+    page: "?"
+    text: "In Remark 11.10.4, $f \\frac{d\\alpha}{} dx dx$ should be $f \\frac{d\\alpha}{dx} dx$. (This\
+      \ issue may already be corrected in some printings.)"
+  - id: fourth-edition-0122
+    page: '271'
+    text: "In Examples A.2.1, “no conclusion on $x$ or $x^2$” should be “no conclusion for $x^2$“."
+  - id: fourth-edition-0123
+    page: 283-284
+    text: In the proof of Proposition A.6.2, 0 \leq y \leq x may be improved to 0 < y < x; similarly for
+      the first line of page 332.
+  - id: fourth-edition-0124
+    page: "?"
+    text: "In Exercise B.1.1, $\\epsilon_{i+1}=1$ should be $\\epsilon_{i+1} := 1$."
+  - id: fourth-edition-0125
+    page: '290'
+    text: In the paragraph immediately after proof of Theorem B.1.4, “Onceone has this” is missing a space.
+  - id: fourth-edition-0126
+    page: '291'
+    text: In Definition B.2.1, note that the + sign is often omitted from the decimal representation.
+  - id: fourth-edition-0127
+    page: 291-292
+    text: "In the proof of Theorem B.2.2, many of the indices of $a$ need to have their sign flipped for\
+      \ consistency, e.g., $a_i$ should be $a_{-i}$."
+  - id: fourth-edition-0128
+    page: '293'
+    text: "In Exercise B.2.3, “$x$ is not at terminating decimal” should be “$x$ is not a terminating\
+      \ decimal”. $n/10^{-m}$ can be $n/10^m$, and $m$ can be set to be a natural number rather than an\
+      \ integer."
+  - id: fourth-edition-0129
+    page: null
+    text: In the index, the entries for ++ and for Cauchy-Schwarz are duplicated in some issues.
+  - id: fourth-edition-0130
+    page: null
+    text: "General LaTeX issues: Use \\text instead of \\hbox for subscripted text. Some numbers (such\
+      \ as 0) are not properly placed in math mode in certain places. Some instances of \\ldots should\
+      \ be \\dots. \\lim \\sup should be \\limsup, and similarly for \\lim \\inf."
+- id: corrected-fourth-edition
+  name: Corrected fourth edition
+  errata:
+  - id: corrected-fourth-edition-0001
+    page: '52'
+    text: In Remark 3.3.9, “ontheir” is missing a space
+  - id: corrected-fourth-edition-0002
+    page: '54'
+    text: In Example 3.3.21, should “but also what its range is” be “but also what its codomain is”?
+  - id: corrected-fourth-edition-0003
+    page: 101, 133
+    text: "Definition 6.1.16 should require $M \\geq 0$ for compatibility with Definition 5.1.12."
+  - id: corrected-fourth-edition-0004
+    page: '205'
+    text: Ex. 8.4.2 “thesets” is missing a space
+  - id: corrected-fourth-edition-0005
+    page: '220'
+    text: Remark 9.1.25, Theorem 1.5.7 should be “of Analysis II”
+  - id: corrected-fourth-edition-0006
+    page: "?"
+    text: In Exercise 9.8.5 (b), add “Is f continuous from the left at r?
+  - id: corrected-fourth-edition-0007
+    page: "?"
+    text: "In Exercise 10.1.5, add “with the convention that $nx^{n-1}$ vanishes for $x=n=0$“."
+  - id: corrected-fourth-edition-0008
+    page: "?"
+    text: In Section 10.2, an exercise to prove Darboux’ theorem can be added.
+  - id: corrected-fourth-edition-0009
+    page: '283'
+    text: start of section 11.4, Proposition 8.3.3 should be “of Analysis II”
+  - id: corrected-fourth-edition-0010
+    page: null
+    text: Page 301 bottom, 2/3 of the way through proof of Theorem 11.9.4, “while from definition we have”
+      should refer to Definition 11.3.1.
+  - id: corrected-fourth-edition-0011
+    page: "?"
+    text: "In Exercise 11.9.1, add “is $F$ differentiable from the left at $r$?”. In Exercise 11.9.3,\
+      \ $x_0$ needs to lie in the interior interval $(a,b)$."

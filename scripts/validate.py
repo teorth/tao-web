@@ -1,0 +1,64 @@
+#!/usr/bin/env python3
+"""Validate every errata YAML file in data/errata/ against schema/errata.schema.json.
+
+Also enforces a few cross-field rules the JSON Schema can't express (unique ids).
+Exits non-zero on any problem so CI fails loudly. Run: python scripts/validate.py
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import yaml
+from jsonschema import Draft7Validator
+
+ROOT = Path(__file__).resolve().parent.parent
+SCHEMA = ROOT / "schema" / "errata.schema.json"
+DATA = ROOT / "data" / "errata"
+
+
+def main() -> int:
+    validator = Draft7Validator(yaml.safe_load(SCHEMA.read_text(encoding="utf-8")))
+    files = sorted(DATA.glob("*.yaml"))
+    if not files:
+        print(f"No YAML files found in {DATA}", file=sys.stderr)
+        return 1
+
+    problems = 0
+    for path in files:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+        errors = sorted(validator.iter_errors(doc), key=lambda e: e.path)
+        for err in errors:
+            loc = "/".join(str(p) for p in err.path) or "(root)"
+            print(f"{path.name}: {loc}: {err.message}")
+            problems += 1
+
+        # Cross-field: erratum ids must be unique within a file.
+        seen = {}
+        for ed in doc.get("editions", []):
+            for i, e in enumerate(ed.get("errata", [])):
+                eid = e.get("id")
+                if eid is None:
+                    continue
+                if eid in seen:
+                    print(f"{path.name}: duplicate erratum id {eid!r}")
+                    problems += 1
+                seen[eid] = True
+
+        n = sum(len(ed.get("errata", [])) for ed in doc.get("editions", []))
+        stubs = sum(
+            1 for ed in doc.get("editions", []) for e in ed.get("errata", [])
+            if e.get("page") == "?"
+        )
+        status = "OK" if not errors else "INVALID"
+        print(f"  {path.name}: {n} errata, {stubs} stubs -> {status}")
+
+    if problems:
+        print(f"\n{problems} problem(s) found.", file=sys.stderr)
+        return 1
+    print(f"\nAll {len(files)} file(s) valid.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
