@@ -64,7 +64,6 @@ works:
   arxiv: '2603.21453'
   tags:
   - harmonic-analysis
-  - random-matrices
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2603.21453"
@@ -217,7 +216,6 @@ works:
   arxiv: '2511.07721'
   tags:
   - kakeya-restriction
-  - tiling
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2511.07721"
@@ -556,7 +554,6 @@ works:
   arxiv: '2309.02325'
   tags:
   - additive-combinatorics
-  - euler
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2309.02325"
@@ -573,7 +570,6 @@ works:
   arxiv: '2309.09504'
   tags:
   - additive-combinatorics
-  - tiling
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2309.09504"
@@ -590,6 +586,7 @@ works:
   arxiv: '2311.05762'
   tags:
   - additive-combinatorics
+  - approximate-groups
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2311.05762"
@@ -637,6 +634,7 @@ works:
   arxiv: '2306.11514'
   tags:
   - honeycombs
+  - random-matrices
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2306.11514"
@@ -736,6 +734,7 @@ works:
   tags:
   - additive-combinatorics
   - gowers-norms
+  - multiplicative-functions
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2107.02158"
@@ -786,6 +785,7 @@ works:
   arxiv: '2112.02056'
   tags:
   - additive-combinatorics
+  - ergodic-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2112.02056"
@@ -911,6 +911,7 @@ works:
   arxiv: '2010.00574'
   tags:
   - additive-combinatorics
+  - ergodic-theory
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=4286"
@@ -946,6 +947,7 @@ works:
   arxiv: '2012.02747'
   tags:
   - additive-combinatorics
+  - compressed-sensing
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=10677"
@@ -964,8 +966,8 @@ works:
   arxiv: '2008.00857'
   tags:
   - harmonic-analysis
-  - ergodic-theory
   - multilinear
+  - ergodic-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2008.00857"
@@ -998,7 +1000,6 @@ works:
   arxiv: '2006.11602'
   tags:
   - harmonic-analysis
-  - machine-assisted
   links:
   - type: journal
     url: "https://ems.press/journals/rmi/issues/2012"
@@ -1142,6 +1143,7 @@ works:
   arxiv: '1911.12033'
   tags:
   - additive-combinatorics
+  - ergodic-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1911.12033"
@@ -1156,9 +1158,9 @@ works:
   arxiv: '1907.11342'
   tags:
   - kakeya-restriction
+  - multilinear
   - kakeya
   - restriction
-  - multilinear
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1907.11342"
@@ -1206,7 +1208,6 @@ works:
   tags:
   - pde
   - euler
-  - random-matrices
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=8904"
@@ -1406,6 +1407,7 @@ works:
   arxiv: '1707.01315'
   tags:
   - additive-combinatorics
+  - multiplicative-functions
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1707.01315"
@@ -1478,6 +1480,7 @@ works:
   arxiv: '1712.08840'
   tags:
   - additive-combinatorics
+  - multiplicative-functions
   links:
   - type: journal
     url: "https://mathscinet.ams.org/mathscinet/search/journaldoc.html?id=734"
@@ -1510,7 +1513,6 @@ works:
   arxiv: '1707.02389'
   tags:
   - pde
-  - random-matrices
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/1707.02389"
@@ -1526,7 +1528,6 @@ works:
   tags:
   - pde
   - euler
-  - random-matrices
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1707.07807"
@@ -1562,6 +1563,7 @@ works:
   tags:
   - additive-combinatorics
   - gowers-norms
+  - ergodic-theory
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1603.07815"
@@ -2042,7 +2044,6 @@ works:
   arxiv: '1307.4357'
   tags:
   - additive-combinatorics
-  - random-matrices
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/1307.4357"
@@ -2156,7 +2157,6 @@ works:
   venue: Daedalus 141 (3) (Summer 2012)
   tags:
   - additive-combinatorics
-  - random-matrices
   - misc
 - id: new-bounds-for-szemeredi-s-theorem-ia-progressions-of-length
   kind: paper
@@ -2252,6 +2252,7 @@ works:
   arxiv: '1212.2586'
   tags:
   - additive-combinatorics
+  - ergodic-theory
   links:
   - type: journal
     url: "http://journals.cambridge.org/action/displayJournal?jid=FMS"
@@ -2715,6 +2716,7 @@ works:
   tags:
   - additive-combinatorics
   - gowers-norms
+  - ergodic-theory
   links:
   - type: journal
     url: "http://www.ma.huji.ac.il/jdm/"
@@ -3134,9 +3136,9 @@ works:
   arxiv: '0904.2880'
   tags:
   - pde
+  - multilinear
   - strichartz
   - gowers-norms
-  - multilinear
   links:
   - type: arxiv
     url: "http://arxiv.org/abs/0904.2880"
@@ -3261,6 +3263,7 @@ works:
   arxiv: '0807.1736'
   tags:
   - additive-combinatorics
+  - multiplicative-functions
   - ergodic-theory
   links:
   - type: journal
@@ -3876,6 +3879,7 @@ works:
   arxiv: math.NT/0606087
   tags:
   - additive-combinatorics
+  - multiplicative-functions
   links:
   - type: journal
     url: "http://aif.cedram.org/?lang=en"
@@ -4059,7 +4063,6 @@ works:
   tags:
   - pde
   - nls
-  - machine-assisted
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/math.AP/0606254"
@@ -4120,8 +4123,8 @@ works:
   arxiv: math.AP/0609849
   tags:
   - pde
-  - strichartz
   - multilinear
+  - strichartz
   links:
   - type: journal
     url: "http://ejde.math.swt.edu/"
@@ -4395,9 +4398,9 @@ works:
   arxiv: math.CA/0509262
   tags:
   - kakeya-restriction
+  - multilinear
   - kakeya
   - restriction
-  - multilinear
   links:
   - type: journal
     url: "http://www.ml.kva.se/publications/acta/"
@@ -4834,6 +4837,7 @@ works:
   tags:
   - harmonic-analysis
   - primes
+  - compressed-sensing
   links:
   - type: journal
     url: "http://math.ucsd.edu/~mrl/"
@@ -4851,7 +4855,6 @@ works:
   arxiv: math.CO/0306274
   tags:
   - honeycombs
-  - ergodic-theory
   links:
   - type: journal
     url: "http://www.combinatorics.org/"
@@ -5171,8 +5174,8 @@ works:
   arxiv: math.CA/0210084
   tags:
   - kakeya-restriction
-  - restriction
   - multilinear
+  - restriction
   links:
   - type: journal
     url: "http://link.springer.de/link/service/journals/00039/index.htm"
@@ -5789,8 +5792,8 @@ works:
   venue: GAFA 10 (2000), 185-215
   tags:
   - kakeya-restriction
-  - restriction
   - multilinear
+  - restriction
   links:
   - type: journal
     url: "http://link.springer.de/link/service/journals/00039/bibs/0001001/00100185.htm"
@@ -6025,8 +6028,8 @@ works:
   arxiv: math.CA/9909066
   tags:
   - kakeya-restriction
-  - restriction
   - multilinear
+  - restriction
   links:
   - type: journal
     url: "http://link.springer-ny.com/link/service/journals/00209/bibs/1238002/12380215.htm"
@@ -6134,9 +6137,9 @@ works:
   arxiv: math.CA/9807163
   tags:
   - kakeya-restriction
+  - multilinear
   - kakeya
   - restriction
-  - multilinear
   links:
   - type: journal
     url: "http://www.ams.org/jourcgi/amsjournal?fn=120&pg1=pii&s1=S0894034798002781"
@@ -6426,8 +6429,8 @@ works:
   title: "Dvir's proof of the finite field Kakeya conjecture"
   tags:
   - additive-combinatorics
-  - kakeya
   - kakeya-restriction
+  - kakeya
   links:
   - type: note
     url: "http://terrytao.wordpress.com/2008/03/24/dvirs-proof-of-the-finite-field-kakeya-conjecture/"
@@ -6902,8 +6905,8 @@ works:
   title: Non-endpoint bilinear cone restriction theorems
   tags:
   - kakeya-restriction
-  - restriction
   - multilinear
+  - restriction
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/cone_simplified.dvi"
@@ -6912,9 +6915,8 @@ works:
   title: Informal proof of bilinear cone restriction estimates
   tags:
   - kakeya-restriction
-  - restriction
-  - machine-assisted
   - multilinear
+  - restriction
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/cone_informal.dvi"
@@ -6923,7 +6925,6 @@ works:
   title: Informal proof of x-ray estimates
   tags:
   - kakeya-restriction
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/xray_informal.dvi"
@@ -6941,7 +6942,6 @@ works:
   title: "An informal outline of Wolff's local smoothing estimate"
   tags:
   - kakeya-restriction
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/smsub_informal.dvi"
@@ -7508,7 +7508,6 @@ works:
   tags:
   - pde
   - nls
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/bourgain.dvi"
@@ -7518,7 +7517,6 @@ works:
   tags:
   - pde
   - nls
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/grillakis.dvi"
@@ -7544,7 +7542,6 @@ works:
   tags:
   - pde
   - nls
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/preprints/Expository/schrodinger_derivation.dvi"
@@ -7628,8 +7625,8 @@ works:
   title: A physical space proof of the bilinear Strichartz and local smoothing estimate
   tags:
   - pde
-  - strichartz
   - multilinear
+  - strichartz
   links:
   - type: note
     url: "http://terrytao.files.wordpress.com/2013/07/bilinear.pdf"
@@ -7705,7 +7702,6 @@ works:
   title: Conformal compactification applet
   tags:
   - pde
-  - machine-assisted
   links:
   - type: note
     url: "http://www.math.ucla.edu/~tao/java/Compact.html"
