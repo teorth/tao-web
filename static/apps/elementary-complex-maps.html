@@ -127,8 +127,7 @@
     });
     $("cv").addEventListener("pointermove", function (e) {
       var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
-      if (cur && l && l.i === 0) { cur.push(m); hover = m; draw(); }
-      else if (cur) { cur.push(m); draw(); }               // keep drawing even if cursor briefly leaves
+      if (cur) { if (m) { cur.push(m); hover = m; } draw(); }   // never push a null point off-canvas
       else if (inDomain(l)) { hover = m; draw(); }
       else if (hover) { hover = null; draw(); }
     });

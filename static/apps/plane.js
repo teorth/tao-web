@@ -46,7 +46,8 @@
   S.math = function (p, px, py) { return [(px - p.cx) / p.s, (p.cy - py) / p.s]; };
 
   S.clip = function (p, fn) {
-    var c = this.ctx; c.save(); c.beginPath(); c.rect(p.x0, 0, p.w, this.cssH); c.clip(); fn(); c.restore();
+    var c = this.ctx; c.save(); c.beginPath(); c.rect(p.x0, 0, p.w, this.cssH); c.clip();
+    try { fn(); } finally { c.restore(); }   // always restore, even if fn throws
   };
   S.clear = function () {
     var c = this.ctx; c.clearRect(0, 0, this.cssW, this.cssH); c.fillStyle = this.css("--panel");
@@ -81,12 +82,18 @@
     var c = this.ctx, a = this.px(p, x1, y1), b = this.px(p, x2, y2);
     c.beginPath(); c.moveTo(a[0], a[1]); c.lineTo(b[0], b[1]); c.stroke();
   };
-  // polyline through math points [[x,y],...] (caller sets stroke style)
+  // polyline through math points [[x,y],...] (caller sets stroke style).
+  // Skips null / non-finite points, breaking the line there.
   S.poly = function (p, pts) {
     var c = this.ctx; if (!pts.length) return;
-    c.beginPath();
-    for (var i = 0; i < pts.length; i++) { var q = this.px(p, pts[i][0], pts[i][1]);
-      if (i === 0) c.moveTo(q[0], q[1]); else c.lineTo(q[0], q[1]); }
+    c.beginPath(); var started = false;
+    for (var i = 0; i < pts.length; i++) {
+      var pt = pts[i];
+      if (!pt || !isFinite(pt[0]) || !isFinite(pt[1])) { started = false; continue; }
+      var q = this.px(p, pt[0], pt[1]);
+      if (!started) c.moveTo(q[0], q[1]); else c.lineTo(q[0], q[1]);
+      started = true;
+    }
     c.stroke();
   };
   // sampled curve: f(t) -> [x,y] for t in [t0,t1], N samples
