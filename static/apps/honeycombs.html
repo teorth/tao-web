@@ -47,8 +47,11 @@
       <button data-a="numbers">Toggle numbers</button><button data-a="reset">Reset</button><button data-a="undo">Undo</button>
     </div>
     <canvas id="cv"></canvas>
-    <p class="hint">In <em>select</em> mode, click hexagons to select them (shown grey), then use the
-      Shrink/Enlarge buttons. "Shrink All" deflates the whole honeycomb by one layer.</p>
+    <p class="hint">Click a hexagon to shrink it (right-click to enlarge). The
+      <strong>Shrink / Enlarge / Max</strong> buttons act on your last-clicked hexagon — or on several
+      at once if you set <em>click</em> to "select hexagons" and pick them (shown grey).
+      <strong>Shrink All</strong> deflates the whole honeycomb by one layer.</p>
+    <p class="hint" id="status" style="min-height:1.2em;color:var(--accent)"></p>
   </div>
 
   <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao and Allen Knutson, part of
@@ -60,7 +63,7 @@
     var $ = function (id) { return document.getElementById(id); };
     var cv = $("cv"), ctx = cv.getContext("2d");
     var W = 700, H = 520, sqrt3 = Math.sqrt(3), infty = 20;
-    var n = 5, hive = [], backup = [], selected = [], mode = 1, virtual = 0;
+    var n = 5, hive = [], backup = [], selected = [], mode = 1, virtual = 0, lastHex = null;
     var showHive = true, drawRGB = true, drawSurface = false, numbers = false;
     var x0 = 100, y0 = H / 2 + 90, xscale = 4, yscale = 4;
     var trunc = Math.trunc;
@@ -108,16 +111,20 @@
 
     // ---- mutations ----
     function clickAt(x, y, right) {
+      var h = locateHex(x, y); lastHex = { I: h.I, J: h.J };
       if (mode === 1 || mode === 2) {
-        snapshot(); var h = locateHex(x, y);
+        snapshot();
         if ((mode === 1) !== right) hive[h.J][h.I]++; else hive[h.J][h.I]--;
         if (!legalHive()) restore();
-      } else { var g = locateHex(x, y); selected[g.J][g.I] = !selected[g.J][g.I]; }
+      } else { selected[h.J][h.I] = !selected[h.J][h.I]; }
       draw();
     }
+    function anySel() { for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) if (selected[j][i]) return true; return false; }
+    function isTarget(i, j) { return anySel() ? selected[j][i] : !!(lastHex && lastHex.I === i && lastHex.J === j); }
+    function hasTarget() { return anySel() || !!lastHex; }
     function shrinkSelected(shrink) {
       snapshot();
-      for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) if (selected[j][i]) hive[j][i] += shrink ? 1 : -1;
+      for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) if (isTarget(i, j)) hive[j][i] += shrink ? 1 : -1;
       if (!legalHive()) { restore(); draw(); return false; }
       draw(); return true;
     }
@@ -129,10 +136,10 @@
     }
     function shrinkMax(shrink) {
       var saved = clone(hive), ind = [];
-      for (var j = 0; j <= n; j++) { ind[j] = []; for (var i = 0; i <= n - j; i++) ind[j][i] = selected[j][i] ? (shrink ? 1 : -1) : 0; }
+      for (var j = 0; j <= n; j++) { ind[j] = []; for (var i = 0; i <= n - j; i++) ind[j][i] = isTarget(i, j) ? (shrink ? 1 : -1) : 0; }
       hive = ind; var bad = legalHive(); hive = saved;
-      if (bad) return false;                      // unbounded direction — refuse
-      var modified = false; while (shrinkSelected(shrink)) modified = true; return modified;
+      if (bad) return "unbounded";                // direction stays legal forever — refuse
+      var steps = 0; while (shrinkSelected(shrink)) steps++; return steps;
     }
     function undo() { var t = hive; hive = backup; backup = t; draw(); }
 
@@ -226,6 +233,13 @@
       ctx.fillText("B = (" + Bs.join(", ") + ")", sx, H - 24);
       ctx.fillText("C = (" + Cs.join(", ") + ")", sx, H - 12);
       drawHive();
+      selStatus();
+    }
+    function selStatus() {
+      if (!$("status")) return;
+      var c = 0; for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) if (selected[j][i]) c++;
+      $("status").textContent = c ? (c + " hexagon" + (c > 1 ? "s" : "") + " selected — buttons act on these.")
+        : lastHex ? "Target: your last-clicked hexagon (or select several)." : "";
     }
 
     // ---- events ----
@@ -236,14 +250,18 @@
     $("mode").addEventListener("change", function () { mode = +$("mode").value; });
     $("hive").addEventListener("change", function () { var v = $("hive").value; showHive = v !== "hide"; drawRGB = v === "mound"; drawSurface = v === "flat"; draw(); });
     $("edge").addEventListener("change", function () { virtual = +$("edge").value; });
+    function say(m) { $("status").textContent = m; }
     document.querySelectorAll(".btns button").forEach(function (b) {
       b.addEventListener("click", function () {
-        var a = b.dataset.a.split(",");
-        if (a[0] === "shrink") shrinkSelected(a[1] === "1");
-        else if (a[0] === "max") shrinkMax(a[1] === "1");
-        else if (a[0] === "all") shrinkAll(a[1] === "1");
+        var a = b.dataset.a.split(","), shrink = a[1] === "1", word = shrink ? "shrink" : "enlarge";
+        if (a[0] === "shrink" || a[0] === "max") {
+          if (!hasTarget()) { say("Click a hexagon first (or use “select hexagons” to pick several), then press this button."); return; }
+        }
+        if (a[0] === "shrink") { if (!shrinkSelected(shrink)) say("Already at the legal limit — can’t " + word + " further."); }
+        else if (a[0] === "max") { var r = shrinkMax(shrink); say(r === "unbounded" ? "These hexagons can " + word + " without limit here — try the “Positive edges” constraint." : r > 0 ? (word.charAt(0).toUpperCase() + word.slice(1) + "ed by " + r + " step" + (r > 1 ? "s" : "") + ".") : "Already at the legal limit."); }
+        else if (a[0] === "all") { shrinkAll(shrink); say("Whole honeycomb " + (shrink ? "deflated" : "inflated") + " by one layer."); }
         else if (a[0] === "numbers") { numbers = !numbers; draw(); }
-        else if (a[0] === "reset") { initHive(n); draw(); }
+        else if (a[0] === "reset") { initHive(n); lastHex = null; draw(); }
         else if (a[0] === "undo") undo();
       });
     });
