@@ -620,6 +620,11 @@ lectures:
   date: '2022'
   topic: Mathematical thinking
 service:
+- start: '2025'
+  organization: Foundation for Science and AI Research (SAIR)
+  role: Co-founder
+  url: "https://sair.foundation/"
+  highlight: true
 - start: '1998'
   end: '2005'
   organization: Zentralblatt Math.
