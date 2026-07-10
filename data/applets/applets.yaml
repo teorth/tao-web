@@ -156,9 +156,10 @@ applets:
 # --- Miscellaneous (Java) ---
 - name: Besicovitch sets
   category: Miscellaneous
-  status: to-port
+  status: ported
   year: 1998
-  description: Illustrates Besicovitch (Kakeya) sets — sets of measure zero containing a unit segment in every direction.
+  description: The Perron-tree construction of a small-area set that still contains a unit segment in every direction — vary the iterations and overlap.
+  url: apps/besicovitch-sets.html
   source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 - name: Conformal compactification
   category: Miscellaneous

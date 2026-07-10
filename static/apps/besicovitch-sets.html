@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Besicovitch sets — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .layout { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; align-items: flex-start; }
+  .diagram { flex: 1 1 22rem; max-width: 30rem; }
+  .panel { flex: 1 1 15rem; display: flex; flex-direction: column; gap: 1.1rem; }
+  .ctl { display: flex; flex-direction: column; gap: .35rem; }
+  .ctl .lab { display: flex; justify-content: space-between; align-items: baseline; }
+  .ctl .lab span:first-child { font-weight: 600; font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .ctl .lab .val { font-family: var(--mono); color: var(--ink); }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+  .area { background: var(--panel); border: 1px solid var(--line); border-radius: 9px; padding: .8rem .9rem; }
+  .area .big { font-family: var(--mono); font-size: 1.6rem; color: var(--accent); }
+  .area .cap { color: var(--muted); font-size: .85rem; margin-top: .2rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Besicovitch sets</h1>
+    <p class="lede">A <strong>Besicovitch (Kakeya) set</strong> contains a unit line segment in every
+      direction, yet can have arbitrarily small area. This shows the classic <em>Perron-tree</em>
+      construction: a triangle is repeatedly split and its halves slid over each other, so the
+      <span class="math">2<sup>n</sup></span> pieces still point in all directions but overlap more
+      and more. Increase <span class="math">n</span> and push <span class="math">α</span> toward 1 to
+      watch the area shrink.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao
+      (originally <code>Besicovitch.java</code> / <code>Kakeya.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="layout">
+      <div class="diagram"><canvas id="cv" style="width:100%;display:block;border:1px solid var(--line);border-radius:10px"></canvas></div>
+      <div class="panel">
+        <div class="ctl">
+          <div class="lab"><span>Iterations n</span><span class="val" id="nVal">6</span></div>
+          <input type="range" id="n" min="0" max="9" step="1" value="6">
+          <div class="lab" style="color:var(--muted);font-size:.8rem"><span style="text-transform:none;letter-spacing:0;font-weight:400">2ⁿ triangles</span><span class="val" id="ntri"></span></div>
+        </div>
+        <div class="ctl">
+          <div class="lab"><span>Overlap α</span><span class="val" id="aVal">0.80</span></div>
+          <input type="range" id="alpha" min="0.5" max="1" step="0.01" value="0.8">
+        </div>
+        <div class="area">
+          <div class="big" id="area"></div>
+          <div class="cap">upper bound for the area  (α<sup>2n</sup> + (1 − α)) — a segment still points in every direction</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cv = $("cv"), ctx = cv.getContext("2d"), pad = 6;
+    function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+    function draw() {
+      var n = +$("n").value, alpha = +$("alpha").value;
+      $("nVal").textContent = n; $("aVal").textContent = alpha.toFixed(2);
+      var n2 = 1 << n, alphaN = Math.pow(alpha, n);
+      $("ntri").textContent = n2;
+      $("area").textContent = "area ≈ " + (Math.pow(alpha, 2 * n) + (1 - alpha)).toFixed(3);
+
+      var dpr = window.devicePixelRatio || 1, size = Math.min(cv.clientWidth, 460);
+      cv.width = size * dpr; cv.height = size * dpr; cv.style.height = size + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, size, size);
+      var s = size - 2 * pad, topY = pad, botY = size - pad;
+      ctx.fillStyle = css("--panel"); ctx.fillRect(0, 0, size, size);
+
+      for (var k = 0; k < n2; k++) {
+        var x = 0, m = k, j2 = n2 / 2, aj = 1;
+        for (var j = 0; j < n; j++) {
+          x += (aj / j2) * Math.floor((m + 1) / 2);
+          aj *= alpha; j2 = Math.floor(j2 / 2); m = Math.floor(m / 2);
+        }
+        x *= (alpha - 1); x += 1 - alphaN;
+        var ax = x, bl = x + k / n2, br = x + (k + 1) / n2;
+        var hue = Math.round(k / Math.max(1, n2) * 300);
+        ctx.fillStyle = "hsla(" + hue + ",72%,55%,0.35)";
+        ctx.beginPath();
+        ctx.moveTo(pad + ax * s, topY);
+        ctx.lineTo(pad + bl * s, botY);
+        ctx.lineTo(pad + br * s, botY);
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.strokeStyle = css("--line"); ctx.lineWidth = 1; ctx.strokeRect(0.5, 0.5, size - 1, size - 1);
+    }
+    ["n", "alpha"].forEach(function (id) { $(id).addEventListener("input", draw); });
+    window.addEventListener("resize", draw);
+    draw();
+  })();
+</script>
+</body>
+</html>
