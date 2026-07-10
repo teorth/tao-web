@@ -836,10 +836,13 @@ def build_applets(doc: dict) -> str:
             nm = f'<a href="{html.escape(a["url"])}">{nm}</a>'
         pill = f'<span class="pill {a["status"]}">{_APPLET_STATUS[a["status"]]}</span>'
         note = f' {html.escape(a["note"])}' if a.get("note") else ""
+        java = "Java, " + str(a["year"]) if a.get("year") else "Java"
         src = ""
         if a.get("source"):
             lbl = "original applet" if a["status"] in ("to-port", "retired") else "original"
-            src = f'<div class="src"><a href="{html.escape(a["source"])}">{lbl}</a> (Java)</div>'
+            src = f'<div class="src"><a href="{html.escape(a["source"])}">{lbl}</a> ({java})</div>'
+        elif a.get("year"):
+            src = f'<div class="src">{java}</div>'
         return (f'<div class="app"><div class="nm">{nm}</div>{pill}'
                 f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}</div>')
 

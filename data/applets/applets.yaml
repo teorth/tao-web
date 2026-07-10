@@ -9,7 +9,7 @@ description: >-
   ported.
 category_notes:
   Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
-  Complex analysis: All the complex analysis apps below were originally written by Terence Tao in 2002, in Java.
+  Complex analysis: All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000.
 applets:
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
@@ -43,36 +43,42 @@ applets:
 - name: Vector calculator
   category: Linear algebra
   status: ported
+  year: 2002
   description: Vector addition and subtraction, scalar multiplication, an elementary row operation (v − c·w), and the dot product.
   url: apps/vector-calculator.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/Apple1.html
 - name: Gaussian elimination
   category: Linear algebra
   status: ported
+  year: 2002
   description: Row-reduce a 4×5 augmented matrix by applying elementary row operations one step at a time, with an undo history and a running log.
   url: apps/gaussian-elimination.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/Gauss.html
 - name: Matrix calculator
   category: Linear algebra
   status: ported
+  year: 2002
   description: Arithmetic on two matrices up to 5×5 — sums, products, powers, transpose, trace, determinant, and inverse.
   url: apps/matrix-calculator.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/matrixCalc.html
 - name: Linear transformations in R^2
   category: Linear algebra
   status: ported
+  year: 2002
   description: Visualize how a 2×2 matrix transforms the plane — draw in the domain and watch the image appear in the range.
   url: apps/linear-transformations.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/linearMap.html
 - name: Eigenvalues and eigenvectors
   category: Linear algebra
   status: ported
+  year: 2002
   description: Explore the eigenlines and eigenvalues of a 2×2 matrix; drag a vector, or drag the columns of the matrix directly.
   url: apps/eigenvalues.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/EigenMap.html
 - name: Gram–Schmidt orthogonalisation
   category: Linear algebra
   status: ported
+  year: 2002
   description: Orthogonalise a set of vectors step by step — subtract projections and normalise, with a live inner-product table.
   url: apps/gram-schmidt.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/GramSchmidt.html
@@ -80,78 +86,93 @@ applets:
 - name: The complex plane
   category: Complex analysis
   status: ported
+  year: 1998
   description: An Argand-plane sandbox — drag a complex number and watch its Cartesian and polar forms, with buttons for basic operations.
   url: apps/complex-plane.html
   source: https://www.math.ucla.edu/~tao/java/Plane.html
 - name: Elementary complex maps
   category: Complex analysis
   status: ported
+  year: 2000
   description: Draw a curve in the domain and see its image under w = f(z) for a range of elementary functions.
   url: apps/elementary-complex-maps.html
   source: https://www.math.ucla.edu/~tao/java/Complex.html
 - name: Möbius transforms
   category: Complex analysis
   status: to-port
+  year: 1999
   description: Explores Möbius transformations of the complex plane.
   source: https://www.math.ucla.edu/~tao/java/Mobius.html
 - name: Multi-valued functions
   category: Complex analysis
   status: to-port
+  year: 1998
   description: Illustrates branch cuts and multi-valued complex functions.
   source: https://www.math.ucla.edu/~tao/java/Multi.html
 - name: The complex derivative
   category: Complex analysis
   status: to-port
+  year: 1998
   description: Visualizes complex differentiation and conformality.
   source: https://www.math.ucla.edu/~tao/java/Diff.html
 - name: The complex integral
   category: Complex analysis
   status: to-port
+  year: 1998
   description: Illustrates contour integration in the complex plane.
   source: https://www.math.ucla.edu/~tao/java/Integ.html
 - name: Taylor and Laurent series
   category: Complex analysis
   status: to-port
+  year: 2007
   description: Demonstrates Taylor and Laurent series expansions.
   source: https://www.math.ucla.edu/~tao/java/Laurent.html
 - name: The fundamental theorem of calculus
   category: Complex analysis
   status: to-port
+  year: 2000
   description: A complex-analytic view of the fundamental theorem of calculus.
   source: https://www.math.ucla.edu/~tao/java/Ftoc.html
 - name: The residue theorem
   category: Complex analysis
   status: to-port
+  year: 2000
   description: Illustrates the residue theorem for contour integrals.
   source: https://www.math.ucla.edu/~tao/java/Residue.html
 - name: The argument principle
   category: Complex analysis
   status: to-port
+  year: 2000
   description: Demonstrates the argument principle and winding numbers.
   source: https://www.math.ucla.edu/~tao/java/Argument.html
 # --- Miscellaneous (Java) ---
 - name: Besicovitch sets
   category: Miscellaneous
   status: to-port
+  year: 1998
   description: Illustrates Besicovitch (Kakeya) sets — sets of measure zero containing a unit segment in every direction.
   source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 - name: Conformal compactification
   category: Miscellaneous
   status: to-port
+  year: 1998
   description: Visualizes the conformal compactification of the plane.
   source: https://www.math.ucla.edu/~tao/java/Compact.html
 - name: Honeycombs
   category: Miscellaneous
   status: to-port
+  year: 1999
   description: Interactive honeycombs modelling Littlewood–Richardson coefficients (joint with Allen Knutson).
   source: https://www.math.ucla.edu/~tao/java/Honeycomb.html
 - name: Exponent calculator
   category: Miscellaneous
   status: to-port
+  year: 1999
   description: A small numerical calculator utility.
   source: https://www.math.ucla.edu/~tao/java/Calculator.html
 - name: Multiple choice applet
   category: Miscellaneous
   status: retired
+  year: 2005
   description: A multiple-choice quiz applet, later superseded by a wiki.
   source: https://www.math.ucla.edu/~tao/java/MultipleChoice/MultipleChoice.html

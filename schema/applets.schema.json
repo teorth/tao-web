@@ -24,6 +24,7 @@
         "properties": {
           "name": { "type": "string" },
           "category": { "type": "string", "description": "Grouping heading; sections render in first-seen order." },
+          "year": { "type": "integer", "description": "Year the original source was last modified." },
           "status": {
             "type": "string",
             "enum": ["ported", "live", "to-port", "retired"],
