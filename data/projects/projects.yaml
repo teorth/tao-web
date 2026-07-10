@@ -1,0 +1,61 @@
+# Online collaborative projects. Maintained by hand.
+# Launch year = the source repository's creation year (via the GitHub API).
+title: Collaborative projects
+description: >-
+  Online collaborative projects I am involved in, including formalization efforts in Lean and
+  community-maintained mathematical databases. Launch years are approximate (taken from the
+  repository creation date).
+projects:
+- name: Optimization problems
+  description: A collection of open optimization problems in mathematics, each tracked with current bounds and references.
+  launched: 2026
+  status: active
+  url: https://teorth.github.io/optimizationproblems/
+  repo: https://github.com/teorth/optimizationproblems
+- name: Erdős problems
+  description: A community database recording and tracking the status of the problems catalogued at erdosproblems.com.
+  launched: 2025
+  status: active
+  url: https://teorth.github.io/erdosproblems/
+  repo: https://github.com/teorth/erdosproblems
+- name: Exponent pair database
+  description: A community-maintained database of exponent pairs and related exponents in analytic number theory, together with the deductions relating them.
+  launched: 2024
+  status: active
+  url: https://teorth.github.io/expdb/
+  repo: https://github.com/teorth/expdb
+- name: Prime Number Theorem And… (PNT+)
+  description: A Lean formalization of the prime number theorem and related results in analytic number theory.
+  launched: 2024
+  status: active
+  url: https://alexkontorovich.github.io/PrimeNumberTheoremAnd/
+  repo: https://github.com/AlexKontorovich/PrimeNumberTheoremAnd
+- name: Mathlib at ICERM 2026 (Stieltjes integral)
+  description: A Mathlib fork developed during the May 2026 ICERM meeting, formalizing the Riemann–Stieltjes integral.
+  launched: 2026
+  status: inactive
+  repo: https://github.com/leanprover-community/mathlib-at-ICERM26/tree/stieltjes
+- name: Analysis I Lean companion
+  description: A Lean companion to the textbook Analysis I, formalizing its results and exercises.
+  launched: 2025
+  status: inactive
+  url: https://teorth.github.io/analysis/
+  repo: https://github.com/teorth/analysis
+- name: Estimates
+  description: A proof-of-concept tool for automatically proving or verifying asymptotic estimates in analysis.
+  launched: 2025
+  status: inactive
+  url: https://teorth.github.io/estimates/
+  repo: https://github.com/teorth/estimates
+- name: Equational theories
+  description: A collaborative project mapping the implications between equational theories of magmas.
+  launched: 2024
+  status: inactive
+  url: https://teorth.github.io/equational_theories/
+  repo: https://github.com/teorth/equational_theories
+- name: Polynomial Freiman–Ruzsa conjecture (PFR)
+  description: A Lean formalization of the proof of the polynomial Freiman–Ruzsa conjecture.
+  launched: 2023
+  status: inactive
+  url: https://teorth.github.io/pfr/
+  repo: https://github.com/teorth/pfr

@@ -56,6 +56,7 @@ PAPERS = ROOT / "data" / "papers"
 CV = ROOT / "data" / "cv"
 CONTACT = ROOT / "data" / "contact"
 TRAVEL = ROOT / "data" / "travel"
+PROJECTS = ROOT / "data" / "projects"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -784,9 +785,34 @@ def build_contact(contact: dict, travel: dict | None = None) -> str:
     return page("Terence Tao — contact and policies", "\n".join(body))
 
 
+def build_projects(projects: dict) -> str:
+    def row(p):
+        primary = p.get("url") or p["repo"]
+        name = f'<a href="{html.escape(primary)}"><strong>{html.escape(p["name"])}</strong></a>'
+        dd = f'{name} &mdash; {html.escape(p["description"])}'
+        if p.get("url"):  # url is the project site; also surface the code repo
+            dd += f' <span class="meta">[<a href="{html.escape(p["repo"])}">code</a>]</span>'
+        return (str(p["launched"]), dd)
+
+    items = projects.get("projects", [])
+    body = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv">',
+            '<h1>Collaborative projects</h1>']
+    if projects.get("description"):
+        body.append(f'<div class="cv-bio"><p>{html.escape(projects["description"])}</p></div>')
+    for status, heading in [("active", "Active"), ("inactive", "Completed or inactive")]:
+        group = [p for p in items if p.get("status") == status]
+        if not group:
+            continue
+        group.sort(key=lambda p: (-p["launched"], p["name"].lower()))
+        body.append(_cv_section(heading, _cv_rows([row(p) for p in group])))
+    body.append("</div>")
+    return page("Terence Tao — collaborative projects", "\n".join(body))
+
+
 def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None,
                 papers: dict | None = None, cv: dict | None = None,
-                contact: dict | None = None, travel: dict | None = None) -> str:
+                contact: dict | None = None, travel: dict | None = None,
+                projects: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -821,6 +847,10 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         npast = len((travel or {}).get("past") or [])
         body += ('<p class="desc"><a href="travel.html"><strong>Travel</strong></a> '
                  f'&mdash; upcoming engagements and a log of {npast} past trips.</p>')
+    if projects:
+        nproj = len((projects or {}).get("projects") or [])
+        body += ('<p class="desc"><a href="projects.html"><strong>Collaborative projects</strong></a> '
+                 f'&mdash; {nproj} active and completed online projects.</p>')
     body += ('<details class="section" id="books">'
              f'<summary>Books <span class="count">({len(books)})</span></summary>'
              f'<ul class="book-list">{"".join(rows)}</ul></details>')
@@ -901,8 +931,14 @@ def main() -> None:
     if contact_path.exists():
         contact = yaml.safe_load(contact_path.read_text(encoding="utf-8"))
         (SITE / "contact.html").write_text(build_contact(contact, travel), encoding="utf-8", newline="\n")
-    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers, cv, contact, travel),
-                                     encoding="utf-8", newline="\n")
+    projects_path = PROJECTS / "projects.yaml"
+    projects = None
+    if projects_path.exists():
+        projects = yaml.safe_load(projects_path.read_text(encoding="utf-8"))
+        (SITE / "projects.html").write_text(build_projects(projects), encoding="utf-8", newline="\n")
+    (SITE / "index.html").write_text(
+        build_index(books, linkdocs, teaching, papers, cv, contact, travel, projects),
+        encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
     ncourses = len((teaching or {}).get("courses") or [])
     nworks = len((papers or {}).get("works") or [])

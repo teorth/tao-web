@@ -27,6 +27,8 @@ TRAVEL_SCHEMA = ROOT / "schema" / "travel.schema.json"
 TRAVEL = ROOT / "data" / "travel"
 CONTACT_SCHEMA = ROOT / "schema" / "contact.schema.json"
 CONTACT = ROOT / "data" / "contact"
+PROJECTS_SCHEMA = ROOT / "schema" / "projects.schema.json"
+PROJECTS = ROOT / "data" / "projects"
 
 
 def validate_links() -> int:
@@ -161,6 +163,7 @@ def main() -> int:
     problems += validate_cv()
     problems += validate_one(TRAVEL_SCHEMA, TRAVEL / "travel.yaml", "travel")
     problems += validate_one(CONTACT_SCHEMA, CONTACT / "contact.yaml", "contact")
+    problems += validate_one(PROJECTS_SCHEMA, PROJECTS / "projects.yaml", "projects")
 
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)
