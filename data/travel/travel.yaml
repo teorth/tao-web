@@ -20,11 +20,30 @@ upcoming:
   dates: Jun 29
   place: UC Riverside
 - year: 2026
+  dates: Jul 20–21
+  place: Washington DC
+- year: 2026
   dates: Jul 23–30
   place: Philadelphia
 - year: 2026
+  dates: Aug 8
+  place: Stanford
+- year: 2026
+  dates: Aug 28–30
+  place: Seattle
+  tentative: true
+- year: 2026
+  dates: Oct 1–2
+  place: NY
+- year: 2026
+  dates: Oct 9
+  place: Caltech
+- year: 2026
   dates: Nov 5–7
   place: San Francisco
+- year: 2026
+  dates: Nov 15–16
+  place: New York
 - year: 2027
   dates: Winter quarter
   place: UK
