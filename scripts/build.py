@@ -851,6 +851,11 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         nproj = len((projects or {}).get("projects") or [])
         body += ('<p class="desc"><a href="projects.html"><strong>Collaborative projects</strong></a> '
                  f'&mdash; {nproj} active and completed online projects.</p>')
+    for l in sorted(links, key=lambda d: d["title"].lower()):
+        blurb = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", l.get("description", ""))
+        blurb = f" &mdash; {html.escape(blurb)}" if blurb else ""
+        body += (f'<p class="desc"><a href="{l["slug"]}.html">'
+                 f'<strong>{html.escape(l["title"])}</strong></a>{blurb}</p>')
     body += ('<details class="section" id="books">'
              f'<summary>Books <span class="count">({len(books)})</span></summary>'
              f'<ul class="book-list">{"".join(rows)}</ul></details>')
@@ -871,13 +876,6 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         body += ('<details class="section" id="teaching">'
                  f'<summary>Teaching <span class="count">({len(courses)})</span></summary>'
                  f'<ul class="book-list">{"".join(crows)}</ul></details>')
-    if links:
-        lrows = "".join(
-            f'<li><a href="{l["slug"]}.html">{html.escape(l["title"])}</a></li>'
-            for l in sorted(links, key=lambda d: d["title"].lower()))
-        body += ('<details class="section" id="other">'
-                 f'<summary>Other pages <span class="count">({len(links)})</span></summary>'
-                 f'<ul class="book-list">{lrows}</ul></details>')
     # Open the <details> targeted by the URL hash (e.g. index.html#books).
     body += ('<script>function openHash(){var h=location.hash.slice(1);if(!h)return;'
              'var el=document.getElementById(h);if(!el)return;'
