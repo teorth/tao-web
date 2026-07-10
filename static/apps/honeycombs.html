@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Honeycombs — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .controls { display: flex; flex-wrap: wrap; gap: .5rem .9rem; align-items: center; margin-top: 1rem; }
+  .controls select { min-width: auto; padding: .3rem .45rem; font-size: .9rem; }
+  .controls .lab { color: var(--muted); font-size: .85rem; }
+  .btns { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+  .btns button { font-size: .85rem; padding: .4rem .7rem; background: var(--panel); color: var(--accent); border: 1px solid var(--line); }
+  .btns button:hover { background: var(--accent-soft); filter: none; }
+  #cv { width: 100%; max-width: 700px; height: auto; display: block; margin-top: 1rem;
+    border: 1px solid var(--line); border-radius: 8px; touch-action: none; background: #000; }
+  .hint { color: var(--muted); font-size: .85rem; margin-top: .6rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Honeycombs</h1>
+    <p class="lede">A <strong>honeycomb</strong> of order <span class="math">n</span> is a web of edges
+      in three directions at 120°. Honeycombs parametrise Littlewood–Richardson coefficients — the
+      multiplicities in tensor products of <span class="math">U(n)</span> representations — and
+      equivalently the eigenvalues of sums of Hermitian matrices (Horn's problem). The three boundary
+      "spectra" <span class="math">A, B, C</span> are those eigenvalue tuples. <strong>Click a hexagon
+      to shrink it</strong> (right-click to enlarge); edges may shrink to zero but not go negative. The
+      dual <em>hive</em> (a triangular array of integers) is shown at right.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao and
+      Allen Knutson (originally <code>Honeycomb.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="controls">
+      <span class="lab">n =</span><select id="n"></select>
+      <span class="lab">click:</span>
+      <select id="mode"><option value="1">shrink hexagons</option><option value="2">enlarge hexagons</option><option value="3">select hexagons</option></select>
+      <select id="hive"><option value="mound">Hive mound w/colours</option><option value="flat">Hive flatspaces</option><option value="hide">Hide hive</option></select>
+      <select id="edge"><option value="0">Non-negative edges</option><option value="1">Positive edges</option><option value="-666">Virtual edges</option></select>
+    </div>
+    <div class="btns">
+      <button data-a="shrink,1">Shrink</button><button data-a="max,1">Shrink Max</button><button data-a="all,1">Shrink All</button>
+      <button data-a="shrink,0">Enlarge</button><button data-a="max,0">Enlarge Max</button><button data-a="all,0">Enlarge All</button>
+      <button data-a="numbers">Toggle numbers</button><button data-a="reset">Reset</button><button data-a="undo">Undo</button>
+    </div>
+    <canvas id="cv"></canvas>
+    <p class="hint">In <em>select</em> mode, click hexagons to select them (shown grey), then use the
+      Shrink/Enlarge buttons. "Shrink All" deflates the whole honeycomb by one layer.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao and Allen Knutson, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cv = $("cv"), ctx = cv.getContext("2d");
+    var W = 700, H = 520, sqrt3 = Math.sqrt(3), infty = 20;
+    var n = 5, hive = [], backup = [], selected = [], mode = 1, virtual = 0;
+    var showHive = true, drawRGB = true, drawSurface = false, numbers = false;
+    var x0 = 100, y0 = H / 2 + 90, xscale = 4, yscale = 4;
+    var trunc = Math.trunc;
+
+    for (var k = 1; k <= 9; k++) { var o = document.createElement("option"); o.value = k; o.textContent = k; $("n").appendChild(o); }
+    $("n").value = 5;
+
+    function clone(a) { return a.map(function (r) { return r.slice(); }); }
+    function initHive(N) {
+      n = N; hive = []; backup = []; selected = [];
+      for (var j = 0; j <= n; j++) { hive[j] = []; selected[j] = []; for (var i = 0; i <= n - j; i++) { hive[j][i] = 10 * (i * i + i * j + j * j - i - j); selected[j][i] = false; } }
+      backup = clone(hive); xscale = yscale = 20 / n;
+    }
+    function snapshot() { backup = clone(hive); }
+    function restore() { hive = clone(backup); }
+
+    function getCoords(i, j, up) {
+      var a = 0, b = 0;
+      if (j === -1) { a = hive[0][i] - hive[0][i - 1]; b = hive[1][i - 1] - hive[0][i - 1] - infty; }
+      else if (i === 0 && !up) { a = hive[j][i + 1] - hive[j][i] - infty; b = hive[j + 1][i] - hive[j][i]; }
+      else if (i + j === n) { a = hive[j][i] - hive[j][i - 1] + infty; b = hive[j + 1][i - 1] - hive[j][i - 1] + infty; }
+      else if (up) { a = hive[j][i + 1] - hive[j][i]; b = hive[j + 1][i] - hive[j][i]; }
+      else { a = hive[j + 1][i] - hive[j + 1][i - 1]; b = hive[j + 1][i] - hive[j][i]; }
+      return { x: a, y: b };
+    }
+    function pt(i, j, up) { var p = getCoords(i, j, up); return { x: x0 + p.x * xscale, y: y0 - (2 * p.y - p.x) / sqrt3 * yscale }; }
+    function findcoord(i, j, wc, up) { var p = getCoords(i, j, up); return wc === 1 ? p.x : wc === 2 ? -p.y : p.y - p.x; }
+
+    function legalHive() {
+      for (var j = 0; j <= n - 2; j++) for (var i = 0; i <= n - 2 - j; i++) {
+        if (hive[j + 1][i] + hive[j + 1][i + 1] + virtual > hive[j][i + 1] + hive[j + 2][i]) return false;
+        if (hive[j + 1][i] + hive[j][i + 1] + virtual > hive[j][i] + hive[j + 1][i + 1]) return false;
+        if (hive[j][i + 1] + hive[j + 1][i + 1] + virtual > hive[j + 1][i] + hive[j][i + 2]) return false;
+      }
+      return true;
+    }
+    function locateHex(x, y) {
+      var a = (x - x0) / xscale, b = ((y0 - y) / yscale * sqrt3 + a) / 2, I = 0, J = 0;
+      for (var j = 0; j <= n - 1; j++) for (var i = 0; i <= n - j - 1; i++) {
+        if (hive[j][i + 1] - hive[j][i] < a) if (hive[j][i + 1] - hive[j + 1][i] < a - b) { if (j === 0) I++; else if (hive[j - 1][i + 1] - hive[j][i] > a - b) I++; }
+        if (hive[j + 1][i] - hive[j][i] < b) if (hive[j][i + 1] - hive[j + 1][i] > a - b) { if (i === 0) J++; else if (hive[j][i] - hive[j + 1][i - 1] < a - b) J++; }
+      }
+      return { I: I, J: J };
+    }
+
+    // ---- mutations ----
+    function clickAt(x, y, right) {
+      if (mode === 1 || mode === 2) {
+        snapshot(); var h = locateHex(x, y);
+        if ((mode === 1) !== right) hive[h.J][h.I]++; else hive[h.J][h.I]--;
+        if (!legalHive()) restore();
+      } else { var g = locateHex(x, y); selected[g.J][g.I] = !selected[g.J][g.I]; }
+      draw();
+    }
+    function shrinkSelected(shrink) {
+      snapshot();
+      for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) if (selected[j][i]) hive[j][i] += shrink ? 1 : -1;
+      if (!legalHive()) { restore(); draw(); return false; }
+      draw(); return true;
+    }
+    function shrinkAll(shrink) {
+      snapshot();
+      for (var j = 0; j <= n; j++) for (var i = 0; i <= n - j; i++) { var q = i * i + i * j + j * j - i - j; hive[j][i] += shrink ? -q : q; }
+      if (!legalHive()) { restore(); draw(); return false; }
+      draw(); return true;
+    }
+    function shrinkMax(shrink) {
+      var saved = clone(hive), ind = [];
+      for (var j = 0; j <= n; j++) { ind[j] = []; for (var i = 0; i <= n - j; i++) ind[j][i] = selected[j][i] ? (shrink ? 1 : -1) : 0; }
+      hive = ind; var bad = legalHive(); hive = saved;
+      if (bad) return false;                      // unbounded direction — refuse
+      var modified = false; while (shrinkSelected(shrink)) modified = true; return modified;
+    }
+    function undo() { var t = hive; hive = backup; backup = t; draw(); }
+
+    // ---- drawing ----
+    function col(r, g, b) { function c(v) { return Math.max(0, Math.min(255, Math.round(v * 255))); } return "rgb(" + c(r) + "," + c(g) + "," + c(b) + ")"; }
+    function shine(lo1, lo2, hi) { var d = 25 + hi - trunc((lo1 + lo2) / 2); return d < 0 ? 0 : d > 50 ? 1 : d / 50; }
+    function poly(pts, fill) { ctx.beginPath(); pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); }); ctx.closePath(); if (fill) ctx.fill(); }
+    function line(a, b) { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); }
+
+    function drawHive() {
+      if (!showHive && !drawRGB && !drawSurface) return;
+      var w = W - 24 * n - 60, ya = 24, vs = drawSurface ? 100000 : -2, base = H - 72;
+      function z(a, b) { return hive[a][b] - hive[0][0] - trunc(a * (hive[n][0] - hive[0][0]) / n) - trunc(b * (hive[0][n] - hive[0][0]) / n); }
+      function px(i, j, zz) { return { x: w + 30 * i + 15 * j, y: base - j * ya - trunc(zz / vs) }; }   // i=col, j=row for hive labels/surface
+      if (drawRGB) {
+        for (var j = n - 1; j >= 0; j--) for (var i = 0; i <= n - j - 1; i++) {
+          ctx.fillStyle = col(1 - shine(z(i, j), z(i + 1, j), z(i, j + 1)), 1 - shine(z(i + 1, j), z(i, j + 1), z(i, j)), 1 - shine(z(i, j + 1), z(i, j), z(i + 1, j)));
+          poly([{ x: w + 30 * j + 15 * i, y: base - i * ya - trunc(z(i, j) / vs) },
+                { x: w + 30 * (j + 1) + 15 * i, y: base - i * ya - trunc(z(i, j + 1) / vs) },
+                { x: w + 30 * j + 15 * (i + 1), y: base - (i + 1) * ya - trunc(z(i + 1, j) / vs) }], true);
+          if (j > 0) {
+            ctx.fillStyle = col(shine(z(i, j), z(i + 1, j), z(i + 1, j - 1)), shine(z(i + 1, j - 1), z(i, j), z(i + 1, j)), shine(z(i + 1, j), z(i + 1, j - 1), z(i, j)));
+            poly([{ x: w + 30 * j + 15 * i, y: base - i * ya - trunc(z(i, j) / vs) },
+                  { x: w + 30 * j + 15 * (i + 1), y: base - (i + 1) * ya - trunc(z(i + 1, j) / vs) },
+                  { x: w + 30 * (j - 1) + 15 * (i + 1), y: base - (i + 1) * ya - trunc(z(i + 1, j - 1) / vs) }], true);
+          }
+        }
+      }
+      if (drawSurface) {
+        function inR(i, j) { return i >= 0 && j >= 0 && i + j <= n; }
+        function bar(i1, j1, i4, j4, i3, j3, i2, j2) {
+          if (![[i1, j1], [i2, j2], [i3, j3], [i4, j4]].every(function (p) { return inR(p[0], p[1]); })) return;
+          var s1 = hive[j2][i2] + hive[j3][i3], s2 = hive[j1][i1] + hive[j4][i4];
+          if (s1 > s2) ctx.strokeStyle = "#e5484d"; else if (s1 < s2) ctx.strokeStyle = "#fff"; else return;
+          ctx.lineWidth = 1.5;
+          line(px(i2, j2, z(j2, i2)), px(i3, j3, z(j3, i3)));
+        }
+        for (var jj = 0; jj <= n; jj++) for (var ii = 0; ii <= n - jj; ii++) {
+          bar(ii, jj, ii + 1, jj + 1, ii, jj + 1, ii + 1, jj);
+          bar(ii, jj, ii - 1, jj + 2, ii - 1, jj + 1, ii, jj + 1);
+          bar(ii, jj, ii + 2, jj - 1, ii + 1, jj - 1, ii + 1, jj);
+        }
+        ctx.strokeStyle = "#fff"; ctx.lineWidth = 1;
+        function edge(list) { ctx.beginPath(); list.forEach(function (p, k) { var q = px(p[0], p[1], z(p[1], p[0])); if (k === 0) ctx.moveTo(q.x, q.y); else ctx.lineTo(q.x, q.y); }); ctx.stroke(); }
+        var bot = [], lef = [], hyp = [];
+        for (var e = 0; e <= n; e++) { bot.push([e, 0]); lef.push([0, e]); hyp.push([n - e, e]); }
+        edge(bot); edge(lef); edge(hyp);
+      }
+      if (showHive) {
+        ctx.fillStyle = "#fff"; ctx.font = "11px system-ui, sans-serif"; ctx.textAlign = "left";
+        for (var j2 = 0; j2 <= n; j2++) for (var i2 = 0; i2 <= n - j2; i2++)
+          ctx.fillText(String((n - 1) * n * 10 - hive[j2][i2]), w + 30 * i2 + 15 * j2, base - j2 * ya);
+      }
+    }
+
+    function draw() {
+      var dpr = window.devicePixelRatio || 1;
+      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.fillStyle = "#000"; ctx.fillRect(0, 0, W, H);
+      var i, j;
+      // selected hexagons (grey)
+      ctx.fillStyle = "#555";
+      for (j = 0; j <= n; j++) for (i = 0; i <= n - j; i++) if (selected[j][i]) {
+        var c = [];
+        if (j > 0) c.push(pt(i, j - 1, true));
+        if (j > 0 || i + j < n) c.push(pt(i + 1, j - 1, false));
+        if (i + j < n) c.push(pt(i, j, true));
+        if (i + j < n || i > 0) c.push(pt(i, j, false));
+        if (i > 0) c.push(pt(i - 1, j, true));
+        if (i > 0 || j > 0) c.push(pt(i, j - 1, false));
+        poly(c, true);
+      }
+      // honeycomb Y-edges (white)
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.4;
+      for (j = 0; j <= n - 1; j++) for (i = 0; i <= n - 1 - j; i++) {
+        var A = pt(i, j, true), B = pt(i, j, false), C = pt(i + 1, j, false), D = pt(i + 1, j - 1, false);
+        line(A, B); line(A, C); line(A, D);
+        if (numbers) {
+          ctx.fillStyle = "#22d3ee"; ctx.font = "10px system-ui"; ctx.textAlign = "left";
+          ctx.fillText(String(findcoord(i, j, 2, true)), (A.x + B.x) / 2 + 3, (A.y + B.y) / 2 - 3);
+          ctx.fillText(String(findcoord(i, j, 3, true)), (A.x + C.x) / 2 + 3, (A.y + C.y) / 2 + 7);
+          ctx.fillText(String(findcoord(i, j, 1, true)), (A.x + D.x) / 2 + 2, (A.y + D.y) / 2);
+        }
+      }
+      // boundary spectra A,B,C
+      var As = [], Bs = [], Cs = [];
+      for (i = 0; i <= n - 1; i++) { As.push(hive[n - i][i] - hive[n - i - 1][i + 1]); Bs.push(hive[0][n - i] - hive[0][n - i - 1]); Cs.push(hive[i][0] - hive[i + 1][0]); }
+      ctx.fillStyle = "#9aa0ab"; ctx.font = "11px ui-monospace, monospace"; ctx.textAlign = "left";
+      var sx = W - 24 * n - 60;
+      ctx.fillText("A = (" + As.join(", ") + ")", sx, H - 36);
+      ctx.fillText("B = (" + Bs.join(", ") + ")", sx, H - 24);
+      ctx.fillText("C = (" + Cs.join(", ") + ")", sx, H - 12);
+      drawHive();
+    }
+
+    // ---- events ----
+    function logical(e) { var r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left) * (W / r.width), y: (e.clientY - r.top) * (H / r.height) }; }
+    cv.addEventListener("pointerdown", function (e) { e.preventDefault(); var p = logical(e); clickAt(p.x, p.y, e.button === 2); });
+    cv.addEventListener("contextmenu", function (e) { e.preventDefault(); });
+    $("n").addEventListener("change", function () { initHive(+$("n").value); draw(); });
+    $("mode").addEventListener("change", function () { mode = +$("mode").value; });
+    $("hive").addEventListener("change", function () { var v = $("hive").value; showHive = v !== "hide"; drawRGB = v === "mound"; drawSurface = v === "flat"; draw(); });
+    $("edge").addEventListener("change", function () { virtual = +$("edge").value; });
+    document.querySelectorAll(".btns button").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var a = b.dataset.a.split(",");
+        if (a[0] === "shrink") shrinkSelected(a[1] === "1");
+        else if (a[0] === "max") shrinkMax(a[1] === "1");
+        else if (a[0] === "all") shrinkAll(a[1] === "1");
+        else if (a[0] === "numbers") { numbers = !numbers; draw(); }
+        else if (a[0] === "reset") { initHive(n); draw(); }
+        else if (a[0] === "undo") undo();
+      });
+    });
+
+    initHive(5); draw();
+  })();
+</script>
+</body>
+</html>

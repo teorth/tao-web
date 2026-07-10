@@ -170,9 +170,10 @@ applets:
   source: https://www.math.ucla.edu/~tao/java/Compact.html
 - name: Honeycombs
   category: Miscellaneous
-  status: to-port
+  status: ported
   year: 1999
-  description: Interactive honeycombs modelling Littlewood–Richardson coefficients (joint with Allen Knutson).
+  description: Interactive honeycombs (with Allen Knutson) modelling Littlewood–Richardson coefficients and Horn's problem — click hexagons to mutate, with the dual hive shown alongside.
+  url: apps/honeycombs.html
   source: https://www.math.ucla.edu/~tao/java/Honeycomb.html
 - name: Exponent calculator (harmonic analysis)
   category: Miscellaneous
