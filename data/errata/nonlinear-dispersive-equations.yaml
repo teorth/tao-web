@@ -383,7 +383,7 @@ editions:
   - id: errata-0192
     page: '106'
     date: '2026-07-10'
-    text: "In the hint for Exercise 2.75, it might be helpful to add that the case where $d \\geq 3$,\
+    text: "In the hint for Exercise 2.75, add that the case where $d \\geq 3$,\
       \ $N \\leq 2M$ and both functions are frequency supported where $|\\xi| \\leq 2M$ can also be\
       \ handled using the linear $L_x^2 \\to L_{t,x}^4$ estimates, which one can get from interpolating\
       \ between the $L_x^2 \\to L_{t,x}^\\infty$ and $L^2 \\to L_{t,x}^{\\frac{2(d+2)}{d}}$ estimates."
