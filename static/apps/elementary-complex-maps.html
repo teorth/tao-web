@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Elementary complex maps — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .toolrow select { font-family: var(--mono); }
+  .stagewrap { margin-top: 1.1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); font-size: .85rem; color: var(--muted); margin-top: .6rem; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Elementary complex maps</h1>
+    <p class="lede">See how a complex function <span class="math">w = f(z)</span> distorts the plane.
+      <strong>Draw a curve with the mouse in the left panel</strong> (the domain) and its image under
+      <span class="math">f</span> appears on the right. Move the cursor to preview a point
+      <span class="math">z</span> and its image <span class="math">f(z)</span>.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2002 Java applet by Terence Tao
+      (originally <code>ComplexMap.java</code> / <code>ComplexGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div class="field">
+        <label for="fn">f(z) =</label>
+        <select id="fn"></select>
+      </div>
+      <button type="button" class="ghost" id="clear">Clear drawing</button>
+    </div>
+
+    <div class="stagewrap">
+      <div class="planetitles"><span>Domain (z) — draw here</span><span>Range (w = f(z))</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="readout" id="readout">Draw in the left panel to see the image on the right.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of, I = C.I;
+    var RED = "#e5484d";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 5 });
+    var strokes = [], cur = null, hover = null;
+
+    function guardInv(z) { return z.norm() < 0.01 ? null : z.inv(); }  // |z| < 0.1 → skip
+    var FUNCS = [
+      ["z", function (z) { return z; }],
+      ["z + i", function (z) { return z.add(I); }],
+      ["2z", function (z) { return z.scale(2); }],
+      ["−z", function (z) { return z.neg(); }],
+      ["iz", function (z) { return z.mul(I); }],
+      ["(1 + i)z", function (z) { return z.mul(of(1, 1)); }],
+      ["z²", function (z) { return z.powN(2); }],
+      ["z³", function (z) { return z.powN(3); }],
+      ["1/z", function (z) { return guardInv(z); }],
+      ["z̄", function (z) { return z.conj(); }],
+      ["9/z̄", function (z) { var w = guardInv(z.conj()); return w ? w.scale(9) : null; }],
+      ["Re(z)", function (z) { return of(z.x, 0); }],
+      ["x + 2iy", function (z) { return of(z.x, 2 * z.y); }],
+      ["eᶻ", function (z) { return z.exp(); }],
+      ["sin z", function (z) { return z.sin(); }],
+      ["cos z", function (z) { return z.cos(); }]
+    ];
+    FUNCS.forEach(function (fn, i) { var o = document.createElement("option"); o.value = i; o.textContent = fn[0]; $("fn").appendChild(o); });
+    function f(z) { return FUNCS[+$("fn").value][1](z); }
+
+    // Map a domain polyline through f, subdividing each segment for smoothness and
+    // splitting into pieces wherever f is undefined (e.g. the pole of 1/z).
+    function imagePieces(stroke) {
+      var pieces = [], seg = [], K = 5;
+      function push(a, b) {
+        for (var t = 0; t <= K; t++) {
+          var x = a[0] + (b[0] - a[0]) * t / K, y = a[1] + (b[1] - a[1]) * t / K;
+          var w = f(of(x, y));
+          if (!w || w.inf || !isFinite(w.x) || !isFinite(w.y)) { if (seg.length > 1) pieces.push(seg); seg = []; }
+          else seg.push([w.x, w.y]);
+        }
+      }
+      if (stroke.length === 1) { var w = f(of(stroke[0][0], stroke[0][1])); if (w && !w.inf) pieces.push([[w.x, w.y]]); }
+      for (var i = 1; i < stroke.length; i++) push(stroke[i - 1], stroke[i]);
+      if (seg.length > 1) pieces.push(seg);
+      return pieces;
+    }
+
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      var all = strokes.concat(cur ? [cur] : []);
+      // domain strokes
+      st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round";
+        all.forEach(function (s) { st.poly(dom, s); }); });
+      // image strokes
+      st.clip(ran, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round";
+        all.forEach(function (s) { imagePieces(s).forEach(function (piece) { st.poly(ran, piece); }); }); });
+      // hover preview: z and f(z)
+      if (hover) {
+        var w = f(of(hover[0], hover[1]));
+        st.clip(dom, function () { c.strokeStyle = c.fillStyle = st.css("--accent"); c.lineWidth = 2; st.arrow(dom, 0, 0, hover[0], hover[1]); });
+        if (w && !w.inf && isFinite(w.x) && isFinite(w.y))
+          st.clip(ran, function () { c.strokeStyle = c.fillStyle = st.css("--accent"); c.lineWidth = 2; st.arrow(ran, 0, 0, w.x, w.y); });
+        $("readout").textContent = "z = " + of(hover[0], hover[1]).toString() + "     f(z) = " + (w && !w.inf ? w.toString() : "∞ / undefined");
+      }
+      st.frames();
+    }
+
+    function inDomain(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) {
+      var l = st.locate(e); if (!inDomain(l)) return;
+      $("cv").setPointerCapture(e.pointerId);
+      var m = st.math(l.p, l.px, l.py); cur = [m]; hover = m; draw();
+    });
+    $("cv").addEventListener("pointermove", function (e) {
+      var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && l && l.i === 0) { cur.push(m); hover = m; draw(); }
+      else if (cur) { cur.push(m); draw(); }               // keep drawing even if cursor briefly leaves
+      else if (inDomain(l)) { hover = m; draw(); }
+      else if (hover) { hover = null; draw(); }
+    });
+    function end() { if (cur) { if (cur.length > 1) strokes.push(cur); cur = null; draw(); } }
+    $("cv").addEventListener("pointerup", end);
+    $("cv").addEventListener("pointercancel", end);
+
+    $("fn").addEventListener("change", draw);
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; hover = null;
+      $("readout").textContent = "Draw in the left panel to see the image on the right."; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+
+    draw();
+  })();
+</script>
+</body>
+</html>

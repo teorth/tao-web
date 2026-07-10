@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The complex plane — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .stagewrap { margin-top: 1rem; max-width: 34rem; }
+  .coords { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; }
+  .coords .grp { display: flex; flex-direction: column; gap: .5rem; }
+  .coords .grp h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0; }
+  .cell { display: flex; align-items: center; gap: .4rem; }
+  .cell label { text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink);
+    font-family: var(--mono); font-style: italic; width: 2.1rem; }
+  .cell input { width: 6rem; font-family: var(--mono); text-align: right; }
+  .cell .unit { color: var(--muted); font-family: var(--mono); }
+  .ops { margin-top: 1.5rem; }
+  .ops h2 { font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin: 0 0 .5rem; }
+  .opgrid { display: flex; flex-wrap: wrap; gap: .4rem; }
+  .opgrid button { min-width: 3rem; font-family: var(--mono); font-weight: 500;
+    background: var(--panel); color: var(--accent); border: 1px solid var(--line); padding: .4rem .6rem; }
+  .opgrid button:hover { background: var(--accent-soft); filter: none; }
+  .readout { font-family: var(--mono); margin-top: 1.2rem; overflow-wrap: anywhere; color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The complex plane</h1>
+    <p class="lede">A sandbox for a single complex number <span class="math">z</span>. Drag the red
+      dot (or edit the fields) and watch its Cartesian form <span class="math">z = x + iy</span> and
+      polar form <span class="math">z = r·e<sup>iθ</sup></span> stay in sync. The buttons apply basic
+      operations so you can see them geometrically.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2002 Java applet by Terence Tao
+      (originally <code>PlaneApp.java</code> / <code>Plane.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="stagewrap"><canvas class="stage" id="cv"></canvas></div>
+
+    <div class="coords">
+      <div class="grp">
+        <h2>Cartesian</h2>
+        <div class="cell"><label for="x">x =</label><input id="x" type="number" step="0.5" value="3"></div>
+        <div class="cell"><label for="y">y =</label><input id="y" type="number" step="0.5" value="2"></div>
+      </div>
+      <div class="grp">
+        <h2>Polar</h2>
+        <div class="cell"><label for="r">r =</label><input id="r" type="number" step="0.5" min="0"></div>
+        <div class="cell"><label for="th">θ =</label><input id="th" type="number" step="0.05"><span class="unit">× π</span></div>
+      </div>
+    </div>
+
+    <div class="ops">
+      <h2>Operations</h2>
+      <div class="opgrid" id="ops"></div>
+    </div>
+
+    <p class="readout" id="readout"></p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of;
+    var st = new ComplexStage($("cv"), { planes: 1, view: 8 });
+    var z = of(3, 2), drag = false;
+
+    var OPS = [
+      ["0", function () { return of(0, 0); }], ["3+2i", function () { return of(3, 2); }],
+      ["z+1", function (z) { return z.add(of(1, 0)); }], ["z+2−i", function (z) { return z.add(of(2, -1)); }],
+      ["2z", function (z) { return z.scale(2); }], ["−z", function (z) { return z.neg(); }],
+      ["z/2", function (z) { return z.scale(0.5); }], ["iz", function (z) { return z.mul(C.I); }],
+      ["z̄", function (z) { return z.conj(); }], ["z²", function (z) { return z.powN(2); }],
+      ["Re(z)", function (z) { return of(z.x, 0); }], ["Im(z)", function (z) { return of(z.y, 0); }],
+      ["Im(z)·i", function (z) { return of(0, z.y); }], ["|z|", function (z) { return of(z.abs(), 0); }],
+      ["1/z", function (z) { return z.isZero() ? z : z.inv(); }], ["exp(z)", function (z) { return z.exp(); }]
+    ];
+    OPS.forEach(function (op) {
+      var b = document.createElement("button"); b.type = "button"; b.textContent = op[0];
+      b.addEventListener("click", function () { z = op[1](z); sync(); }); $("ops").appendChild(b);
+    });
+
+    function f(v) { var r = Math.round(v * 1e4) / 1e4; return Object.is(r, -0) ? 0 : r; }
+    function fields() {
+      $("x").value = f(z.x); $("y").value = f(z.y);
+      $("r").value = f(z.abs()); $("th").value = f(z.arg() / Math.PI);
+    }
+    function readout() {
+      var r = z.abs(), th = z.arg() / Math.PI;
+      $("readout").textContent = "z = " + z.toString() + "     =  " + f(r) + " · exp(" + f(th) + "π i)"
+        + "     |z| = " + f(r) + ",  arg z = " + f(z.arg()) + " rad";
+    }
+    function draw() {
+      var p = st.panels[0], c = st.ctx;
+      st.clear(); st.grid(p, true);
+      st.clip(p, function () {
+        if (!z.isZero()) {                          // radius line + angle arc
+          c.strokeStyle = st.css("--accent"); c.lineWidth = 1.5; st.seg(p, 0, 0, z.x, z.y);
+          var o = st.px(p, 0, 0), rad = Math.min(p.s * z.abs() * 0.35, 34);
+          c.strokeStyle = st.css("--muted"); c.lineWidth = 1.2; c.beginPath();
+          c.arc(o[0], o[1], rad, 0, -z.arg(), z.arg() < 0); c.stroke();
+        }
+        c.fillStyle = "#e5484d"; st.dot(p, z.x, z.y, 5, true);
+      });
+      st.frames();
+    }
+    function sync() { fields(); readout(); draw(); }
+
+    $("x").addEventListener("input", function () { z = of(+$("x").value || 0, +$("y").value || 0); readout(); draw(); syncPolar(); });
+    $("y").addEventListener("input", function () { z = of(+$("x").value || 0, +$("y").value || 0); readout(); draw(); syncPolar(); });
+    function syncPolar() { $("r").value = f(z.abs()); $("th").value = f(z.arg() / Math.PI); }
+    function fromPolar() { var r = +$("r").value || 0, th = (+$("th").value || 0) * Math.PI;
+      z = of(r * Math.cos(th), r * Math.sin(th)); $("x").value = f(z.x); $("y").value = f(z.y); readout(); draw(); }
+    $("r").addEventListener("input", fromPolar); $("th").addEventListener("input", fromPolar);
+
+    function place(e) { var l = st.locate(e); if (!l) return; var m = st.math(l.p, l.px, l.py); z = of(m[0], m[1]); sync(); }
+    $("cv").addEventListener("pointerdown", function (e) { drag = true; $("cv").setPointerCapture(e.pointerId); place(e); });
+    $("cv").addEventListener("pointermove", function (e) { if (drag) place(e); });
+    $("cv").addEventListener("pointerup", function () { drag = false; });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+
+    sync();
+  })();
+</script>
+</body>
+</html>

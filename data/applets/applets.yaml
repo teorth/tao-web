@@ -9,6 +9,7 @@ description: >-
   ported.
 category_notes:
   Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
+  Complex analysis: All the complex analysis apps below were originally written by Terence Tao in 2002, in Java.
 applets:
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
@@ -78,13 +79,15 @@ applets:
 # --- Complex analysis (Java) ---
 - name: The complex plane
   category: Complex analysis
-  status: to-port
-  description: Visualizes points, regions, and basic arithmetic in the complex plane.
+  status: ported
+  description: An Argand-plane sandbox — drag a complex number and watch its Cartesian and polar forms, with buttons for basic operations.
+  url: apps/complex-plane.html
   source: https://www.math.ucla.edu/~tao/java/Plane.html
 - name: Elementary complex maps
   category: Complex analysis
-  status: to-port
-  description: Shows how elementary complex functions map regions of the plane.
+  status: ported
+  description: Draw a curve in the domain and see its image under w = f(z) for a range of elementary functions.
+  url: apps/elementary-complex-maps.html
   source: https://www.math.ucla.edu/~tao/java/Complex.html
 - name: Möbius transforms
   category: Complex analysis
