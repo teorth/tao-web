@@ -57,6 +57,8 @@ CV = ROOT / "data" / "cv"
 CONTACT = ROOT / "data" / "contact"
 TRAVEL = ROOT / "data" / "travel"
 PROJECTS = ROOT / "data" / "projects"
+APPLETS = ROOT / "data" / "applets"
+STATIC = ROOT / "static"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -74,9 +76,11 @@ def md_links(s: str) -> str:
 
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
-  --line:#e3e3e3; --accent:#7a1f1f; --stub-bg:#fff4e5; --stub-fg:#8a5a00; --card:#fafafa; }
+  --line:#e3e3e3; --accent:#7a1f1f; --stub-bg:#fff4e5; --stub-fg:#8a5a00; --card:#fafafa;
+  --ok-bg:#e6f4ec; --ok-fg:#1f7a4d; }
 @media (prefers-color-scheme: dark) { :root { --fg:#e6e6e6; --bg:#151515; --muted:#9a9a9a;
-  --line:#333; --accent:#e08a8a; --stub-bg:#3a2e12; --stub-fg:#e8c06a; --card:#1d1d1d; } }
+  --line:#333; --accent:#e08a8a; --stub-bg:#3a2e12; --stub-fg:#e8c06a; --card:#1d1d1d;
+  --ok-bg:#17321f; --ok-fg:#7fce9f; } }
 * { box-sizing: border-box; }
 body { font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--fg); background: var(--bg); margin: 0; }
@@ -171,6 +175,19 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .contact-note { color: var(--muted); font-size: .9rem; margin: .5rem 0 0; max-width: 42rem; }
 .travel .cx { text-decoration: line-through; color: var(--muted); }
 .travel .tentative { color: var(--muted); }
+.applets .app { display: grid; grid-template-columns: 1fr auto; gap: .1rem .8rem;
+  padding: .55rem 0; border-top: 1px solid var(--line); }
+.applets .app:first-of-type { border-top: 0; }
+.applets .nm { grid-column: 1; grid-row: 1; font-weight: 600; }
+.applets .ds { grid-column: 1; grid-row: 2; color: var(--muted); font-size: .95rem; }
+.applets .src { grid-column: 1; grid-row: 3; color: var(--muted); font-size: .85rem; margin-top: .12rem; }
+.applets .pill { grid-column: 2; grid-row: 1; }
+.applets .legend { color: var(--muted); font-size: .85rem; margin: .3rem 0 0; }
+.pill { font-size: .66rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700;
+  padding: .12rem .5rem; border-radius: 999px; white-space: nowrap; height: fit-content; }
+.pill.ported, .pill.live { color: var(--ok-fg); background: var(--ok-bg); }
+.pill.to-port { color: var(--stub-fg); background: var(--stub-bg); }
+.pill.retired { color: var(--muted); background: var(--card); border: 1px solid var(--line); }
 @media print {
   .cv-nav, footer, .wrap > p:first-child { display: none; }
   .wrap { max-width: none; padding: 0; }
@@ -809,10 +826,46 @@ def build_projects(projects: dict) -> str:
     return page("Terence Tao — collaborative projects", "\n".join(body))
 
 
+_APPLET_STATUS = {"ported": "Ported", "live": "Live", "to-port": "To port", "retired": "Retired"}
+
+
+def build_applets(doc: dict) -> str:
+    def row(a):
+        nm = html.escape(a["name"])
+        if a.get("url"):
+            nm = f'<a href="{html.escape(a["url"])}">{nm}</a>'
+        pill = f'<span class="pill {a["status"]}">{_APPLET_STATUS[a["status"]]}</span>'
+        note = f' {html.escape(a["note"])}' if a.get("note") else ""
+        src = ""
+        if a.get("source"):
+            lbl = "original applet" if a["status"] in ("to-port", "retired") else "original"
+            src = f'<div class="src"><a href="{html.escape(a["source"])}">{lbl}</a> (Java)</div>'
+        return (f'<div class="app"><div class="nm">{nm}</div>{pill}'
+                f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}</div>')
+
+    applets = doc.get("applets", [])
+    cats = []
+    for a in applets:
+        if a["category"] not in cats:
+            cats.append(a["category"])
+    body = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv applets">',
+            '<h1>Interactive tools</h1>']
+    if doc.get("description"):
+        body.append(f'<div class="cv-bio"><p>{html.escape(doc["description"])}</p></div>')
+    body.append('<p class="legend"><strong>Status:</strong> Ported = runs here now &middot; '
+                'Live = works elsewhere &middot; To port = old Java, not yet rebuilt &middot; '
+                'Retired = superseded.</p>')
+    for cat in cats:
+        rows = "".join(row(a) for a in applets if a["category"] == cat)
+        body.append(_cv_section(cat, rows))
+    body.append("</div>")
+    return page("Terence Tao — interactive tools", "\n".join(body))
+
+
 def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None,
                 papers: dict | None = None, cv: dict | None = None,
                 contact: dict | None = None, travel: dict | None = None,
-                projects: dict | None = None) -> str:
+                projects: dict | None = None, applets: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -851,6 +904,10 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         nproj = len((projects or {}).get("projects") or [])
         body += ('<p class="desc"><a href="projects.html"><strong>Collaborative projects</strong></a> '
                  f'&mdash; {nproj} active and completed online projects.</p>')
+    if applets:
+        napp = len((applets or {}).get("applets") or [])
+        body += ('<p class="desc"><a href="applets.html"><strong>Interactive tools</strong></a> '
+                 f'&mdash; {napp} experimental math apps and games, old and newly ported.</p>')
     for l in sorted(links, key=lambda d: d["title"].lower()):
         blurb = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", l.get("description", ""))
         blurb = f" &mdash; {html.escape(blurb)}" if blurb else ""
@@ -934,8 +991,16 @@ def main() -> None:
     if projects_path.exists():
         projects = yaml.safe_load(projects_path.read_text(encoding="utf-8"))
         (SITE / "projects.html").write_text(build_projects(projects), encoding="utf-8", newline="\n")
+    applets_path = APPLETS / "applets.yaml"
+    applets = None
+    if applets_path.exists():
+        applets = yaml.safe_load(applets_path.read_text(encoding="utf-8"))
+        (SITE / "applets.html").write_text(build_applets(applets), encoding="utf-8", newline="\n")
+    # Copy hand-authored static assets (e.g. the ported applet pages) verbatim into site/.
+    if STATIC.exists():
+        shutil.copytree(STATIC, SITE, dirs_exist_ok=True)
     (SITE / "index.html").write_text(
-        build_index(books, linkdocs, teaching, papers, cv, contact, travel, projects),
+        build_index(books, linkdocs, teaching, papers, cv, contact, travel, projects, applets),
         encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
     ncourses = len((teaching or {}).get("courses") or [])
