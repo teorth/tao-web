@@ -729,6 +729,7 @@ service:
   url: "https://muse.jhu.edu/journal/40"
   highlight: true
 - start: '2003'
+  end: '2008'
   organization: International Mathematics Research Surveys
   role: Advisory Board
   editorial: true
