@@ -5228,6 +5228,9 @@ works:
   year: 2002
   status: published
   venue: J. R. Stat. Soc. Ser. B Stat. Methodol. 64 (2002), 537–547
+  links:
+  - type: journal
+    url: "https://rss.onlinelibrary.wiley.com/doi/abs/10.1111/1467-9868.00349"
   tags:
   - misc
 - id: a-discrete-model-for-the-bi-carleson-operator
