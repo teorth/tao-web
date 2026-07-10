@@ -12,6 +12,8 @@ book:
     isbn: "978-0-374-62179-7"
     note: "Hardcover, 128 pages; also available as e-book and audiobook. Distributed by Farrar, Straus and Giroux. To be published October 27, 2026."
   links:
+  - title: "Publisher (Quanta Books)"
+    url: "https://www.quantabooks.org/books/six-math-essentials/"
   - title: "Publisher (Farrar, Straus and Giroux)"
     url: "http://fsgbooks.com"
 editions: []
