@@ -7371,19 +7371,129 @@ works:
 - id: paul-cohen
   kind: obituary
   title: Paul Cohen
+  year: 2007
   tags:
   - misc
   links:
   - type: note
-    url: "http://terrytao.wordpress.com/2007/03/25/paul-cohen/"
+    url: "https://terrytao.wordpress.com/2007/03/25/paul-cohen/"
 - id: atle-selberg
   kind: obituary
   title: Atle Selberg
+  year: 2007
   tags:
   - misc
   links:
   - type: note
-    url: "http://terrytao.wordpress.com/2007/08/12/atle-selberg/"
+    url: "https://terrytao.wordpress.com/2007/08/12/atle-selberg/"
+- id: oded-schramm
+  kind: obituary
+  title: Oded Schramm
+  year: 2008
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2008/09/03/oded-schramm/"
+- id: israel-gelfand
+  kind: obituary
+  title: Israel Gelfand
+  year: 2009
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2009/10/07/israel-gelfand/"
+- id: bill-thurston
+  kind: obituary
+  title: Bill Thurston
+  year: 2012
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2012/08/22/bill-thurston/"
+- id: garth-gaudry
+  kind: obituary
+  title: Garth Gaudry
+  year: 2012
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2012/10/18/garth-gaudry/"
+- id: lars-hormander
+  kind: obituary
+  title: Lars Hörmander
+  year: 2012
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2012/11/30/lars-hormander/"
+- id: klaus-roth
+  kind: obituary
+  title: Klaus Roth
+  year: 2015
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2015/11/12/klaus-roth/"
+- id: maryam-mirzakhani
+  kind: obituary
+  title: Maryam Mirzakhani
+  year: 2017
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2017/07/15/maryam-mirzakhani/"
+- id: elias-stein
+  kind: obituary
+  title: Elias Stein
+  year: 2018
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2018/12/24/elias-stein/"
+- id: jean-bourgain
+  kind: obituary
+  title: Jean Bourgain
+  year: 2018
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2018/12/29/jean-bourgain/"
+- id: louis-nirenberg
+  kind: obituary
+  title: Louis Nirenberg
+  year: 2020
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2020/01/27/louis-nirenberg/"
+- id: john-conway
+  kind: obituary
+  title: John Conway
+  year: 2020
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2020/04/12/john-conway/"
+- id: vaughan-jones
+  kind: obituary
+  title: Vaughan Jones
+  year: 2020
+  tags:
+  - misc
+  links:
+  - type: note
+    url: "https://terrytao.wordpress.com/2020/09/09/vaughan-jones/"
 - id: does-p-np
   kind: talk
   title: Does P = NP?
