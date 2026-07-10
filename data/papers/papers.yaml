@@ -5404,6 +5404,9 @@ works:
   year: 2002
   status: published
   venue: Proc. Centre Math. Appl. Austral. Nat. Univ. 40 (2002), 19–48
+  links:
+  - type: pdf
+    url: "https://maths.anu.edu.au/files/CMAproc40-tao.pdf"
   tags:
   - pde
 - id: existence-globale-et-diffusion-pour-l-quation-de-schr-dinger
@@ -7393,44 +7396,6 @@ works:
     url: "http://www.math.ucla.edu/~tao/preprints/Slides/mergesort.eps"
   - type: note
     url: "http://www.maths.unsw.edu.au/highschool/parabola.html"
-- id: the-cosmic-distance-ladder
-  kind: obituary
-  title: The cosmic distance ladder
-  tags:
-  - misc
-  links:
-  - type: note
-    url: "http://www.math.ucla.edu/~tao/preprints/Slides/Cosmic%20Distance%20Ladder.ppt"
-  - type: note
-    url: "http://qtss.amsi.org.au/Teachers_afternoon.html"
-  - type: discussion
-    url: "http://terrytao.wordpress.com/2007/05/31/the-cosmic-distance-ladder/"
-- id: vitae
-  kind: obituary
-  title: Vitae
-  tags:
-  - misc
-  links:
-  - type: note
-    url: "http://www.math.ucla.edu/~tao/preprints/cv.html"
-- id: thesis-home-page
-  kind: obituary
-  title: Thesis home page
-  tags:
-  - misc
-  links:
-  - type: note
-    url: "http://www.math.ucla.edu/~tao/preprints/thesis.html"
-  - type: note
-    url: "http://www.wspc.com.sg/books/mathematics/4240.html"
-- id: java-applets
-  kind: obituary
-  title: Java applets
-  tags:
-  - misc
-  links:
-  - type: note
-    url: "http://www.math.ucla.edu/~tao/java/index2.html"
 - id: structure-and-randomness-pages-from-year-one-of-a-mathematic
   kind: obituary
   title: "Structure and randomness: pages from year one of a mathematical blog"
