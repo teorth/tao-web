@@ -54,7 +54,10 @@
       "type": "object", "additionalProperties": false, "required": ["name", "level", "years"],
       "properties": {
         "name": { "type": "string" }, "level": { "type": "string" }, "institution": { "type": "string" },
-        "years": { "type": "string" }, "thesis": { "$ref": "#/$defs/titled" }
+        "years": { "type": "string" }, "thesis": { "$ref": "#/$defs/titled" },
+        "url": { "type": "string", "description": "Student's web page." },
+        "atc": { "type": "integer", "description": "Year advanced to candidacy (current students)." },
+        "coadvisor": { "type": "string", "description": "Co-advisor, if jointly supervised." }
       } } },
     "lectures": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["name", "venue", "date"],

@@ -636,8 +636,15 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
                    '<a href="cv-long.html">full CV</a>).</p>'
         rows = []
         for s in studs:
-            dd = f'{html.escape(s["name"])} <span class="meta">({html.escape(s["level"])}'
-            dd += f', {html.escape(s["institution"])})</span>' if s.get("institution") else ")</span>"
+            nm = html.escape(s["name"])
+            if s.get("url"):
+                nm = f'<a href="{html.escape(s["url"])}">{nm}</a>'
+            meta = html.escape(s["level"])
+            if s.get("coadvisor"):
+                meta += f', co-advised with {html.escape(s["coadvisor"])}'
+            if s.get("institution"):
+                meta += f', {html.escape(s["institution"])}'
+            dd = f'{nm} <span class="meta">({meta})</span>'
             if s.get("thesis"):
                 th = s["thesis"]; tt = html.escape(th["title"])
                 if th.get("url"):
@@ -938,6 +945,42 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         body += ('<details class="section" id="teaching">'
                  f'<summary>Teaching <span class="count">({len(courses)})</span></summary>'
                  f'<ul class="book-list">{"".join(crows)}</ul></details>')
+    students = (cv or {}).get("students") or []
+    if students:
+        def is_current(s):
+            y = str(s.get("years", "")).strip()
+            return y.endswith("–") or y.endswith("-")
+
+        def sname(s):
+            nm = html.escape(s["name"])
+            return f'<a href="{html.escape(s["url"])}">{nm}</a>' if s.get("url") else nm
+
+        def co(s):
+            return f'; co-advised with {html.escape(s["coadvisor"])}' if s.get("coadvisor") else ""
+        current = [s for s in students if is_current(s)]
+        former = [s for s in students if not is_current(s)]
+        crows = []
+        for s in sorted(current, key=lambda s: s["name"]):
+            det = (f'{html.escape(s["level"])}, advanced to candidacy {s["atc"]}' if s.get("atc")
+                   else f'{html.escape(s["level"])}, {html.escape(str(s.get("years", "")))}')
+            crows.append(f'<li>{sname(s)}<span class="coauth"> &middot; {det}{co(s)}</span></li>')
+        frows = []
+        for s in reversed(former):
+            th = s.get("thesis") or {}
+            extra = html.escape(s["level"]) + co(s)
+            if th.get("title"):
+                tt = html.escape(th["title"])
+                if th.get("url"):
+                    tt = f'<a href="{html.escape(th["url"])}">{tt}</a>'
+                extra += f' &mdash; {tt}'
+            frows.append(f'<li><span class="year">{html.escape(str(s.get("years", "")))}</span> '
+                         f'{sname(s)}<span class="coauth"> &middot; {extra}</span></li>')
+        body += ('<details class="section" id="students">'
+                 f'<summary>Students <span class="count">({len(current)} current)</span></summary>'
+                 f'<ul class="book-list">{"".join(crows)}</ul>'
+                 '<details class="section">'
+                 f'<summary>Former students <span class="count">({len(former)})</span></summary>'
+                 f'<ul class="book-list">{"".join(frows)}</ul></details></details>')
     # Open the <details> targeted by the URL hash (e.g. index.html#books).
     body += ('<script>function openHash(){var h=location.hash.slice(1);if(!h)return;'
              'var el=document.getElementById(h);if(!el)return;'

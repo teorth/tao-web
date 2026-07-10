@@ -349,13 +349,15 @@ students:
   thesis:
     title: Cycles of even length in graphs
 - name: Julia Garibaldi
-  level: PhD (joint with John Garnett)
+  level: PhD
+  coadvisor: John Garnett
   institution: UCLA
   years: 2002–2004
   thesis:
     title: Erdős distance problem for convex metrics
 - name: Roman Sasyk
-  level: PhD (informally co-supervised)
+  level: PhD
+  coadvisor: Sorin Popa
   institution: UCLA
   years: 2002–2003
   thesis:
@@ -556,6 +558,20 @@ students:
   level: PhD
   institution: UCLA
   years: 2024–
+  url: "https://sites.google.com/view/ariannadjimzadah/"
+- name: Siddharth Mulherkar
+  level: PhD
+  institution: UCLA
+  years: 2024–
+  atc: 2024
+  url: "http://www.math.ucla.edu/~sidmulherkar"
+- name: Ben Goldman
+  level: PhD
+  coadvisor: Dominique Maldague
+  institution: UCLA
+  years: 2025–
+  atc: 2025
+  url: "https://www.math.ucla.edu/~bengoldman"
 lectures:
 - name: Zygmund–Calderón Lectures
   venue: University of Chicago
