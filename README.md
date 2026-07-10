@@ -1,70 +1,63 @@
 # tao-web
 
-Structured source of truth for content currently maintained by hand on
-[terrytao.wordpress.com](https://terrytao.wordpress.com/) and
-[math.ucla.edu/~tao](https://www.math.ucla.edu/~tao/), starting with **book errata**.
-
-Each book's errata live in one YAML file. A build step renders them to a static
-site published via GitHub Pages, so the data is edited once and the page is
-generated — no more hand-syncing HTML, and page-number stubs are tracked
-explicitly instead of buried in prose.
+The structured source of truth for [Terence Tao's](https://www.math.ucla.edu/~tao/)
+web content — book errata, papers, CV, teaching, contact/policies, travel,
+collaborative projects, and curated links. The data lives as YAML, is validated
+against JSON Schema, and is rendered to a static site published at
+**<https://teorth.github.io/tao-web/>** via GitHub Pages. The YAML is the ground
+truth; the pages are generated (with AI assistance).
 
 ## Layout
 
 ```
-data/errata/<slug>.yaml      # ground truth: one file per book
-schema/errata.schema.json    # contract every YAML file must satisfy
-scripts/validate.py          # check all YAML against the schema (CI gate)
-scripts/build.py             # YAML -> static HTML into site/
-scripts/import_wordpress.py  # one-time migration helper per book
-site/                        # generated output (gitignored; built in CI)
-.github/workflows/deploy.yml # validate + build + publish to Pages on push to main
+data/<type>/*.yaml    # ground truth, one directory per content type
+schema/*.schema.json  # the contract each data file must satisfy
+scripts/validate.py   # validate all data against the schemas (CI gate)
+scripts/build.py      # render YAML -> static HTML into site/
+site/                 # generated output (gitignored; built in CI)
+.github/workflows/    # validate + build + publish to Pages on push to main
 ```
 
-## Data model
+## Content types
 
-A file is a `book` plus a list of `editions`, each with `errata`. Each erratum
-is primarily a `page` token and a `text` correction (inline math in `$...$`):
+Each type is a directory under `data/` with a matching `schema/<type>.schema.json`
+that documents every field:
 
-```yaml
-book:
-  title: Analysis I
-  slug: analysis-i
-editions:
-  - id: fourth-edition
-    name: Fourth edition
-    errata:
-      - id: fourth-edition-0004
-        page: "9"                 # exact printed token; "x" for front matter, "101, 133" for spans
-        text: "In Example 1.2.12, final paragraph, $4 x^{-2}$ should be $4 x^{-3}$."
-      - id: fourth-edition-0071
-        page: "?"                 # KNOWN location, page number not yet filled in (a stub)
-        text: "In Exercise 11.9.1, ..."
-```
+| type       | what it holds                                                     |
+|------------|-------------------------------------------------------------------|
+| `errata`   | book bibliographic details and errata (one file per book)         |
+| `papers`   | a searchable, tag-organized database of papers, short stories, …  |
+| `cv`       | profile, bio, education, awards, service → bio + short/full CV     |
+| `teaching` | the course list                                                   |
+| `contact`  | contact details and correspondence policies                       |
+| `travel`   | upcoming and past trips                                            |
+| `projects` | collaborative / formalization projects                            |
+| `links`    | curated link collections (e.g. Mastodon posts)                    |
 
-`page: "?"` marks a stub — a correction whose page number is still unknown.
-`page: null` is for entries with no page concept (e.g. a `General:` note). The
-build highlights stubs and the validator counts them, so they are easy to find
-and resolve in batches. Optional enrichment fields (`location`, `change.from`/
-`change.to`, `reported_by`, `status`, `fixed_in`) are documented in the schema.
+A record is plain YAML; e.g. one erratum is a `page` token plus a `text`
+correction (with inline math in `$...$`), where `page: "?"` marks a known
+location whose page number is not yet filled in.
 
 ## Working on it
 
 ```bash
 pip install -r requirements.txt
-python scripts/validate.py     # must pass before pushing
-python scripts/build.py        # writes site/; open site/index.html to preview
+python scripts/validate.py   # must pass before pushing
+python scripts/build.py      # writes site/; open site/index.html to preview
 ```
 
-Everyday edits are just changes to the YAML (add a correction, fill a stub page
-number), validated and previewed with the two commands above. Pushing to `main`
-revalidates and republishes automatically.
+Everyday edits are just YAML changes; pushing to `main` revalidates and
+republishes automatically. Edit the data, never the generated HTML in `site/`.
 
-## Migrating another book
+## Corrections
 
-```bash
-python scripts/import_wordpress.py --url https://terrytao.wordpress.com/books/<slug>/ \
-  --slug <slug> --title "<Title>" --out data/errata/<slug>.yaml
-```
+This repository is maintained by the author (with AI assistance) and is not
+looking for co-maintainers, but corrections are welcome — please open an
+[issue](https://github.com/teorth/tao-web/issues) or a pull request. See
+[CONTRIBUTING.md](CONTRIBUTING.md).
 
-Review the generated file, then it becomes the ground truth.
+## License
+
+Copyright © Terence Tao. All rights reserved — see [LICENSE](LICENSE). This
+content is not intended for reuse or forking; you are welcome to read the site
+and to use the errata to correct your own copies of the relevant works.
