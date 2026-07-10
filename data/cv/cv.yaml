@@ -341,12 +341,14 @@ students:
   institution: UCLA / UNSW
   years: '2000'
   thesis:
+    url: "http://www.math.ucla.edu/~tao/preprints/ThesisSyd.dvi.Z"
     title: Uniform distribution of sequences mod 1
 - name: Thomas Lam
   level: Honours undergraduate
   institution: UNSW
   years: 2000–2001
   thesis:
+    url: "http://www.math.ucla.edu/~tao/preprints/thomas.dvi.Z"
     title: Cycles of even length in graphs
 - name: Julia Garibaldi
   level: PhD
@@ -354,6 +356,7 @@ students:
   institution: UCLA
   years: 2002–2004
   thesis:
+    url: "http://www.math.ucla.edu/~jlucas/dissertation.pdf"
     title: Erdős distance problem for convex metrics
 - name: Roman Sasyk
   level: PhD
@@ -367,36 +370,42 @@ students:
   institution: UCLA
   years: 2003–2006
   thesis:
+    url: "http://www.math.ucla.edu/~mvisan/thesis.pdf"
     title: Critical nonlinear Schrödinger equations in higher dimensions
 - name: Jon Bueti
   level: PhD
   institution: UCLA
   years: 2003–2006
   thesis:
+    url: "http://www.math.ucla.edu/~jbueti/buetithesis.pdf"
     title: Finite field x-ray and k-plane estimates
 - name: Umut Isik
   level: Undergraduate
   institution: UCLA
   years: '2005'
   thesis:
+    url: "http://www.math.ucla.edu/~tao/preprints/nc.pdf"
     title: Maximal non-commuting subsets of groups
 - name: Shuanglin Shao
   level: PhD
   institution: UCLA
   years: 2006–2008
   thesis:
+    url: "http://www.math.ucla.edu/~slshao/ssl-thes.pdf"
     title: Restriction estimates for paraboloids and cones in the cylindrically symmetric case
 - name: Soonsik Kwon
   level: PhD
   institution: UCLA
   years: 2006–2008
   thesis:
+    url: "http://www.math.ucla.edu/~rhex2/dissertation_kwon.pdf"
     title: Low-regularity problems of fifth-order KdV and modified KdV equations
 - name: Tristan Roy
   level: PhD
   institution: UCLA
   years: 2006–2008
   thesis:
+    url: "http://www.math.ucla.edu/~triroy/ThesisTristan.pdf"
     title: Global well-posedness of the defocusing cubic wave equation in dimension 3
 - name: Tim Austin
   level: PhD
@@ -439,36 +448,42 @@ students:
   institution: UCLA
   years: 2011–2013
   thesis:
+    url: "https://escholarship.org/uc/item/2zz111pj"
     title: The statistics of the Riemann zeta function and related topics
 - name: Pietro Carolino
   level: PhD
   institution: UCLA
   years: 2012–2015
   thesis:
+    url: "https://escholarship.org/uc/item/8388n9jk"
     title: The structure of locally compact groups
 - name: Jacques Benatar
   level: PhD
   institution: UCLA
   years: 2012–2015
   thesis:
+    url: "https://escholarship.org/uc/item/8md7r4rx"
     title: The existence of small gaps in subsets of the integers
 - name: Anand Rajagopalan
   level: PhD
   institution: UCLA
   years: 2013–2015
   thesis:
+    url: "https://escholarship.org/uc/item/56j203cc"
     title: Outlier eigenvalue fluctuations of perturbed IID matrices
 - name: Ben Krause
   level: PhD
   institution: UCLA
   years: 2013–2015
   thesis:
+    url: "https://escholarship.org/uc/item/0582z84f"
     title: Some results in pointwise ergodic theory
 - name: Jordy Greenblatt
   level: PhD
   institution: UCLA
   years: 2014–2016
   thesis:
+    url: "https://escholarship.org/uc/item/16k3f6p1"
     title: Dimensional asymptotics for norms of maximal averaging operators on Cartesian powers of finite
       graphs
 - name: Nick Cook
@@ -476,18 +491,21 @@ students:
   institution: UCLA
   years: 2013–2016
   thesis:
+    url: "https://escholarship.org/uc/item/18w762mz"
     title: Spectral properties of non-Hermitian random matrices
 - name: Yilong Yang
   level: PhD
   institution: UCLA
   years: 2015–2017
   thesis:
+    url: "https://escholarship.org/uc/item/09b4347b"
     title: Shapes of finite groups through covering properties and Cayley graphs
 - name: Stephen Ge
   level: PhD
   institution: UCLA
   years: 2015–2017
   thesis:
+    url: "https://escholarship.org/uc/item/1n542603"
     title: The eigenvalue spacing of IID random matrices and related least singular value results
 - name: Zane Li
   level: PhD
