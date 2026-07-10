@@ -201,7 +201,7 @@ def page(title: str, body: str) -> str:
 </head>
 <body><div class="wrap">
 {body}
-<footer>Generated from data maintained by Terence Tao at
+<footer>Generated from data maintained (with AI assistance) by Terence Tao at
 <a href="https://github.com/teorth/tao-web">github.com/teorth/tao-web</a>.
 Corrections welcome as issues or pull requests.</footer>
 </div></body></html>
