@@ -174,11 +174,12 @@ applets:
   year: 1999
   description: Interactive honeycombs modelling Littlewood–Richardson coefficients (joint with Allen Knutson).
   source: https://www.math.ucla.edu/~tao/java/Honeycomb.html
-- name: Exponent calculator
+- name: Exponent calculator (harmonic analysis)
   category: Miscellaneous
-  status: to-port
+  status: ported
   year: 1999
-  description: A small numerical calculator utility.
+  description: Solve the exponent relations in named estimates — Hölder, Sobolev, Young, fractional integration, Strichartz, restriction/extension, interpolation, and scaling — with rational or symbolic inputs.
+  url: apps/exponent-calculator.html
   source: https://www.math.ucla.edu/~tao/java/Calculator.html
 - name: Multiple choice applet
   category: Miscellaneous

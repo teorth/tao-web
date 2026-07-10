@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exponent calculator — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .pick { margin-top: 1rem; }
+  .pick select { min-width: 15rem; font-weight: 600; }
+  .card2 { margin-top: 1.3rem; border-top: 1px solid var(--line); padding-top: 1.1rem; }
+  .desc2 { margin: 0 0 .9rem; max-width: 46rem; }
+  .fields { display: flex; flex-wrap: wrap; gap: .6rem 1.1rem; align-items: center; margin-bottom: 1rem; }
+  .fld { display: inline-flex; align-items: center; gap: .35rem; }
+  .fld label { font-family: var(--mono); font-style: italic; color: var(--ink); }
+  .fld input { width: 5.5rem; font-family: var(--mono); }
+  .fld input[readonly] { background: var(--accent-soft); }
+  .buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem; }
+  .buttons button { font-weight: 500; }
+  .formula { font-family: var(--mono); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 7px; padding: .5rem .7rem; margin: 0 0 .7rem; overflow-x: auto; }
+  .restr { color: var(--muted); font-size: .86rem; margin: 0; }
+  .restr div { margin: .1rem 0; }
+  .err { color: var(--danger); font-weight: 600; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Harmonic-analysis exponent calculator</h1>
+    <p class="lede">Work out the "exponent numerology" of the estimates that come up constantly in
+      harmonic analysis and PDE — Hölder, Sobolev, Young, fractional integration, the Strichartz
+      estimates, the restriction/extension conjectures, interpolation, and scaling. Pick an estimate,
+      fill in what you know, and solve for the unknown. Entries are rational (<code>3/2</code>,
+      <code>-3</code>, <code>1/0</code> for ∞) and may be symbolic (<code>d</code>, <code>2n+1</code>,
+      <code>(a+b)/c</code>; use <code>nn</code> for n², and <code>\eps</code> for multi-letter names).</p>
+    <p class="prov">A modern JavaScript port of a 1999 Java applet by Terence Tao
+      (originally <code>Calculator.java</code> and friends).</p>
+  </header>
+
+  <div class="card">
+    <div class="pick"><label for="pick" style="text-transform:none;letter-spacing:0;color:var(--muted);margin-right:.5rem">Estimate:</label><select id="pick"></select></div>
+    <div class="card2" id="card"></div>
+    <p class="err" id="err"></p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1999 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+// ---- rational-function engine (port of Rational.java / Polynomial.java) ----
+var RE = (function () {
+  function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { var t = a % b; a = b; b = t; } return a; }
+  function kv(k) { return k === "" ? [] : k.split("*"); }
+  function mk(v) { return v.slice().sort().join("*"); }
+  function pC(c) { var m = new Map(); if (c !== 0) m.set("", c); return m; }
+  function pV(n) { var m = new Map(); m.set(n, 1); return m; }
+  function pAdd(a, b) { var r = new Map(a); b.forEach(function (c, k) { var n = (r.get(k) || 0) + c; if (n === 0) r.delete(k); else r.set(k, n); }); return r; }
+  function pNeg(a) { var r = new Map(); a.forEach(function (c, k) { r.set(k, -c); }); return r; }
+  function pSub(a, b) { return pAdd(a, pNeg(b)); }
+  function pMul(a, b) { var r = new Map(); a.forEach(function (ca, ka) { b.forEach(function (cb, kb) { var k = mk(kv(ka).concat(kv(kb))), n = (r.get(k) || 0) + ca * cb; if (n === 0) r.delete(k); else r.set(k, n); }); }); return r; }
+  function R(n, d) { return { num: n, den: d }; }
+  function rC(c) { return R(pC(c), pC(1)); }
+  function rV(n) { return R(pV(n), pC(1)); }
+  function mul(a, b) { return R(pMul(a.num, b.num), pMul(a.den, b.den)); }
+  function div(a, b) { return R(pMul(a.num, b.den), pMul(a.den, b.num)); }
+  function recip(a) { return R(a.den, a.num); }
+  function add(a, b) { return R(pAdd(pMul(a.num, b.den), pMul(a.den, b.num)), pMul(a.den, b.den)); }
+  function sub(a, b) { return R(pSub(pMul(a.num, b.den), pMul(a.den, b.num)), pMul(a.den, b.den)); }
+  function content(all) { var g = 0, minv = null; all.forEach(function (c, k) { g = gcd(g, c); var cnt = {}; kv(k).forEach(function (v) { cnt[v] = (cnt[v] || 0) + 1; }); if (minv === null) minv = cnt; else { var nm = {}; Object.keys(minv).forEach(function (v) { if (cnt[v]) nm[v] = Math.min(minv[v], cnt[v]); }); minv = nm; } }); return { c: g || 1, vars: minv || {} }; }
+  function divMon(p, mon) { var r = new Map(); p.forEach(function (c, k) { var cnt = {}; kv(k).forEach(function (v) { cnt[v] = (cnt[v] || 0) + 1; }); Object.keys(mon.vars).forEach(function (v) { cnt[v] -= mon.vars[v]; }); var vs = []; Object.keys(cnt).forEach(function (v) { for (var i = 0; i < cnt[v]; i++) vs.push(v); }); r.set(mk(vs), c / mon.c); }); return r; }
+  function simplify(a) {
+    var num = a.num, den = a.den;
+    if (num.size === 0 && den.size) return R(pC(0), pC(1));
+    if (den.size === 0 && num.size) return R(pC(1), pC(0));
+    if (num.size === 0 && den.size === 0) return a;
+    var all = new Map(); num.forEach(function (c, k) { all.set(k, c); }); den.forEach(function (c, k) { all.set("d#" + k, c); });
+    var mon = content(all); num = divMon(num, mon); den = divMon(den, mon);
+    var dk = Array.from(den.keys()).sort(function (a, b) { return kv(b).length - kv(a).length || (b < a ? -1 : 1); });
+    if (dk.length && den.get(dk[0]) < 0) { num = pNeg(num); den = pNeg(den); }
+    return R(num, den);
+  }
+  function closeP(s, i) { var d = 1; i++; for (; i < s.length; i++) { if (s[i] === "(") d++; else if (s[i] === ")") { d--; if (!d) return i; } } throw new Error("()"); }
+  function multdiv(s) { var r = rC(1), m = true, i = 0; while (i < s.length) { var c = s[i]; if (c === "(") { var l = closeP(s, i); var x = valueOf(s.slice(i + 1, l)); r = m ? mul(r, x) : div(r, x); i = l + 1; m = true; } else if (c === "*") { m = true; i++; } else if (c === "/") { m = false; i++; } else if (c === "\\") { var l2 = i + 1; while (l2 < s.length && /[A-Za-z]/.test(s[l2])) l2++; var f = rV(s.slice(i, l2)); r = m ? mul(r, f) : div(r, f); i = l2; m = true; } else if (/[A-Za-z]/.test(c)) { var f2 = rV(c); r = m ? mul(r, f2) : div(r, f2); i++; m = true; } else if (/[0-9]/.test(c)) { var l3 = i + 1; while (l3 < s.length && /[0-9]/.test(s[l3])) l3++; var f3 = rC(parseInt(s.slice(i, l3), 10)); r = m ? mul(r, f3) : div(r, f3); i = l3; m = true; } else if (/\s/.test(c)) i++; else throw new Error("char"); } return r; }
+  function valueOf(s) { var r = rC(0), a = true, i = 0; while (i < s.length) { var c = s[i]; if (c === "+") { a = true; i++; } else if (c === "-") { a = false; i++; } else { var l = i, ok = false; while (l < s.length) { if (s[l] === "(") l = closeP(s, l); else if (s[l] === "+" || s[l] === "-") ok = true; if (ok) break; l++; } var t = multdiv(s.slice(i, l)); r = a ? add(r, t) : sub(r, t); i = l; a = true; } } return r; }
+  function polyStr(p) { if (p.size === 0) return "0"; var ks = Array.from(p.keys()).sort(function (a, b) { return kv(b).length - kv(a).length || (a < b ? -1 : 1); }); var o = ""; ks.forEach(function (k, idx) { var vars = kv(k), c = p.get(k), sign = c < 0 ? "-" : (idx ? "+" : ""), ac = Math.abs(c); var body = vars.length ? (ac === 1 ? "" : ac) + vars.map(function (v) { return v.replace(/^\\/, ""); }).join("") : "" + ac; o += sign + body; }); return o; }
+  function str(a) { a = simplify(a); var num = a.num, den = a.den; if (num.size === 0 && den.size === 0) return "0/0"; var ns = num.size > 1 ? "(" + polyStr(num) + ")" : polyStr(num); if (den.size === 0) return ns + "/0"; if (den.size === 1 && den.has("") && den.get("") === 1) return ns; var mv = false; den.forEach(function (c, k) { if (kv(k).length > 1) mv = true; }); var ds = (den.size > 1 || mv) ? "(" + polyStr(den) + ")" : polyStr(den); return ns + "/" + ds; }
+  return { P: valueOf, recip: recip, add: add, sub: sub, mul: mul, div: div, K: rC, str: str };
+})();
+
+// ---- calculators ----
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var P = RE.P, rc = RE.recip, ad = RE.add, sb = RE.sub, ml = RE.mul, dv = RE.div, K = RE.K, S = RE.str;
+  var HALF = P("1/2"), ONE = K(1);
+  var fld = {};   // current card's input elements, by key
+  function v(k) { return P(fld[k].value); }         // parse field
+  function r(k) { return rc(P(fld[k].value)); }      // reciprocal of field
+  function set(k, rat) { fld[k].value = S(rat); }
+
+  function tex(s) {
+    return s.replace(/\\infty/g, "∞").replace(/\\leq/g, "≤").replace(/\\geq/g, "≥").replace(/\\neq/g, "≠")
+      .replace(/\\nabla/g, "∇").replace(/\\partial/g, "∂").replace(/\\times/g, "×").replace(/\\in\b/g, "∈")
+      .replace(/\\phi/g, "φ").replace(/\\beta/g, "β").replace(/\\epsilon/g, "ε").replace(/\\eps\b/g, "ε")
+      .replace(/\^\{([^}]*)\}/g, "^($1)").replace(/_\{([^}]*)\}/g, "_($1)").replace(/[{}]/g, "").replace(/\\/g, "");
+  }
+
+  var CARDS = [
+    { name: "Hölder's inequality",
+      desc: ["If f is in L^p and g is in L^q, then fg is in L^r, where"],
+      fields: [["p", "p", "2"], ["q", "q", "2"], ["r", "r", "1"]],
+      formula: "1/p + 1/q = 1/r",
+      restr: ["0 < p,q,r \\leq \\infty", "Additional Hölder estimates hold if the support is compact."],
+      buttons: [
+        ["Compute p from q,r", function () { set("p", rc(sb(r("r"), r("q")))); }],
+        ["Compute q from p,r", function () { set("q", rc(sb(r("r"), r("p")))); }],
+        ["Compute r from p,q", function () { set("r", rc(ad(r("p"), r("q")))); }]] },
+    { name: "Sobolev inequality",
+      desc: ["If \\nabla^a f is in L^p(R^n), then \\nabla^{a-s} f is in L^q(R^n), where"],
+      fields: [["n", "n", "3"], ["s", "s", "1"], ["p", "p", "2"], ["q", "q", "6"]],
+      formula: "1/p = 1/q + s/n",
+      restr: ["s \\geq 0;  1 < p < q < \\infty", "Endpoints need an epsilon more derivatives, or use H^1 and BMO."],
+      buttons: [
+        ["Compute s from p,q,n", function () { set("s", ml(sb(r("p"), r("q")), v("n"))); }],
+        ["Compute p from s,q,n", function () { set("p", rc(ad(r("q"), dv(v("s"), v("n"))))); }],
+        ["Compute q from s,p,n", function () { set("q", rc(sb(r("p"), dv(v("s"), v("n"))))); }]] },
+    { name: "Young's inequality",
+      desc: ["If f is in L^p and g is in L^q, then f*g is in L^r, where"],
+      fields: [["p", "p", "2"], ["q", "q", "2"], ["r", "r", "1/0"]],
+      formula: "1/p + 1/q = 1/r + 1",
+      restr: ["1 \\leq p,q,r \\leq \\infty", "Sharper Lorentz-space and discrete versions are available."],
+      buttons: [
+        ["Compute p from q,r", function () { set("p", rc(ad(sb(r("r"), r("q")), ONE))); }],
+        ["Compute q from p,r", function () { set("q", rc(ad(sb(r("r"), r("p")), ONE))); }],
+        ["Compute r from p,q", function () { set("r", rc(sb(ad(r("p"), r("q")), ONE))); }]] },
+    { name: "Fractional integration",
+      desc: ["If f is in L^p(R^n), then f * |x|^{-a} is in L^q(R^n), where"],
+      fields: [["n", "n", "3"], ["p", "p", "2"], ["a", "a", "2"], ["q", "q", "6"]],
+      formula: "1/p + a/n = 1/q + 1",
+      restr: ["1 < p,q < \\infty,  0 < a < n"],
+      buttons: [
+        ["Compute p from a,q", function () { set("p", rc(sb(ad(r("q"), ONE), dv(v("a"), v("n"))))); }],
+        ["Compute q from p,a", function () { set("q", rc(ad(sb(r("p"), ONE), dv(v("a"), v("n"))))); }],
+        ["Compute a from p,q", function () { set("a", ml(v("n"), sb(ad(r("q"), ONE), r("p")))); }]] },
+    { name: "Dual exponent",
+      desc: ["The dual of L^p is L^{p'}, where"],
+      fields: [["p", "p", "2"], ["pp", "p'", "2", true]],
+      formula: "1/p + 1/p' = 1",
+      restr: ["0 < p \\leq \\infty. Duality is symmetric."],
+      buttons: [["Compute dual p'", function () { set("pp", rc(sb(ONE, r("p")))); }]] },
+    { name: "Wave Strichartz",
+      desc: ["If \\phi solves the free wave equation in R^n with data in H^s x H^{s-1},",
+        "then \\phi is in L^q_t L^r_x, where"],
+      fields: [["n", "n", "3"], ["s", "s", "1/2"], ["q", "q", "4"], ["r", "r", "4"]],
+      formula: "n/2 - s = 1/q + n/r;   1/q + (n-1)/2r = (n-1)/4",
+      restr: ["2 \\leq q \\leq \\infty;  2 \\leq r < \\infty", "Besov versions hold at r = \\infty unless (q,r,n) = (2,\\infty,3)."],
+      buttons: [
+        ["Compute q,r from s,n", function () { var n = v("n"); set("q", dv(ad(n, ONE), ml(sb(n, ONE), v("s")))); set("r", rc(sb(HALF, dv(ml(K(2), v("s")), ad(n, ONE))))); }],
+        ["Compute r,s from q,n", function () { var n = v("n"); set("s", dv(ad(n, ONE), ml(sb(n, ONE), v("q")))); set("r", rc(sb(HALF, dv(dv(K(2), sb(n, ONE)), v("q"))))); }],
+        ["Compute q,s from r,n", function () { var n = v("n"), r2 = sb(HALF, r("r")); set("q", dv(dv(K(2), sb(n, ONE)), r2)); set("s", ml(dv(ad(n, ONE), K(2)), r2)); }]] },
+    { name: "Schrödinger Strichartz",
+      desc: ["If \\phi solves the free Schrödinger equation in R^n with L^2 data,",
+        "then \\phi is in L^q_t L^r_x, where"],
+      fields: [["n", "n", "2"], ["q", "q", "4"], ["r", "r", "4"]],
+      formula: "n/2 = 2/q + n/r",
+      restr: ["2 \\leq q,r \\leq \\infty;  (q,r,n) \\neq (\\infty,2,2)"],
+      buttons: [
+        ["Compute q from r,n", function () { set("q", dv(dv(K(2), v("n")), sb(HALF, r("r")))); }],
+        ["Compute r from q,n", function () { set("r", dv(v("n"), sb(dv(v("n"), K(2)), dv(K(2), v("q"))))); }]] },
+    { name: "Linear interpolation",
+      desc: ["If T maps L^{p_1}→L^{q_1} and L^{p_2}→L^{q_2} with norms 2^{N_1}, 2^{N_2},",
+        "then with parameter t it maps L^p→L^q with norm 2^N, where"],
+      fields: [["p1", "p_1", "1"], ["q1", "q_1", "1"], ["N1", "N_1", "0"], ["p2", "p_2", "1/0"], ["q2", "q_2", "1/0"], ["N2", "N_2", "0"], ["p", "p", "2"], ["q", "q", "2"], ["N", "N", "0"], ["t", "t", "1/2"]],
+      formula: "1/p = (1-t)/p_1 + t/p_2;   1/q = (1-t)/q_1 + t/q_2;   N = (1-t)N_1 + t N_2",
+      restr: ["Restrictions depend on the real vs. complex method.", "Swap p,q,N with p_2,q_2,N_2 for extrapolation."],
+      buttons: (function () {
+        function interp(a, b, t) { return ad(ml(a, sb(ONE, t)), ml(b, t)); }
+        function param(a, b, c) { return dv(sb(c, a), sb(b, a)); }
+        function fill(t, skip) { set("t", t); if (skip !== "p") set("p", rc(interp(r("p1"), r("p2"), t))); if (skip !== "q") set("q", rc(interp(r("q1"), r("q2"), t))); if (skip !== "N") set("N", interp(v("N1"), v("N2"), t)); }
+        return [
+          ["Compute q,N,t from p", function () { fill(param(r("p1"), r("p2"), r("p")), "p"); }],
+          ["Compute p,N,t from q", function () { fill(param(r("q1"), r("q2"), r("q")), "q"); }],
+          ["Compute p,q,t from N", function () { fill(param(v("N1"), v("N2"), v("N")), "N"); }],
+          ["Compute p,q,N from t", function () { fill(v("t"), "t"); }]];
+      })() },
+    { name: "Restriction conjecture",
+      desc: ["If f is in L^p(R^n), its Fourier transform restricted to the sphere or paraboloid is in L^q, where"],
+      fields: [["n", "n", "3"], ["p", "p", "4/3"], ["q", "q", "2"]],
+      formula: "(n-1)/q = (n+1)(1 - 1/p)",
+      restr: ["Conjectured: p \\leq 2n/(n+1)", "Known: p \\leq 4/3 (n=2), p \\leq 4/3 + 8/255 (n=3), p \\leq 2(n+1)/(n+3) (n>3)"],
+      buttons: [
+        ["Compute p from q,n", function () { var nd = dv(sb(v("n"), ONE), ad(v("n"), ONE)); set("p", rc(sb(ONE, dv(nd, v("q"))))); }],
+        ["Compute q from p,n", function () { var nd = dv(sb(v("n"), ONE), ad(v("n"), ONE)); set("q", dv(nd, sb(ONE, r("p")))); }]] },
+    { name: "Extension conjecture",
+      desc: ["If f is in L^p on the sphere or paraboloid in R^n, its Fourier transform is in L^q, where"],
+      fields: [["n", "n", "3"], ["p", "p", "2"], ["q", "q", "4"]],
+      formula: "(n+1)/q = (n-1)(1 - 1/p)",
+      restr: ["Conjectured: q \\geq 2n/(n-1)", "Known: q \\geq 4 (n=2), q \\geq 4 - 8/31 (n=3), q \\geq 2(n+1)/(n-1) (n>3)"],
+      buttons: [
+        ["Compute p from q,n", function () { var nd = dv(ad(v("n"), ONE), sb(v("n"), ONE)); set("p", rc(sb(ONE, dv(nd, v("q"))))); }],
+        ["Compute q from p,n", function () { var nd = dv(ad(v("n"), ONE), sb(v("n"), ONE)); set("q", dv(nd, sb(ONE, r("p")))); }]] },
+    { name: "Scaling exponent",
+      desc: ["The equation (\\partial_t^a + \\nabla^b) u = u^k (\\nabla u)^l in R^n is critical at regularity H^s, where"],
+      fields: [["n", "n", "3"], ["b", "b", "2"], ["k", "k", "3"], ["l", "l", "0"], ["s", "s", "1/2"]],
+      formula: "s = n/2 - (b-l)/(k+l-1)",
+      restr: [],
+      buttons: [
+        ["Compute s from n,b,k,l", function () { set("s", sb(dv(v("n"), K(2)), dv(sb(v("b"), v("l")), sb(ad(v("k"), v("l")), ONE)))); }],
+        ["Compute k from n,b,l,s", function () { set("k", sb(sb(ONE, v("l")), dv(sb(v("b"), v("l")), sb(v("s"), dv(v("n"), K(2)))))); }]] }
+  ];
+
+  CARDS.forEach(function (c, i) { var o = document.createElement("option"); o.value = i; o.textContent = c.name; $("pick").appendChild(o); });
+
+  function render() {
+    var c = CARDS[+$("pick").value], el = $("card"); fld = {}; $("err").textContent = "";
+    var h = c.desc.map(function (d) { return '<p class="desc2">' + tex(d) + "</p>"; }).join("");
+    h += '<div class="fields">' + c.fields.map(function (f) {
+      return '<span class="fld"><label>' + tex(f[1]) + ' =</label><input data-k="' + f[0] + '" value="' + f[2] + '"' + (f[3] ? " readonly" : "") + "></span>";
+    }).join("") + "</div>";
+    h += '<div class="buttons">' + c.buttons.map(function (b, j) { return '<button type="button" data-b="' + j + '">' + b[0] + "</button>"; }).join("") + "</div>";
+    h += '<p class="formula">' + tex(c.formula) + "</p>";
+    if (c.restr.length) h += '<div class="restr">' + c.restr.map(function (rr) { return "<div>" + tex(rr) + "</div>"; }).join("") + "</div>";
+    el.innerHTML = h;
+    el.querySelectorAll("input[data-k]").forEach(function (inp) { fld[inp.dataset.k] = inp; });
+    el.querySelectorAll("button[data-b]").forEach(function (btn) {
+      btn.addEventListener("click", function () { $("err").textContent = ""; try { c.buttons[+btn.dataset.b][1](); } catch (e) { $("err").textContent = "Syntax error — check your inputs."; } });
+    });
+  }
+  $("pick").addEventListener("change", render);
+  render();
+})();
+</script>
+</body>
+</html>
