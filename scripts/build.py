@@ -855,9 +855,11 @@ def build_applets(doc: dict) -> str:
     body.append('<p class="legend"><strong>Status:</strong> Ported = runs here now &middot; '
                 'Live = works elsewhere &middot; To port = old Java, not yet rebuilt &middot; '
                 'Retired = superseded.</p>')
+    notes = doc.get("category_notes") or {}
     for cat in cats:
+        note = (f'<p class="legend">{html.escape(notes[cat])}</p>' if cat in notes else "")
         rows = "".join(row(a) for a in applets if a["category"] == cat)
-        body.append(_cv_section(cat, rows))
+        body.append(_cv_section(cat, note + rows))
     body.append("</div>")
     return page("Terence Tao — interactive tools", "\n".join(body))
 

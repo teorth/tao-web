@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matrix calculator — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .dims { display: flex; align-items: center; gap: .4rem; margin-bottom: .5rem; }
+  .dims .times { color: var(--muted); font-family: var(--mono); }
+  .dims select { min-width: auto; padding: .3rem .4rem; }
+  .operand h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 .2rem; }
+  .operands { display: flex; flex-wrap: wrap; gap: 1.6rem; }
+  .opbar { margin-top: 1.5rem; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1rem; }
+  .outmatrix { display: inline-grid; gap: .1rem .1rem; padding: .4rem .7rem; position: relative;
+    grid-template-columns: repeat(var(--cols, 1), minmax(3rem, auto)); }
+  .outmatrix::before, .outmatrix::after { content: ""; position: absolute; top: 3px; bottom: 3px;
+    width: 8px; border: 2px solid var(--accent); }
+  .outmatrix::before { left: 0; border-right: 0; border-radius: 5px 0 0 5px; }
+  .outmatrix::after { right: 0; border-left: 0; border-radius: 0 5px 5px 0; }
+  .outmatrix .cell { font-family: var(--mono); font-variant-numeric: tabular-nums;
+    text-align: right; padding: .18rem .5rem; }
+  .scalarout { font-family: var(--mono); font-size: 1.5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Matrix calculator</h1>
+    <p class="lede">Arithmetic on two real matrices A and B (up to 5×5): sums, products,
+      powers, transpose, trace, determinant, and inverse.</p>
+    <p class="prov">A modern JavaScript port of a 2002 Java applet by Kim Chi Tran
+      (originally <code>matrixCalc.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="operands">
+      <div class="operand">
+        <h2>Matrix A</h2>
+        <div class="dims">
+          <select id="arows"></select><span class="times">×</span><select id="acols"></select>
+        </div>
+        <div class="matrix" id="gridA"></div>
+      </div>
+      <div class="operand">
+        <h2>Matrix B</h2>
+        <div class="dims">
+          <select id="brows"></select><span class="times">×</span><select id="bcols"></select>
+        </div>
+        <div class="matrix" id="gridB"></div>
+      </div>
+    </div>
+
+    <div class="opbar">
+      <div class="field">
+        <label for="func">Operation</label>
+        <select id="func"></select>
+      </div>
+      <button type="button" id="compute">Compute</button>
+      <span class="err" id="err"></span>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="ghost" id="clearA">Clear A</button>
+      <button type="button" class="ghost" id="clearB">Clear B</button>
+      <button type="button" class="ghost" id="swap">Swap A ↔ B</button>
+      <button type="button" class="ghost" id="copyA">Result → A</button>
+      <button type="button" class="ghost" id="copyB">Result → B</button>
+    </div>
+
+    <div class="result" id="result" hidden>
+      <p class="expr" id="expr"></p>
+      <div class="out" id="out"></div>
+    </div>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Kim Chi Tran, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var OPS = ["A + B", "A − B", "A · B", "B · A", "A · A", "A · A · A",
+               "Aᵀ", "tr(A)", "A⁻¹", "det(A)"];
+    var lastResult = null;   // {M} for matrix results, null otherwise
+
+    // dimension selects 1..5
+    ["arows", "acols", "brows", "bcols"].forEach(function (id) {
+      var s = $(id);
+      for (var k = 1; k <= 5; k++) { var o = document.createElement("option"); o.value = k; o.textContent = k; s.appendChild(o); }
+      s.value = id === "acols" || id === "bcols" ? 2 : 2;
+    });
+    $("arows").value = 2; $("acols").value = 2; $("brows").value = 2; $("bcols").value = 2;
+    OPS.forEach(function (label, i) { var o = document.createElement("option"); o.value = i; o.textContent = label; $("func").appendChild(o); });
+
+    function fmt(x) {
+      if (!isFinite(x)) return String(x);
+      var r = Math.round(x * 1e6) / 1e6;
+      return Object.is(r, -0) ? "0" : String(r);
+    }
+
+    // (Re)build an r×c input grid, preserving overlapping values.
+    function buildGrid(el, r, c) {
+      var prev = {};
+      el.querySelectorAll("input").forEach(function (inp) { prev[inp.dataset.rc] = inp.value; });
+      el.innerHTML = ""; el.style.setProperty("--cols", c);
+      for (var i = 0; i < r; i++) for (var j = 0; j < c; j++) {
+        var inp = document.createElement("input");
+        inp.className = "num"; inp.type = "text"; inp.inputMode = "decimal";
+        inp.dataset.rc = i + "," + j;
+        inp.value = prev[i + "," + j] !== undefined ? prev[i + "," + j] : "0";
+        inp.setAttribute("aria-label", "entry " + (i + 1) + "," + (j + 1));
+        el.appendChild(inp);
+      }
+    }
+    function rebuildA() { buildGrid($("gridA"), +$("arows").value, +$("acols").value); }
+    function rebuildB() { buildGrid($("gridB"), +$("brows").value, +$("bcols").value); }
+    ["arows", "acols"].forEach(function (id) { $(id).addEventListener("change", rebuildA); });
+    ["brows", "bcols"].forEach(function (id) { $(id).addEventListener("change", rebuildB); });
+
+    function readGrid(el, r, c) {
+      var M = [], inputs = {};
+      el.querySelectorAll("input").forEach(function (inp) { inputs[inp.dataset.rc] = inp.value; });
+      for (var i = 0; i < r; i++) { M[i] = []; for (var j = 0; j < c; j++) {
+        var x = parseFloat(inputs[i + "," + j]); if (!isFinite(x)) return null; M[i][j] = x; } }
+      return M;
+    }
+
+    // --- matrix math (double precision) ---
+    function mul(X, Y) {
+      var r = X.length, n = Y.length, c = Y[0].length, Z = [];
+      for (var i = 0; i < r; i++) { Z[i] = []; for (var j = 0; j < c; j++) {
+        var s = 0; for (var k = 0; k < n; k++) s += X[i][k] * Y[k][j]; Z[i][j] = s; } }
+      return Z;
+    }
+    function transpose(X) {
+      var Z = []; for (var j = 0; j < X[0].length; j++) { Z[j] = []; for (var i = 0; i < X.length; i++) Z[j][i] = X[i][j]; } return Z;
+    }
+    function elementwise(X, Y, f) {
+      var Z = []; for (var i = 0; i < X.length; i++) { Z[i] = []; for (var j = 0; j < X[0].length; j++) Z[i][j] = f(X[i][j], Y[i][j]); } return Z;
+    }
+    function clone(X) { return X.map(function (row) { return row.slice(); }); }
+    function det(A) {                       // Gaussian elimination with partial pivoting
+      var n = A.length, M = clone(A), d = 1;
+      for (var col = 0; col < n; col++) {
+        var piv = col; for (var r = col + 1; r < n; r++) if (Math.abs(M[r][col]) > Math.abs(M[piv][col])) piv = r;
+        if (M[piv][col] === 0) return 0;
+        if (piv !== col) { var t = M[piv]; M[piv] = M[col]; M[col] = t; d = -d; }
+        d *= M[col][col];
+        for (var r2 = col + 1; r2 < n; r2++) { var f = M[r2][col] / M[col][col];
+          for (var j = col; j < n; j++) M[r2][j] -= f * M[col][j]; }
+      }
+      return d;
+    }
+    function inverse(A) {                    // Gauss-Jordan on [A | I]
+      var n = A.length, M = clone(A), I = [];
+      for (var i = 0; i < n; i++) { I[i] = []; for (var j = 0; j < n; j++) I[i][j] = i === j ? 1 : 0; }
+      for (var col = 0; col < n; col++) {
+        var piv = col; for (var r = col + 1; r < n; r++) if (Math.abs(M[r][col]) > Math.abs(M[piv][col])) piv = r;
+        if (Math.abs(M[piv][col]) < 1e-12) return null;
+        if (piv !== col) { var t = M[piv]; M[piv] = M[col]; M[col] = t; t = I[piv]; I[piv] = I[col]; I[col] = t; }
+        var p = M[col][col];
+        for (var j = 0; j < n; j++) { M[col][j] /= p; I[col][j] /= p; }
+        for (var r2 = 0; r2 < n; r2++) if (r2 !== col) { var f = M[r2][col];
+          for (var j2 = 0; j2 < n; j2++) { M[r2][j2] -= f * M[col][j2]; I[r2][j2] -= f * I[col][j2]; } }
+      }
+      return I;
+    }
+
+    function showMatrix(label, M) {
+      $("expr").textContent = label + " =";
+      var cols = M[0].length, html = '<div class="outmatrix" style="--cols:' + cols + '">';
+      for (var i = 0; i < M.length; i++) for (var j = 0; j < cols; j++) html += '<span class="cell">' + fmt(M[i][j]) + "</span>";
+      html += "</div>";
+      $("out").innerHTML = html; $("result").hidden = false; lastResult = { M: M };
+    }
+    function showScalar(label, v) {
+      $("expr").textContent = label + " =";
+      $("out").innerHTML = '<span class="scalarout">' + fmt(v) + "</span>";
+      $("result").hidden = false; lastResult = null;
+    }
+    function fail(msg) { $("err").textContent = msg; $("result").hidden = true; lastResult = null; }
+
+    $("compute").addEventListener("click", function () {
+      $("err").textContent = "";
+      var ar = +$("arows").value, ac = +$("acols").value, br = +$("brows").value, bc = +$("bcols").value;
+      var A = readGrid($("gridA"), ar, ac), B = readGrid($("gridB"), br, bc);
+      if (!A || !B) return fail("Every entry must be a number.");
+      var op = +$("func").value;
+      switch (op) {
+        case 0: case 1:
+          if (ar !== br || ac !== bc) return fail("A and B must have the same dimensions.");
+          return showMatrix(OPS[op], elementwise(A, B, op === 0 ? function (x, y) { return x + y; } : function (x, y) { return x - y; }));
+        case 2:
+          if (ac !== br) return fail("For A · B, columns of A must equal rows of B.");
+          return showMatrix("A · B", mul(A, B));
+        case 3:
+          if (bc !== ar) return fail("For B · A, columns of B must equal rows of A.");
+          return showMatrix("B · A", mul(B, A));
+        case 4:
+          if (ar !== ac) return fail("A must be square.");
+          return showMatrix("A · A", mul(A, A));
+        case 5:
+          if (ar !== ac) return fail("A must be square.");
+          return showMatrix("A · A · A", mul(mul(A, A), A));
+        case 6:
+          return showMatrix("Aᵀ", transpose(A));
+        case 7:
+          if (ar !== ac) return fail("A must be square.");
+          var tr = 0; for (var i = 0; i < ar; i++) tr += A[i][i]; return showScalar("tr(A)", tr);
+        case 8:
+          if (ar !== ac) return fail("A must be square.");
+          var inv = inverse(A); if (!inv) return fail("A is singular — the inverse does not exist.");
+          return showMatrix("A⁻¹", inv);
+        case 9:
+          if (ar !== ac) return fail("A must be square.");
+          return showScalar("det(A)", det(A));
+      }
+    });
+
+    function setGrid(el, rowsSel, colsSel, M) {
+      $(rowsSel).value = M.length; $(colsSel).value = M[0].length;
+      buildGrid(el, M.length, M[0].length);
+      el.querySelectorAll("input").forEach(function (inp) {
+        var rc = inp.dataset.rc.split(","); inp.value = fmt(M[+rc[0]][+rc[1]]);
+      });
+    }
+    $("clearA").addEventListener("click", function () { $("gridA").querySelectorAll("input").forEach(function (i) { i.value = "0"; }); });
+    $("clearB").addEventListener("click", function () { $("gridB").querySelectorAll("input").forEach(function (i) { i.value = "0"; }); });
+    $("swap").addEventListener("click", function () {
+      var ar = +$("arows").value, ac = +$("acols").value, br = +$("brows").value, bc = +$("bcols").value;
+      var A = readGrid($("gridA"), ar, ac), B = readGrid($("gridB"), br, bc);
+      if (!A || !B) return fail("Every entry must be a number.");
+      setGrid($("gridA"), "arows", "acols", B); setGrid($("gridB"), "brows", "bcols", A);
+    });
+    function copyTo(el, rowsSel, colsSel) {
+      if (!lastResult) return fail("Copy is only available for matrix results (not tr/det).");
+      $("err").textContent = ""; setGrid(el, rowsSel, colsSel, lastResult.M);
+    }
+    $("copyA").addEventListener("click", function () { copyTo($("gridA"), "arows", "acols"); });
+    $("copyB").addEventListener("click", function () { copyTo($("gridB"), "brows", "bcols"); });
+
+    rebuildA(); rebuildB();
+    // a friendly starting example
+    setGrid($("gridA"), "arows", "acols", [[1, 2], [3, 4]]);
+    setGrid($("gridB"), "brows", "bcols", [[0, 1], [1, 0]]);
+  })();
+</script>
+</body>
+</html>

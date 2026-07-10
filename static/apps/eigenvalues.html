@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eigenvalues and eigenvectors — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .mrow { display: flex; flex-wrap: wrap; gap: 1rem 1.5rem; align-items: flex-start; }
+  .meditor { display: grid; grid-template-columns: repeat(2, 4.6rem); gap: .4rem;
+    padding: .45rem .8rem; position: relative; }
+  .meditor::before, .meditor::after { content: ""; position: absolute; top: 3px; bottom: 3px;
+    width: 8px; border: 2px solid var(--muted); }
+  .meditor::before { left: 0; border-right: 0; border-radius: 5px 0 0 5px; }
+  .meditor::after { right: 0; border-left: 0; border-radius: 0 5px 5px 0; }
+  .meditor input { width: 4.4rem; font-family: var(--mono); text-align: center;
+    font-variant-numeric: tabular-nums; padding: .4rem .3rem; }
+  .mlabel { font-family: var(--mono); font-style: italic; color: var(--muted);
+    margin-bottom: .3rem; display: block; }
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .stagewrap { margin-top: 1.2rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; }
+  .planetitles span:last-child { text-align: right; }
+  .eig { font-family: var(--mono); font-size: .95rem; margin-top: .9rem; overflow-wrap: anywhere; }
+  .eig .val { color: var(--accent); }
+  .readout { font-family: var(--mono); font-size: .85rem; color: var(--muted); margin-top: .4rem; }
+  .hintline { margin-top: .5rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Eigenvalues and eigenvectors</h1>
+    <p class="lede">A 2×2 matrix <span class="math">A</span> acts on the plane by
+      <span class="math">T(x,y) = (ax+by,&nbsp;cx+dy)</span>. Drag in the left panel to set an input
+      vector and see its image on the right. The magenta <strong>eigenlines</strong> are the
+      directions along which <span class="math">A</span> acts by pure scaling — a vector on an
+      eigenline maps to a multiple of itself. You can also drag the green and blue dots on the right
+      to reshape the columns of <span class="math">A</span> directly.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2002 Java applet by Kim Chi Tran
+      (originally <code>EigenMap.java</code> / <code>EigenGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div>
+        <span class="mlabel">A =</span>
+        <div class="meditor">
+          <input id="a" type="number" step="0.1" value="2" aria-label="a">
+          <input id="b" type="number" step="0.1" value="1" aria-label="b">
+          <input id="c" type="number" step="0.1" value="1" aria-label="c">
+          <input id="d" type="number" step="0.1" value="2" aria-label="d">
+        </div>
+      </div>
+      <div class="field">
+        <label for="preset">Example</label>
+        <select id="preset"></select>
+      </div>
+      <div class="field">
+        <label for="layout">Show</label>
+        <select id="layout">
+          <option value="3">Grid &amp; eigenlines</option>
+          <option value="1">Grid only</option>
+          <option value="2">Eigenlines only</option>
+          <option value="0">Neither</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="stagewrap">
+      <div class="planetitles"><span>Domain — drag to set a vector</span><span>Range (image under A)</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="eig" id="eig"></p>
+    <p class="readout" id="readout"></p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Kim Chi Tran, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cv = $("cv"), ctx = cv.getContext("2d");
+    var VIEW = 5, GREEN = "#2ea043", BLUE = "#2f6fed", MAGENTA = "#c026d3";
+    var vec = [1.5, 1], drag = null;               // input vector; drag = 'vec'|'green'|'cyan'|null
+    var PRESETS = [
+      ["Identity", 1, 0, 0, 1], ["Dilation", 2, 0, 0, 2], ["Contraction", 0.5, 0, 0, 0.5],
+      ["Reflection in x-axis", 1, 0, 0, -1], ["Reflection in y-axis", -1, 0, 0, 1],
+      ["Reflection in y = x", 0, 1, 1, 0], ["Rotation", 0.8, 0.6, -0.6, 0.8],
+      ["Dilated rotation", 1.6, 1.2, -1.2, 1.6], ["Shear", 1, 1, 0, 1],
+      ["Symmetric (λ = 3, 1)", 2, 1, 1, 2], ["Projection to y = x", 0.5, 0.5, 0.5, 0.5],
+      ["Non-isotropic dilation", 2, 0, 0, 0.5], ["Nilpotent", 1, 1, -1, -1], ["Zero", 0, 0, 0, 0]
+    ];
+    PRESETS.forEach(function (p, i) { var o = document.createElement("option"); o.value = i; o.textContent = p[0]; $("preset").appendChild(o); });
+    $("preset").value = 9;
+
+    function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+    function mat() { return { a: +$("a").value || 0, b: +$("b").value || 0, c: +$("c").value || 0, d: +$("d").value || 0 }; }
+    function T(m, x, y) { return [m.a * x + m.b * y, m.c * x + m.d * y]; }
+    function f(x) { var r = Math.round(x * 1e4) / 1e4; return Object.is(r, -0) ? "0" : String(r); }
+    function round1(x) { return Math.round(x * 10) / 10; }
+
+    var L, Rp, pad = 8;
+    function layout() {
+      var cssW = cv.clientWidth, dpr = window.devicePixelRatio || 1;
+      var gap = 18, panelW = Math.floor((cssW - gap) / 2), panelH = panelW;
+      cv.width = cssW * dpr; cv.height = panelH * dpr; cv.style.height = panelH + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var s = (panelW / 2 - pad) / VIEW;
+      L = { cx: panelW / 2, cy: panelH / 2, s: s, x0: 0, w: panelW };
+      Rp = { cx: panelW + gap + panelW / 2, cy: panelH / 2, s: s, x0: panelW + gap, w: panelW };
+    }
+    function P(pl, x, y) { return [pl.cx + pl.s * x, pl.cy - pl.s * y]; }
+    function toMath(pl, px, py) { return [(px - pl.cx) / pl.s, (pl.cy - py) / pl.s]; }
+    function line(pl, x1, y1, x2, y2) { var p = P(pl, x1, y1), q = P(pl, x2, y2);
+      ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); }
+    function clipPanel(pl) { ctx.beginPath(); ctx.rect(pl.x0, 0, pl.w, cv.clientHeight); ctx.clip(); }
+
+    function drawGrid(pl, m, showGrid) {
+      ctx.save(); clipPanel(pl);
+      if (showGrid) { ctx.strokeStyle = css("--grid"); ctx.lineWidth = 1;
+        for (var i = -VIEW; i <= VIEW; i++) {
+          if (m) { var A = T(m, -VIEW, i), B = T(m, VIEW, i), C = T(m, i, -VIEW), D = T(m, i, VIEW);
+            line(pl, A[0], A[1], B[0], B[1]); line(pl, C[0], C[1], D[0], D[1]); }
+          else { line(pl, -VIEW, i, VIEW, i); line(pl, i, -VIEW, i, VIEW); }
+        }
+      }
+      ctx.restore();
+      ctx.save(); clipPanel(pl);
+      ctx.strokeStyle = css("--axis") || css("--muted"); ctx.lineWidth = 1.2;
+      line(pl, -VIEW, 0, VIEW, 0); line(pl, 0, -VIEW, 0, VIEW);
+      ctx.lineWidth = 1;
+      for (var t = -VIEW + 1; t <= VIEW - 1; t++) { var px = P(pl, t, 0), py = P(pl, 0, t);
+        ctx.beginPath(); ctx.moveTo(px[0], px[1] - 3); ctx.lineTo(px[0], px[1] + 3); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(py[0] - 3, py[1]); ctx.lineTo(py[0] + 3, py[1]); ctx.stroke(); }
+      ctx.restore();
+    }
+    // line  p*x + q*y = 0  across the view
+    function eigenLine(pl, p, q) {
+      if (p * p + q * q < 1e-4) return;
+      ctx.save(); clipPanel(pl); ctx.strokeStyle = MAGENTA; ctx.lineWidth = 2; ctx.setLineDash([6, 4]);
+      if (q * q > p * p) line(pl, -VIEW, VIEW * p / q, VIEW, -VIEW * p / q);
+      else line(pl, VIEW * q / p, -VIEW, -VIEW * q / p, VIEW);
+      ctx.restore();
+    }
+    function drawEigen(m, lam) {
+      // direction solving (A-lam) x + B y = 0, falling back to row 2
+      var p, q;
+      if ((m.a - lam) * (m.a - lam) + m.b * m.b > 1e-3) { p = m.a - lam; q = m.b; }
+      else if (m.c * m.c + (m.d - lam) * (m.d - lam) > 1e-3) { p = m.c; q = m.d - lam; }
+      else return;
+      eigenLine(L, p, q); eigenLine(Rp, p, q);
+    }
+    function arrow(pl, x, y, color, wide) {
+      ctx.save(); clipPanel(pl); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = wide ? 2.6 : 2;
+      var o = P(pl, 0, 0), h = P(pl, x, y);
+      ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(h[0], h[1]); ctx.stroke();
+      var ang = Math.atan2(h[1] - o[1], h[0] - o[0]), len = 9;
+      if (Math.hypot(h[0] - o[0], h[1] - o[1]) > 4) {
+        ctx.beginPath(); ctx.moveTo(h[0], h[1]);
+        ctx.lineTo(h[0] - len * Math.cos(ang - 0.4), h[1] - len * Math.sin(ang - 0.4));
+        ctx.lineTo(h[0] - len * Math.cos(ang + 0.4), h[1] - len * Math.sin(ang + 0.4));
+        ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
+    }
+    function dot(pl, x, y, color) { var p = P(pl, x, y);
+      ctx.save(); clipPanel(pl); ctx.fillStyle = color;
+      ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, 7); ctx.fill();
+      ctx.strokeStyle = css("--panel"); ctx.lineWidth = 1.5; ctx.stroke(); ctx.restore(); }
+
+    function eigen(m) {
+      var tr = m.a + m.d, disc = tr * tr - 4 * (m.a * m.d - m.b * m.c);
+      if (disc > 1e-3) return { kind: "real", l1: (tr + Math.sqrt(disc)) / 2, l2: (tr - Math.sqrt(disc)) / 2 };
+      if (disc < -1e-3) return { kind: "complex", re: tr / 2, im: Math.sqrt(-disc) / 2 };
+      return { kind: "repeated", l1: tr / 2 };
+    }
+
+    function redraw() {
+      var m = mat(), opt = +$("layout").value, showGrid = opt & 1, showEig = opt & 2;
+      ctx.clearRect(0, 0, cv.clientWidth, cv.clientHeight);
+      ctx.fillStyle = css("--panel");
+      ctx.fillRect(L.x0, 0, L.w, cv.clientHeight); ctx.fillRect(Rp.x0, 0, Rp.w, cv.clientHeight);
+      drawGrid(L, null, showGrid); drawGrid(Rp, m, showGrid);
+      var E = eigen(m);
+      if (showEig) {
+        if (E.kind === "real") { drawEigen(m, E.l1); drawEigen(m, E.l2); }
+        else if (E.kind === "repeated") drawEigen(m, E.l1);
+      }
+      // input vector and its image
+      arrow(L, vec[0], vec[1], css("--accent"), true);
+      var im = T(m, vec[0], vec[1]); arrow(Rp, im[0], im[1], css("--accent"), true);
+      // column-image handles (green = image of e1, blue = image of e2)
+      dot(Rp, m.a, m.c, GREEN); dot(Rp, m.b, m.d, BLUE);
+      ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+      ctx.strokeRect(L.x0 + 0.5, 0.5, L.w - 1, cv.clientHeight - 1);
+      ctx.strokeRect(Rp.x0 + 0.5, 0.5, Rp.w - 1, cv.clientHeight - 1);
+
+      var e = $("eig");
+      if (E.kind === "real") e.innerHTML = "Eigenvalues: <span class='val'>λ = " + f(E.l1) + "</span> and <span class='val'>λ = " + f(E.l2) + "</span> (real, distinct).";
+      else if (E.kind === "repeated") e.innerHTML = "Repeated eigenvalue: <span class='val'>λ = " + f(E.l1) + "</span>.";
+      else e.innerHTML = "Complex eigenvalues: <span class='val'>" + f(E.re) + " ± " + f(E.im) + "i</span> — no real eigenlines (A rotates the plane).";
+      $("readout").textContent = "det A = " + f(m.a * m.d - m.b * m.c) + "     trace A = " + f(m.a + m.d) +
+        "     v = (" + f(vec[0]) + ", " + f(vec[1]) + ")  ↦  (" + f(im[0]) + ", " + f(im[1]) + ")";
+    }
+
+    function locate(e) {
+      var r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+      return { px: px, py: py, inLeft: px >= L.x0 && px <= L.x0 + L.w, inRight: px >= Rp.x0 && px <= Rp.x0 + Rp.w };
+    }
+    cv.addEventListener("pointerdown", function (e) {
+      var p = locate(e), m = mat();
+      if (p.inRight) {                              // grab a column handle?
+        var mm = toMath(Rp, p.px, p.py);
+        if ((mm[0] - m.a) * (mm[0] - m.a) + (mm[1] - m.c) * (mm[1] - m.c) < 0.16) drag = "green";
+        else if ((mm[0] - m.b) * (mm[0] - m.b) + (mm[1] - m.d) * (mm[1] - m.d) < 0.16) drag = "cyan";
+      }
+      if (!drag && p.inLeft) { drag = "vec"; vec = toMath(L, p.px, p.py); }
+      if (drag) { cv.setPointerCapture(e.pointerId); redraw(); }
+    });
+    cv.addEventListener("pointermove", function (e) {
+      if (!drag) return;
+      var p = locate(e);
+      if (drag === "vec") vec = toMath(L, p.px, p.py);
+      else { var mm = toMath(Rp, p.px, p.py), x = round1(mm[0]), y = round1(mm[1]);
+        if (drag === "green") { $("a").value = x; $("c").value = y; }
+        else { $("b").value = x; $("d").value = y; } }
+      redraw();
+    });
+    function end() { drag = null; }
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+
+    ["a", "b", "c", "d", "layout"].forEach(function (id) { $(id).addEventListener("input", redraw); });
+    $("preset").addEventListener("change", function () {
+      var p = PRESETS[+$("preset").value];
+      $("a").value = p[1]; $("b").value = p[2]; $("c").value = p[3]; $("d").value = p[4]; redraw();
+    });
+    window.addEventListener("resize", function () { layout(); redraw(); });
+    layout(); redraw();
+  })();
+</script>
+</body>
+</html>

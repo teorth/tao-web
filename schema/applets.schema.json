@@ -9,6 +9,11 @@
   "properties": {
     "title": { "type": "string" },
     "description": { "type": "string" },
+    "category_notes": {
+      "type": "object",
+      "description": "Optional note rendered under a category heading, keyed by category name.",
+      "additionalProperties": { "type": "string" }
+    },
     "applets": {
       "type": "array",
       "minItems": 1,

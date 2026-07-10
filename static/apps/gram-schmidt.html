@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gram–Schmidt — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .dims { display: flex; align-items: center; gap: .5rem; margin-bottom: .7rem; }
+  .dims select { min-width: auto; padding: .3rem .5rem; }
+  .vrows { display: grid; gap: .35rem; }
+  .vrow { display: flex; align-items: center; gap: .5rem; }
+  .vrow .lab { font-family: var(--mono); font-style: italic; color: var(--muted);
+    width: 2.2rem; text-align: right; }
+  .ops { margin-top: 1.5rem; display: flex; flex-direction: column; }
+  .oprow { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem;
+    padding: .5rem 0; border-top: 1px solid var(--line); }
+  .oprow:first-child { border-top: 0; }
+  .oprow button { min-width: 8rem; }
+  .oprow select { min-width: auto; padding: .35rem .45rem; }
+  .oprow .t { color: var(--muted); font-size: .92rem; }
+  .panels { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 1.5rem; }
+  .ip h2, .log h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 .45rem; }
+  table.ip { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.ip td, table.ip th { font-family: var(--mono); font-size: .85rem; text-align: right;
+    padding: .2rem .55rem; border: 1px solid var(--line); }
+  table.ip th { color: var(--muted); font-style: italic; }
+  table.ip td.zero { color: var(--ok-fg, #1f7a4d); }
+  td.diag { background: var(--accent-soft); }
+  .logbox { font-family: var(--mono); font-size: .85rem; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 8px; padding: .6rem .7rem;
+    min-width: 15rem; height: 9rem; overflow-y: auto; white-space: pre-wrap; }
+  .toolbar { margin-top: 1.2rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+  :root { --ok-fg: #1f7a4d; } @media (prefers-color-scheme: dark) { :root { --ok-fg: #7fce9f; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Gram–Schmidt orthogonalisation</h1>
+    <p class="lede">Orthogonalise a set of <span class="math">d</span> vectors in
+      <span class="math">R<sup>d</sup></span> one step at a time: subtract a projection to make one
+      vector orthogonal to another, or normalise a vector to unit length. The inner-product table
+      shows your progress — off-diagonal zeros mean orthogonal.</p>
+    <p class="prov">A modern JavaScript port of a 2002 Java applet by Kim Chi Tran
+      (originally <code>GramSchmidt.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="dims">
+      <label for="dim" style="text-transform:none;letter-spacing:0;font-weight:400;color:var(--muted)">Number of vectors (= dimension)</label>
+      <select id="dim"></select>
+    </div>
+    <div class="vrows" id="vrows"></div>
+
+    <div class="ops">
+      <div class="oprow">
+        <button type="button" id="normalize">Normalise</button>
+        <span class="t">vector</span><select id="nvec"></select>
+      </div>
+      <div class="oprow">
+        <button type="button" id="ortho">Make orthogonal</button>
+        <span class="t">vector</span><select id="ovec1"></select>
+        <span class="t">to vector</span><select id="ovec2"></select>
+      </div>
+    </div>
+    <span class="err" id="err"></span>
+
+    <div class="panels">
+      <div class="ip">
+        <h2>Inner products vᵢ · vⱼ</h2>
+        <div id="iptable"></div>
+      </div>
+      <div class="log">
+        <h2>Steps</h2>
+        <div class="logbox" id="log" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="ghost" id="reset">Reset to identity</button>
+      <button type="button" class="ghost" id="example">Load example</button>
+      <button type="button" class="ghost" id="clearlog">Clear steps</button>
+    </div>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Kim Chi Tran, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var d = 3, cells = [];
+    var dimSel = $("dim"), vrows = $("vrows"), logbox = $("log");
+
+    for (var k = 1; k <= 5; k++) { var o = document.createElement("option"); o.value = k; o.textContent = k; dimSel.appendChild(o); }
+    dimSel.value = 3;
+
+    function fmt(x) {
+      if (!isFinite(x)) return String(x);
+      var r = Math.round(x * 1e6) / 1e6;
+      return Object.is(r, -0) ? "0" : String(r);
+    }
+    function fmt3(x) { return (Math.round(x * 1000) / 1000).toFixed(3); }
+
+    function rebuildVecSelects() {
+      [$("nvec"), $("ovec1"), $("ovec2")].forEach(function (sel, si) {
+        var keep = Math.min(+sel.value || 1, d);
+        sel.innerHTML = "";
+        for (var i = 1; i <= d; i++) { var o = document.createElement("option"); o.value = i; o.textContent = "v" + i; sel.appendChild(o); }
+        sel.value = si === 2 ? Math.min(2, d) : (si === 0 || si === 1 ? Math.min(si + 1, d) : 1);
+      });
+    }
+
+    // Build d rows × d component inputs. `init` sets values (else preserve).
+    function buildGrid(init) {
+      var prev = cells.map(function (c) { return c.value; });
+      vrows.innerHTML = ""; cells = [];
+      for (var i = 0; i < d; i++) {
+        var row = document.createElement("div"); row.className = "vrow";
+        var lab = document.createElement("span"); lab.className = "lab"; lab.textContent = "v" + (i + 1) + " ="; row.appendChild(lab);
+        var open = document.createElement("span"); open.className = "bracket"; open.textContent = "["; row.appendChild(open);
+        for (var j = 0; j < d; j++) {
+          var inp = document.createElement("input");
+          inp.className = "num"; inp.type = "text"; inp.inputMode = "decimal";
+          inp.dataset.rc = i + "," + j;
+          inp.setAttribute("aria-label", "vector " + (i + 1) + " component " + (j + 1));
+          inp.value = init ? String(init[i][j]) : (prev.length ? (findPrev(prev, i, j) || "0") : (i === j ? "1" : "0"));
+          inp.addEventListener("input", updateIP);
+          row.appendChild(inp); cells.push(inp);
+        }
+        var close = document.createElement("span"); close.className = "bracket"; close.textContent = "]"; row.appendChild(close);
+        vrows.appendChild(row);
+      }
+    }
+    function findPrev(prev, i, j) { return undefined; } // simple: don't preserve across dim change
+    function at(i, j) { return cells[i * d + j]; }
+
+    function read() {
+      var V = [];
+      for (var i = 0; i < d; i++) { V[i] = []; for (var j = 0; j < d; j++) {
+        var x = parseFloat(at(i, j).value); if (!isFinite(x)) return null; V[i][j] = x; } }
+      return V;
+    }
+    function write(V) { for (var i = 0; i < d; i++) for (var j = 0; j < d; j++) at(i, j).value = fmt(V[i][j]); }
+    function dot(a, b) { var s = 0; for (var k = 0; k < d; k++) s += a[k] * b[k]; return s; }
+
+    function log(msg, isErr) {
+      var line = document.createElement("div");
+      line.textContent = (isErr ? "⚠ " : "→ ") + msg;
+      if (isErr) line.style.color = "var(--danger)";
+      logbox.appendChild(line); logbox.scrollTop = logbox.scrollHeight;
+    }
+    function fail(msg) { $("err").textContent = msg; }
+
+    function updateIP() {
+      var V = read(), t = $("iptable");
+      if (!V) { t.innerHTML = '<span class="hint">Enter numeric components to see inner products.</span>'; return; }
+      var html = "<table class='ip'><tr><th></th>";
+      for (var j = 0; j < d; j++) html += "<th>v" + (j + 1) + "</th>";
+      html += "</tr>";
+      for (var i = 0; i < d; i++) {
+        html += "<tr><th>v" + (i + 1) + "</th>";
+        for (var j2 = 0; j2 < d; j2++) {
+          var p = dot(V[i], V[j2]);
+          var cls = i === j2 ? "diag" : (Math.abs(p) < 5e-4 ? "zero" : "");
+          html += "<td class='" + cls + "'>" + fmt3(p) + "</td>";
+        }
+        html += "</tr>";
+      }
+      t.innerHTML = html + "</table>";
+    }
+
+    $("normalize").addEventListener("click", function () {
+      $("err").textContent = "";
+      var V = read(); if (!V) return fail("Every component must be a number.");
+      var n = +$("nvec").value - 1, len = Math.sqrt(dot(V[n], V[n]));
+      if (len === 0) return fail("Cannot normalise v" + (n + 1) + ": it is the zero vector.");
+      for (var k = 0; k < d; k++) V[n][k] /= len;
+      write(V); updateIP();
+      log("v" + (n + 1) + " ÷ " + fmt(len) + "  → unit length.");
+    });
+
+    $("ortho").addEventListener("click", function () {
+      $("err").textContent = "";
+      var V = read(); if (!V) return fail("Every component must be a number.");
+      var m = +$("ovec1").value - 1, n = +$("ovec2").value - 1;
+      if (m === n) return fail("Pick two different vectors.");
+      var nn = dot(V[n], V[n]);
+      if (nn < 1e-9) return fail("Cannot use v" + (n + 1) + " as reference: it is (near) zero.");
+      var f = dot(V[m], V[n]) / nn;
+      for (var k = 0; k < d; k++) V[m][k] -= f * V[n][k];
+      write(V); updateIP();
+      log("v" + (m + 1) + " ← v" + (m + 1) + " − " + fmt(f) + " · v" + (n + 1) + "  (⟂ to v" + (n + 1) + ").");
+    });
+
+    function resize() { d = +dimSel.value; rebuildVecSelects(); buildGrid(null); updateIP(); }
+    dimSel.addEventListener("change", function () {
+      d = +dimSel.value; rebuildVecSelects();
+      // reset to identity on dimension change (matches the original's default state)
+      var I = []; for (var i = 0; i < d; i++) { I[i] = []; for (var j = 0; j < d; j++) I[i][j] = i === j ? 1 : 0; }
+      buildGrid(I); updateIP();
+    });
+    $("reset").addEventListener("click", function () {
+      var I = []; for (var i = 0; i < d; i++) { I[i] = []; for (var j = 0; j < d; j++) I[i][j] = i === j ? 1 : 0; }
+      buildGrid(I); updateIP(); log("Reset to the identity basis.");
+    });
+    $("example").addEventListener("click", function () {
+      dimSel.value = 3; d = 3; rebuildVecSelects();
+      buildGrid([[1, 1, 0], [1, 0, 1], [0, 1, 1]]); updateIP();
+      log("Loaded three non-orthogonal vectors — try: make v2 ⟂ v1, make v3 ⟂ v1, make v3 ⟂ v2, then normalise each.");
+    });
+    $("clearlog").addEventListener("click", function () { logbox.innerHTML = ""; });
+
+    rebuildVecSelects(); buildGrid([[1, 1, 0], [1, 0, 1], [0, 1, 1]]); updateIP();
+  })();
+</script>
+</body>
+</html>

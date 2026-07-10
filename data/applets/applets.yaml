@@ -7,6 +7,8 @@ description: >-
   Most of the older ones are Java applets that no longer run in modern browsers; this page tracks
   which have been ported to modern JavaScript, which still run elsewhere, and which are yet to be
   ported.
+category_notes:
+  Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
 applets:
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
@@ -45,28 +47,33 @@ applets:
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/Apple1.html
 - name: Gaussian elimination
   category: Linear algebra
-  status: to-port
-  description: Row-reduces a user-entered matrix by Gaussian elimination.
+  status: ported
+  description: Row-reduce a 4×5 augmented matrix by applying elementary row operations one step at a time, with an undo history and a running log.
+  url: apps/gaussian-elimination.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/Gauss.html
 - name: Matrix calculator
   category: Linear algebra
-  status: to-port
-  description: Performs basic arithmetic on user-entered matrices.
+  status: ported
+  description: Arithmetic on two matrices up to 5×5 — sums, products, powers, transpose, trace, determinant, and inverse.
+  url: apps/matrix-calculator.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/matrixCalc.html
 - name: Linear transformations in R^2
   category: Linear algebra
-  status: to-port
-  description: Visualizes the action of a 2×2 matrix as a linear map of the plane.
+  status: ported
+  description: Visualize how a 2×2 matrix transforms the plane — draw in the domain and watch the image appear in the range.
+  url: apps/linear-transformations.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/linearMap.html
 - name: Eigenvalues and eigenvectors
   category: Linear algebra
-  status: to-port
-  description: Illustrates the eigenvalues and eigenvectors of a 2×2 matrix.
+  status: ported
+  description: Explore the eigenlines and eigenvalues of a 2×2 matrix; drag a vector, or drag the columns of the matrix directly.
+  url: apps/eigenvalues.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/EigenMap.html
 - name: Gram–Schmidt orthogonalisation
   category: Linear algebra
-  status: to-port
-  description: Demonstrates the Gram–Schmidt orthogonalization process.
+  status: ported
+  description: Orthogonalise a set of vectors step by step — subtract projections and normalise, with a live inner-product table.
+  url: apps/gram-schmidt.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/GramSchmidt.html
 # --- Complex analysis (Java) ---
 - name: The complex plane

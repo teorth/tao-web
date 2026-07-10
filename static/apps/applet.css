@@ -1,0 +1,117 @@
+/* Shared styling for the ported tao-web applets (static/apps/*.html).
+   Self-contained, theme-aware; matches the generated site's restrained look. */
+:root {
+  --bg: #fbfbfa; --panel: #ffffff; --ink: #1b1d21; --muted: #61656e;
+  --line: #e6e6ea; --accent: #3a5bd9; --accent-soft: #eef1fd; --danger: #b23b3b;
+  --grid: #e9e9ee; --axis: #9aa0ab;
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #131519; --panel: #1a1d23; --ink: #e9eaec; --muted: #9aa0ab;
+    --line: #2a2e36; --accent: #8aa2ff; --accent-soft: #20263a; --danger: #f08a8a;
+    --grid: #262a33; --axis: #565c68;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #fbfbfa; --panel: #ffffff; --ink: #1b1d21; --muted: #61656e;
+  --line: #e6e6ea; --accent: #3a5bd9; --accent-soft: #eef1fd; --danger: #b23b3b;
+  --grid: #e9e9ee; --axis: #9aa0ab;
+}
+:root[data-theme="dark"] {
+  --bg: #131519; --panel: #1a1d23; --ink: #e9eaec; --muted: #9aa0ab;
+  --line: #2a2e36; --accent: #8aa2ff; --accent-soft: #20263a; --danger: #f08a8a;
+  --grid: #262a33; --axis: #565c68;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
+  line-height: 1.5; -webkit-font-smoothing: antialiased; }
+.wrap { max-width: 44rem; margin: 0 auto; padding: 1.6rem 1.25rem 3rem; }
+a { color: var(--accent); }
+.back { font-size: .9rem; margin: 0 0 1.4rem; }
+
+header { margin-bottom: 1.6rem; }
+h1 { font-size: 1.6rem; font-weight: 600; letter-spacing: -0.01em; margin: 0 0 .25rem;
+  text-wrap: balance; }
+.lede { color: var(--muted); margin: 0; max-width: 36rem; }
+.prov { color: var(--muted); font-size: .82rem; margin: .5rem 0 0; }
+.prov code { font-family: var(--mono); }
+
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px;
+  padding: 1.3rem; }
+
+/* control rows */
+.row, .controls { display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; align-items: flex-end; }
+.field { display: flex; flex-direction: column; gap: .35rem; }
+label { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em;
+  color: var(--muted); font-weight: 600; }
+select, .num, .dim, input[type="text"] {
+  font: inherit; color: var(--ink); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 7px; padding: .45rem .55rem; }
+select { min-width: 11rem; }
+select:focus-visible, input:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+.dim { width: 3.5rem; text-align: center; font-variant-numeric: tabular-nums; }
+.num { width: 3.6rem; text-align: center; font-family: var(--mono);
+  font-variant-numeric: tabular-nums; }
+.hint { color: var(--muted); font-size: .85rem; margin: .3rem 0 0; }
+
+/* buttons */
+.actions { margin-top: 1.4rem; display: flex; flex-wrap: wrap; align-items: center; gap: .6rem 1rem; }
+button { font: inherit; font-weight: 600; color: #fff; background: var(--accent);
+  border: 0; border-radius: 7px; padding: .5rem 1.05rem; cursor: pointer; }
+button:hover { filter: brightness(1.06); }
+button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+button.ghost { color: var(--accent); background: transparent; border: 1px solid var(--line); }
+button.ghost:hover { background: var(--accent-soft); filter: none; }
+.err { color: var(--danger); font-size: .9rem; }
+
+/* vectors (bracketed rows of inputs) */
+.vecblock { margin-top: 1.25rem; display: flex; flex-direction: column; gap: .4rem; }
+.veclabel { font-family: var(--mono); font-style: italic; font-size: 1rem; color: var(--ink); }
+.comps { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.bracket { font-family: var(--mono); font-size: 1.5rem; color: var(--muted); line-height: 1; }
+.scalarfield .num { width: 5rem; }
+
+/* matrices (bracketed grid of inputs) */
+.matrix { display: inline-grid; gap: .35rem; padding: .4rem .7rem; position: relative;
+  grid-template-columns: repeat(var(--cols, 3), 3.5rem); }
+.matrix::before, .matrix::after { content: ""; position: absolute; top: 3px; bottom: 3px;
+  width: 8px; border: 2px solid var(--muted); }
+.matrix::before { left: 0; border-right: 0; border-radius: 5px 0 0 5px; }
+.matrix::after { right: 0; border-left: 0; border-radius: 0 5px 5px 0; }
+.matrix .num { width: 3.5rem; }
+.matlabel { font-family: var(--mono); font-style: italic; margin-bottom: .3rem; display: block; }
+
+/* A op B = C layouts */
+.calc { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem; margin-top: 1.2rem; }
+.opsym { font-family: var(--mono); font-size: 1.5rem; color: var(--muted); }
+.operand { display: flex; flex-direction: column; gap: .3rem; }
+
+/* result panel */
+.result { margin-top: 1.5rem; border-top: 1px solid var(--line); padding-top: 1.25rem; }
+.result[hidden] { display: none; }
+.result .expr { color: var(--muted); font-family: var(--mono); font-size: .95rem; margin: 0 0 .55rem; }
+.result .out { font-family: var(--mono); font-variant-numeric: tabular-nums;
+  font-size: 1.2rem; color: var(--ink); overflow-x: auto; padding-bottom: .2rem; }
+.result .out .b { color: var(--accent); }
+.result table { border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.result td { font-family: var(--mono); text-align: right; padding: .15rem .55rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .result .out { animation: rise .18s ease-out; }
+  @keyframes rise { from { opacity: 0; transform: translateY(3px); } }
+}
+
+/* canvas stage for graphical applets */
+.stage { display: block; width: 100%; max-width: 100%; height: auto;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+  touch-action: none; }
+.legend { display: flex; flex-wrap: wrap; gap: .3rem 1.1rem; margin-top: .8rem;
+  color: var(--muted); font-size: .85rem; }
+.legend .k { display: inline-flex; align-items: center; gap: .35rem; }
+.legend .sw { width: .9rem; height: .9rem; border-radius: 3px; display: inline-block; }
+
+.math { font-style: italic; font-family: var(--mono); }
+footer { margin-top: 2rem; color: var(--muted); font-size: .82rem; }

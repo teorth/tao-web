@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gaussian elimination — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .aug { --cols: 5; }
+  .aug .num:nth-child(5n) { margin-left: .55rem; border-left: 2px solid var(--accent); }
+  .rowtags { display: grid; gap: .35rem; margin-right: .1rem; }
+  .rowtags span { height: 2rem; display: flex; align-items: center; font-family: var(--mono);
+    color: var(--muted); font-size: .9rem; }
+  .matrixwrap { display: flex; align-items: flex-start; gap: .3rem; margin-top: .4rem; }
+  .ops { margin-top: 1.5rem; display: flex; flex-direction: column; }
+  .oprow { display: flex; flex-wrap: wrap; align-items: center; gap: .45rem;
+    padding: .5rem 0; border-top: 1px solid var(--line); }
+  .oprow:first-child { border-top: 0; }
+  .oprow button { min-width: 6.2rem; }
+  .oprow select { min-width: auto; padding: .35rem .4rem; }
+  .oprow .num { width: 3.4rem; }
+  .oprow .t { color: var(--muted); font-size: .92rem; }
+  .log { margin-top: 1.5rem; }
+  .log h2 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+    color: var(--muted); margin: 0 0 .4rem; }
+  .logbox { font-family: var(--mono); font-size: .85rem; background: var(--panel);
+    border: 1px solid var(--line); border-radius: 8px; padding: .6rem .7rem;
+    height: 8.5rem; overflow-y: auto; white-space: pre-wrap; color: var(--ink); }
+  .toolbar { margin-top: 1.1rem; display: flex; gap: .6rem; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Gaussian elimination</h1>
+    <p class="lede">Row-reduce a 4×5 augmented matrix by applying elementary row operations
+      one step at a time. Columns 1–4 are coefficients; column 5 (after the divider) is the
+      right-hand side.</p>
+    <p class="prov">A modern JavaScript port of a 2002 Java applet by Kim Chi Tran
+      (originally <code>Gauss.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="matrixwrap">
+      <div class="rowtags" aria-hidden="true">
+        <span>R1</span><span>R2</span><span>R3</span><span>R4</span>
+      </div>
+      <div class="matrix aug" id="matrix" style="--cols:5"></div>
+    </div>
+
+    <div class="ops">
+      <div class="oprow">
+        <button type="button" data-op="swap">Swap</button>
+        <span class="t">row</span><select data-k="swapA"></select>
+        <span class="t">with row</span><select data-k="swapB"></select>
+      </div>
+      <div class="oprow">
+        <button type="button" data-op="scale">Multiply</button>
+        <span class="t">row</span><select data-k="scaleR"></select>
+        <span class="t">by</span><input class="num" data-k="scaleS" type="text" inputmode="decimal" value="1">
+      </div>
+      <div class="oprow">
+        <button type="button" data-op="pivot">Normalize</button>
+        <span class="t">row</span><select data-k="pivR"></select>
+        <span class="t">so column</span><select data-k="pivC"></select>
+        <span class="t">becomes 1</span>
+      </div>
+      <div class="oprow">
+        <button type="button" data-op="axpy">Subtract</button>
+        <input class="num" data-k="axS" type="text" inputmode="decimal" value="1">
+        <span class="t">× row</span><select data-k="axA"></select>
+        <span class="t">from row</span><select data-k="axB"></select>
+      </div>
+      <div class="oprow">
+        <button type="button" data-op="eliminate">Eliminate</button>
+        <span class="t">using row</span><select data-k="elA"></select>
+        <span class="t">zero column</span><select data-k="elC"></select>
+        <span class="t">of row</span><select data-k="elB"></select>
+      </div>
+    </div>
+
+    <div class="toolbar">
+      <button type="button" class="ghost" id="undo">Undo</button>
+      <button type="button" class="ghost" id="clear">Clear to zero</button>
+      <button type="button" class="ghost" id="example">Load example</button>
+    </div>
+
+    <div class="log">
+      <h2>Steps</h2>
+      <div class="logbox" id="log" aria-live="polite"></div>
+    </div>
+  </div>
+
+  <footer>A modern JavaScript port of a 2002 Java applet by Kim Chi Tran, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var R = 4, C = 5;
+    var grid = document.getElementById("matrix"), logbox = document.getElementById("log");
+    var history = [];
+
+    // Build matrix inputs.
+    var cells = [];
+    for (var i = 0; i < R; i++) {
+      for (var j = 0; j < C; j++) {
+        var inp = document.createElement("input");
+        inp.className = "num"; inp.type = "text"; inp.inputMode = "decimal"; inp.value = "0";
+        inp.setAttribute("aria-label", "row " + (i + 1) + " column " + (j + 1));
+        grid.appendChild(inp); cells.push(inp);
+      }
+    }
+    function at(i, j) { return cells[i * C + j]; }
+
+    // Populate the row/column dropdowns.
+    function fill(sel, n, label, def) {
+      for (var k = 0; k < n; k++) {
+        var o = document.createElement("option");
+        o.value = k; o.textContent = label + " " + (k + 1);
+        sel.appendChild(o);
+      }
+      sel.value = def;
+    }
+    var K = {};
+    document.querySelectorAll("select[data-k]").forEach(function (s) { K[s.dataset.k] = s; });
+    fill(K.swapA, R, "R", 0); fill(K.swapB, R, "R", 1);
+    fill(K.scaleR, R, "R", 0);
+    fill(K.pivR, R, "R", 0); fill(K.pivC, C, "C", 0);
+    fill(K.axA, R, "R", 0); fill(K.axB, R, "R", 1);
+    fill(K.elA, R, "R", 0); fill(K.elB, R, "R", 1); fill(K.elC, C, "C", 0);
+    var F = {};
+    document.querySelectorAll("input[data-k]").forEach(function (i) { F[i.dataset.k] = i; });
+
+    function fmt(x) {
+      if (!isFinite(x)) return String(x);
+      var r = Math.round(x * 1e9) / 1e9;
+      return Object.is(r, -0) ? "0" : String(r);
+    }
+    function read() {
+      var M = [];
+      for (var i = 0; i < R; i++) {
+        M[i] = [];
+        for (var j = 0; j < C; j++) {
+          var x = parseFloat(at(i, j).value);
+          if (!isFinite(x)) return null;
+          M[i][j] = x;
+        }
+      }
+      return M;
+    }
+    function write(M) {
+      for (var i = 0; i < R; i++) for (var j = 0; j < C; j++) at(i, j).value = fmt(M[i][j]);
+    }
+    function snapshot() {
+      history.push(cells.map(function (c) { return c.value; }));
+      if (history.length > 100) history.shift();
+    }
+    function log(msg, isErr) {
+      var line = document.createElement("div");
+      line.textContent = (isErr ? "⚠ " : "→ ") + msg;
+      if (isErr) line.style.color = "var(--danger)";
+      logbox.appendChild(line); logbox.scrollTop = logbox.scrollHeight;
+    }
+    function num(k) { return parseFloat(F[k].value); }
+    function idx(k) { return parseInt(K[k].value, 10); }
+
+    var OPS = {
+      swap: function (M) {
+        var a = idx("swapA"), b = idx("swapB");
+        if (a === b) return "Cannot swap a row with itself.";
+        var t = M[a]; M[a] = M[b]; M[b] = t;
+        return "Swapped R" + (a + 1) + " and R" + (b + 1) + ".";
+      },
+      scale: function (M) {
+        var r = idx("scaleR"), s = num("scaleS");
+        if (!isFinite(s)) return "The scalar must be a number.";
+        for (var j = 0; j < C; j++) M[r][j] *= s;
+        return "R" + (r + 1) + " ← " + fmt(s) + " · R" + (r + 1) + ".";
+      },
+      pivot: function (M) {
+        var r = idx("pivR"), c = idx("pivC"), p = M[r][c];
+        if (p === 0) return "Cannot normalize: column " + (c + 1) + " of R" + (r + 1) + " is zero.";
+        for (var j = 0; j < C; j++) M[r][j] /= p;
+        return "R" + (r + 1) + " ← R" + (r + 1) + " / " + fmt(p) + "  (column " + (c + 1) + " becomes 1).";
+      },
+      axpy: function (M) {
+        var s = num("axS"), a = idx("axA"), b = idx("axB");
+        if (!isFinite(s)) return "The scalar must be a number.";
+        for (var j = 0; j < C; j++) M[b][j] -= s * M[a][j];
+        return "R" + (b + 1) + " ← R" + (b + 1) + " − " + fmt(s) + " · R" + (a + 1) + ".";
+      },
+      eliminate: function (M) {
+        var a = idx("elA"), b = idx("elB"), c = idx("elC");
+        if (a === b) return "Pick two different rows.";
+        if (M[a][c] === 0) return "Cannot eliminate: column " + (c + 1) + " of R" + (a + 1) + " is zero.";
+        if (M[b][c] === 0) return "Column " + (c + 1) + " of R" + (b + 1) + " is already zero.";
+        var f = M[b][c] / M[a][c];
+        for (var j = 0; j < C; j++) M[b][j] -= f * M[a][j];
+        return "R" + (b + 1) + " ← R" + (b + 1) + " − " + fmt(f) + " · R" + (a + 1) +
+               "  (column " + (c + 1) + " becomes 0).";
+      }
+    };
+
+    document.querySelectorAll("button[data-op]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var M = read();
+        if (!M) { log("Every entry must be a number.", true); return; }
+        snapshot();
+        var msg = OPS[btn.dataset.op](M);
+        if (msg.indexOf("Cannot") === 0 || msg.indexOf("Pick") === 0 ||
+            msg.indexOf("The scalar") === 0 || msg.indexOf("already") >= 0) {
+          history.pop(); log(msg, true); return;
+        }
+        write(M); log(msg);
+      });
+    });
+
+    document.getElementById("undo").addEventListener("click", function () {
+      if (!history.length) { log("Nothing to undo.", true); return; }
+      var prev = history.pop();
+      cells.forEach(function (c, k) { c.value = prev[k]; });
+      log("Undid the last step.");
+    });
+    document.getElementById("clear").addEventListener("click", function () {
+      snapshot(); write([[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0],[0,0,0,0,0]]); log("Cleared to zero.");
+    });
+    document.getElementById("example").addEventListener("click", function () {
+      snapshot();
+      write([[2,1,-1,2,5],[4,5,-3,6,9],[-2,5,-2,6,4],[0,1,1,1,3]]);
+      log("Loaded an example system.");
+    });
+  })();
+</script>
+</body>
+</html>
