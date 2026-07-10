@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The residue theorem — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .poles { display: flex; flex-direction: column; gap: .35rem; margin-bottom: .6rem; }
+  .prow { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; font-family: var(--mono); font-size: .85rem; color: var(--muted); }
+  .prow input { width: 3.1rem; }
+  .prow input[type=checkbox] { width: auto; }
+  .stagewrap { margin-top: .6rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); margin-top: .7rem; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The residue theorem</h1>
+    <p class="lede"><strong>Draw a closed contour</strong> in the left plane around some of the poles
+      (pink). The running value of <span class="math">∮ f(z)&nbsp;dz</span> traces out in the right
+      plane and should converge to <span class="math">2πi × (sum of enclosed residues)</span>.
+      Poles and their residues are editable.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2000 Java applet by Terence Tao
+      (originally <code>ResApp.java</code> / <code>ResGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="poles" id="poles"></div>
+    <button type="button" class="ghost" id="clear">Clear contour</button>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane — draw a contour</span><span>∮ f(z) dz  (÷ 2π shown)</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="readout" id="readout"></p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2000 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of, I = C.I;
+    var RED = "#e5484d", PINK = "#e05aa8", BLUE = "#2f6fed", GREEN = "#2ea043", CYAN = "#12a4a4";
+    var st = new ComplexStage($("cv"), { planes: 2, views: [7, 3] });
+    var strokes = [], cur = null, hover = null;
+    var TAU = 2 * Math.PI;
+
+    var DEF = [[true, 0, 0, 1, 0], [false, 4, 0, 2, 0], [false, 0, 4, 1, 0], [false, -4, -4, -1, 0]];
+    DEF.forEach(function (d, i) {
+      var row = document.createElement("div"); row.className = "prow"; row.dataset.i = i;
+      row.innerHTML = '<label><input type="checkbox" data-k="on"' + (d[0] ? " checked" : "") + '> Pole ' + (i + 1) + '</label>'
+        + ' at <input data-k="px" value="' + d[1] + '">+<input data-k="py" value="' + d[2] + '">i,'
+        + ' residue <input data-k="rx" value="' + d[3] + '">+<input data-k="ry" value="' + d[4] + '">i';
+      $("poles").appendChild(row);
+    });
+    $("poles").addEventListener("input", function () { strokes = []; cur = null; draw(); });
+
+    function poles() {
+      return [].map.call(document.querySelectorAll(".prow"), function (row) {
+        function v(k) { return parseFloat(row.querySelector('[data-k=' + k + ']').value) || 0; }
+        return { on: row.querySelector('[data-k=on]').checked, p: of(v("px"), v("py")), res: of(v("rx"), v("ry")) };
+      }).filter(function (p) { return p.on; });
+    }
+    function f(z, ps) {
+      var s = of(0, 0);
+      for (var i = 0; i < ps.length; i++) { var d = z.sub(ps[i].p); if (d.norm() < 1e-4) return null; s = s.add(ps[i].res.div(d)); }
+      return s;
+    }
+    function integrate(pts, ps) {
+      var traj = [[0, 0]], w = of(0, 0);
+      for (var k = 1; k < pts.length; k++) {
+        var fz = f(of(pts[k][0], pts[k][1]), ps); if (!fz) continue;
+        var dz = of(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]);
+        w = w.add(fz.mul(dz).scale(1 / TAU)); traj.push([w.x, w.y]);
+      }
+      return { traj: traj, w: w };
+    }
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx, ps = poles();
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      // vector field
+      st.clip(dom, function () { c.strokeStyle = BLUE; c.lineWidth = 1;
+        for (var i = -6; i <= 6; i++) for (var j = -6; j <= 6; j++) { var v = f(of(i, j), ps); if (!v || v.inf) continue;
+          var a = v.abs(); if (a > 1) v = v.scale(1 / a); st.seg(dom, i, j, i + v.x, j + v.y); } });
+      // poles
+      st.clip(dom, function () { c.fillStyle = PINK; ps.forEach(function (pl) { var r = Math.min(10, Math.sqrt(9 * pl.res.abs())) / dom.s; st.dot(dom, pl.p.x, pl.p.y, Math.max(4, r * dom.s), true); }); });
+      var all = strokes.concat(cur ? [cur] : []), lastW = null;
+      all.forEach(function (pts) {
+        st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round"; st.poly(dom, pts); });
+        var r = integrate(pts, ps); lastW = r.w;
+        st.clip(ran, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round";
+          c.beginPath(); var prev = null, started = false;
+          for (var k = 0; k < r.traj.length; k++) { var q = st.px(ran, r.traj[k][0], r.traj[k][1]);
+            var cw = of(r.traj[k][0], r.traj[k][1]); if (started && prev && cw.sub(prev).abs() < 2) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); started = true; prev = cw; }
+          c.stroke(); });
+      });
+      if (hover) { var z = of(hover[0], hover[1]), fz = f(z, ps), tip = (cur ? integrate(cur, ps).w : of(0, 0));
+        st.clip(dom, function () { c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(dom, 0, 0, z.x, z.y, 7); });
+        if (fz && !fz.inf) st.clip(ran, function () { var Z = fz.scale(1 / TAU);
+          c.strokeStyle = GREEN; c.lineWidth = 2.2; st.seg(ran, tip.x, tip.y, tip.x + Z.x, tip.y + Z.y);
+          var iZ = Z.mul(I); c.strokeStyle = CYAN; c.lineWidth = 2.2; st.seg(ran, tip.x, tip.y, tip.x + iZ.x, tip.y + iZ.y);
+          c.fillStyle = RED; st.dot(ran, tip.x, tip.y, 3); }); }
+      st.frames();
+      if (lastW) { var integ = lastW.scale(TAU); $("readout").innerHTML = "∮ f(z) dz = 2π·w ≈ <b>" + integ.toString() + "</b>   (2πi × Σ residues)"; }
+    }
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (!inDom(l)) return;
+      $("cv").setPointerCapture(e.pointerId); var m = st.math(l.p, l.px, l.py); cur = [m]; hover = m; draw(); });
+    $("cv").addEventListener("pointermove", function (e) { var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && m) { cur.push(m); hover = m; draw(); } else if (inDom(l)) { hover = m; draw(); } else if (hover) { hover = null; draw(); } });
+    function end() { if (cur) { if (cur.length > 1) strokes.push(cur); cur = null; draw(); } }
+    $("cv").addEventListener("pointerup", end); $("cv").addEventListener("pointercancel", end);
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    draw();
+  })();
+</script>
+</body>
+</html>

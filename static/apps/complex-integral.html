@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The complex integral — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .toolrow select { font-family: var(--mono); }
+  .stagewrap { margin-top: 1.1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); margin-top: .7rem; overflow-wrap: anywhere; }
+  .legend .sw { width: .9rem; height: .28rem; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The complex integral</h1>
+    <p class="lede"><strong>Draw a contour in the left plane</strong> and the running value of the
+      integral <span class="math">∫ f(z)&nbsp;dz = Σ f(z<sub>k</sub>)·Δz<sub>k</sub></span> traces out
+      in the right plane — its endpoint is the value of the integral. The green and cyan ticks show
+      how <span class="math">f(z)</span> turns the tangent directions <span class="math">dz=1</span>
+      and <span class="math">dz=i</span>.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao
+      (originally <code>IntegApp.java</code> / <code>IntegGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div class="field"><label for="fn">f(z) =</label><select id="fn"></select></div>
+      <button type="button" class="ghost" id="clear">Clear</button>
+    </div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane — draw a contour</span><span>value of ∫ f(z) dz</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <div class="legend">
+      <span class="k"><span class="sw" style="background:#2ea043"></span> f(z) · 1</span>
+      <span class="k"><span class="sw" style="background:#12a4a4"></span> f(z) · i</span>
+      <span class="k"><span class="sw" style="background:#e5484d"></span> contour &amp; partial sum</span>
+    </div>
+    <p class="readout" id="readout">Draw a closed loop and watch the sum return (or not) to 0.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of, I = C.I;
+    var RED = "#e5484d", GREEN = "#2ea043", CYAN = "#12a4a4", BLUE = "#2f6fed";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 7 });
+    var strokes = [], cur = null, hover = null;
+
+    var FUNCS = [
+      ["1", function () { return of(1, 0); }],
+      ["1 + i", function () { return of(1, 1); }],
+      ["z", function (z) { return z; }],
+      ["z̄", function (z) { return z.conj(); }],
+      ["1/z", function (z) { return z.norm() < 0.01 ? null : z.inv(); }],
+      ["z²", function (z) { return z.powN(2); }],
+      ["eᶻ", function (z) { return z.exp(); }]
+    ];
+    FUNCS.forEach(function (fn, i) { var o = document.createElement("option"); o.value = i; o.textContent = fn[0]; $("fn").appendChild(o); });
+    function f(z) { return FUNCS[+$("fn").value][1](z); }
+
+    // Accumulate the Riemann sum along a contour; returns {traj, w, broke}.
+    function integrate(pts) {
+      var traj = [[0, 0]], w = of(0, 0), broke = false;
+      for (var k = 1; k < pts.length; k++) {
+        var z = of(pts[k][0], pts[k][1]), fz = f(z);
+        if (!fz || fz.inf) { broke = true; continue; }
+        var dz = of(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]);
+        w = w.add(fz.mul(dz)); traj.push([w.x, w.y]);
+      }
+      return { traj: traj, w: w, broke: broke };
+    }
+
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      var all = strokes.concat(cur ? [cur] : []), lastW = null;
+      all.forEach(function (pts) {
+        st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round"; st.poly(dom, pts); });
+        var r = integrate(pts); lastW = r.w;
+        st.clip(ran, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round"; st.poly(ran, r.traj); });
+      });
+      // live tangent images at the cursor / current tip
+      if (hover) {
+        var z = of(hover[0], hover[1]), fz = f(z);
+        var tip = (cur && strokes.concat([cur]).length) ? integrate(cur).w : of(0, 0);
+        st.clip(dom, function () {
+          c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(dom, 0, 0, z.x, z.y, 7);
+          c.strokeStyle = GREEN; c.lineWidth = 2.4; st.seg(dom, z.x, z.y, z.x + 1, z.y);
+          c.strokeStyle = CYAN; c.lineWidth = 2.4; st.seg(dom, z.x, z.y, z.x, z.y + 1);
+        });
+        if (fz && !fz.inf) st.clip(ran, function () {
+          c.strokeStyle = GREEN; c.lineWidth = 2.4; st.seg(ran, tip.x, tip.y, tip.x + fz.x, tip.y + fz.y);
+          var ifz = fz.mul(I); c.strokeStyle = CYAN; c.lineWidth = 2.4; st.seg(ran, tip.x, tip.y, tip.x + ifz.x, tip.y + ifz.y);
+          c.fillStyle = RED; st.dot(ran, tip.x, tip.y, 3);
+        });
+      }
+      st.frames();
+      if (lastW) $("readout").innerHTML = "∫ f(z) dz  ≈  <b>" + lastW.toString() + "</b>";
+    }
+
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) {
+      var l = st.locate(e); if (!inDom(l)) return;
+      $("cv").setPointerCapture(e.pointerId);
+      var m = st.math(l.p, l.px, l.py); cur = [m]; hover = m; draw();
+    });
+    $("cv").addEventListener("pointermove", function (e) {
+      var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && m) { cur.push(m); hover = m; draw(); }
+      else if (inDom(l)) { hover = m; draw(); }
+      else if (hover) { hover = null; draw(); }
+    });
+    function end() { if (cur) { if (cur.length > 1) strokes.push(cur); cur = null; draw(); } }
+    $("cv").addEventListener("pointerup", end); $("cv").addEventListener("pointercancel", end);
+    $("fn").addEventListener("change", function () { strokes = []; cur = null; draw(); });
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; hover = null; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    draw();
+  })();
+</script>
+</body>
+</html>

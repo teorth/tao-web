@@ -11,6 +11,7 @@
     this.cv = canvas; this.ctx = canvas.getContext("2d");
     this.n = opts.planes || 2;
     this.view = opts.view || 5;                 // half-width in math units
+    this.views = opts.views || null;            // optional per-panel half-widths
     this.gap = opts.gap != null ? opts.gap : 18;
     this.pad = opts.pad != null ? opts.pad : 10;
     this.aspect = opts.aspect || 1;             // panel height / width
@@ -29,11 +30,11 @@
     this.cv.width = Math.round(cssW * dpr); this.cv.height = Math.round(panelH * dpr);
     this.cv.style.height = panelH + "px";
     this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    var s = (Math.min(panelW, panelH) / 2 - this.pad) / this.view;
+    var half = Math.min(panelW, panelH) / 2 - this.pad;
     this.panels = [];
     for (var i = 0; i < n; i++) {
-      var x0 = i * (panelW + this.gap);
-      this.panels.push({ x0: x0, w: panelW, cx: x0 + panelW / 2, cy: panelH / 2, s: s });
+      var x0 = i * (panelW + this.gap), v = (this.views && this.views[i]) || this.view;
+      this.panels.push({ x0: x0, w: panelW, cx: x0 + panelW / 2, cy: panelH / 2, s: half / v, view: v });
     }
     return this;
   };
@@ -58,7 +59,7 @@
 
   // Grid: light unit lines (optional), black axes + ticks + interior lattice dots.
   S.grid = function (p, showGrid) {
-    var c = this.ctx, V = this.view, self = this, i, q;
+    var c = this.ctx, V = p.view || this.view, self = this, i, q;
     this.clip(p, function () {
       if (showGrid) {
         c.strokeStyle = self.css("--grid"); c.lineWidth = 1;

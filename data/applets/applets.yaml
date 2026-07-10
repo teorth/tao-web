@@ -99,51 +99,59 @@ applets:
   source: https://www.math.ucla.edu/~tao/java/Complex.html
 - name: Möbius transforms
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 1999
-  description: Explores Möbius transformations of the complex plane.
+  url: apps/mobius-transforms.html
+  description: Draw points, circles, and lines and watch a Möbius map w = (az+b)/(cz+d) send them to circles and lines.
   source: https://www.math.ucla.edu/~tao/java/Mobius.html
 - name: Multi-valued functions
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 1998
-  description: Illustrates branch cuts and multi-valued complex functions.
+  url: apps/multi-valued-functions.html
+  description: Drag z and watch the several branches of the roots and the logarithm move — and swap across the branch cut.
   source: https://www.math.ucla.edu/~tao/java/Multi.html
 - name: The complex derivative
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 1998
-  description: Visualizes complex differentiation and conformality.
+  url: apps/complex-derivative.html
+  description: "See conformality: an analytic map acts locally like multiplication by f′(z), preserving angles."
   source: https://www.math.ucla.edu/~tao/java/Diff.html
 - name: The complex integral
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 1998
-  description: Illustrates contour integration in the complex plane.
+  url: apps/complex-integral.html
+  description: Draw a contour and watch the running value of ∫ f(z) dz trace out as a vector sum.
   source: https://www.math.ucla.edu/~tao/java/Integ.html
 - name: Taylor and Laurent series
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 2007
-  description: Demonstrates Taylor and Laurent series expansions.
+  url: apps/taylor-laurent.html
+  description: Pick a center and see the Taylor and Laurent expansions of 1/((z−1)(z−2)) and their regions of convergence.
   source: https://www.math.ucla.edu/~tao/java/Laurent.html
 - name: The fundamental theorem of calculus
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 2000
-  description: A complex-analytic view of the fundamental theorem of calculus.
+  url: apps/fundamental-theorem.html
+  description: Draw different paths between two points; their antiderivative images all end at the same place.
   source: https://www.math.ucla.edu/~tao/java/Ftoc.html
 - name: The residue theorem
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 2000
-  description: Illustrates the residue theorem for contour integrals.
+  url: apps/residue-theorem.html
+  description: Draw a contour around editable poles; the integral converges to 2πi times the enclosed residues.
   source: https://www.math.ucla.edu/~tao/java/Residue.html
 - name: The argument principle
   category: Complex analysis
-  status: to-port
+  status: ported
   year: 2000
-  description: Demonstrates the argument principle and winding numbers.
+  url: apps/argument-principle.html
+  description: Draw a contour and count how many times its image winds around 0 — the enclosed zeros minus poles.
   source: https://www.math.ucla.edu/~tao/java/Argument.html
 # --- Miscellaneous (Java) ---
 - name: Besicovitch sets

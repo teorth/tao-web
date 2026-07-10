@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Möbius transforms — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: .8rem 1.2rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .coef { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem; font-family: var(--mono);
+    color: var(--muted); margin-top: .8rem; font-size: .9rem; }
+  .coef input { width: 2.9rem; }
+  .stagewrap { margin-top: 1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .hintline { color: var(--muted); font-size: .85rem; margin-top: .6rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Möbius transforms</h1>
+    <p class="lede">A Möbius map <span class="math">w = (az+b)/(cz+d)</span> sends circles and lines to
+      circles and lines. <strong>Draw points, circles, or lines in the left plane</strong> and watch
+      their images appear on the right.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1999 Java applet by Terence Tao
+      (originally <code>MobiusApp.java</code> / <code>Mobius.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div class="field"><label for="mode">Draw</label>
+        <select id="mode"><option value="point">Point (click)</option><option value="circle" selected>Circle (drag)</option><option value="line">Line (drag)</option></select></div>
+      <div class="field"><label for="preset">Preset map</label>
+        <select id="preset">
+          <option value="1,0,0,1,0,0,0,0">Identity  w = z</option>
+          <option value="0,0,1,0,1,0,0,0">Inversion  w = 1/z</option>
+          <option value="1,0,-1,0,1,0,1,0">Smith  w = (z−1)/(z+1)</option>
+          <option value="1,0,0,-1,1,0,0,1">Cayley  w = (z−i)/(z+i)</option>
+        </select></div>
+      <button type="button" class="ghost" id="undo">Delete last</button>
+      <button type="button" class="ghost" id="clear">Clear</button>
+    </div>
+    <div class="coef">
+      w = ( (<input id="aRe" value="1">+<input id="aIm" value="0">i)z + (<input id="bRe" value="0">+<input id="bIm" value="0">i) )
+      / ( (<input id="cRe" value="0">+<input id="cIm" value="0">i)z + (<input id="dRe" value="1">+<input id="dIm" value="0">i) )
+    </div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane — draw here</span><span>w-plane (image)</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="hintline">Tip: the unit circle (centre 0, radius 1) under inversion maps to itself; a line not through 0 maps to a circle through the image of ∞.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1999 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of;
+    var st = new ComplexStage($("cv"), { planes: 2, view: 5 });
+    var shapes = [], preview = null, dragStart = null;
+    var COLORS = ["#e5484d", "#2f6fed", "#2ea043", "#c026d3", "#e0a800"];
+
+    function coef() {
+      function g(id) { return parseFloat($(id).value) || 0; }
+      return { a: of(g("aRe"), g("aIm")), b: of(g("bRe"), g("bIm")), c: of(g("cRe"), g("cIm")), d: of(g("dRe"), g("dIm")) };
+    }
+    function mob(z) { var k = coef(); return C.mobius(z, k.a, k.b, k.c, k.d); }
+
+    function fitThrough(w1, w2, w3) {                 // circle or line through 3 image points
+      if (w1.inf || w2.inf || w3.inf) {
+        var f = [w1, w2, w3].filter(function (w) { return !w.inf; });
+        return f.length >= 2 ? { type: "line", p: f[0], q: f[1] } : null;
+      }
+      var A = w2.x - w1.x, B = w2.y - w1.y, Cc = w3.x - w1.x, D = w3.y - w1.y;
+      var X = (w2.norm() - w1.norm()) / 2, Y = (w3.norm() - w1.norm()) / 2, det = A * D - B * Cc;
+      if (Math.abs(det) < 1e-6) return { type: "line", p: w1, q: w2 };
+      var xc = (D * X - B * Y) / det, yc = (-Cc * X + A * Y) / det;
+      return { type: "circle", c: of(xc, yc), r: Math.hypot(w1.x - xc, w1.y - yc) };
+    }
+    function imageOf(sh) {
+      if (sh.kind === "point") { var w = mob(sh.z); return w.inf ? null : { type: "point", z: w }; }
+      if (sh.kind === "circle") {
+        return fitThrough(mob(of(sh.c.x - sh.r, sh.c.y)), mob(of(sh.c.x + sh.r, sh.c.y)), mob(of(sh.c.x, sh.c.y + sh.r)));
+      }
+      return fitThrough(mob(sh.p), mob(sh.q), mob(C.INF()));
+    }
+    function drawGeom(p, g, color) {
+      if (!g) return; var c = st.ctx; c.strokeStyle = color; c.fillStyle = color; c.lineWidth = 1.8;
+      if (g.type === "point" || g.kind === "point") { var z = g.z; st.dot(p, z.x, z.y, 5, true); }
+      else if (g.type === "circle" || g.kind === "circle") { var cc = g.c, r = g.r; st.circle(p, cc.x, cc.y, r); }
+      else { var a = g.kind === "line" ? g.p : g.p, b = g.kind === "line" ? g.q : g.q;   // extend the segment across the plane
+        var dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+        st.seg(p, a.x - dx * 30, a.y - dy * 30, b.x + dx * 30, b.y + dy * 30); }
+    }
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      var list = shapes.concat(preview ? [preview] : []);
+      list.forEach(function (sh, i) {
+        var col = COLORS[i % COLORS.length];
+        st.clip(dom, function () { drawGeom(dom, sh, col); });
+        st.clip(ran, function () { drawGeom(ran, imageOf(sh), col); });
+      });
+      // pole markers
+      var k = coef();
+      st.clip(dom, function () { if (k.c.norm() > 1e-3) { c.strokeStyle = "#888"; c.lineWidth = 1.5; var z = k.d.neg().div(k.c); markX(dom, z); } });
+      st.clip(ran, function () { if (k.c.norm() > 1e-3) { c.strokeStyle = "#888"; c.lineWidth = 1.5; markX(ran, k.a.div(k.c)); } });
+      st.frames();
+    }
+    function markX(p, z) { if (z.inf) return; var c = st.ctx, q = st.px(p, z.x, z.y); c.beginPath();
+      c.moveTo(q[0] - 4, q[1] - 4); c.lineTo(q[0] + 4, q[1] + 4); c.moveTo(q[0] - 4, q[1] + 4); c.lineTo(q[0] + 4, q[1] - 4); c.stroke(); }
+
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) {
+      var l = st.locate(e); if (!inDom(l)) return; $("cv").setPointerCapture(e.pointerId);
+      var m = st.math(l.p, l.px, l.py), z = of(m[0], m[1]), mode = $("mode").value;
+      if (mode === "point") { shapes.push({ kind: "point", z: z }); draw(); }
+      else { dragStart = z; preview = null; }
+    });
+    $("cv").addEventListener("pointermove", function (e) {
+      if (!dragStart) return; var l = st.locate(e); if (!l) return; var m = st.math(l.p, l.px, l.py), z = of(m[0], m[1]), mode = $("mode").value;
+      if (mode === "circle") preview = { kind: "circle", c: dragStart, r: Math.hypot(z.x - dragStart.x, z.y - dragStart.y) };
+      else preview = { kind: "line", p: dragStart, q: z };
+      draw();
+    });
+    $("cv").addEventListener("pointerup", function () {
+      if (preview && ((preview.kind === "circle" && preview.r > 0.05) || (preview.kind === "line" && preview.p.sub(preview.q).abs() > 0.1))) shapes.push(preview);
+      preview = null; dragStart = null; draw();
+    });
+    $("preset").addEventListener("change", function () {
+      var v = $("preset").value.split(",").map(Number);
+      $("aRe").value = v[0]; $("aIm").value = v[1]; $("bRe").value = v[2]; $("bIm").value = v[3];
+      $("cRe").value = v[4]; $("cIm").value = v[5]; $("dRe").value = v[6]; $("dIm").value = v[7]; draw();
+    });
+    ["aRe", "aIm", "bRe", "bIm", "cRe", "cIm", "dRe", "dIm"].forEach(function (id) { $(id).addEventListener("input", draw); });
+    $("undo").addEventListener("click", function () { shapes.pop(); draw(); });
+    $("clear").addEventListener("click", function () { shapes = []; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    // start with the unit circle as an example
+    shapes.push({ kind: "circle", c: of(0, 0), r: 1 });
+    draw();
+  })();
+</script>
+</body>
+</html>

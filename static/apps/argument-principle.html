@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The argument principle — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .coef { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; font-family: var(--mono);
+    color: var(--muted); margin-bottom: .5rem; }
+  .coef input { width: 3.2rem; }
+  .stagewrap { margin-top: .6rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); margin-top: .7rem; overflow-wrap: anywhere; }
+  .readout b { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The argument principle</h1>
+    <p class="lede"><strong>Draw a closed contour</strong> in the left plane. Its image
+      <span class="math">f(contour)</span> in the right plane winds around the origin once for every
+      <span style="color:#c026d3;font-weight:600">zero</span> minus every
+      <span style="color:var(--fg);font-weight:600">pole</span> of <span class="math">f</span> it
+      encloses. Hover to see the image of a small circle around the cursor.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2000 Java applet by Terence Tao
+      (originally <code>ArgumentApp.java</code> / <code>ArgumentGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="coef">
+      f(z) = ( z² + <input id="a" value="1">z + <input id="b" value="5"> ) / ( z² +
+      <input id="c" value="-1">z + <input id="d" value="2"> )
+      <button type="button" class="ghost" id="clear" style="margin-left:.6rem">Clear</button>
+    </div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane — draw a contour</span><span>f(z)-plane (winds around 0)</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="readout" id="readout">Draw a loop; the winding number = (zeros − poles) enclosed.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2000 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of;
+    var RED = "#e5484d", BLUE = "#2f6fed", MAGENTA = "#c026d3", YELLOW = "#e0a800";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 7 });
+    var strokes = [], cur = null, hover = null;
+
+    function co(id) { return parseFloat($(id).value) || 0; }
+    function f(z) {
+      var a = co("a"), b = co("b"), c = co("c"), d = co("d");
+      var num = z.powN(2).add(z.scale(a)).add(of(b, 0));
+      var den = z.powN(2).add(z.scale(c)).add(of(d, 0));
+      return den.norm() < 1e-4 ? null : num.div(den);
+    }
+    function quadRoots(p, q) {                          // roots of z^2 + p z + q
+      var disc = p * p / 4 - q;
+      if (disc >= 0) return [of(-p / 2 - Math.sqrt(disc), 0), of(-p / 2 + Math.sqrt(disc), 0)];
+      return [of(-p / 2, Math.sqrt(-disc)), of(-p / 2, -Math.sqrt(-disc))];
+    }
+    function cross(p, x, y, color) {
+      var c = st.ctx, q = st.px(p, x, y); c.strokeStyle = color; c.lineWidth = 2;
+      c.beginPath(); c.moveTo(q[0] - 5, q[1] - 5); c.lineTo(q[0] + 5, q[1] + 5);
+      c.moveTo(q[0] - 5, q[1] + 5); c.lineTo(q[0] + 5, q[1] - 5); c.stroke();
+    }
+    function winding(pts) {
+      var tot = 0, prev = null;
+      for (var k = 0; k < pts.length; k++) { var w = f(of(pts[k][0], pts[k][1])); if (!w || w.inf) { prev = null; continue; }
+        var ang = Math.atan2(w.y, w.x); if (prev !== null) { var dd = ang - prev; while (dd > Math.PI) dd -= 2 * Math.PI; while (dd < -Math.PI) dd += 2 * Math.PI; tot += dd; } prev = ang; }
+      return tot / (2 * Math.PI);
+    }
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      st.clip(dom, function () {
+        quadRoots(co("a"), co("b")).forEach(function (z) { cross(dom, z.x, z.y, MAGENTA); });   // zeros
+        quadRoots(co("c"), co("d")).forEach(function (z) { cross(dom, z.x, z.y, st.css("--fg") || "#000"); }); // poles
+      });
+      var all = strokes.concat(cur ? [cur] : []), lastPts = null;
+      all.forEach(function (pts) {
+        st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round"; st.poly(dom, pts); });
+        st.clip(ran, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round";
+          c.beginPath(); var prev = null, started = false;
+          for (var k = 0; k < pts.length; k++) { var w = f(of(pts[k][0], pts[k][1])); if (!w || w.inf) { started = false; continue; }
+            var q = st.px(ran, w.x, w.y); if (started && prev && w.sub(prev).abs() < 6) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); started = true; prev = w; }
+          c.stroke(); });
+        lastPts = pts;
+      });
+      // mark origin in range plane
+      st.clip(ran, function () { c.fillStyle = st.css("--muted"); st.dot(ran, 0, 0, 3); });
+      // hover: yellow circle + its image
+      if (hover) {
+        st.clip(dom, function () { c.strokeStyle = YELLOW; c.lineWidth = 1.6; st.circle(dom, hover[0], hover[1], 2); });
+        st.clip(ran, function () { c.strokeStyle = BLUE; c.lineWidth = 1.6; c.beginPath(); var started = false;
+          for (var i = 0; i <= 120; i++) { var t = i / 120 * 2 * Math.PI, w = f(of(hover[0] + 2 * Math.cos(t), hover[1] + 2 * Math.sin(t)));
+            if (!w || w.inf) { started = false; continue; } var q = st.px(ran, w.x, w.y); if (started) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); started = true; }
+          c.stroke(); });
+      }
+      st.frames();
+      if (lastPts) { var wn = winding(lastPts); $("readout").innerHTML = "winding number of f(contour) around 0:  <b>" + Math.round(wn) + "</b>  (≈ " + (Math.round(wn * 100) / 100) + ")"; }
+    }
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (!inDom(l)) return;
+      $("cv").setPointerCapture(e.pointerId); var m = st.math(l.p, l.px, l.py); cur = [m]; hover = m; draw(); });
+    $("cv").addEventListener("pointermove", function (e) { var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && m) { cur.push(m); hover = m; draw(); } else if (inDom(l)) { hover = m; draw(); } else if (hover) { hover = null; draw(); } });
+    function end() { if (cur) { if (cur.length > 1) strokes.push(cur); cur = null; draw(); } }
+    $("cv").addEventListener("pointerup", end); $("cv").addEventListener("pointercancel", end);
+    ["a", "b", "c", "d"].forEach(function (id) { $(id).addEventListener("input", function () { strokes = []; cur = null; draw(); }); });
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    draw();
+  })();
+</script>
+</body>
+</html>

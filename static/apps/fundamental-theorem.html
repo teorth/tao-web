@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The fundamental theorem of calculus — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .toolrow select { font-family: var(--mono); }
+  .stagewrap { margin-top: 1.1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); font-size: .88rem; margin-top: .7rem; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The fundamental theorem of calculus</h1>
+    <p class="lede">For an analytic <span class="math">F</span> with <span class="math">F′ = f</span>,
+      the integral <span class="math">∫ f dz = F(b) − F(a)</span> depends only on the endpoints.
+      <strong>Draw several paths between the same two points</strong> in the left plane — their images
+      <span class="math">F(path)</span> all end at the same place on the right. The blue arrows show
+      the direction field of <span class="math">f</span>.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 2000 Java applet by Terence Tao
+      (originally <code>FtocApp.java</code> / <code>FtocGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div class="field"><label for="fn">F(z) =</label><select id="fn"></select></div>
+      <button type="button" class="ghost" id="clear">Clear paths</button>
+    </div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane — draw paths</span><span>F(z)-plane</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="readout" id="readout">Draw a path; F traces it on the right. Its endpoint is F(b) − F(a).</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 2000 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of, I = C.I;
+    var RED = "#e5484d", GREEN = "#2ea043", CYAN = "#12a4a4", BLUE = "#2f6fed";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 7 });
+    var strokes = [], cur = null, hover = null;
+
+    // [F label, f, F]
+    var FN = [
+      ["z   (F′ = 1)", function () { return of(1, 0); }, function (z) { return z; }],
+      ["(1+i)z", function () { return of(1, 1); }, function (z) { return z.mul(of(1, 1)); }],
+      ["z²/2   (F′ = z)", function (z) { return z; }, function (z) { return z.powN(2).scale(0.5); }],
+      ["Log z   (F′ = 1/z)", function (z) { return z.norm() < 0.01 ? null : z.inv(); }, function (z) { return z.isZero() ? null : z.log(); }],
+      ["eᶻ", function (z) { return z.exp(); }, function (z) { return z.exp(); }]
+    ];
+    FN.forEach(function (f, i) { var o = document.createElement("option"); o.value = i; o.textContent = f[0]; $("fn").appendChild(o); });
+    function f(z) { return FN[+$("fn").value][1](z); }
+    function F(z) { return FN[+$("fn").value][2](z); }
+
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      // vector field of f
+      st.clip(dom, function () {
+        c.strokeStyle = BLUE; c.lineWidth = 1;
+        for (var i = -6; i <= 6; i++) for (var j = -6; j <= 6; j++) {
+          var v = f(of(i, j)); if (!v || v.inf) continue;
+          var a = v.abs(); if (a > 1) v = v.scale(1 / a);
+          st.seg(dom, i, j, i + v.x, j + v.y);
+        }
+      });
+      var all = strokes.concat(cur ? [cur] : []), lastEnd = null;
+      all.forEach(function (pts) {
+        st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round"; st.poly(dom, pts); });
+        st.clip(ran, function () {                       // F(path), broken at discontinuities
+          c.strokeStyle = RED; c.lineWidth = 1.8; c.lineJoin = c.lineCap = "round";
+          c.beginPath(); var prev = null, started = false, endw = null;
+          for (var k = 0; k < pts.length; k++) {
+            var w = F(of(pts[k][0], pts[k][1])); if (!w || w.inf) { started = false; continue; }
+            var q = st.px(ran, w.x, w.y);
+            if (started && prev && w.sub(prev).abs() < 2) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]);
+            started = true; prev = w; endw = w;
+          }
+          c.stroke(); if (endw) lastEnd = endw;
+        });
+      });
+      if (hover) {
+        var z = of(hover[0], hover[1]), w = F(z), fz = f(z);
+        st.clip(dom, function () { c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(dom, 0, 0, z.x, z.y, 7);
+          c.strokeStyle = GREEN; c.lineWidth = 2.4; st.seg(dom, z.x, z.y, z.x + 1, z.y);
+          c.strokeStyle = CYAN; c.lineWidth = 2.4; st.seg(dom, z.x, z.y, z.x, z.y + 1); });
+        if (w && !w.inf && fz && !fz.inf) st.clip(ran, function () {
+          c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(ran, 0, 0, w.x, w.y, 7);
+          c.strokeStyle = GREEN; c.lineWidth = 2.4; st.seg(ran, w.x, w.y, w.x + fz.x, w.y + fz.y);
+          var ifz = fz.mul(I); c.strokeStyle = CYAN; c.lineWidth = 2.4; st.seg(ran, w.x, w.y, w.x + ifz.x, w.y + ifz.y); });
+      }
+      st.frames();
+      if (lastEnd) $("readout").innerHTML = "path ends at F(b) = <b>" + lastEnd.toString() + "</b> — same for every path with the same endpoints";
+    }
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (!inDom(l)) return;
+      $("cv").setPointerCapture(e.pointerId); var m = st.math(l.p, l.px, l.py); cur = [m]; hover = m; draw(); });
+    $("cv").addEventListener("pointermove", function (e) { var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && m) { cur.push(m); hover = m; draw(); } else if (inDom(l)) { hover = m; draw(); } else if (hover) { hover = null; draw(); } });
+    function end() { if (cur) { if (cur.length > 1) strokes.push(cur); cur = null; draw(); } }
+    $("cv").addEventListener("pointerup", end); $("cv").addEventListener("pointercancel", end);
+    $("fn").addEventListener("change", function () { strokes = []; cur = null; draw(); });
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    draw();
+  })();
+</script>
+</body>
+</html>

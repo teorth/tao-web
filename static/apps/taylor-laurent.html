@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taylor and Laurent series — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .layout { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 1rem; }
+  .diagram { flex: 1 1 20rem; max-width: 28rem; }
+  .series { flex: 1 1 20rem; display: flex; flex-direction: column; gap: 1rem; }
+  .ser h2 { font-size: .95rem; margin: 0 0 .2rem; }
+  .ser .reg { color: var(--muted); font-size: .82rem; margin: 0 0 .3rem; }
+  .ser .expr { font-family: var(--mono); font-size: .9rem; overflow-wrap: anywhere;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 7px; padding: .5rem .6rem; }
+  .taylor h2 { color: #d23f3f; } .l1 h2 { color: #1f9d57; } .l2 h2 { color: #0f8f9c; }
+  .z0 { font-family: var(--mono); margin-top: .3rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Taylor and Laurent series</h1>
+    <p class="lede"><strong>Click anywhere</strong> to choose a center <span class="math">z₀</span>.
+      The function <span class="math">f(z) = 1/((z−1)(z−2))</span> has three series about
+      <span class="math">z₀</span>, valid on three regions set by the two poles (×): a Taylor disc, a
+      Laurent annulus, and a Laurent exterior.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a Java applet by Terence Tao (~2007,
+      originally <code>LaurentApp.java</code> / <code>LaurentGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="layout">
+      <div class="diagram">
+        <canvas class="stage" id="cv"></canvas>
+        <p class="z0" id="z0"></p>
+      </div>
+      <div class="series">
+        <div class="ser taylor"><h2>Taylor series</h2><p class="reg" id="tReg"></p><div class="expr" id="tExpr"></div></div>
+        <div class="ser l1"><h2>Laurent series (annulus)</h2><p class="reg" id="l1Reg"></p><div class="expr" id="l1Expr"></div></div>
+        <div class="ser l2"><h2>Laurent series (exterior)</h2><p class="reg" id="l2Reg"></p><div class="expr" id="l2Expr"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>A modern JavaScript port of a Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of;
+    var st = new ComplexStage($("cv"), { planes: 1, view: 5, aspect: 1 });
+    var z0 = of(0, 0);
+    // f = -1/(z-1) + 1/(z-2): poles with residues
+    var POLES = [{ s: of(1, 0), rho: of(-1, 0) }, { s: of(2, 0), rho: of(1, 0) }];
+
+    function fmt(c) {
+      var x = Math.round(c.x * 1e4) / 1e4, y = Math.round(c.y * 1e4) / 1e4;
+      if (Math.abs(y) < 1e-4) return "" + x;
+      return c.toString();
+    }
+    function nonzero(c) { return c.x * c.x + c.y * c.y > 1e-12; }
+    function pw(k) {  // power string for w^k with w=(z-z0)
+      if (k === 0) return "";
+      if (k === 1) return "(z−z₀)";
+      if (k > 1) return "(z−z₀)^" + k;
+      if (k === -1) return "/(z−z₀)";
+      return "/(z−z₀)^" + (-k);
+    }
+    function join(terms) {  // terms: [{c, k}]
+      var out = "";
+      terms.forEach(function (t) {
+        if (!nonzero(t.c)) return;
+        var s = pw(t.k), body;
+        if (t.k === 0) body = fmt(t.c);
+        else if (t.k > 0) body = (Math.abs(Math.abs(t.c.x) - 1) < 1e-9 && Math.abs(t.c.y) < 1e-9 ? (t.c.x < 0 ? "−" : "") : fmt(t.c)) + s;
+        else body = fmt(t.c) + s;
+        if (out === "") out = body.charAt(0) === "−" ? body : body;
+        else out += "  " + (body.charAt(0) === "−" ? "− " + body.slice(1) : "+ " + body);
+      });
+      return (out || "0") + "  + …";
+    }
+    // Taylor coeff of w^k (k>=0): sum_j -rho_j / d_j^{k+1}
+    function taylorCoeff(k) { var s = of(0, 0); POLES.forEach(function (p) { var d = p.s.sub(z0); s = s.add(p.rho.neg().div(d.powN(k + 1))); }); return s; }
+    // exterior coeff of w^{-m} (m>=1) from a given pole: rho * d^{m-1}
+    function extCoeff(p, m) { var d = p.s.sub(z0); return p.rho.mul(d.powN(m - 1)); }
+
+    function update() {
+      var d1 = POLES[0].s.sub(z0).abs(), d2 = POLES[1].s.sub(z0).abs();
+      var r1 = Math.min(d1, d2), r2 = Math.max(d1, d2);
+      var near = d1 <= d2 ? POLES[0] : POLES[1], far = d1 <= d2 ? POLES[1] : POLES[0];
+      // Taylor: powers 0..3
+      var T = []; for (var k = 0; k <= 3; k++) T.push({ c: taylorCoeff(k), k: k });
+      $("tExpr").textContent = join(T);
+      $("tReg").textContent = "converges for |z − z₀| < " + (Math.round(r1 * 1e3) / 1e3);
+      // Laurent annulus: positive powers from far pole (Taylor of far), negative from near (exterior)
+      var L1 = [];
+      for (var k2 = 0; k2 <= 2; k2++) L1.push({ c: far.rho.neg().div(far.s.sub(z0).powN(k2 + 1)), k: k2 });
+      for (var m = 1; m <= 3; m++) L1.push({ c: extCoeff(near, m), k: -m });
+      $("l1Expr").textContent = join(L1);
+      $("l1Reg").textContent = (Math.round(r1 * 1e3) / 1e3) + " < |z − z₀| < " + (Math.round(r2 * 1e3) / 1e3);
+      // Laurent exterior: both poles exterior, negative powers
+      var L2 = []; for (var m2 = 1; m2 <= 3; m2++) L2.push({ c: extCoeff(POLES[0], m2).add(extCoeff(POLES[1], m2)), k: -m2 });
+      $("l2Expr").textContent = join(L2);
+      $("l2Reg").textContent = "|z − z₀| > " + (Math.round(r2 * 1e3) / 1e3);
+      $("z0").textContent = "z₀ = " + z0.toString();
+      draw(r1, r2);
+    }
+    function draw(r1, r2) {
+      var p = st.panels[0], c = st.ctx;
+      st.clear();
+      // region discs (translucent so the grid shows through)
+      st.clip(p, function () {
+        c.fillStyle = "rgba(15,143,156,.20)"; c.fillRect(p.x0, 0, p.w, st.cssH);     // exterior = cyan
+        var o = st.px(p, z0.x, z0.y);
+        c.fillStyle = "rgba(31,157,87,.24)"; c.beginPath(); c.arc(o[0], o[1], p.s * r2, 0, 7); c.fill();   // annulus disc = green
+        c.fillStyle = "rgba(210,63,63,.24)"; c.beginPath(); c.arc(o[0], o[1], p.s * r1, 0, 7); c.fill();   // Taylor disc = red
+        c.strokeStyle = st.css("--muted"); c.lineWidth = 1;
+        c.beginPath(); c.arc(o[0], o[1], p.s * r1, 0, 7); c.stroke();
+        c.beginPath(); c.arc(o[0], o[1], p.s * r2, 0, 7); c.stroke();
+      });
+      st.grid(p, false);
+      st.clip(p, function () {
+        c.strokeStyle = st.css("--fg") || "#000"; c.lineWidth = 2;      // poles as ×
+        POLES.forEach(function (pl) { var q = st.px(p, pl.s.x, pl.s.y);
+          c.beginPath(); c.moveTo(q[0] - 5, q[1] - 5); c.lineTo(q[0] + 5, q[1] + 5); c.moveTo(q[0] - 5, q[1] + 5); c.lineTo(q[0] + 5, q[1] - 5); c.stroke(); });
+        c.strokeStyle = st.css("--accent"); c.lineWidth = 2;            // center as +
+        var z = st.px(p, z0.x, z0.y);
+        c.beginPath(); c.moveTo(z[0] - 6, z[1]); c.lineTo(z[0] + 6, z[1]); c.moveTo(z[0], z[1] - 6); c.lineTo(z[0], z[1] + 6); c.stroke();
+      });
+      st.frames();
+    }
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (!l) return; var m = st.math(l.p, l.px, l.py); z0 = of(m[0], m[1]); update(); });
+    window.addEventListener("resize", function () { st.resize(); update(); });
+    update();
+  })();
+</script>
+</body>
+</html>

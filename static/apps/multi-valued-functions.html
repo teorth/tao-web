@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Multi-valued functions — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .toolrow select { font-family: var(--mono); }
+  .stagewrap { margin-top: 1.1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); font-size: .88rem; margin-top: .7rem; overflow-wrap: anywhere; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Multi-valued functions</h1>
+    <p class="lede"><strong>Drag <span class="math">z</span> around the left plane</strong> — especially
+      in a loop around the origin — and watch its several values <span class="math">f(z)</span> move in
+      the right plane. The <span style="color:#e5484d;font-weight:600">principal</span> branch is red,
+      the others blue. Circle the origin once and the branches swap places: that's the branch cut in
+      action.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao
+      (originally <code>MultiApp.java</code> / <code>MultiGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow">
+      <div class="field"><label for="fn">f(z) =</label><select id="fn"></select></div>
+      <div class="field"><label for="show">Branches</label>
+        <select id="show"><option value="1">Show all</option><option value="0">Principal only</option></select></div>
+      <button type="button" class="ghost" id="clear">Clear trail</button>
+    </div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane (drag here)</span><span>values of f(z)</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <p class="readout" id="readout">Drag z in a loop around 0 to see the sheets permute.</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of;
+    var RED = "#e5484d", BLUE = "#2f6fed";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 5 });
+    var frames = [], cur = null, hoverImgs = null;
+
+    function roots(z, n) {
+      var out = [], R = Math.pow(z.abs(), 1 / n), th = z.arg() / n;
+      for (var k = 0; k < n; k++) out.push(of(R * Math.cos(th + 2 * Math.PI * k / n), R * Math.sin(th + 2 * Math.PI * k / n)));
+      return out;
+    }
+    var FN = [
+      ["± z", function (z) { return [z, z.neg()]; }],
+      ["z^(1/2)", function (z) { return roots(z, 2); }],
+      ["z^(1/3)", function (z) { return roots(z, 3); }],
+      ["z^(1/4)", function (z) { return roots(z, 4); }],
+      ["z^(1/5)", function (z) { return roots(z, 5); }],
+      ["z^(1/6)", function (z) { return roots(z, 6); }],
+      ["Log(z)", function (z) { var R = Math.log(z.abs()), t = z.arg(); return [of(R, t), of(R, t + 2 * Math.PI), of(R, t - 2 * Math.PI)]; }]
+    ];
+    FN.forEach(function (f, i) { var o = document.createElement("option"); o.value = i; o.textContent = f[0]; $("fn").appendChild(o); });
+    function imgs(z) { return FN[+$("fn").value][1](z); }
+    function principalOnly() { return $("show").value === "0"; }
+
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx;
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      var path = frames.concat(cur ? [cur] : []);
+      // domain path
+      st.clip(dom, function () { c.strokeStyle = RED; c.lineWidth = 1.6; c.lineJoin = c.lineCap = "round";
+        st.poly(dom, path.map(function (fr) { return fr.z; })); });
+      // range branch traces
+      st.clip(ran, function () {
+        var nb = path.length ? path[path.length - 1].im.length : 0;
+        var lim = principalOnly() ? 1 : nb;
+        for (var k = 0; k < lim; k++) {
+          c.strokeStyle = k === 0 ? RED : BLUE; c.lineWidth = 1.6;
+          c.beginPath(); var started = false, prev = null;
+          for (var i = 0; i < path.length; i++) {
+            var pt = path[i].im[k]; if (!pt) { started = false; continue; }
+            var q = st.px(ran, pt.x, pt.y);
+            if (started && prev && Math.hypot(pt.x - prev.x, pt.y - prev.y) < 1.6) c.lineTo(q[0], q[1]);
+            else c.moveTo(q[0], q[1]);
+            started = true; prev = pt;
+          }
+          c.stroke();
+        }
+      });
+      // current image dots + hover
+      var live = hoverImgs || (path.length ? path[path.length - 1].im : null);
+      if (live) st.clip(ran, function () {
+        var lim = principalOnly() ? 1 : live.length;
+        for (var k = 0; k < lim; k++) { c.fillStyle = k === 0 ? RED : BLUE; st.dot(ran, live[k].x, live[k].y, k === 0 ? 5 : 4, true); }
+      });
+      if (hover) st.clip(dom, function () { c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(dom, 0, 0, hover.x, hover.y, 7); c.fillStyle = RED; st.dot(dom, hover.x, hover.y, 4); });
+      st.frames();
+    }
+    var hover = null;
+    function frameAt(m) { var z = of(m[0], m[1]); return { z: [m[0], m[1]], im: imgs(z) }; }
+    function inDom(l) { return l && l.i === 0; }
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (!inDom(l)) return;
+      $("cv").setPointerCapture(e.pointerId); var m = st.math(l.p, l.px, l.py); cur = frameAt(m); hover = of(m[0], m[1]); hoverImgs = cur.im; draw(); });
+    $("cv").addEventListener("pointermove", function (e) { var l = st.locate(e), m = l ? st.math(l.p, l.px, l.py) : null;
+      if (cur && m) { var fr = frameAt(m); cur = fr; frames.push(fr); hover = of(m[0], m[1]); hoverImgs = fr.im; draw(); }
+      else if (inDom(l)) { hover = of(m[0], m[1]); hoverImgs = imgs(hover); draw(); }
+      else if (hover) { hover = null; hoverImgs = null; draw(); } });
+    function end() { cur = null; draw(); }
+    $("cv").addEventListener("pointerup", end); $("cv").addEventListener("pointercancel", end);
+    $("fn").addEventListener("change", function () { frames = []; cur = null; draw(); });
+    $("show").addEventListener("change", draw);
+    $("clear").addEventListener("click", function () { frames = []; cur = null; draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    draw();
+  })();
+</script>
+</body>
+</html>

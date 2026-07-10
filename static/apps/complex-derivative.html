@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The complex derivative — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolrow { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; }
+  .toolrow .field label { text-transform: none; letter-spacing: 0; }
+  .toolrow select { font-family: var(--mono); }
+  .stagewrap { margin-top: 1.1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span { flex: 1; } .planetitles span:last-child { text-align: right; }
+  .readout { font-family: var(--mono); font-size: .88rem; margin-top: .7rem; overflow-wrap: anywhere; }
+  .legend .sw { width: .9rem; height: .28rem; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The complex derivative</h1>
+    <p class="lede"><strong>Drag the base point in the left plane.</strong> A small grid neighbourhood
+      and the unit directions <span class="math">1</span> (green) and <span class="math">i</span>
+      (cyan) map to the right plane. For an <em>analytic</em> function the two image vectors stay
+      perpendicular and equal in length — that's multiplication by <span class="math">f′(z)</span>
+      (a rotation + scaling), so angles are preserved. The last three functions are
+      <em>not</em> analytic, and you'll see the frame skew.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao
+      (originally <code>DiffApp.java</code> / <code>DiffGrid.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow"><div class="field"><label for="fn">f(z) =</label><select id="fn"></select></div></div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>z-plane (drag the point)</span><span>f(z)-plane</span></div>
+      <canvas class="stage" id="cv"></canvas>
+    </div>
+    <div class="legend">
+      <span class="k"><span class="sw" style="background:#2ea043"></span> image of direction 1  (∂f/∂x)</span>
+      <span class="k"><span class="sw" style="background:#12a4a4"></span> image of direction i  (∂f/∂y)</span>
+    </div>
+    <p class="readout" id="readout"></p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="complex.js"></script>
+<script src="plane.js"></script>
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var C = window.Complex, of = C.of, I = C.I;
+    var RED = "#e5484d", GREEN = "#2ea043", CYAN = "#12a4a4", BLUE = "#2f6fed";
+    var st = new ComplexStage($("cv"), { planes: 2, view: 5 });
+
+    // each: [label, f, dfdx, dfdy, defaultZ, analytic]
+    var FN = [
+      ["z", function (z) { return z; }, function () { return of(1, 0); }, function () { return I; }, of(0, 0), true],
+      ["(1+i)z − i", function (z) { return z.mul(of(1, 1)).sub(I); }, function () { return of(1, 1); }, function () { return I.mul(of(1, 1)); }, of(0, 0), true],
+      ["z²/4", function (z) { return z.powN(2).scale(0.25); }, function (z) { return z.scale(0.5); }, function (z) { return I.mul(z.scale(0.5)); }, of(3, 0), true],
+      ["5/z", function (z) { return z.inv().scale(5); }, function (z) { return z.powN(2).inv().scale(-5); }, function (z) { return I.mul(z.powN(2).inv().scale(-5)); }, of(2, 0), true],
+      ["eᶻ", function (z) { return z.exp(); }, function (z) { return z.exp(); }, function (z) { return I.mul(z.exp()); }, of(0, 0), true],
+      ["x + y + iy", function (z) { return of(z.x + z.y, z.y); }, function () { return of(1, 0); }, function () { return of(1, 1); }, of(0, 0), false],
+      ["x + y² + iy", function (z) { return of(z.x + z.y * z.y, z.y); }, function () { return of(1, 0); }, function (z) { return of(2 * z.y, 1); }, of(0, 0), false],
+      ["z̄", function (z) { return z.conj(); }, function () { return of(1, 0); }, function () { return of(0, -1); }, of(0, 0), false]
+    ];
+    FN.forEach(function (f, i) { var o = document.createElement("option"); o.value = i; o.textContent = f[0]; $("fn").appendChild(o); });
+    var base = of(0, 0);
+
+    function cur() { return FN[+$("fn").value]; }
+    function gridImage(p, f, X, Y) {                 // curved image of the ±2 neighbourhood
+      var c = st.ctx; c.strokeStyle = RED; c.lineWidth = 1.3;
+      for (var i = -2; i <= 2; i++) {
+        st.curve(p, function (s) { var w = f(of(X + s, Y + i)); return w.inf ? [NaN, NaN] : [w.x, w.y]; }, -2, 2, 40);
+        st.curve(p, function (s) { var w = f(of(X + i, Y + s)); return w.inf ? [NaN, NaN] : [w.x, w.y]; }, -2, 2, 40);
+      }
+    }
+    function draw() {
+      var dom = st.panels[0], ran = st.panels[1], c = st.ctx, F = cur();
+      var f = F[1], w = f(base), dx = F[2](base), dy = F[3](base);
+      st.clear(); st.grid(dom, true); st.grid(ran, true);
+      // domain: red neighbourhood grid + unit direction frame
+      st.clip(dom, function () {
+        c.strokeStyle = RED; c.lineWidth = 1.3;
+        for (var i = -2; i <= 2; i++) { st.seg(dom, base.x - 2, base.y + i, base.x + 2, base.y + i); st.seg(dom, base.x + i, base.y - 2, base.x + i, base.y + 2); }
+        c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(dom, 0, 0, base.x, base.y, 7);
+        c.strokeStyle = GREEN; c.lineWidth = 2.6; st.arrow(dom, base.x, base.y, base.x + 1, base.y, 7);
+        c.strokeStyle = CYAN; c.lineWidth = 2.6; st.arrow(dom, base.x, base.y, base.x, base.y + 1, 7);
+      });
+      // range: image of neighbourhood + Jacobian frame at f(z)
+      if (!w.inf) st.clip(ran, function () {
+        gridImage(ran, f, base.x, base.y);
+        c.strokeStyle = BLUE; c.lineWidth = 1.6; st.arrow(ran, 0, 0, w.x, w.y, 7);
+        c.strokeStyle = GREEN; c.lineWidth = 2.6; st.arrow(ran, w.x, w.y, w.x + dx.x, w.y + dx.y, 7);
+        c.strokeStyle = CYAN; c.lineWidth = 2.6; st.arrow(ran, w.x, w.y, w.x + dy.x, w.y + dy.y, 7);
+      });
+      st.frames();
+      var ang = Math.abs(dx.x * dy.x + dx.y * dy.y) < 1e-6 ? "90°" :
+        (Math.round(Math.acos((dx.x * dy.x + dx.y * dy.y) / (Math.hypot(dx.x, dx.y) * Math.hypot(dy.x, dy.y))) * 180 / Math.PI)) + "°";
+      $("readout").innerHTML = "z = " + base.toString() + ",  f(z) = " + (w.inf ? "∞" : w.toString())
+        + "     angle between image vectors: <b>" + ang + "</b>  " + (F[5] ? "(analytic — always 90°)" : "(not analytic)");
+    }
+    function place(e) { var l = st.locate(e); if (!l || l.i !== 0) return; var m = st.math(l.p, l.px, l.py); base = of(m[0], m[1]); draw(); }
+    var drag = false;
+    $("cv").addEventListener("pointerdown", function (e) { var l = st.locate(e); if (l && l.i === 0) { drag = true; $("cv").setPointerCapture(e.pointerId); place(e); } });
+    $("cv").addEventListener("pointermove", function (e) { if (drag) place(e); });
+    $("cv").addEventListener("pointerup", function () { drag = false; });
+    $("fn").addEventListener("change", function () { base = cur()[4].clone(); draw(); });
+    window.addEventListener("resize", function () { st.resize(); draw(); });
+    base = cur()[4].clone(); draw();
+  })();
+</script>
+</body>
+</html>
