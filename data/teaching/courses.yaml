@@ -38,8 +38,9 @@ courses:
   url: "https://bruinlearn.ucla.edu/courses/162694"
 - year: 2022
   quarter: F
-  number: Math 246A
-  title: Complex analysis
+  number: Math 254A
+  title: Analytic prime number theory
+  url: "https://bruinlearn.ucla.edu/courses/141882"
 - year: 2022
   quarter: S
   number: Math 246C
