@@ -158,6 +158,7 @@ awards:
 - year: '2005'
   organization: ISAAC
   award: ISAAC Award
+  url: "http://mathisaac.org/Award.html"
 - year: '2006'
   organization: International Congress of Mathematicians
   award: Plenary Speaker
@@ -189,6 +190,7 @@ awards:
 - year: 2007–2011
   organization: National Science Foundation
   award: Research Award DMS-0649473
+  url: "https://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0649473"
 - year: 2007–
   organization: The Royal Society
   award: Fellow
@@ -196,6 +198,7 @@ awards:
 - year: 2008–2010
   organization: National Science Foundation
   award: Alan T. Waterman Award
+  url: "https://www.nsf.gov/news/news_summ.jsp?cntn_id=111401&org=NSF&from=news"
   highlight: true
 - year: '2008'
   organization: CESASC
@@ -231,6 +234,7 @@ awards:
 - year: '2012'
   organization: Royal Swedish Academy of Sciences
   award: Crafoord Prize (Mathematics)
+  url: "http://www.crafoordprize.se/press/arkivpressreleases/thecrafoordprizeinmathematics2012andthecrafoordprizeinastronomy2012.5.6018c17913483dc064280001363.html"
   highlight: true
 - year: '2012'
   organization: American Philosophical Society
@@ -241,6 +245,7 @@ awards:
 - year: 2012–2022
   organization: Simons Foundation
   award: Simons Investigator
+  url: "https://simonsfoundation.org/program-areas/mathematics-and-physical-science/simons-investigators/"
 - year: '2013'
   organization: Spanish Royal Academy of Sciences
   award: Overseas Member
@@ -253,12 +258,14 @@ awards:
 - year: '2013'
   organization: Center for Excellence in Education
   award: Joseph Lieberman Award
+  url: "http://www.cee.org/news/cee-presents-dr-terence-tao-joseph-i-lieberman-award-his-significant-contribution-mathematics"
 - year: '2013'
   organization: Center for Talented Youth
   award: Distinguished Alumni Award
 - year: '2014'
   organization: The Royal Society
   award: Royal Medal
+  url: "https://royalsociety.org/awards/royal-medal/"
   highlight: true
 - year: '2014'
   organization: Royal Swedish Academy of Sciences
@@ -276,6 +283,7 @@ awards:
 - year: '2019'
   organization: RISM
   award: Riemann Prize
+  url: "https://www.rism.it/index.php/news/riemann-prize-2019"
   highlight: true
 - year: '2020'
   organization: Princess of Asturias Foundation
@@ -300,6 +308,7 @@ awards:
 - year: '2023'
   organization: French Academy of Sciences
   award: Grande Médaille
+  url: "https://www.academie-sciences.fr/fr/Colloques-conferences-et-debats/ceremonie-grande-medaille-2022-terence-tao.html"
   highlight: true
 - year: '2023'
   organization: American Institute of Mathematics
@@ -322,6 +331,7 @@ awards:
 - year: '2026'
   organization: Laude Institute
   award: Moonshot seed grant (co-PI)
+  url: "https://www.laude.org/moonshots"
 - year: 2026–2029
   organization: DARPA
   award: expMath grant (co-PI)
@@ -412,6 +422,7 @@ students:
   institution: UCLA
   years: 2006–2010
   thesis:
+    url: "https://arxiv.org/abs/1006.0491"
     title: Multiple recurrence and the structure of probability-preserving systems
 - name: Le Thai Hoang
   level: PhD
@@ -626,6 +637,7 @@ lectures:
   date: '2005'
   topic: Nonlinear dispersive and wave equations
 - name: Chern Lectures
+  url: "http://math.berkeley.edu/index.php?module=announce&ANN_user_op=view&ANN_id=50"
   venue: UC Berkeley
   date: '2006'
   topic: Nonlinear geometric PDE

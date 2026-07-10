@@ -23,11 +23,6 @@ upcoming:
   dates: Jul 23–30
   place: Philadelphia
 - year: 2026
-  dates: Sep 14–15
-  place: York Town
-  tentative: true
-  note: very tentative
-- year: 2026
   dates: Nov 5–7
   place: San Francisco
 - year: 2027
@@ -35,6 +30,9 @@ upcoming:
   place: UK
   tentative: true
   note: very tentative
+- year: 2027
+  dates: Apr 12
+  place: York Town
 - year: 2027
   dates: May 6
   place: New York

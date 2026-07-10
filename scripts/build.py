@@ -586,9 +586,13 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
         items = cv.get("awards", [])
         if not long:
             items = [a for a in items if a.get("highlight")]
-        rows = [(html.escape(a["year"]),
-                 f'{html.escape(a["award"])} <span class="meta">&mdash; {html.escape(a["organization"])}</span>')
-                for a in items]
+        rows = []
+        for a in items:
+            name = html.escape(a["award"])
+            if a.get("url"):
+                name = f'<a href="{html.escape(a["url"])}">{name}</a>'
+            rows.append((html.escape(a["year"]),
+                         f'{name} <span class="meta">&mdash; {html.escape(a["organization"])}</span>'))
         return _cv_rows(rows)
 
     def books_block() -> str:
@@ -666,7 +670,10 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
     def lectures_block() -> str:
         rows = []
         for l in cv.get("lectures", []):
-            dd = f'<strong>{html.escape(l["name"])}</strong>, {html.escape(l["venue"])}'
+            nm = html.escape(l["name"])
+            if l.get("url"):
+                nm = f'<a href="{html.escape(l["url"])}">{nm}</a>'
+            dd = f'<strong>{nm}</strong>, {html.escape(l["venue"])}'
             if l.get("topic"):
                 dd += f'<br><span class="meta">{html.escape(l["topic"])}</span>'
             rows.append((html.escape(l["date"]), dd))
