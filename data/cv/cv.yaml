@@ -347,6 +347,7 @@ awards:
   award: Golden Plate Award
 students:
 - name: Deborah Cromer
+  url: "https://www.kirby.unsw.edu.au/our-people/deborah-cromer"
   level: Honours undergraduate
   institution: UCLA / UNSW
   years: '2000'
@@ -354,6 +355,7 @@ students:
     url: "http://www.math.ucla.edu/~tao/preprints/ThesisSyd.dvi.Z"
     title: Uniform distribution of sequences mod 1
 - name: Thomas Lam
+  url: "https://websites.umich.edu/~tfylam/"
   level: Honours undergraduate
   institution: UNSW
   years: 2000–2001
@@ -369,6 +371,7 @@ students:
     url: "http://www.math.ucla.edu/~jlucas/dissertation.pdf"
     title: Erdős distance problem for convex metrics
 - name: Roman Sasyk
+  url: "https://bicyt.conicet.gov.ar/fichas/p/roman-sasyk"
   level: PhD
   coadvisor: Sorin Popa
   institution: UCLA
@@ -376,6 +379,7 @@ students:
   thesis:
     title: Operator algebra methods in ergodic theory
 - name: Monica Visan
+  url: "https://www.math.ucla.edu/~visan/"
   level: PhD
   institution: UCLA
   years: 2003–2006
@@ -390,6 +394,7 @@ students:
     url: "http://www.math.ucla.edu/~jbueti/buetithesis.pdf"
     title: Finite field x-ray and k-plane estimates
 - name: Umut Isik
+  url: "https://www.isik.dev/"
   level: Undergraduate
   institution: UCLA
   years: '2005'
@@ -397,6 +402,7 @@ students:
     url: "http://www.math.ucla.edu/~tao/preprints/nc.pdf"
     title: Maximal non-commuting subsets of groups
 - name: Shuanglin Shao
+  url: "https://mathematics.ku.edu/people/shuanglin-shao"
   level: PhD
   institution: UCLA
   years: 2006–2008
@@ -404,6 +410,7 @@ students:
     url: "http://www.math.ucla.edu/~slshao/ssl-thes.pdf"
     title: Restriction estimates for paraboloids and cones in the cylindrically symmetric case
 - name: Soonsik Kwon
+  url: "https://mathsci.kaist.ac.kr/~soonsikk/"
   level: PhD
   institution: UCLA
   years: 2006–2008
@@ -411,6 +418,7 @@ students:
     url: "http://www.math.ucla.edu/~rhex2/dissertation_kwon.pdf"
     title: Low-regularity problems of fifth-order KdV and modified KdV equations
 - name: Tristan Roy
+  url: "https://www.math.nagoya-u.ac.jp/~tristanroy/"
   level: PhD
   institution: UCLA
   years: 2006–2008
@@ -418,6 +426,7 @@ students:
     url: "http://www.math.ucla.edu/~triroy/ThesisTristan.pdf"
     title: Global well-posedness of the defocusing cubic wave equation in dimension 3
 - name: Tim Austin
+  url: "https://sites.google.com/view/tim-austin"
   level: PhD
   institution: UCLA
   years: 2006–2010
@@ -425,6 +434,7 @@ students:
     url: "https://arxiv.org/abs/1006.0491"
     title: Multiple recurrence and the structure of probability-preserving systems
 - name: Le Thai Hoang
+  url: "https://olemiss.edu/profiles/leth"
   level: PhD
   institution: UCLA
   years: 2007–2010
@@ -437,6 +447,7 @@ students:
   thesis:
     title: Subthreshold geometric renormalization and energy-critical Schrödinger maps
 - name: Zaher Hani
+  url: "https://sites.lsa.umich.edu/zhani/"
   level: PhD
   institution: UCLA
   years: 2008–2011
@@ -449,12 +460,14 @@ students:
   thesis:
     title: Arithmetic properties of random matrices
 - name: Josh Zahl
+  url: "https://jzahl.github.io/"
   level: PhD
   institution: UCLA
   years: 2009–2013
   thesis:
     title: Some algebraic and geometric variants of restriction and Kakeya problems
 - name: Brad Rodgers
+  url: "https://brad-rodgers.github.io/"
   level: PhD
   institution: UCLA
   years: 2011–2013
@@ -469,6 +482,7 @@ students:
     url: "https://escholarship.org/uc/item/8388n9jk"
     title: The structure of locally compact groups
 - name: Jacques Benatar
+  url: "https://sites.google.com/view/jbenatar/"
   level: PhD
   institution: UCLA
   years: 2012–2015
@@ -483,6 +497,7 @@ students:
     url: "https://escholarship.org/uc/item/56j203cc"
     title: Outlier eigenvalue fluctuations of perturbed IID matrices
 - name: Ben Krause
+  url: "https://benkrause.wixsite.com/homepage"
   level: PhD
   institution: UCLA
   years: 2013–2015
@@ -498,6 +513,7 @@ students:
     title: Dimensional asymptotics for norms of maximal averaging operators on Cartesian powers of finite
       graphs
 - name: Nick Cook
+  url: "https://sites.math.duke.edu/~nickcook/"
   level: PhD
   institution: UCLA
   years: 2013–2016
@@ -519,6 +535,7 @@ students:
     url: "https://escholarship.org/uc/item/1n542603"
     title: The eigenvalue spacing of IID random matrices and related least singular value results
 - name: Zane Li
+  url: "https://math.sciences.ncsu.edu/people/zkli/"
   level: PhD
   institution: UCLA
   years: 2017–2019
@@ -526,6 +543,7 @@ students:
     url: "https://escholarship.org/uc/item/0cz3756c"
     title: Decoupling for the parabola and connections to efficient congruencing
 - name: Bjoern Bringmann
+  url: "https://sites.google.com/view/bbringmann/home"
   level: PhD
   institution: UCLA
   years: 2018–2021
@@ -533,6 +551,7 @@ students:
     url: "https://escholarship.org/uc/item/8x53c52h"
     title: Probabilistic perspectives on dispersive partial differential equations
 - name: Khang Huynh
+  url: "https://sites.google.com/view/hmkhang24/home"
   level: PhD
   institution: UCLA
   years: 2018–2021
@@ -554,6 +573,7 @@ students:
     url: "https://escholarship.org/uc/item/5s59h931"
     title: Zeros of Riemann zeta-type functions
 - name: Stan Palasek
+  url: "https://www.math.ias.edu/~palasek/"
   level: PhD
   institution: UCLA
   years: 2020–2023
@@ -561,6 +581,7 @@ students:
     url: "https://escholarship.org/uc/item/1pm1q1gv"
     title: Some quantitative regularity theorems for the Navier–Stokes equations
 - name: Jaume de Dios
+  url: "https://jaume.dedios.cat/"
   level: PhD
   institution: UCLA
   years: 2021–2023
@@ -569,6 +590,7 @@ students:
     title: Uniform estimates for operators involving polynomial curves; decoupling estimates for fractal
       and product sets
 - name: James Leng
+  url: "https://sites.google.com/view/jamesleng/home"
   level: PhD
   institution: UCLA
   years: 2022–2025
@@ -576,6 +598,7 @@ students:
     title: Szemerédi's theorem, primes, and nilsequences
     url: "https://escholarship.org/uc/item/7z39f2qk"
 - name: Ben Johnsrude
+  url: "https://sites.google.com/view/johnsrude"
   level: PhD
   institution: UCLA
   years: 2022–2025
@@ -583,10 +606,12 @@ students:
     title: Topics in the theory of Fourier decoupling
     url: "https://escholarship.org/uc/item/9z00n279"
 - name: Zi Li Lim
+  url: "https://sites.google.com/view/zi-li-lim/home"
   level: PhD
   institution: UCLA
   years: 2022–2026
 - name: Rushil Raghavan
+  url: "https://rushil.online/"
   level: PhD
   institution: UCLA
   years: 2023–2026
