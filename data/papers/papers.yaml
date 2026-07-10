@@ -7385,7 +7385,7 @@ works:
   - type: note
     url: "http://terrytao.wordpress.com/2007/08/12/atle-selberg/"
 - id: does-p-np
-  kind: obituary
+  kind: talk
   title: Does P = NP?
   tags:
   - misc
@@ -7396,14 +7396,6 @@ works:
     url: "http://www.math.ucla.edu/~tao/preprints/Slides/mergesort.eps"
   - type: note
     url: "http://www.maths.unsw.edu.au/highschool/parabola.html"
-- id: structure-and-randomness-pages-from-year-one-of-a-mathematic
-  kind: obituary
-  title: "Structure and randomness: pages from year one of a mathematical blog"
-  tags:
-  - misc
-  links:
-  - type: note
-    url: "http://terrytao.wordpress.com/2008/11/23/structure-and-randomness-open-questions-expository-articles-and-lecture-series-from-a-mathematical-blog/"
 - id: an-estimate-for-the-bilinear-hilbert-transform
   kind: short-story
   title: An estimate for the bilinear Hilbert transform
