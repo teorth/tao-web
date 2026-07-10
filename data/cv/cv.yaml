@@ -494,42 +494,49 @@ students:
   institution: UCLA
   years: 2017–2019
   thesis:
+    url: "https://escholarship.org/uc/item/0cz3756c"
     title: Decoupling for the parabola and connections to efficient congruencing
 - name: Bjoern Bringmann
   level: PhD
   institution: UCLA
   years: 2018–2021
   thesis:
+    url: "https://escholarship.org/uc/item/8x53c52h"
     title: Probabilistic perspectives on dispersive partial differential equations
 - name: Khang Huynh
   level: PhD
   institution: UCLA
   years: 2018–2021
   thesis:
+    url: "https://escholarship.org/uc/item/8xd4p2n7"
     title: "Intrinsic harmonic analysis on manifolds with boundary, and Onsager's conjecture"
 - name: Redmond McNamara
   level: PhD
   institution: UCLA
   years: 2019–2021
   thesis:
+    url: "https://escholarship.org/uc/item/4wr015m0"
     title: Dynamical methods for the Sarnak and Chowla conjectures
 - name: Alex Dobner
   level: PhD
   institution: UCLA
   years: 2019–2021
   thesis:
+    url: "https://escholarship.org/uc/item/5s59h931"
     title: Zeros of Riemann zeta-type functions
 - name: Stan Palasek
   level: PhD
   institution: UCLA
   years: 2020–2023
   thesis:
+    url: "https://escholarship.org/uc/item/1pm1q1gv"
     title: Some quantitative regularity theorems for the Navier–Stokes equations
 - name: Jaume de Dios
   level: PhD
   institution: UCLA
   years: 2021–2023
   thesis:
+    url: "https://escholarship.org/uc/item/6kg2d385"
     title: Uniform estimates for operators involving polynomial curves; decoupling estimates for fractal
       and product sets
 - name: James Leng
