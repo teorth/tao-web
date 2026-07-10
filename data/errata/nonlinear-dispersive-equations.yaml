@@ -380,6 +380,13 @@ editions:
     page: '106'
     text: "In Exercise 2.75, the hypothesis $b > 1/2$ is missing. In Exercise 2.74, $C^0_t L^4_x$ should\
       \ be $C^0_t L^2_x$, and all occurrences of $latex{\\mathbb T}^2$ should be ${\\mathbb T}$."
+  - id: errata-0192
+    page: '106'
+    date: '2026-07-10'
+    text: "In the hint for Exercise 2.75, it might be helpful to add that the case where $d \\geq 3$,\
+      \ $N \\leq 2M$ and both functions are frequency supported where $|\\xi| \\leq 2M$ can also be\
+      \ handled using the linear $L_x^2 \\to L_{t,x}^4$ estimates, which one can get from interpolating\
+      \ between the $L_x^2 \\to L_{t,x}^\\infty$ and $L^2 \\to L_{t,x}^{\\frac{2(d+2)}{d}}$ estimates."
   - id: errata-0083
     page: '107'
     text: "In the second display of Exercise 2.77, the $L^2_t L^2_x$ norm should be an $L^6_t L^6_x$ norm.\
