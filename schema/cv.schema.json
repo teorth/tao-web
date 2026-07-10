@@ -48,7 +48,8 @@
       "type": "object", "additionalProperties": false, "required": ["year", "organization", "award"],
       "properties": {
         "year": { "type": "string" }, "organization": { "type": "string" }, "award": { "type": "string" },
-        "url": { "type": "string" }, "highlight": { "type": "boolean" }
+        "url": { "type": "string" }, "highlight": { "type": "boolean" },
+        "postnominal": { "type": "string", "description": "Post-nominal letters conferred by this honor (e.g. FRS, AC); rendered after the name on the full CV." }
       } } },
     "students": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["name", "level", "years"],

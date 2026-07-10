@@ -156,6 +156,7 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .wl { display: block; margin-top: .1rem; font-size: .85rem; }
 .wl .lk { margin-right: .7rem; }
 .cv-head h1 { margin-bottom: .1rem; }
+.postnom { font-size: .6em; font-weight: 400; color: var(--muted); letter-spacing: .04em; vertical-align: .12em; }
 .cv-head .role { margin: 0; }
 .cv-contact { color: var(--muted); font-size: .9rem; margin: .35rem 0 0; }
 .cv-nav { margin: .8rem 0 1.6rem; font-size: .9rem; display: flex; gap: 1rem; flex-wrap: wrap; }
@@ -518,10 +519,26 @@ def _cv_pub(w: dict) -> str:
     return ". ".join(bits)
 
 
+# Conventional ordering of post-nominals: Commonwealth honours first, then society
+# fellowships (Australian bodies before overseas). Any others fall back to the end.
+_POSTNOM_ORDER = ["AC", "FAA", "FAustMS", "FRS"]
+
+
+def _postnominals(cv: dict) -> str:
+    letters = [a["postnominal"] for a in cv.get("awards", []) if a.get("postnominal")]
+    letters = sorted(set(letters),
+                     key=lambda x: (_POSTNOM_ORDER.index(x) if x in _POSTNOM_ORDER else len(_POSTNOM_ORDER), x))
+    return " ".join(letters)
+
+
 def _cv_header(cv: dict, here: str) -> str:
     p = cv.get("profile", {})
+    name = html.escape(p.get("name", ""))
+    post = _postnominals(cv) if here == "cv-long" else ""
+    if post:
+        name += f' <span class="postnom">{html.escape(post)}</span>'
     parts = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv-head">',
-             f'<h1>{html.escape(p.get("name", ""))}</h1>']
+             f'<h1>{name}</h1>']
     if p.get("title"):
         parts.append(f'<p class="role sub">{html.escape(p["title"])}, {html.escape(p.get("institution", ""))}</p>')
     contact = []

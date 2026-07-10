@@ -194,6 +194,7 @@ awards:
 - year: 2007–
   organization: The Royal Society
   award: Fellow
+  postnominal: FRS
   highlight: true
 - year: 2008–2010
   organization: National Science Foundation
@@ -341,6 +342,7 @@ awards:
 - year: '2026'
   organization: Australia
   award: Companion of the Order of Australia
+  postnominal: AC
   highlight: true
 - year: '2026'
   organization: American Academy of Achievement
