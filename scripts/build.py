@@ -90,6 +90,8 @@ h1 { font-size: 1.9rem; margin: 0 0 .3rem; }
 h2 { font-size: 1.25rem; margin: 2.2rem 0 .2rem; padding-bottom: .3rem; border-bottom: 2px solid var(--line); }
 h3 { font-size: 1.05rem; margin: 1.5rem 0 .2rem; }
 .sub { color: var(--muted); margin: 0 0 1.5rem; }
+.positions { list-style: none; padding: .7rem 0 .7rem 1rem; margin: 0 0 1.6rem; border-left: 3px solid var(--accent); }
+.positions li { margin: .25rem 0; line-height: 1.4; }
 .count { color: var(--muted); font-size: .9rem; margin: .1rem 0 1rem; }
 ol.errata { list-style: none; margin: 0; padding: 0; }
 ol.errata > li { display: grid; grid-template-columns: 5.5rem 1fr; gap: .6rem;
@@ -922,6 +924,14 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
     body = ('<h1>Terence Tao</h1>'
             '<p class="sub">Book pages (bibliographic details and errata) and other collected pages, '
             'generated from a database maintained by the author.</p>')
+    if cv and cv.get("positions"):
+        pitems = []
+        for pos in cv["positions"]:
+            org = html.escape(pos["organization"])
+            if pos.get("url"):
+                org = f'<a href="{html.escape(pos["url"])}">{org}</a>'
+            pitems.append(f'<li><strong>{html.escape(pos["title"])}</strong>, {org}</li>')
+        body += f'<ul class="positions">{"".join(pitems)}</ul>'
     nworks = len((papers or {}).get("works") or [])
     if nworks:
         body += ('<p class="desc"><a href="papers.html"><strong>Papers and preprints</strong></a> '

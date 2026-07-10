@@ -40,6 +40,16 @@ profile:
     - name: General relativity
     - name: General harmonic analysis
     - name: Inverse scattering, nonlinear Fourier transforms, and integrable systems for rough data
+positions:
+- title: Distinguished Professor and James and Carol Collins Chair
+  organization: Department of Mathematics, UCLA
+  url: "https://www.math.ucla.edu/"
+- title: Director of Special Projects
+  organization: Institute for Pure and Applied Mathematics, UCLA
+  url: "https://www.ipam.ucla.edu/"
+- title: Co-Founder
+  organization: Foundation for Science & AI Research
+  url: "https://sair.foundation/"
 education:
 - degree: Ph.D.
   year: '1996'
@@ -96,8 +106,12 @@ appointments:
   institution: UNSW
   title: Visiting Professor
 - start: '2000'
+  end: '2009'
   institution: UCLA
   title: Professor
+- start: '2009'
+  institution: UCLA
+  title: Distinguished Professor
 - start: '2001'
   end: '2003'
   institution: Clay Mathematics Institute

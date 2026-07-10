@@ -32,6 +32,14 @@
         }
       }
     },
+    "positions": {
+      "type": "array",
+      "description": "Current headline positions, surfaced as a Positions list on the front page.",
+      "items": {
+        "type": "object", "additionalProperties": false, "required": ["title", "organization"],
+        "properties": {
+          "title": { "type": "string" }, "organization": { "type": "string" }, "url": { "type": "string" }
+        } } },
     "education": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["degree", "year", "institution"],
       "properties": {
