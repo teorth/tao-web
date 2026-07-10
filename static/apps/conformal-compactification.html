@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conformal compactification — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .stagewrap { margin-top: 1rem; }
+  .planetitles { display: flex; color: var(--muted); font-size: .85rem; margin-bottom: .3rem; }
+  .planetitles span:first-child { flex: 1; } .planetitles span:last-child { flex: 0 0 auto; }
+  .readout { font-family: var(--mono); font-size: .88rem; margin-top: .7rem; color: var(--muted); overflow-wrap: anywhere; }
+  .toolrow { display: flex; gap: 1rem; align-items: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Conformal compactification</h1>
+    <p class="lede">The infinite first quadrant of the plane (left) is mapped conformally onto a bounded
+      triangle (right). The two edges of the quadrant become the two legs of the triangle, and the
+      <strong>point at infinity is stretched out into the whole hypotenuse</strong>. Angles are
+      preserved. <strong>Drag in either region</strong> to draw a curve and see its image.</p>
+    <p class="prov">A modern JavaScript + Canvas port of a 1998 Java applet by Terence Tao
+      (originally <code>Compact.java</code>).</p>
+  </header>
+
+  <div class="card">
+    <div class="toolrow"><button type="button" class="ghost" id="clear">Clear</button></div>
+    <div class="stagewrap">
+      <div class="planetitles"><span>the plane (first quadrant)</span><span>its compactification</span></div>
+      <canvas id="cv" style="width:100%;display:block"></canvas>
+    </div>
+    <p class="readout" id="readout">Drag near the top-right of the plane to approach the hypotenuse (infinity).</p>
+  </div>
+
+  <footer>A modern JavaScript port of a 1998 Java applet by Terence Tao, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var cv = $("cv"), ctx = cv.getContext("2d"), pad = 10, VIEW = 3;
+    var RED = "#e5484d", BLUE = "#2f6fed";
+    var strokes = [], cur = null, hover = null;
+    var L, Tr;   // layout: left square + right triangle
+    function css(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+
+    // maps (math coords)
+    function F(X, Y) { var U = Math.atan(X + Y), V = Math.atan(X - Y); return [(U + V) / Math.PI, (U - V) / Math.PI]; }
+    function G(a, b) { var U = Math.tan((a + b) * Math.PI / 2), V = Math.tan((a - b) * Math.PI / 2); return [(U + V) / 2, (U - V) / 2]; }
+    // pixel maps
+    function planePx(X, Y) { return [L.x + X / VIEW * L.s, L.y - Y / VIEW * L.s]; }
+    function triPx(a, b) { return [Tr.x + a * Tr.s, Tr.y - b * Tr.s]; }
+    function planeMath(px, py) { return [(px - L.x) / L.s * VIEW, (L.y - py) / L.s * VIEW]; }
+    function triMath(px, py) { return [(px - Tr.x) / Tr.s, (Tr.y - py) / Tr.s]; }
+
+    function layout() {
+      var dpr = window.devicePixelRatio || 1, W = Math.min(cv.clientWidth, 880), H = Math.round(W * 0.5);
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.height = H + "px"; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      var s = H - 2 * pad;
+      L = { x: pad, y: H - pad, s: s };                    // origin bottom-left of left square
+      Tr = { x: W - pad - s, y: H - pad, s: s };            // origin bottom-left of triangle
+      cv._W = W; cv._H = H;
+    }
+    function clipRect(x0, y0, w, h, fn) { ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, w, h); ctx.clip(); fn(); ctx.restore(); }
+    function clipTri(fn) { ctx.save(); ctx.beginPath();
+      var a = triPx(0, 0), b = triPx(1, 0), c = triPx(0, 1); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.closePath(); ctx.clip(); fn(); ctx.restore(); }
+
+    function poly(pts, mapper) { ctx.beginPath(); for (var i = 0; i < pts.length; i++) { var q = mapper(pts[i][0], pts[i][1]); if (i === 0) ctx.moveTo(q[0], q[1]); else ctx.lineTo(q[0], q[1]); } ctx.stroke(); }
+
+    function draw() {
+      layout();
+      ctx.clearRect(0, 0, cv._W, cv._H);
+      ctx.fillStyle = css("--panel"); ctx.fillRect(L.x, L.y - L.s, L.s, L.s);
+      clipTri(function () { ctx.fillStyle = css("--panel"); ctx.fillRect(Tr.x, Tr.y - Tr.s, Tr.s, Tr.s); });
+      var axis = css("--axis") || css("--muted"), grid = css("--grid");
+      // plane: coordinate grid lines + their images in the triangle
+      ctx.lineWidth = 1;
+      for (var g = 0; g <= VIEW; g += 0.5) {
+        ctx.strokeStyle = grid;
+        clipRect(L.x, L.y - L.s, L.s, L.s, function () { poly([[g, 0], [g, VIEW]], planePx); poly([[0, g], [VIEW, g]], planePx); });
+        clipTri(function () {
+          var v = [], h = [];
+          for (var t = 0; t <= VIEW; t += 0.1) { v.push(F(g, t)); h.push(F(t, g)); }
+          poly(v, triPx); poly(h, triPx);
+        });
+      }
+      // axes / triangle outline
+      ctx.strokeStyle = axis; ctx.lineWidth = 1.4;
+      poly([[0, VIEW], [0, 0], [VIEW, 0]], planePx);
+      var a = triPx(0, 1), b = triPx(0, 0), c = triPx(1, 0);
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.stroke();
+      ctx.setLineDash([5, 4]); ctx.strokeStyle = css("--accent");   // hypotenuse = infinity
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(c[0], c[1]); ctx.stroke(); ctx.setLineDash([]);
+      // strokes + images
+      strokes.concat(cur ? [cur] : []).forEach(function (st) {
+        ctx.strokeStyle = RED; ctx.lineWidth = 1.8; ctx.lineJoin = ctx.lineCap = "round";
+        if (st.side === "plane") {
+          clipRect(L.x, L.y - L.s, L.s, L.s, function () { poly(st.pts, planePx); });
+          clipTri(function () { poly(st.pts.map(function (p) { return F(p[0], p[1]); }), triPx); });
+        } else {
+          clipTri(function () { poly(st.pts, triPx); });
+          clipRect(L.x, L.y - L.s, L.s, L.s, function () { poly(st.pts.map(function (p) { return G(p[0], p[1]); }), planePx); });
+        }
+      });
+      // hover arrows
+      if (hover) {
+        ctx.strokeStyle = BLUE; ctx.lineWidth = 1.6;
+        if (hover.side === "plane") { var im = F(hover.p[0], hover.p[1]);
+          clipRect(L.x, L.y - L.s, L.s, L.s, function () { var o = planePx(0, 0), h = planePx(hover.p[0], hover.p[1]); line(o, h); });
+          clipTri(function () { var o = triPx(0, 0), h = triPx(im[0], im[1]); line(o, h); }); }
+        else { var pm = G(hover.p[0], hover.p[1]);
+          clipTri(function () { var o = triPx(0, 0), h = triPx(hover.p[0], hover.p[1]); line(o, h); });
+          clipRect(L.x, L.y - L.s, L.s, L.s, function () { var o = planePx(0, 0), h = planePx(pm[0], pm[1]); line(o, h); }); }
+      }
+    }
+    function line(o, h) { ctx.beginPath(); ctx.moveTo(o[0], o[1]); ctx.lineTo(h[0], h[1]); ctx.stroke(); }
+
+    function locate(e) {
+      var r = cv.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+      if (px >= L.x && px <= L.x + L.s && py >= L.y - L.s && py <= L.y) return { side: "plane", p: planeMath(px, py) };
+      var t = triMath(px, py);
+      if (t[0] >= 0 && t[1] >= 0 && t[0] + t[1] <= 1) return { side: "tri", p: t };
+      return null;
+    }
+    cv.addEventListener("pointerdown", function (e) { var l = locate(e); if (!l) return; cv.setPointerCapture(e.pointerId); cur = { side: l.side === "plane" ? "plane" : "tri", pts: [l.p] }; hover = l; draw(); });
+    cv.addEventListener("pointermove", function (e) { var l = locate(e);
+      if (cur && l && (l.side === "plane" ? cur.side === "plane" : cur.side === "tri")) { cur.pts.push(l.p); hover = l; draw(); }
+      else if (l) { hover = l; if (!cur) draw(); }
+      else if (hover && !cur) { hover = null; draw(); } });
+    function end() { if (cur) { if (cur.pts.length > 1) strokes.push(cur); cur = null; draw(); } }
+    cv.addEventListener("pointerup", end); cv.addEventListener("pointercancel", end);
+    $("clear").addEventListener("click", function () { strokes = []; cur = null; draw(); });
+    window.addEventListener("resize", draw);
+    draw();
+  })();
+</script>
+</body>
+</html>

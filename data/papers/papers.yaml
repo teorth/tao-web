@@ -1250,6 +1250,11 @@ works:
   year: 2019
   status: published
   venue: Nature Reviews Physics 1,418–419(2019)
+  links:
+  - type: journal
+    url: "https://www.nature.com/articles/s42254-019-0068-9"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2019/05/31/searching-for-singularities-in-the-navier-stokes-equations/"
   tags:
   - pde
   - navier-stokes
@@ -2186,6 +2191,9 @@ works:
   year: 2012
   status: published
   venue: Daedalus 141 (3) (Summer 2012)
+  links:
+  - type: journal
+    url: "https://www.jstor.org/stable/23240263"
   tags:
   - additive-combinatorics-number-theory
 - id: new-bounds-for-szemeredi-s-theorem-ia-progressions-of-length

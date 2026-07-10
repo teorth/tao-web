@@ -163,9 +163,10 @@ applets:
   source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 - name: Conformal compactification
   category: Miscellaneous
-  status: to-port
+  status: ported
   year: 1998
-  description: Visualizes the conformal compactification of the plane.
+  description: The infinite quadrant of the plane mapped conformally onto a bounded triangle, with infinity stretched onto the hypotenuse — draw curves in either region.
+  url: apps/conformal-compactification.html
   source: https://www.math.ucla.edu/~tao/java/Compact.html
 - name: Honeycombs
   category: Miscellaneous
