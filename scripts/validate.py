@@ -23,6 +23,10 @@ PAPERS_SCHEMA = ROOT / "schema" / "papers.schema.json"
 PAPERS = ROOT / "data" / "papers"
 CV_SCHEMA = ROOT / "schema" / "cv.schema.json"
 CV = ROOT / "data" / "cv"
+TRAVEL_SCHEMA = ROOT / "schema" / "travel.schema.json"
+TRAVEL = ROOT / "data" / "travel"
+CONTACT_SCHEMA = ROOT / "schema" / "contact.schema.json"
+CONTACT = ROOT / "data" / "contact"
 
 
 def validate_links() -> int:
@@ -100,6 +104,21 @@ def validate_cv() -> int:
     return len(errors)
 
 
+def validate_one(schema_path, data_path, label) -> int:
+    """Validate a single data file against a schema; print a one-line summary."""
+    if not data_path.exists():
+        return 0
+    validator = Draft7Validator(yaml.safe_load(schema_path.read_text(encoding="utf-8")))
+    doc = yaml.safe_load(data_path.read_text(encoding="utf-8"))
+    errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
+    for err in errors[:40]:
+        loc = "/".join(str(p) for p in err.path) or "(root)"
+        print(f"{data_path.name}: {loc}: {err.message}")
+    counts = {k: len(v) for k, v in doc.items() if isinstance(v, list)}
+    print(f"  {data_path.name}: {counts or label} -> {'OK' if not errors else 'INVALID'}")
+    return len(errors)
+
+
 def main() -> int:
     validator = Draft7Validator(yaml.safe_load(SCHEMA.read_text(encoding="utf-8")))
     files = sorted(DATA.glob("*.yaml"))
@@ -140,6 +159,8 @@ def main() -> int:
     problems += validate_teaching()
     problems += validate_papers()
     problems += validate_cv()
+    problems += validate_one(TRAVEL_SCHEMA, TRAVEL / "travel.yaml", "travel")
+    problems += validate_one(CONTACT_SCHEMA, CONTACT / "contact.yaml", "contact")
 
     if problems:
         print(f"\n{problems} problem(s) found.", file=sys.stderr)

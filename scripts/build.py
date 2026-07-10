@@ -54,6 +54,8 @@ LINKS = ROOT / "data" / "links"
 TEACHING = ROOT / "data" / "teaching"
 PAPERS = ROOT / "data" / "papers"
 CV = ROOT / "data" / "cv"
+CONTACT = ROOT / "data" / "contact"
+TRAVEL = ROOT / "data" / "travel"
 SITE = ROOT / "site"
 
 _MDLINK = re.compile(r'\[([^\]]+)\]\(([^)]+)\)')
@@ -162,6 +164,12 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .cv-list .dd .meta { color: var(--muted); }
 .cv-bio p { max-width: 42rem; }
 .cv-more { color: var(--muted); font-size: .9rem; }
+.policies { margin: .4rem 0 0; padding-left: 1.4rem; }
+.policies li { margin: .55rem 0; max-width: 44rem; }
+.policies li .t { font-weight: 600; }
+.contact-note { color: var(--muted); font-size: .9rem; margin: .5rem 0 0; max-width: 42rem; }
+.travel .cx { text-decoration: line-through; color: var(--muted); }
+.travel .tentative { color: var(--muted); }
 @media print {
   .cv-nav, footer, .wrap > p:first-child { display: none; }
   .wrap { max-width: none; padding: 0; }
@@ -698,8 +706,87 @@ _QUARTER_NAME = {"F": "Fall", "W": "Winter", "S": "Spring", "Su": "Summer"}
 _QUARTER_ORDER = {"W": 1, "S": 2, "Su": 3, "F": 4}  # chronological within a year
 
 
+def _trip_line(t: dict) -> str:
+    place = html.escape(t["place"])
+    if t.get("url"):
+        place = f'<a href="{html.escape(t["url"])}">{place}</a>'
+    if t.get("note"):
+        place += f' <span class="meta">({html.escape(t["note"])})</span>'
+    line = f'{html.escape(t["dates"])}: {place}'
+    if t.get("cancelled"):
+        return f'<span class="cx">{line}</span>'
+    if t.get("tentative"):
+        return f'<span class="tentative">{line}</span>'
+    return line
+
+
+def _travel_rows(trips: list, desc: bool) -> str:
+    years: dict[int, list] = {}
+    for t in trips:
+        years.setdefault(t["year"], []).append(t)
+    rows = [(str(y), "<br>".join(_trip_line(t) for t in years[y]))
+            for y in sorted(years, reverse=desc)]
+    return _cv_rows(rows)
+
+
+def build_travel(travel: dict) -> str:
+    body = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv travel">',
+            '<h1>Travel</h1>']
+    up = travel.get("upcoming") or []
+    if up:
+        inner = ""
+        if travel.get("note"):
+            inner += f'<p class="cv-more">{html.escape(travel["note"])}</p>'
+        inner += _travel_rows(up, desc=False)
+        body.append(_cv_section("Upcoming", inner))
+    past = travel.get("past") or []
+    if past:
+        body.append(_cv_section(f"Past trips ({len(past)})", _travel_rows(past, desc=True)))
+    body.append("</div>")
+    return page("Terence Tao — travel", "\n".join(body))
+
+
+def build_contact(contact: dict, travel: dict | None = None) -> str:
+    c = contact.get("contact", {})
+    body = ['<p><a href="index.html">&larr; Home</a></p>', '<div class="cv contact">',
+            '<h1>Contact and policies</h1>']
+    if contact.get("preamble"):
+        body.append(f'<div class="cv-bio"><p>{contact["preamble"]}</p></div>')
+
+    def link(url, label=None):
+        return f'<a href="{html.escape(url)}">{html.escape(label or url)}</a>'
+    rows = []
+    if c.get("office"):
+        rows.append(("Office", html.escape(c["office"])))
+    if c.get("mailing"):
+        rows.append(("Mail", html.escape(c["mailing"])))
+    if c.get("email"):
+        rows.append(("Email", f'<a href="mailto:{html.escape(c["email"])}">{html.escape(c["email"])}</a>'))
+    for lbl, key, short in [("Blog", "blog", None), ("Zoom", "zoom", None),
+                            ("Mastodon", "mastodon", "@tao"), ("Bluesky", "bluesky", "@teorth")]:
+        if c.get(key):
+            rows.append((lbl, link(c[key], short or c[key].replace("https://", ""))))
+    if c.get("pronouns"):
+        rows.append(("Pronouns", html.escape(c["pronouns"])))
+    body.append(_cv_rows(rows))
+    if c.get("note"):
+        body.append(f'<p class="contact-note">{html.escape(c["note"])}</p>')
+    if contact.get("intro"):
+        body.append(f'<section><p>{contact["intro"]}</p>')
+        items = "".join(f'<li><span class="t">{html.escape(p["title"])}.</span> {p["body"]}</li>'
+                        for p in contact.get("policies", []))
+        body.append(f'<ol class="policies">{items}</ol></section>')
+    if travel and (travel.get("upcoming")):
+        inner = _travel_rows(travel["upcoming"], desc=False)
+        inner += '<p class="cv-more"><a href="travel.html">Full travel history &rarr;</a></p>'
+        body.append(_cv_section("Upcoming travel", inner))
+    body.append("</div>")
+    return page("Terence Tao — contact and policies", "\n".join(body))
+
+
 def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None = None,
-                papers: dict | None = None, cv: dict | None = None) -> str:
+                papers: dict | None = None, cv: dict | None = None,
+                contact: dict | None = None, travel: dict | None = None) -> str:
     def pub_year(doc):
         return (doc["book"].get("publication") or {}).get("first_published")
 
@@ -727,7 +814,14 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
     if cv:
         body += ('<p class="desc"><a href="bio.html"><strong>Biography and CV</strong></a> '
                  '&mdash; short and extended bios, plus short and full curriculum vitae.</p>')
-    body += ('<details class="section">'
+    if contact:
+        body += ('<p class="desc"><a href="contact.html"><strong>Contact and policies</strong></a> '
+                 '&mdash; how to reach me, and my correspondence policies.</p>')
+    if travel:
+        npast = len((travel or {}).get("past") or [])
+        body += ('<p class="desc"><a href="travel.html"><strong>Travel</strong></a> '
+                 f'&mdash; upcoming engagements and a log of {npast} past trips.</p>')
+    body += ('<details class="section" id="books">'
              f'<summary>Books <span class="count">({len(books)})</span></summary>'
              f'<ul class="book-list">{"".join(rows)}</ul></details>')
     courses = (teaching or {}).get("courses") or []
@@ -744,16 +838,22 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
             title = html.escape(c["title"]) + (f" ({html.escape(inst)})" if inst and inst != "UCLA" else "")
             crows.append(f'<li><span class="year">{term}</span> {num}'
                          f'<span class="coauth"> &middot; {title}</span></li>')
-        body += ('<details class="section">'
+        body += ('<details class="section" id="teaching">'
                  f'<summary>Teaching <span class="count">({len(courses)})</span></summary>'
                  f'<ul class="book-list">{"".join(crows)}</ul></details>')
     if links:
         lrows = "".join(
             f'<li><a href="{l["slug"]}.html">{html.escape(l["title"])}</a></li>'
             for l in sorted(links, key=lambda d: d["title"].lower()))
-        body += ('<details class="section">'
+        body += ('<details class="section" id="other">'
                  f'<summary>Other pages <span class="count">({len(links)})</span></summary>'
                  f'<ul class="book-list">{lrows}</ul></details>')
+    # Open the <details> targeted by the URL hash (e.g. index.html#books).
+    body += ('<script>function openHash(){var h=location.hash.slice(1);if(!h)return;'
+             'var el=document.getElementById(h);if(!el)return;'
+             "var d=el.tagName==='DETAILS'?el:el.closest('details');"
+             'if(d){d.open=true;d.scrollIntoView();}}'
+             "window.addEventListener('hashchange',openHash);openHash();</script>")
     return page("Terence Tao — books and errata", body)
 
 
@@ -792,7 +892,16 @@ def main() -> None:
             (SITE / f"{slug}.html").write_text(htmltext, encoding="utf-8", newline="\n")
         for name, text in cv_texts:
             (SITE / name).write_text(text, encoding="utf-8", newline="\n")
-    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers, cv),
+    travel_path = TRAVEL / "travel.yaml"
+    travel = yaml.safe_load(travel_path.read_text(encoding="utf-8")) if travel_path.exists() else None
+    if travel:
+        (SITE / "travel.html").write_text(build_travel(travel), encoding="utf-8", newline="\n")
+    contact_path = CONTACT / "contact.yaml"
+    contact = None
+    if contact_path.exists():
+        contact = yaml.safe_load(contact_path.read_text(encoding="utf-8"))
+        (SITE / "contact.html").write_text(build_contact(contact, travel), encoding="utf-8", newline="\n")
+    (SITE / "index.html").write_text(build_index(books, linkdocs, teaching, papers, cv, contact, travel),
                                      encoding="utf-8", newline="\n")
     (SITE / ".nojekyll").write_text("", encoding="utf-8")  # serve files as-is on Pages
     ncourses = len((teaching or {}).get("courses") or [])

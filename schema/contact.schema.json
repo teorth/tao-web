@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://terrytao.github.io/tao-web/schema/contact.schema.json",
+  "title": "Contact and policies page",
+  "description": "Contact details, correspondence policies (the numbered FAQ), and the intro prose for the contact page.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["contact", "policies"],
+  "properties": {
+    "title": { "type": "string" },
+    "preamble": { "type": "string", "description": "Opening note (raw HTML) about unsolicited manuscripts." },
+    "intro": { "type": "string", "description": "Intro to the policy list (raw HTML)." },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "office": { "type": "string" },
+        "mailing": { "type": "string" },
+        "email": { "type": "string" },
+        "blog": { "type": "string" },
+        "zoom": { "type": "string" },
+        "mastodon": { "type": "string" },
+        "bluesky": { "type": "string" },
+        "pronouns": { "type": "string" },
+        "note": { "type": "string" }
+      }
+    },
+    "policies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "body"],
+        "properties": {
+          "title": { "type": "string" },
+          "body": { "type": "string", "description": "Policy text as raw HTML (may contain links)." }
+        }
+      }
+    }
+  }
+}

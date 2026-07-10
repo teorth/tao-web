@@ -1,0 +1,167 @@
+# Contact details + correspondence policies. Maintained by hand.
+# Migrated from math.ucla.edu/~tao/tags.html; phone/fax intentionally omitted,
+# links updated to the new site, item 6 journal list updated per the CV.
+title: Contact and policies
+preamble: >-
+  Please do not mail or email me any unsolicited self-authored manuscripts (such as those relating
+  to prime numbers, to <a href="https://www.math.ucla.edu/~tao/submissions.html">famous unsolved
+  problems</a> such as the Clay Millennium Prize problems, or proposed theories in cosmology, AI, or
+  gifted education); due to lack of time and the high volume of requests, I will not read or comment
+  on them, and they will be discarded without acknowledgment. (For referee requests, see item 10
+  below. For submissions to journals for which I am an editor, see
+  <a href="https://www.math.ucla.edu/~tao/submissions.html">this page</a>.)
+contact:
+  office: Mathematical Sciences 6183 (pigeonhole in MS 6364)
+  mailing: Terence Tao, UCLA Department of Mathematics, Los Angeles, CA 90095-1555
+  email: tao@math.ucla.edu
+  blog: https://terrytao.wordpress.com
+  zoom: https://ucla.zoom.us/j/9264073849
+  mastodon: https://mathstodon.xyz/@tao
+  bluesky: https://bsky.app/profile/teorth.bsky.social
+  pronouns: he, him
+  note: >-
+    Unsolicited surprise requests from strangers (in person, by phone, or by email) are essentially
+    guaranteed to be met with a negative response.
+intro: >-
+  The best way to contact me is by e-mail, though if I am travelling it may take up to a week for me
+  to respond. (Members of the media should see the
+  <a href="https://www.math.ucla.edu/~tao/media.html">media page</a> instead.) Due to time
+  limitations, however, I have to decline or severely restrict many e-mail requests, including many
+  of the following:
+policies:
+- title: Invitations to give seminars, colloquia, lecture series, or to attend conferences or programs
+  body: >-
+    For work and family reasons, and because of existing commitments and high demand, I am currently
+    declining essentially all invitations to discretionary travel or speaking engagements —
+    especially international travel, and especially events for which substitute speakers are
+    available. Apologies in advance.
+- title: Invitations to join an editorial board, advisory board, or organizational/scientific committee
+  body: >-
+    Due to heavy workload and <a href="https://www.math.ucla.edu/~tao/submissions.html">existing
+    commitments</a>, I am currently declining all invitations of this nature, including "honorary"
+    or "zero-work" positions.
+- title: Invitations to publish a monograph, book, or lecture notes
+  body: I have no uncommitted book plans at present.
+- title: Invitations to contribute data to a project
+  body: >-
+    You are welcome to freely use any unpublished material (short stories, lecture notes, code, or
+    slides) on my web page or blog; published material is of course subject to copyright, and source
+    files are usually available on request. I am, however, unable to donate significant time to
+    migrating data, creating new content, or taking on an organizational role for such a project. In
+    particular I cannot write a preface, introduction, or endorsement unless there is a direct
+    personal connection between the publication and myself, and I am almost certainly unable to
+    contribute to montages of contributions by many people. An article I have recently uploaded to
+    the <a href="https://arxiv.org/">arXiv</a> is usually already submitted to a journal, and I will
+    not be able to offer it elsewhere.
+- title: Invitations to collaborate
+  body: Unfortunately, due to many existing projects, I am not able to consider further collaborations at this time.
+- title: >-
+    Submissions to a journal I edit (American Journal of Mathematics, Dynamics of PDE, or Forum of
+    Mathematics)
+  body: >-
+    Please see <a href="https://www.math.ucla.edu/~tao/submissions.html">this page</a>. I currently
+    serve as an editor for
+    <a href="https://www.press.jhu.edu/journals/american-journal-mathematics">American Journal of
+    Mathematics</a>, <a href="https://www.intlpress.com/site/pub/pages/journals/items/dpde/">Dynamics
+    of PDE</a>, and <a href="https://www.cambridge.org/core/what-we-publish/journals/forum-of-mathematics">Forum
+    of Mathematics</a>.
+- title: Unsolicited manuscripts (other than for submission to a journal I edit)
+  body: >-
+    Due to lack of time and many requests, I cannot read or comment on unsolicited self-authored
+    manuscripts of any kind (such as those relating to prime numbers); these will be discarded
+    without acknowledgment. If your manuscript is already publication-quality, I suggest uploading it
+    to the <a href="https://arxiv.org/">arXiv</a> instead. For advice on choosing a journal, see
+    <a href="https://terrytao.wordpress.com/advice-on-writing-papers/submit-to-an-appropriate-journal/">this
+    page</a>; for advice on writing papers, see
+    <a href="https://terrytao.wordpress.com/advice-on-writing-papers/">this page</a>.
+- title: Updates to one of my web pages
+  body: >-
+    I am happy to accept corrections. Note that some older pages, such as my conference list and the
+    local/global well-posedness page, are obsolete and are no longer updated here.
+- title: Requests for letters of recommendation
+  body: >-
+    I am generally willing to write these when I am already sufficiently familiar with the
+    applicant's work, but require at least a month's notice and very specific information on where,
+    in what format, and by when the letters should be sent. A CV and publication list (or a link to
+    one) is very helpful. Where possible I prefer online systems such as
+    <a href="https://www.mathjobs.org/">MathJobs</a> to print applications, and I am generally unable
+    to write physical letters while travelling.
+- title: Requests to referee a paper
+  body: >-
+    I can still devote some time to refereeing, though if a paper is not of major significance, or
+    could be refereed by many others, I am likely to decline or give only a quick opinion. A full
+    report typically takes two to four months, depending on the length of the paper and my schedule.
+- title: Requests for Java programming code
+  body: >-
+    See <a href="https://www.math.ucla.edu/~tao/java/index2.html">this page</a> and
+    <a href="https://www.math.ucla.edu/~tao/java/">this directory</a> for my past experiments with
+    Java, including source code; you are free to use and modify it as long as its provenance is
+    acknowledged. I cannot help with specific Java tasks or homework. The code was written for Java
+    1.0 and may not be compatible with modern versions.
+- title: Requests for help with a math problem
+  body: >-
+    I am happy to attempt questions arising directly from one of my papers, books, or classes (please
+    be specific, and include your own thoughts). I also welcome corrections and errata. I cannot,
+    however, assist with other mathematical queries, troubleshoot research projects, speculate on
+    conjectures, or answer homework or course questions not arising from one of my own classes. For
+    general advice on solving problems, see
+    <a href="https://terrytao.wordpress.com/career-advice/solving-mathematical-problems/">this
+    page</a>; for general queries, try <a href="https://mathoverflow.net/">MathOverflow</a>
+    (research-level), <a href="https://www.artofproblemsolving.com/">the Art of Problem Solving</a>
+    (high-school/undergraduate), the <a href="https://math.stackexchange.com/">Mathematics Stack
+    Exchange</a>, or the <a href="https://www.reddit.com/r/math/">/r/math subreddit</a>.
+- title: Requests for preprints or papers
+  body: >-
+    Please see my <a href="papers.html">papers and preprints page</a> or
+    <a href="https://arxiv.org/a/tao_t_1">search the arXiv</a>. In almost all cases the arXiv version,
+    linked from the papers page, is the most updated version; source files are generally available on
+    request or directly from the arXiv.
+- title: Requests for books, or questions about books
+  body: >-
+    See my <a href="index.html#books">book pages</a> for bibliographic details and errata, and my
+    <a href="https://terrytao.wordpress.com/books/">blog book page</a> for sample chapters and
+    publication status. I cannot provide full-length versions of the books.
+- title: Requests to exchange links
+  body: I do not participate in link exchanges between web pages.
+- title: Requests for an appointment
+  body: >-
+    I have only a very limited amount of time available for appointments, and give priority to UCLA
+    faculty, staff, and students (particularly my own graduate students and students in my classes).
+    For media-related appointments, please see the
+    <a href="https://www.math.ucla.edu/~tao/media.html">media page</a>. Other requests are likely to
+    be declined due to lack of time; please consult my travel schedule and e-mail at least a week in
+    advance.
+- title: Requests for career advice
+  body: >-
+    Please see <a href="https://terrytao.wordpress.com/career-advice/">my career advice page</a>. Due
+    to lack of time I cannot provide personalized career advice, but you are welcome to comment on
+    that page or its subpages.
+- title: Requests for prefaces, autographs, inspirational words, or endorsements
+  body: >-
+    I will be declining almost all such requests, especially where I have no direct personal
+    connection to the topic and target audience.
+- title: Requests for new blog articles
+  body: >-
+    I do not take requests for specific blog topics, nor do I accept unsolicited guest articles or
+    offers of links or content for the blog.
+- title: Requests for interviews
+  body: >-
+    Please see the <a href="https://www.math.ucla.edu/~tao/media.html">media page</a>. In general I
+    decline almost all interviews, including those for school projects.
+- title: Queries on gifted education
+  body: >-
+    Please see <a href="https://terrytao.wordpress.com/career-advice/advice-on-gifted-education/">this
+    page</a>. Due to lack of time I cannot provide personalized advice on these issues.
+- title: Applications for a position at the UCLA mathematics department
+  body: >-
+    Please see the <a href="https://ww3.math.ucla.edu/">department faculty and graduate admissions
+    pages</a> as appropriate. You are welcome to inform me of your application, but I am usually not
+    involved in admissions and cannot handle materials directly or advise on improving your chances.
+    Note that I do not accept students for graduate study with me until they are already at UCLA and
+    have passed their qualifying exams, and I plan to take on roughly one graduate student a year.
+- title: Applications for a summer research position, internship, mentorship, CSST, or REU
+  body: Unfortunately I do not have the time available to supervise such positions.
+- title: Offers of an honorary degree, or honorary membership in an organization
+  body: >-
+    This is very flattering, but I do not accept honorary degrees or honorary memberships in
+    organizations with which I have no prior affiliation.

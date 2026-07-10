@@ -1,0 +1,1327 @@
+# Travel log. Past trips imported from the live tags.html table; upcoming maintained by hand.
+title: Travel
+note: Due to a high workload and large volume of requests, I am currently declining almost all future invitations to travel.
+upcoming:
+- year: 2026
+  dates: Feb 21
+  place: Princeton
+- year: 2026
+  dates: May 11–15
+  place: Providence
+- year: 2026
+  dates: Jun 23–24
+  place: DC
+- year: 2026
+  dates: Jun 28 – Jul 3
+  place: Montreal
+  cancelled: true
+  note: very tentative
+- year: 2026
+  dates: Jun 29
+  place: UC Riverside
+- year: 2026
+  dates: Jul 23–30
+  place: Philadelphia
+- year: 2026
+  dates: Sep 14–15
+  place: York Town
+  tentative: true
+  note: very tentative
+- year: 2026
+  dates: Nov 5–7
+  place: San Francisco
+- year: 2027
+  dates: Winter quarter
+  place: UK
+  tentative: true
+  note: very tentative
+- year: 2027
+  dates: May 6
+  place: New York
+  tentative: true
+  note: tentative
+past:
+- year: 1997
+  dates: July 13–18
+  place: MSRI
+- year: 1997
+  dates: August 2–10
+  place: Baltimore
+- year: 1997
+  dates: August 11–17
+  place: Princeton
+- year: 1997
+  dates: Aug 19–Dec 10
+  place: Berkeley
+- year: 1997
+  dates: Dec 21–1998 Jan 1
+  place: Vacation
+- year: 1998
+  dates: Mar 26–28
+  place: Austin
+- year: 1998
+  dates: Mar 29–31
+  place: Madison
+- year: 1998
+  dates: Apr 1–3
+  place: San Diego
+- year: 1998
+  dates: July 6–13
+  place: Edinburgh
+- year: 1998
+  dates: July 14–23
+  place: Madrid
+- year: 1998
+  dates: July 24–Aug 9
+  place: Paris
+- year: 1998
+  dates: Aug 10–14
+  place: Kiel
+- year: 1998
+  dates: Aug 15–27
+  place: Berlin
+- year: 1998
+  dates: Sep 14–21
+  place: Chicago
+- year: 1998
+  dates: Dec 3–6
+  place: Berkeley
+- year: 1998
+  dates: Dec 19–1999 Jan 4
+  place: Princeton
+- year: 1999
+  dates: Jan 6–Jan 12
+  place: Madison
+- year: 1999
+  dates: Apr 1–4
+  place: Iowa
+- year: 1999
+  dates: Apr 10–11
+  place: Las Vegas
+- year: 1999
+  dates: Jun 18–July 1
+  place: Vacation
+- year: 1999
+  dates: July 1–Dec 24
+  place: UNSW
+- year: 1999
+  dates: July 11–16
+  place: Melbourne
+- year: 1999
+  dates: July 17–23
+  place: ANU
+- year: 1999
+  dates: Nov 6–12
+  place: ANU
+- year: 1999
+  dates: Dec 24–2000 Jan 2
+  place: Vacation
+- year: 2000
+  dates: Feb 12–13
+  place: Stanford
+  url: http://math.stanford.edu/courses/conference/conf.html
+- year: 2000
+  dates: Feb 21–22
+  place: Caltech
+  url: http://www.math.caltech.edu/events/00wsmp.html
+- year: 2000
+  dates: Mar 24–Apr 2
+  place: Berkeley
+- year: 2000
+  dates: Apr 14–16
+  place: Michigan
+  url: http://kleene.math.wisc.edu/%7Ewf-conf/
+- year: 2000
+  dates: Apr 28–30
+  place: San Diego
+  url: http://www.math.ucla.edu/~tao/harmonic/scapde.txt
+- year: 2000
+  dates: May 23–28
+  place: Paris
+  url: http://www.claymath.org/special_events/millennium_event.htm
+- year: 2000
+  dates: Jun 15–21
+  place: Caltech
+- year: 2000
+  dates: Jun 22–Jul 1
+  place: France
+- year: 2000
+  dates: Jul 2–6
+  place: El Escorial
+  url: http://www.uam.es/departamentos/ciencias/matematicas/escorial2000.htm
+- year: 2000
+  dates: Jul 20
+  place: ANU
+- year: 2000
+  dates: Jul – Dec
+  place: UNSW
+- year: 2000
+  dates: Sep 9–24
+  place: Sendai
+- year: 2000
+  dates: Sep 24 – Oct 2
+  place: Canberra
+- year: 2000
+  dates: Oct 3–4
+  place: Melbourne
+  url: http://www.ms.unimelb.edu.au/%7Ealeks/colloquia/c14.html
+- year: 2000
+  dates: Dec 6–13
+  place: Stanford
+- year: 2000
+  dates: Dec 14–20
+  place: Berkeley
+  url: http://zeus.math.univ-paris13.fr/%7Epmedp/EDPBePN.html
+- year: 2001
+  dates: Mar 30–31
+  place: Kansas
+  url: http://www.ams.org/mathcal/info/2001_apr20-22_minneapolis.html
+- year: 2001
+  dates: Apr 5–6
+  place: Missouri
+- year: 2001
+  dates: Apr 8–14
+  place: Boston
+- year: 2001
+  dates: Apr 15–19
+  place: Madison
+- year: 2001
+  dates: Apr 20–22
+  place: Minnesota
+  url: http://www.ams.org/mathcal/info/2001_apr20-22_minneapolis.html
+- year: 2001
+  dates: Apr 23–May 20
+  place: Princeton
+- year: 2001
+  dates: May 10–11
+  place: U. Mass. Amherst
+- year: 2001
+  dates: May 20–26
+  place: Oberwolfach
+  url: http://web.archive.org/web/20080206103642/http://www.mfo.de/Meetings/Meeting_Program_2001.html#T0121
+- year: 2001
+  dates: May 27–Jun 3
+  place: ETH
+- year: 2001
+  dates: Jun 4–10
+  place: Goteborg
+  url: http://web.archive.org/web/20080206103642/http://www.math.chalmers.se/Math/Research/HarmonicAnalysis/Conferences/hapde_01.html
+- year: 2001
+  dates: Jun 11–24
+  place: Milan
+  url: http://web.archive.org/web/20080206103642/http://www.matapp.unimib.it/convex2001/
+- year: 2001
+  dates: Jul 12–13
+  place: Washington DC
+- year: 2001
+  dates: Jul 14–22
+  place: Caltech/UCLA
+- year: 2001
+  dates: Aug 17–22
+  place: Adelaide
+- year: 2001
+  dates: Sep 7–22
+  place: UCLA
+- year: 2001
+  dates: Jun 25–Dec 6
+  place: ANU
+- year: 2002
+  dates: Jan 6–7
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://www.ams.org/amsmtgs/2049_intro.html
+- year: 2002
+  dates: Jan 14–18
+  place: Macquarie
+  url: http://web.archive.org/web/20080206103642/http://www.maths.mq.edu.au/ichart/
+- year: 2002
+  dates: Mar 23–26
+  place: Boston
+  url: http://web.archive.org/web/20080206103642/http://www-math.mit.edu/%7Eandras/rbmconf.html
+- year: 2002
+  dates: Mar 27–Apr 2
+  place: Edinburgh
+  url: http://web.archive.org/web/20080206103642/http://www.ma.hw.ac.uk/icms/meetings/2002/cama/sci_prog.html
+- year: 2002
+  dates: Apr 3–7
+  place: Orsay
+- year: 2002
+  dates: Apr 8–10
+  place: Chicago
+- year: 2002
+  dates: Apr 20–21
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://math.mail.ucsb.edu/mailman/listinfo.cgi/scapde
+- year: 2002
+  dates: Apr 25
+  place: Irvine
+- year: 2002
+  dates: Apr 29
+  place: Caltech
+- year: 2002
+  dates: May 1–7
+  place: Stanford
+  url: http://web.archive.org/web/20080206103642/http://math.stanford.edu/wgr/
+- year: 2002
+  dates: May 8–11
+  place: Missouri
+  url: http://web.archive.org/web/20080206103642/http://www.math.missouri.edu/%7Econf2002/
+- year: 2002
+  dates: June 25–29
+  place: Madison
+- year: 2002
+  dates: July 1–16
+  place: Minnesota
+- year: 2002
+  dates: July 17–Aug 14
+  place: Canberra
+  url: http://web.archive.org/web/20080206103642/http://www.math.ucla.edu/%7Etao/International%20Conference%20on%20Nonlinear%20PDE%20and%20Related%20Topics:%20Celebrating%20Neil%20Trudinger%27s%2060th%20Birthday
+- year: 2002
+  dates: Aug 18–20
+  place: Microsoft Research
+  url: http://web.archive.org/web/20080206103642/http://www.research.microsoft.com/research/theory/Website%20Talks/Tao.pdf
+- year: 2003
+  dates: Jan 3–5
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://www.math.ucsd.edu/%7Eokikiolu/conference/sagp
+- year: 2003
+  dates: Apr 1,3,8,10
+  place: Caltech
+  url: http://web.archive.org/web/20080206103642/http://www.math.caltech.edu/events/wolff03.html
+- year: 2003
+  dates: Jun 23–27
+  place: Mexico
+  url: http://web.archive.org/web/20080206103642/http://www.matem.unam.mx/whapde
+- year: 2003
+  dates: June 29–July 12
+  place: Park City
+  url: https://static.ias.edu/pcmi/2003/
+- year: 2003
+  dates: Aug 1–5
+  place: Adelaide
+  url: http://web.archive.org/web/20080206103642/http://www.worldgifted.org/xconf.htm/
+- year: 2003
+  dates: Nov 7
+  place: Sydney
+- year: 2003
+  dates: July 13 – 2004 Jan 23
+  place: ANU
+- year: 2004
+  dates: Feb 26, Mar 4
+  place: San Diego
+- year: 2004
+  dates: Mar 26–28
+  place: Princeton
+  url: http://web.archive.org/web/20080206103642/http://www.math.ias.edu/WANP/regform.htm
+- year: 2004
+  dates: Mar 29 – Apr 3
+  place: University of Michigan
+- year: 2004
+  dates: Apr 3–8
+  place: Michigan State University
+  url: http://web.archive.org/web/20080206103642/http://www.mth.msu.edu/Lecture_Series/2004.html
+- year: 2004
+  dates: Apr 10 – June 20
+  place: Edinburgh + elsewhere in UK
+  url: http://web.archive.org/web/20080206103642/http://www.lms.ac.uk/meetings/hardy_04.html
+- year: 2004
+  dates: June 7–11
+  place: Forges les Eaux
+  url: http://web.archive.org/web/20080206103642/http://math.polytechnique.fr/collforgesfr.html
+- year: 2004
+  dates: June 21–25
+  place: El Escorial
+  url: http://web.archive.org/web/20080206103642/http://www.uam.es/personal_pdi/ciencias/soria/Escorial2004.html
+- year: 2004
+  dates: Sep 9–12
+  place: AIM
+  url: http://web.archive.org/web/20080206103642/http://www.aimath.org/ARCC/workshops/additivecomb.html
+- year: 2004
+  dates: Dec 12–14
+  place: Stanford
+  url: http://web.archive.org/web/20080206103642/http://math.stanford.edu/yk70/
+- year: 2005
+  dates: Jan 29–30
+  place: Princeton
+- year: 2005
+  dates: Mar 15
+  place: Caltech
+  url: http://web.archive.org/web/20080206103642/http://www.math.caltech.edu/events/wsmp05.html
+- year: 2005
+  dates: Mar 31 – Apr 2
+  place: Northwestern
+- year: 2005
+  dates: Apr 16–17
+  place: Santa Barbara
+  url: http://web.archive.org/web/20080206103642/http://www.ams.org/amsmtgs/2118_program_ss3.html#title
+- year: 2005
+  dates: June 13–17
+  place: New Mexico
+  url: http://web.archive.org/web/20080206103642/https://mlab-38.nmsu.edu/lakey/index.html
+- year: 2005
+  dates: June 20–July 15
+  place: San Diego
+- year: 2005
+  dates: July 18–21
+  place: Sendai
+  url: http://web.archive.org/web/20080206103642/http://www.math.tohoku.ac.jp/%7Eaas/
+- year: 2005
+  dates: Aug 6–9
+  place: Boston – vacation
+- year: 2005
+  dates: August 22–26
+  place: Cambridge
+  url: http://web.archive.org/web/20080206103642/http://www.newton.cam.ac.uk/programmes/GMR/gmrw02p.html
+- year: 2005
+  dates: Aug 27–Sep 9
+  place: Bristol
+  url: http://web.archive.org/web/20080206103642/http://www.maths.bris.ac.uk/%7Emabjg/workshopinfo.html
+- year: 2005
+  dates: September 14–21
+  place: Sydney – vacation
+- year: 2005
+  dates: October 1–31
+  place: IAS – visit
+- year: 2005
+  dates: Oct 5
+  place: Princeton
+  url: http://web.archive.org/web/20080206103642/http://www.math.princeton.edu/%7Eseminar/2005-06-sem/TaoAbstract10-5-2005
+- year: 2005
+  dates: Oct 6–8
+  place: U. Maryland – colloquium
+- year: 2005
+  dates: Oct 12–14
+  place: MIT
+  url: http://web.archive.org/web/20080206103642/http://www.math.neu.edu/bhmn/tao05.html
+- year: 2005
+  dates: Oct 20
+  place: Cornell – seminar
+- year: 2005
+  dates: Oct 24
+  place: Princeton – seminar
+- year: 2005
+  dates: Oct 28–29
+  place: Courant
+  url: http://web.archive.org/web/20080206103642/http://www.cims.nyu.edu/80th
+- year: 2005
+  dates: Nov 7–22
+  place: Berkeley
+  url: http://web.archive.org/web/20080206103642/http://math.berkeley.edu/index.php?module=announce&ANN_user_op=view&ANN_id=50
+- year: 2005
+  dates: Nov 19
+  place: Princeton – JAMS
+- year: 2005
+  dates: Dec 7–2006 Feb 6
+  place: Australia – US immigration
+- year: 2006
+  dates: Mar 2
+  place: USC – colloquium
+- year: 2006
+  dates: Mar 14
+  place: UC Santa Cruz – colloquium
+- year: 2006
+  dates: Mar 24–26
+  place: Memphis
+  url: http://web.archive.org/web/20080206103642/http://www.people.memphis.edu/%7Ebollobas/Erdos06.html
+- year: 2006
+  dates: Mar 30–Apr 9
+  place: Montreal
+  url: http://web.archive.org/web/20080206103642/http://www.math.ubc.ca/%7Esolymosi/AddComb.html
+- year: 2006
+  dates: Apr 22–25
+  place: Banff
+  url: http://web.archive.org/web/20080206103642/http://www.pims.math.ca/birs/birspages.php?task=displayevent&event_id=06w5030
+- year: 2006
+  dates: June 1–28
+  place: Paris
+  url: http://web.archive.org/web/20080206103642/http://www.ihp.jussieu.fr/ceb/Trimestres/T06-2/index.html
+- year: 2006
+  dates: June 6
+  place: ENS
+- year: 2006
+  dates: June 7–14
+  place: Paris
+  url: http://web.archive.org/web/20080206103642/http://phdconf-math.univ-mlv.fr/
+- year: 2006
+  dates: June 15–16
+  place: Grenoble – colloquium
+- year: 2006
+  dates: July 1–23
+  place: UCLA – Clay Liftoff project
+- year: 2006
+  dates: July 24–Aug 4
+  place: San Diego
+- year: 2006
+  dates: Aug 20–28
+  place: Madrid
+  url: http://web.archive.org/web/20080206103642/http://www.icm2006.org/
+- year: 2006
+  dates: Sep 22–29
+  place: Sydney
+  url: http://web.archive.org/web/20080206103642/http://www.maths.mq.edu.au/austms06/homepage.html
+- year: 2006
+  dates: Nov 11
+  place: Princeton – JAMS
+- year: 2006
+  dates: Nov 17–18
+  place: Boston
+  url: http://web.archive.org/web/20080206103642/http://www.math.harvard.edu/cdm/
+- year: 2006
+  dates: Dec 16–22
+  place: Kumbakonam
+  url: http://web.archive.org/web/20080206103642/http://www.sastra.edu/icntc/index.html
+- year: 2007
+  dates: Jan 22–26
+  place: Canberra
+  url: http://web.archive.org/web/20080206103642/http://www.australianoftheyear.gov.au/pages/page295.asp
+- year: 2007
+  dates: Feb 15
+  place: San Diego
+- year: 2007
+  dates: Mar 18–19
+  place: UCLA
+  url: http://web.archive.org/web/20080206103642/http://www.math.ucla.edu/%7Epopa/workshop0307.html
+- year: 2007
+  dates: Apr 2–6
+  place: MIT
+  url: http://web.archive.org/web/20080206103642/http://www-math.mit.edu/seminars/simons07.html
+- year: 2007
+  dates: Apr 11–14
+  place: Leiden
+  url: http://web.archive.org/web/20080206103642/http://www.nmc2007.nl/
+- year: 2007
+  dates: Apr 26
+  place: UCLA
+  url: http://web.archive.org/web/20080206103642/http://www.math.ucla.edu/Savethedate.jpg
+- year: 2007
+  dates: June 11–14
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://www.research.att.com/%7Edsj/stoc07.html
+- year: 2007
+  dates: July 9–15
+  place: London
+  url: http://web.archive.org/web/20080206103642/http://terrytao.wordpress.com/2007/07/13/a-visit-to-the-royal-society/
+- year: 2007
+  dates: Aug 6–9
+  place: Portland
+- year: 2007
+  dates: Sep 1
+  place: San Diego
+- year: 2007
+  dates: Oct 9–13
+  place: Leiden
+- year: 2007
+  dates: Oct 14–Nov 2
+  place: IAS
+  url: http://web.archive.org/web/20080206103642/http://math.ias.edu/pages/activities/special-programs/arithmetic-combinatorics.php
+- year: 2007
+  dates: Oct 20–22
+  place: Providence
+  url: http://web.archive.org/web/20080206103642/http://focs2007.org/
+- year: 2007
+  dates: Nov 9
+  place: San Diego
+- year: 2007
+  dates: Dec 1–7
+  place: U. Washington
+  url: http://web.archive.org/web/20080206103642/http://www.math.washington.edu/Seminars/milliman_0708.php
+- year: 2008
+  dates: Jan 5–8
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://www.ams.org/amsmtgs/2109_intro.html
+- year: 2008
+  dates: Jan 12–13
+  place: San Diego
+  url: http://web.archive.org/web/20080206103642/http://www.math.ucsd.edu/%7Elindblad/scapde.html
+- year: 2008
+  dates: Feb 3–7
+  place: Katoomba
+  url: http://www.maths.usyd.edu.au/ANZIAM2008/
+- year: 2008
+  dates: Feb 11–15
+  place: IPAM
+  url: http://www.ipam.ucla.edu/programs/eg2008/
+- year: 2008
+  dates: Mar 14–19
+  place: DIMACS
+  url: http://dimacs.rutgers.edu/Workshops/RandomMatrices/
+- year: 2008
+  dates: Mar 30
+  place: Washington DC
+- year: 2008
+  dates: Apr 4–9
+  place: Toronto
+  url: http://www.fields.utoronto.ca/programs/scientific/07-08/harmonic_analysis/combinatorics/index.html
+- year: 2008
+  dates: Apr 17
+  place: UCLA – combinatorics seminar
+- year: 2008
+  dates: Apr 26
+  place: Los Angeles
+  url: http://www.cesasc.org/convention2008_introduction.asp
+- year: 2008
+  dates: May 3–7
+  place: Washington DC
+  url: http://www.nsf.gov/news/news_summ.jsp?cntn_id=111401
+- year: 2008
+  dates: May 24–26
+  place: San Jose – personal
+- year: 2008
+  dates: June 9–13
+  place: Ohio – equidistribution workshop
+- year: 2008
+  dates: June 23–27
+  place: Edinburgh
+  url: http://www.cds.caltech.edu/%7Emarsden/wiki/johnballfest/johnballfest
+- year: 2008
+  dates: July 8–9
+  place: San Diego – research visit
+- year: 2008
+  dates: July 13–19
+  place: Oberwolfach
+- year: 2008
+  dates: Aug 21–Sep 21
+  place: MSRI
+  url: http://www.msri.org/calendar/programs/ProgramInfo/252/show_program
+- year: 2008
+  dates: Nov 3–7
+  place: MSRI
+  url: http://www.msri.org/calendar/programs/ProgramInfo/252/show_program
+- year: 2008
+  dates: Nov 14
+  place: IPAM – SAB
+- year: 2008
+  dates: Nov 15
+  place: Irvine – JAMS
+- year: 2008
+  dates: Nov 17–21
+  place: Penn State
+  url: http://www.math.psu.edu/seminars/marker2008.php
+- year: 2008
+  dates: Dec 3–6
+  place: Seville
+  url: http://congreso.us.es/harmonic08/
+- year: 2008
+  dates: Dec 7–9
+  place: Trondheim
+  url: http://www.ntnu.no/imf/onsager
+- year: 2008
+  dates: Dec 18–21
+  place: vacation
+- year: 2009
+  dates: Feb 9–13
+  place: IPAM – eigenfunctions workshop
+- year: 2009
+  dates: Feb 17, 19
+  place: USC – Whiteman lecture
+- year: 2009
+  dates: Mar 18–19
+  place: Leiden
+- year: 2009
+  dates: Mar 20–27
+  place: Haifa
+  url: http://www.math.technion.ac.il/Site/events/special-lectures/net-lect.html
+- year: 2009
+  dates: Apr 25–26
+  place: DC – NAS
+- year: 2009
+  dates: May 4–9
+  place: Princeton
+  url: http://www.math.princeton.edu/conference/fefferman09/
+- year: 2009
+  dates: June 22–26
+  place: IHP
+  url: http://www.ihp.jussieu.fr/ceb/Trimestres/T09-3/index.html
+- year: 2009
+  dates: July 17–20
+  place: Bremen
+  url: http://www.imo2009.org/
+- year: 2009
+  dates: July 26–Aug 2
+  place: Canazei – research
+- year: 2009
+  dates: Aug 23 – Oct 2
+  place: Australia
+  url: http://www.austms.org.au/tiki-read_article.php?articleId=61
+- year: 2009
+  dates: Oct 10
+  place: Boston – AAAS
+- year: 2009
+  dates: Nov 9–12
+  place: Oregon
+  url: http://math.uoregon.edu/seminars/moursund/
+- year: 2009
+  dates: Nov 13–14
+  place: IPAM – SAB
+- year: 2009
+  dates: Nov 23–25
+  place: Sapporo
+  url: http://www.math.sci.hokudai.ac.jp/%7Etakaoka/RIMS20091123en.html
+- year: 2009
+  dates: Dec 1–4
+  place: IPAM
+  url: http://www.ipam.ucla.edu/programs/cmaws4
+- year: 2009
+  dates: Dec 11–23
+  place: Korea
+  url: http://www.kms.or.kr/kmsams/
+- year: 2009
+  dates: Dec 19–21
+  place: Beijing
+  url: http://www.yau-awards.org/index.php
+- year: 2010
+  dates: Feb 1–4
+  place: UCLA
+  url: http://www.math.ucla.edu/%7Eshlyakht/ucla-2010/conference/index.php
+- year: 2010
+  dates: Mar 6–10
+  place: Riyadh
+  url: http://www.kff.com/EN01/KFIP/1430H2010G/KFIPWinners6WWW1430H2010G.html
+- year: 2010
+  dates: Mar 16–18
+  place: Michigan
+  url: http://www.lsa.umich.edu/umich/v/index.jsp?vgnextoid=15d58385b571e110VgnVCM100000a3b1d38dRCRD&vgnextchannel=b99820ffcbcfc11020ffcbcfc1109db1d38dRCRD
+- year: 2010
+  dates: Mar 22–26
+  place: Minnesota
+- year: 2010
+  dates: June 13–15
+  place: Austin
+  url: http://www.siam.org/meetings/dm10/
+- year: 2010
+  dates: July 12–16
+  place: Pittsburgh
+  url: http://www.siam.org/meetings/an10/
+- year: 2010
+  dates: July 24–Aug 1
+  place: vacation
+- year: 2010
+  dates: Aug 1–7
+  place: Budapest
+  url: http://www.renyi.hu/conferences/sze70/
+- year: 2010
+  dates: Sep 16
+  place: MSRI
+  url: http://www.msri.org/calendar/workshops/WorkshopInfo/508/show_workshop
+- year: 2010
+  dates: Oct 4–7
+  place: Stanford
+  url: http://events.stanford.edu/events/250/25019/
+- year: 2010
+  dates: Oct 9
+  place: UCLA
+  url: http://www.ams.org/meetings/lectures/einstein-2010
+- year: 2010
+  dates: Nov 2–6
+  place: IPAM
+- year: 2010
+  dates: Nov 13–14
+  place: SCAPDE
+  url: http://www.math.ucla.edu/~tao/scapde2010.html
+- year: 2010
+  dates: Dec 13–17
+  place: AIM workshop
+- year: 2010
+  dates: Dec 29–Jan 3
+  place: vacation
+- year: 2011
+  dates: Jan 10 – Feb 19
+  place: Cambridge – Newton Institute program
+- year: 2011
+  dates: Jan 19
+  place: Birmingham
+- year: 2011
+  dates: Feb 1–7
+  place: Haifa
+- year: 2011
+  dates: Feb 11
+  place: Edinburgh
+- year: 2011
+  dates: Feb 21–Mar 18
+  place: Northwestern; see also this workshop
+  url: http://math.northwestern.edu/~kra/WORKSHOP-11/workshop.html
+- year: 2011
+  dates: May 7
+  place: Newark
+- year: 2011
+  dates: May 16–May 20
+  place: Princeton – Stein conference
+  cancelled: true
+- year: 2011
+  dates: June 27–July 1
+  place: U. Wales
+  cancelled: true
+- year: 2011
+  dates: Sep 22–24
+  place: Oslo
+- year: 2011
+  dates: Oct 12–14
+  place: IPAM – DOD2011
+- year: 2011
+  dates: Nov 4–5
+  place: IPAM
+- year: 2012
+  dates: Feb 23–25
+  place: Mumbai
+- year: 2012
+  dates: Mar 11–12
+  place: Northwestern
+- year: 2012
+  dates: Apr 17–20
+  place: Michigan
+- year: 2012
+  dates: Apr 23–May 12
+  place: Northwestern
+  url: http://www.northwestern.edu/provost/awards/nemmers/nemprmath.html#tao
+- year: 2012
+  dates: May 2
+  place: Princeton
+- year: 2012
+  dates: May 4–6
+  place: Northwestern
+  url: http://www.math.northwestern.edu/~dbaskin/eveqconf/
+- year: 2012
+  dates: May 9
+  place: MIT
+- year: 2012
+  dates: May 13–16
+  place: Lund
+  url: http://www.crafoordprize.se/press/arkivpressreleases/thecrafoordprizeinmathematics2012andthecrafoordprizeinastronomy2012.5.6018c17913483dc064280001363.html
+- year: 2012
+  dates: May 17–19
+  place: Cambridge
+  url: http://www.maths.cam.ac.uk/news/5.html
+- year: 2012
+  dates: May 20–24
+  place: Oslo
+  url: http://www.abelprize.no/c54147/seksjon/vis.html?tid=54148
+- year: 2012
+  dates: Jun 1–2
+  place: Washington DC
+  url: http://ada00.math.uni-bielefeld.de/dml/index.php/Main_Page
+- year: 2012
+  dates: Jun 4–6
+  place: Yale
+  url: http://gauss.math.yale.edu/conferences/cjr/Home.html
+- year: 2012
+  dates: Jul 28
+  place: Ohio State
+  url: http://www.ymc.osu.edu/
+- year: 2012
+  dates: Aug 12–25
+  place: Vacation
+- year: 2012
+  dates: Sep 27–30
+  place: Oslo
+- year: 2012
+  dates: Oct 6–13
+  place: Oberwolfach
+- year: 2012
+  dates: Nov 2–3
+  place: IPAM
+- year: 2012
+  dates: Nov 7–9
+  place: Philadelphia
+- year: 2012
+  dates: Nov 29–Dec 1
+  place: Minnesota
+  url: http://www.ima.umn.edu/2012-2013/SW11.29-12.1.12/
+- year: 2013
+  dates: Jan 7–8
+  place: San Diego
+  url: http://jointmathematicsmeetings.org/meetings/national/jmm2013/2141_amssc.html
+- year: 2013
+  dates: Jan 19–20
+  place: San Diego
+  url: http://www.math.ucsd.edu/~asalehig/LieTheoryWorkshop2013.html
+- year: 2013
+  dates: Feb 11–15
+  place: Princeton
+  url: http://www.math.princeton.edu/events/seminars/minerva-lectures
+- year: 2013
+  dates: Feb 20–24
+  place: New York
+  url: http://cims.nyu.edu/webapps/content/special/Abel_in_NY
+- year: 2013
+  dates: Mar 16–18
+  place: MSRI
+- year: 2013
+  dates: Jun 17–21
+  place: UCLA
+  url: http://www.math.ucla.edu/~killip/Ralston_Conference/
+- year: 2013
+  dates: Jul 1–5
+  place: Budapest
+  url: http://www.renyi.hu/conferences/erdos100/index.html
+- year: 2013
+  dates: Aug 6–8
+  place: New York, MoMath lecture
+- year: 2013
+  dates: Aug 10–17 (Australia) – vacation
+  place: ''
+- year: 2013
+  dates: Aug 18–Sep 1
+  place: New Zealand
+- year: 2013
+  dates: Oct 6–8
+  place: Caltech
+- year: 2013
+  dates: Nov 1–2
+  place: IPAM
+- year: 2013
+  dates: Nov 8–9
+  place: MSRI
+- year: 2013
+  dates: Dec 1–3
+  place: Simons
+- year: 2014
+  dates: Feb 3–7
+  place: MSRI
+  url: http://www.msri.org/workshops/688
+- year: 2014
+  dates: Feb 24–27
+  place: New York
+- year: 2014
+  dates: Mar 10–Jun 13
+  place: IPAM
+  url: http://www.ipam.ucla.edu/programs/ccg2014/
+- year: 2014
+  dates: Jul 1–6
+  place: Segovia
+  url: http://www.icmat.es/rogers/ERCworkshop/
+- year: 2014
+  dates: Jul 6–13
+  place: IHES
+  url: https://indico.math.cnrs.fr/conferenceDisplay.py?confId=220
+- year: 2014
+  dates: Jul 13–19
+  place: Bonn
+  url: http://www.hcm.uni-bonn.de/events/eventpages/2014/workshop-analytic-number-theory/description/
+- year: 2014
+  dates: Jul 19–Aug 1
+  place: Vacation
+- year: 2014
+  dates: Sep 7–12
+  place: Lehigh university
+  url: http://math.cas2.lehigh.edu/2014-aeverett-pitcher-lecture
+- year: 2014
+  dates: Sep 21–26
+  place: Oxford
+  url: http://www.claymath.org/events/bounded-gaps-between-primes
+- year: 2014
+  dates: Sep 29–Oct 3
+  place: Minnesota – IMA
+  url: http://www.ima.umn.edu/2014-2015/W9.29-10.3.14/?event_id=W9.29-10.3.14
+- year: 2014
+  dates: Oct 19–20
+  place: Baltimore
+- year: 2014
+  dates: Oct 22–23
+  place: Stockholm
+- year: 2014
+  dates: Nov 7–8
+  place: IPAM
+- year: 2014
+  dates: Nov 9–10
+  place: Silicon Valley
+- year: 2014
+  dates: Nov 11–14
+  place: Yale
+- year: 2014
+  dates: Nov 12
+  place: NYC
+- year: 2014
+  dates: Nov 17–21
+  place: AIM
+- year: 2014
+  dates: Dec 1
+  place: London
+- year: 2014
+  dates: Dec 26–Jan 2
+  place: Vacation
+- year: 2015
+  dates: Feb 16–17
+  place: San Jose
+- year: 2015
+  dates: March 14–23
+  place: Jerusalem
+- year: 2015
+  dates: Apr 9–11
+  place: Los Angeles
+  url: http://www.ipam.ucla.edu/programs/special-events-and-conferences/latinos-in-the-mathematical-sciences-conference/
+- year: 2015
+  dates: Jun 1–6
+  place: Paris
+  url: https://terrytao.wordpress.com/2012/12/29/a-mathematical-formalisation-of-dimensional-analysis/
+- year: 2015
+  dates: Jun 7–9
+  place: FIM, Zurich
+  url: https://www.fim.math.ethz.ch/conferences/2015/Struwe_conference
+- year: 2015
+  dates: Jun 10–12
+  place: Norway
+  url: http://www.uia.no/en/conferences-and-seminares/ergodic-theory-and-combinatorics-conference
+- year: 2015
+  dates: Jul 13–17
+  place: Oxford
+  url: http://spa2015.oxford-man.ox.ac.uk/
+- year: 2015
+  dates: Jul 19–25
+  place: Banff
+  url: http://www.birs.ca/events/2015/5-day-workshops/15w5013
+- year: 2015
+  dates: Jul 29
+  place: New York
+- year: 2015
+  dates: Aug 15–26
+  place: Vacation
+- year: 2015
+  dates: Sep 28–Oct 1
+  place: Adelaide
+- year: 2015
+  dates: Nov 27–28
+  place: Silicon Valley
+  url: https://breakthroughprize.org/
+- year: 2016
+  dates: Jan 16–22
+  place: Tel Aviv
+- year: 2016
+  dates: Jan 25–29
+  place: Princeton
+- year: 2016
+  dates: May 18–19
+  place: Wisconsin
+- year: 2016
+  dates: May 21–24
+  place: IAS
+- year: 2016
+  dates: Aug 2
+  place: NYC
+- year: 2016
+  dates: Aug 8–23
+  place: Vacation
+- year: 2016
+  dates: Oct 15–16
+  place: UCLA, SCAPDE
+- year: 2016
+  dates: Dec 15
+  place: Lake Arrowhead
+- year: 2017
+  dates: Jan 9–13
+  place: IPAM
+  url: http://www.ipam.ucla.edu/programs/workshops/turbulent-dissipation-mixing-and-predictability/
+- year: 2017
+  dates: Jan 17–Mar 24
+  place: MSRI
+  url: http://www.msri.org/programs/297
+- year: 2017
+  dates: Mar 21–23
+  place: Oslo
+  url: http://www.abelprize.no/c69461/seksjon/vis.html?tid=69535&strukt_tid=69461
+- year: 2017
+  dates: Mar 24–27
+  place: Frankfurt
+- year: 2017
+  dates: Apr 10–11
+  place: Simons Institute
+  url: https://simons.berkeley.edu/workshops/pseudorandomness2017-3
+- year: 2017
+  dates: May 4–5
+  place: MSRI
+  url: https://www.msri.org/workshops/810
+- year: 2017
+  dates: June 12–30
+  place: Korea
+- year: 2017
+  dates: July 3–7
+  place: Park City
+  url: https://pcmi.ias.edu/program-index/2017
+- year: 2017
+  dates: July 17–21
+  place: Edinburgh
+  url: http://www.icms.org.uk/workshop.php?id=416
+- year: 2017
+  dates: July 26
+  place: NYC
+- year: 2017
+  dates: Aug 14–18
+  place: AIM
+  url: http://www.aimpl.org/nscombinatorial
+- year: 2017
+  dates: Sep 4–8
+  place: Wroclaw
+  url: http://math.uni.wroc.pl/analysis2017/
+- year: 2017
+  dates: October 2–6
+  place: Marseilles
+  url: https://conferences.cirm-math.fr/1685.html
+- year: 2017
+  dates: Oct 18–19
+  place: NY
+  url: https://www.simonsfoundation.org/event/the-erdos-discrepancy-problem/
+- year: 2017
+  dates: Oct 24
+  place: Annapolis
+  url: https://www.usna.edu/MathSci/michelson-lecture.php
+- year: 2017
+  dates: Dec 2–4
+  place: Bay area
+  url: https://breakthroughprize.org/
+- year: 2017
+  dates: Dec 5
+  place: NY
+- year: 2018
+  dates: Jan 9–21
+  place: Chile
+  url: http://www.congresofuturo.cl/
+- year: 2018
+  dates: Feb 17–18
+  place: New York
+- year: 2018
+  dates: Mar 19–Jun 15
+  place: IPAM
+  url: http://www.ipam.ucla.edu/programs/
+- year: 2018
+  dates: Jun 2–4
+  place: Bristol
+- year: 2018
+  dates: Jun 20–21
+  place: New York
+- year: 2018
+  dates: Jun 22–24
+  place: Milano
+  url: http://www.math.wisc.edu/fricci2018/
+- year: 2018
+  dates: Jun 25–30
+  place: Cortona
+- year: 2018
+  dates: July 2–8
+  place: Budapest
+- year: 2018
+  dates: Jul 10–20
+  place: Vacation
+- year: 2018
+  dates: Aug 19–24
+  place: Banff
+  cancelled: true
+- year: 2018
+  dates: Sep 24–28
+  place: Oxford
+  cancelled: true
+- year: 2018
+  dates: Nov 7
+  place: San Diego
+- year: 2018
+  dates: Dec 9–15
+  place: AIM
+- year: 2019
+  dates: Jan 19
+  place: Baltimore
+  cancelled: true
+- year: 2019
+  dates: Feb 22–24
+  place: Caltech
+  cancelled: true
+- year: 2019
+  dates: Mar 22
+  place: Dublin
+  cancelled: true
+- year: 2019
+  dates: Apr 1–3
+  place: Brown
+  cancelled: true
+- year: 2019
+  dates: Apr 26
+  place: NYC
+  cancelled: true
+- year: 2019
+  dates: May 14–16
+  place: Madison
+  cancelled: true
+- year: 2019
+  dates: May 31
+  place: IAS
+  cancelled: true
+- year: 2019
+  dates: Jul 1
+  place: New York
+- year: 2019
+  dates: Jul 6–7
+  place: Paris
+- year: 2019
+  dates: Sep 12
+  place: Washington DC
+- year: 2019
+  dates: Sep 16
+  place: USC
+  url: https://dornsife.usc.edu/events/site/990/31133500762138/cams-distinguished-lecturer-the-global-regularity-problem-for-na/
+- year: 2019
+  dates: Oct 19–20
+  place: Berkeley
+  url: https://math.berkeley.edu/~zworski/rbmconf.html
+- year: 2020
+  dates: Jan 18
+  place: Denver
+- year: 2020
+  dates: Jan 22–23
+  place: Irvine
+- year: 2020
+  dates: Feb 10–14
+  place: Basel
+- year: 2020
+  dates: Feb 19–20
+  place: Simons Institute
+- year: 2020
+  dates: Mar 14–15
+  place: U. Virginia
+  cancelled: true
+- year: 2020
+  dates: Mar 16–17
+  place: Austin
+  cancelled: true
+- year: 2020
+  dates: Oct 1
+  place: Calgary, remote
+- year: 2020
+  dates: Oct 16
+  place: Dublin, remote
+- year: 2021
+  dates: Jan 26 (Sofia) – remote
+  place: ''
+- year: 2021
+  dates: Apr 8 (Stanford) – remote
+  place: ''
+- year: 2021
+  dates: Apr 9 (Beirut) – remote
+  place: ''
+- year: 2021
+  dates: Apr 12–23 (MSRI) – remote
+  place: ''
+- year: 2021
+  dates: June 29–30
+  place: Los Angeles
+- year: 2021
+  dates: July 1–14
+  place: Bonn
+- year: 2021
+  dates: Sep 9 (Montreal) – remote
+  place: ''
+- year: 2021
+  dates: Sep 20–24
+  place: RISM
+- year: 2021
+  dates: Sep 27–30 (Sydney) – remote
+  place: ''
+- year: 2021
+  dates: Oct 30
+  place: Penn state
+- year: 2021
+  dates: Nov 24 (Budapest) – remote
+  place: ''
+- year: 2022
+  dates: Mar 15
+  place: Harvey Mudd
+- year: 2022
+  dates: Jun 20–26
+  place: Cambridge UK
+- year: 2022
+  dates: Jun 27–Jul 1
+  place: Edinburgh
+- year: 2022
+  dates: Jul 2–5
+  place: Helsinki
+- year: 2022
+  dates: Jul 28–29
+  place: Washington DC
+- year: 2022
+  dates: Sep 5–9
+  place: Montreal
+- year: 2022
+  dates: Nov 12–13
+  place: CSUN
+- year: 2023
+  dates: Jan 3–Mar 31
+  place: IAS
+- year: 2023
+  dates: Feb 13–17
+  place: IPAM
+- year: 2023
+  dates: Mar 20–24
+  place: Paris
+- year: 2023
+  dates: Apr 13
+  place: SLMath
+- year: 2023
+  dates: June 15
+  place: UVa
+- year: 2023
+  dates: June 25–July 10
+  place: vacation
+- year: 2023
+  dates: July 10–14
+  place: Oxford
+  cancelled: true
+- year: 2023
+  dates: July 21–22
+  place: EPFL
+- year: 2023
+  dates: July 31
+  place: Seoul
+- year: 2023
+  dates: Aug 7–11
+  place: Poland
+- year: 2023
+  dates: Nov 29
+  place: NYC
+- year: 2024
+  dates: Jan 3–6
+  place: San Francisco
+- year: 2024
+  dates: Apr 8–12
+  place: Cambridge
+- year: 2024
+  dates: Apr 15–18
+  place: Stanford
+- year: 2024
+  dates: May 13–17
+  place: AIM
+- year: 2024
+  dates: Jun 3–7
+  place: IAS
+- year: 2024
+  dates: Jun 10–12
+  place: London
+- year: 2024
+  dates: July 15–21
+  place: London, Bath
+- year: 2024
+  dates: Jul 22–26
+  place: Edinburgh
+- year: 2024
+  dates: Sep 15–21
+  place: Barcelona
+- year: 2025
+  dates: Feb 17–20
+  place: New York
+- year: 2025
+  dates: Mar 1
+  place: SLMath
+- year: 2025
+  dates: Jun 9–13
+  place: Cambridge
+  cancelled: true
+- year: 2025
+  dates: Jun 22–27
+  place: Warsaw
+  cancelled: true
+- year: 2025
+  dates: July 12–20
+  place: Sunshine Coast
+- year: 2025
+  dates: Aug 6–9
+  place: Sacramento
+- year: 2025
+  dates: Sep 10–12
+  place: Vassar
+- year: 2025
+  dates: Sep 15–19
+  place: Providence
