@@ -988,6 +988,29 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
                  '<details class="section">'
                  f'<summary>Former students <span class="count">({len(former)})</span></summary>'
                  f'<ul class="book-list">{"".join(frows)}</ul></details></details>')
+    editorial = [s for s in ((cv or {}).get("service") or []) if s.get("editorial")]
+    if editorial:
+        def jname(s):
+            nm = html.escape(s["organization"])
+            return f'<a href="{html.escape(s["url"])}">{nm}</a>' if s.get("url") else nm
+        active = [s for s in editorial if not s.get("end")]
+        prior = [s for s in editorial if s.get("end")]
+        arows = []
+        for s in sorted(active, key=lambda s: str(s.get("start", "")), reverse=True):
+            arows.append(f'<li>{jname(s)}<span class="coauth"> &middot; '
+                         f'{html.escape(s["role"])} (since {html.escape(str(s["start"]))})</span></li>')
+        prows = []
+        for s in sorted(prior, key=lambda s: (str(s.get("end", "")), str(s.get("start", ""))),
+                        reverse=True):
+            yr = f'{html.escape(str(s["start"]))}&ndash;{html.escape(str(s["end"]))}'
+            prows.append(f'<li><span class="year">{yr}</span> {jname(s)}'
+                         f'<span class="coauth"> &middot; {html.escape(s["role"])}</span></li>')
+        body += ('<details class="section" id="editorial">'
+                 f'<summary>Editorial roles <span class="count">({len(active)} active)</span></summary>'
+                 f'<ul class="book-list">{"".join(arows)}</ul>'
+                 '<details class="section">'
+                 f'<summary>Former editorial roles <span class="count">({len(prior)})</span></summary>'
+                 f'<ul class="book-list">{"".join(prows)}</ul></details></details>')
     # Open the <details> targeted by the URL hash (e.g. index.html#books).
     body += ('<script>function openHash(){var h=location.hash.slice(1);if(!h)return;'
              'var el=document.getElementById(h);if(!el)return;'

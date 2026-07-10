@@ -719,31 +719,44 @@ service:
   end: '2004'
   organization: J. Amer. Math. Soc.
   role: Associate Editor
+  editorial: true
+  url: "https://www.ams.org/journals/jams/"
   highlight: true
 - start: '2002'
   organization: American Journal of Mathematics
   role: Associate Editor
+  editorial: true
+  url: "https://muse.jhu.edu/journal/40"
   highlight: true
 - start: '2003'
   organization: International Mathematics Research Surveys
   role: Advisory Board
+  editorial: true
 - start: '2003'
   organization: Dynamics of Partial Differential Equations
   role: Associate Editor
+  editorial: true
+  url: "https://www.intlpress.com/site/pub/pages/journals/items/dpde/"
   highlight: true
 - start: '2005'
   end: '2011'
   organization: J. Amer. Math. Soc.
   role: Editor
+  editorial: true
+  url: "https://www.ams.org/journals/jams/"
   highlight: true
 - start: '2007'
   end: '2025'
   organization: Analysis & PDE
   role: Editor
+  editorial: true
+  url: "https://msp.org/apde/"
   highlight: true
 - start: '2012'
   organization: Forum of Mathematics (Cambridge University Press)
   role: Editor
+  editorial: true
+  url: "https://www.cambridge.org/core/journals/forum-of-mathematics-pi"
   highlight: true
 - start: '2013'
   organization: Episciences
@@ -752,6 +765,8 @@ service:
   end: '2025'
   organization: Discrete Analysis
   role: Editor
+  editorial: true
+  url: "https://discreteanalysisjournal.com/"
   highlight: true
 - start: '2002'
   end: '2022'

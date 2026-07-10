@@ -70,7 +70,8 @@
       "properties": {
         "start": { "type": "string" }, "end": { "type": "string" },
         "organization": { "type": "string" }, "role": { "type": "string" },
-        "url": { "type": "string" }, "highlight": { "type": "boolean" }
+        "url": { "type": "string" }, "highlight": { "type": "boolean" },
+        "editorial": { "type": "boolean", "description": "Journal editorial-board role (surfaced in the front-page Editorial roles dropdown)." }
       } } },
     "patents": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["title"],
