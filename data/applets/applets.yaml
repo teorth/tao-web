@@ -11,6 +11,19 @@ category_notes:
   Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
   Complex analysis: All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000.
 applets:
+# --- Relativity (original app, first published here) ---
+- name: Spacetime diagram (special relativity)
+  category: Relativity
+  status: original
+  date: "2026-07-11"
+  description: >-
+    An interactive 1+1-dimensional Minkowski spacetime diagram: construct events, inertial worldlines,
+    light rays, lines of simultaneity, observers, and constant-interval hyperbolae, and view them at once
+    in two independently Lorentz-boostable reference frames — with relativistic Doppler colour shifts,
+    energy / momentum / proper-time readouts, and a mode to “experience” a worldline's subjective time
+    (co-moving frame plus a live backward-light-cone view). Includes worked scenes (twin paradox, pole and
+    barn, light clock) and JSON import/export.
+  url: apps/spacetime-diagram.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra

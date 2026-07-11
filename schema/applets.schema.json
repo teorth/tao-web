@@ -27,9 +27,10 @@
           "year": { "type": "integer", "description": "Year the original source was last modified." },
           "status": {
             "type": "string",
-            "enum": ["ported", "live", "to-port", "retired"],
-            "description": "ported = modern version on this site; live = already works elsewhere; to-port = broken Java, portable; retired = superseded/not planned."
+            "enum": ["ported", "live", "to-port", "retired", "original"],
+            "description": "ported = modern version on this site; live = already works elsewhere; to-port = broken Java, portable; retired = superseded/not planned; original = first published on this site."
           },
+          "date": { "type": "string", "description": "Publication date (ISO, e.g. 2026-07-11) for apps first published on this site." },
           "description": { "type": "string" },
           "url": { "type": "string", "description": "Working version (local ported page or live external app)." },
           "source": { "type": "string", "description": "Original page (usually a dead Java applet)." },

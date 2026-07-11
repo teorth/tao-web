@@ -77,10 +77,10 @@ def md_links(s: str) -> str:
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
   --line:#e3e3e3; --accent:#7a1f1f; --stub-bg:#fff4e5; --stub-fg:#8a5a00; --card:#fafafa;
-  --ok-bg:#e6f4ec; --ok-fg:#1f7a4d; }
+  --ok-bg:#e6f4ec; --ok-fg:#1f7a4d; --new-bg:#e7edfb; --new-fg:#2a4b9b; }
 @media (prefers-color-scheme: dark) { :root { --fg:#e6e6e6; --bg:#151515; --muted:#9a9a9a;
   --line:#333; --accent:#e08a8a; --stub-bg:#3a2e12; --stub-fg:#e8c06a; --card:#1d1d1d;
-  --ok-bg:#17321f; --ok-fg:#7fce9f; } }
+  --ok-bg:#17321f; --ok-fg:#7fce9f; --new-bg:#1a2438; --new-fg:#9db4f0; } }
 * { box-sizing: border-box; }
 body { font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--fg); background: var(--bg); margin: 0; }
@@ -189,6 +189,7 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .pill { font-size: .66rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700;
   padding: .12rem .5rem; border-radius: 999px; white-space: nowrap; height: fit-content; }
 .pill.ported, .pill.live { color: var(--ok-fg); background: var(--ok-bg); }
+.pill.original { color: var(--new-fg); background: var(--new-bg); }
 .pill.to-port { color: var(--stub-fg); background: var(--stub-bg); }
 .pill.retired { color: var(--muted); background: var(--card); border: 1px solid var(--line); }
 @media print {
@@ -859,7 +860,7 @@ def build_projects(projects: dict) -> str:
     return page("Terence Tao — collaborative projects", "\n".join(body))
 
 
-_APPLET_STATUS = {"ported": "Ported", "live": "Live", "to-port": "To port", "retired": "Retired"}
+_APPLET_STATUS = {"ported": "Ported", "live": "Live", "to-port": "To port", "retired": "Retired", "original": "Original"}
 
 
 def build_applets(doc: dict) -> str:
@@ -874,6 +875,8 @@ def build_applets(doc: dict) -> str:
         if a.get("source"):
             lbl = "original applet" if a["status"] in ("to-port", "retired") else "original"
             src = f'<div class="src"><a href="{html.escape(a["source"])}">{lbl}</a> ({java})</div>'
+        elif a.get("date"):
+            src = f'<div class="src">First published {html.escape(a["date"])} on this site.</div>'
         elif a.get("year"):
             src = f'<div class="src">{java}</div>'
         return (f'<div class="app"><div class="nm">{nm}</div>{pill}'
@@ -888,9 +891,9 @@ def build_applets(doc: dict) -> str:
             '<h1>Interactive tools</h1>']
     if doc.get("description"):
         body.append(f'<div class="cv-bio"><p>{html.escape(doc["description"])}</p></div>')
-    body.append('<p class="legend"><strong>Status:</strong> Ported = runs here now &middot; '
-                'Live = works elsewhere &middot; To port = old Java, not yet rebuilt &middot; '
-                'Retired = superseded.</p>')
+    body.append('<p class="legend"><strong>Status:</strong> Original = first published here &middot; '
+                'Ported = runs here now &middot; Live = works elsewhere &middot; '
+                'To port = old Java, not yet rebuilt &middot; Retired = superseded.</p>')
     notes = doc.get("category_notes") or {}
     for cat in cats:
         note = (f'<p class="legend">{html.escape(notes[cat])}</p>' if cat in notes else "")
