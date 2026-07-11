@@ -184,6 +184,7 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
 .applets .nm { grid-column: 1; grid-row: 1; font-weight: 600; }
 .applets .ds { grid-column: 1; grid-row: 2; color: var(--muted); font-size: .95rem; }
 .applets .src { grid-column: 1; grid-row: 3; color: var(--muted); font-size: .85rem; margin-top: .12rem; }
+.applets .src .ai { font-style: italic; opacity: .85; }
 .applets .pill { grid-column: 2; grid-row: 1; }
 .applets .legend { color: var(--muted); font-size: .85rem; margin: .3rem 0 0; }
 .pill { font-size: .66rem; text-transform: uppercase; letter-spacing: .04em; font-weight: 700;
@@ -881,6 +882,11 @@ def build_applets(doc: dict) -> str:
             lines.append(f'First published {html.escape(a["date"])} on this site.')
         elif a.get("year"):
             lines.append(java)
+        # AI-use disclosure for the apps built in this repo.
+        if a["status"] == "original":
+            lines.append('<span class="ai">Coded with the assistance of Claude Code.</span>')
+        elif a["status"] == "ported":
+            lines.append('<span class="ai">Ported with the assistance of Claude Code.</span>')
         if a.get("writeup"):
             w = a["writeup"]
             wlbl = html.escape(w.get("label") or "The making of this app")
