@@ -102,6 +102,10 @@
   .tlmarks { position: relative; height: 9px; }
   .tltick { position: absolute; bottom: 0; width: 2px; height: 9px; background: var(--danger); transform: translateX(-1px); cursor: help; }
   .tlband { position: absolute; bottom: 1px; height: 6px; background: rgba(178,59,59,.5); border-radius: 2px; cursor: help; }
+  .tltip { position: fixed; z-index: 60; background: var(--ink); color: var(--bg); font-size: .78rem;
+    padding: .18rem .45rem; border-radius: 5px; pointer-events: none; white-space: nowrap;
+    transform: translate(-50%, calc(-100% - 6px)); box-shadow: 0 2px 8px rgba(0,0,0,.25); }
+  .tltip[hidden] { display: none; }
   .playbar .tauval { font-variant-numeric: tabular-nums; color: var(--muted); min-width: 5rem; }
   .playbar select.speed { min-width: 4rem; }
   .phint { flex-basis: 100%; color: var(--muted); font-size: .85rem; margin-top: .2rem; }
@@ -129,6 +133,9 @@
   .howto summary { cursor: pointer; color: var(--accent); font-weight: 500; }
   .howto ul { margin: .5rem 0 0; padding-left: 1.1rem; }
   .howto li { margin: .35rem 0; }
+  .quickstart { margin: .7rem 0; padding: .55rem .85rem; font-size: .92rem; max-width: 44rem;
+    background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 5px; }
+  .quickstart strong:first-child { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -145,6 +152,12 @@
       <span class="math">c = 1</span> by default (<strong>Settings &rsaquo; Show&nbsp;c</strong> re-displays the
       powers of <span class="math">c</span> in the readouts) &mdash; so light runs at 45&deg; and causal
       character survives any boost.</p>
+    <p class="quickstart"><strong>Quick start.</strong> For a quick taste of the app, try the
+      subjective-experience demo on the twin-paradox scene it opens with: in the left sidebar click the
+      triangle-shaped <strong>&#9654;&nbsp;Subjective&nbsp;experience</strong> tool (at the bottom), then
+      click the bent red-violet <strong>Traveller</strong> worldline, then press <strong>&#9654;&nbsp;Play</strong>
+      on the timeline panel below. You&rsquo;ll ride the traveller&rsquo;s proper time while the other panel
+      becomes their co-moving frame and a live panel shows what they see in their past light cone.</p>
     <details class="howto">
       <summary>How to use</summary>
       <ul>
@@ -1119,29 +1132,48 @@
         var tf = function (f) { return w.ta + f * (w.tb - w.ta); };
         if (tg.point) {                                   // event: colocation (E on worldline) + observation (E's forward cone meets it)
           var E = tg.point, tc = pointOnSeg(E, w.a, w.b);
-          if (tc != null) points.push({ tau: tf(tc), name: o.name });
+          if (tc != null) points.push({ tau: tf(tc), name: o.name, kind: o.kind });
           [-1, 1].forEach(function (dd) {
             var P = ST.intersect(E, [1, dd], w.a, [w.b[0] - w.a[0], w.b[1] - w.a[1]]);
-            if (P && (P[0] - E[0]) > 1e-6) { var den = w.b[0] - w.a[0], f = Math.abs(den) > 1e-12 ? (P[0] - w.a[0]) / den : -1; if (f >= -1e-9 && f <= 1 + 1e-9) points.push({ tau: tf(f), name: o.name }); }
+            if (P && (P[0] - E[0]) > 1e-6) { var den = w.b[0] - w.a[0], f = Math.abs(den) > 1e-12 ? (P[0] - w.a[0]) / den : -1; if (f >= -1e-9 && f <= 1 + 1e-9) points.push({ tau: tf(f), name: o.name, kind: o.kind }); }
           });
           return;
         }
         tg.segs.forEach(function (seg) {
           var r = segSeg(w.a, w.b, seg[0], seg[1]); if (!r) return;
-          if (r.f != null) points.push({ tau: tf(r.f), name: o.name });
-          else intervals.push({ t0: tf(r.f0), t1: tf(r.f1), name: o.name });
+          if (r.f != null) points.push({ tau: tf(r.f), name: o.name, kind: o.kind });
+          else intervals.push({ t0: tf(r.f0), t1: tf(r.f1), name: o.name, kind: o.kind });
         });
       });
     });
     return { points: points, intervals: intervals };
   }
+  function markLabel(m) {
+    return (m.name && String(m.name).trim()) ? m.name : ("unnamed " + (m.kind || "object"));
+  }
   function updateMarks() {
     var host = $("#props .tlmarks"); if (!host || !play || !play.marks) return;
     var span = play.t1 - play.t0 || 1, pct = function (t) { return Math.max(0, Math.min(100, (t - play.t0) / span * 100)); }, h = "";
-    play.marks.intervals.forEach(function (m) { var a = pct(m.t0), b = pct(m.t1); h += '<div class="tlband" style="left:' + a + '%;width:' + (b - a) + '%" title="' + esc(m.name) + '"></div>'; });
-    play.marks.points.forEach(function (m) { if (m.tau >= play.t0 - 1e-9 && m.tau <= play.t1 + 1e-9) h += '<div class="tltick" style="left:' + pct(m.tau) + '%" title="' + esc(m.name) + '"></div>'; });
+    play.marks.intervals.forEach(function (m) { var a = pct(m.t0), b = pct(m.t1); h += '<div class="tlband" style="left:' + a + '%;width:' + (b - a) + '%" data-label="' + esc(markLabel(m)) + '"></div>'; });
+    play.marks.points.forEach(function (m) { if (m.tau >= play.t0 - 1e-9 && m.tau <= play.t1 + 1e-9) h += '<div class="tltick" style="left:' + pct(m.tau) + '%" data-label="' + esc(markLabel(m)) + '"></div>'; });
     host.innerHTML = h;
   }
+  // Reliable hover tooltip for the timeline marks (native title was flaky on 2px ticks).
+  var tltip = document.createElement("div"); tltip.className = "tltip"; tltip.hidden = true;
+  document.body.appendChild(tltip);
+  document.addEventListener("mouseover", function (e) {
+    var m = e.target && e.target.closest && e.target.closest(".tltick, .tlband");
+    if (!m) return;
+    var lbl = m.getAttribute("data-label"); if (!lbl) return;
+    var r = m.getBoundingClientRect();
+    tltip.textContent = lbl;
+    tltip.style.left = (r.left + r.width / 2) + "px";
+    tltip.style.top = r.top + "px";
+    tltip.hidden = false;
+  });
+  document.addEventListener("mouseout", function (e) {
+    if (e.target && e.target.closest && e.target.closest(".tltick, .tlband")) tltip.hidden = true;
+  });
 
   // ================= canvas interaction =================
   var cv = $("#cv");
