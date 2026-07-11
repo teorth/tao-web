@@ -366,7 +366,7 @@ editions:
   - id: revised-edition-0064
     page: '189'
     text: "In the discussion after Theorem 4.42, the bound $E(A,A) \\geq |A|^2$ should be $E(A,A)\
-      \ >= P(A) |A|^3$."
+      \ \\geq P(A) |A|^3$."
   - id: revised-edition-0065
     page: '191'
     text: "In the third equation of the display, the $L^2(Z)$ norms should be $\\ell^2(Z)$ (and the final\
