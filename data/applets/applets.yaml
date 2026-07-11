@@ -38,6 +38,9 @@ applets:
     a live check of Gilbreath's conjecture on the left diagonal, and a zoomed-out canvas view for large
     arrays. A companion to the paper on Gilbreath's conjecture by Zachary Chase, Zach Hunter and Terence Tao.
   url: apps/gilbreath.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/gilbreath-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra

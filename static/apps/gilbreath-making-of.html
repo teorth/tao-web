@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Gilbreath array explorer &mdash; Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Gilbreath array explorer</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="gilbreath.html">Gilbreath array explorer</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/gilbreath.html">Gilbreath array explorer</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — a visual companion to the paper &quot;Gilbreath&#x27;s conjecture: a Cramér random model and a deterministic analysis&quot; — from first sketch to publication.</em></p>
+<p><strong>How to read this.</strong> As with the <a href="spacetime-diagram-making-of.html">spacetime applet&#x27;s transcript</a>, the point is to convey the <em>process</em>:</p>
+<ul><li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim (a couple of one-word &quot;continue&quot; replies are folded into the narration).</li><li><strong>Claude&#x27;s replies</strong> — the actual code edits to two files, <code>gilbreath.js</code> (numeric core) and <code>gilbreath.html</code> (the app) — are replaced by short <em>italic summaries</em> of what changed.</li><li>Meta-conversation (requests to write this transcript, unrelated site edits) is left out.</li></ul>
+<p>The whole app was built in a single sitting, stage by stage, kept uncommitted for local testing until it was ready to publish. The numeric core was checked with headless Node unit tests throughout, and the UI wiring with a small DOM-shim smoke test.</p>
+<hr>
+<h2>1. The idea, and a plan</h2>
+<p><strong>Terence</strong> (with the paper&#x27;s PDF attached):</p>
+<blockquote><p>I&#x27;d like to create a new app (again, tested locally before pushing), meant to illustrate the Gilbreath conjecture and various random models (see my enclosed paper for background). The app will display a Gilbreath array of length N (where N is settable by the user, maybe defaulting at N=5 initially), where the top row are editable text boxes (that can take in natural number, integer, or real input) and all subsequent rows of the Gilbreath array are auto-generated and auto-updated. Additional statistics such as the mean and maximal value of each row should also be auto-provided. A choice of coloring schemes can be offered: no color scheme, parity coloring (even and odd colored differently, non-integers a neutral color), magnitude coloring (a cell of value x colored according to the integer part of |x|). A dropdown can select how the top row is chosen, as per the paper: (a) the first N primes; (b) the first N prime gaps; (c) the first N normalized prime gaps; (d) independent uniform random variables from 0 to m−1 (m from a text box); (e) independent geometric random variables of mean lambda; and (f) independent exponential real variables of mean lambda. For the random examples one can have a &quot;regenerate&quot; button to resample (also triggered whenever parameters such as N or lambda are modified). Can you plan out how to generate this app in stages? It should be simpler than the relativity app, so maybe fewer stages are needed.</p></blockquote>
+<p><em>Claude proposed reusing the site&#x27;s applet infrastructure and, as with the relativity app, putting a pure DOM-free numeric core in its own <code>gilbreath.js</code> so it could be unit-tested headlessly. It flagged a few math subtleties to settle up front (the normalized-gap convention, and how to parameterize the geometric/exponential variables), and laid out a five-stage plan: (0) numeric core + tests, (1) editable grid, (2) generators, (3) colouring + a live Gilbreath read-out, (3.5) a canvas view for large N, (4) polish + publish. It asked two questions: how to render the triangle (and at what scale), and whether to include a &quot;left diagonal&quot; feature that actually checks the conjecture.</em></p>
+<p><strong>Terence</strong> chose <strong>an editable HTML grid plus a canvas view for large N</strong>, and <strong>yes, include the left-diagonal Gilbreath check</strong> — so the app would <em>demonstrate</em> the conjecture, not just display arrays.</p>
+<p><strong>Terence</strong> (catching a discrepancy in Claude&#x27;s plan):</p>
+<blockquote><p>Oops, good catch on the inconsistent normalization. Please use the normalization from the paper (the app is intended as a visual aid for the paper). Since the paper uses p as the primary variable for the geometric variables instead of lambda, let&#x27;s use p instead there.</p></blockquote>
+<p><em>Claude adopted the paper&#x27;s exact conventions — normalized gaps <code>(p_{k+1} − p_k)/2 − 1</code>, and geometric variables by parameter <code>p</code> (with <code>P(a=k) = (1−p)^k p</code>) — then built Stage 0: the numeric core (prime sieve, the six generators, the absolute-difference array, row statistics, the colour classifiers, and a seedable PRNG) with a headless test suite that reproduces the paper&#x27;s own worked examples (the first-six-primes array and the nine normalized gaps <code>0,0,1,0,1,0,1,2,0</code>).</em></p>
+<hr>
+<h2>2. Stage 1 — the editable grid</h2>
+<p><em>Claude built the triangular HTML grid: a settable N, an editable top row seeded with the first N primes, every lower row auto-computed as absolute differences and re-rendered live on any edit, a per-row mean/max stats rail, auto-sizing cells, and horizontal scrolling. The rows are centred so they stagger Pascal-style into the triangle.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Stage 1 looks good so far! Let&#x27;s continue.</p></blockquote>
+<hr>
+<h2>3. Stage 2 — the generators</h2>
+<p><em>Claude added the top-row generator dropdown — first primes, prime gaps, normalized gaps, uniform, geometric (parameter <code>p</code>), exponential (mean <code>λ</code>), and Custom — with parameter boxes that appear only for the relevant generator, a Regenerate button for the random ones, auto-resampling when N or a parameter changes, and &quot;edit any cell → Custom mode&quot;. Verified with a DOM-shim smoke test driving every generator.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Looks good! The only quibble is that the text uses all caps (so lower case lambda becomes Lambda, etc.). Is it possible to switch to a lower case (and maybe a mathy italic font) for the math symbols?</p></blockquote>
+<p><em>The control labels used <code>text-transform: uppercase</code>, which was turning the lowercase λ / p / m into Λ / P / M. Claude wrapped each math variable in a <code>.var</code> span that opts out of the uppercasing and renders in an italic serif math face.</em></p>
+<hr>
+<h2>4. Stage 3 — colouring and the Gilbreath check</h2>
+<p><em>Told to proceed, Claude added the three colouring schemes (None / Parity / Magnitude) with a legend, and the left-diagonal feature: a &quot;highlight &amp; check&quot; toggle that rings each lower row&#x27;s leftmost cell and shows a live read-out — &quot;all 1s — Gilbreath&#x27;s conjecture holds&quot; (green), or a warning that the diagonal is stuck in {0,1} / leaves {0,1} at a given row.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>One can hide the regenerate button when a random model is not selected. I guess one can also have &quot;all zeroes&quot; as a (very boring) dropdown option, and &quot;uniform even&quot; or &quot;uniform odd&quot; from 0 to m−1 (disallowing any m that is too small for this random variable to be well-defined) to illustrate the parity obstruction that can prevent entries from reaching 1.</p></blockquote>
+<p><em>Claude hid (rather than disabled) the Regenerate button for non-random models, and added three generators. <strong>Uniform even</strong> and <strong>uniform odd</strong> are the star turn: since every entry stays even (odd top rows go even from the second row on), the whole array is trapped in the even integers and the left diagonal can never reach 1 — the 2-separated-set parity obstruction from the paper, now visible live. The <code>m</code> box is guarded so the variable is well-defined (uniform-odd forces <code>m ≥ 2</code>).</em></p>
+<hr>
+<h2>5. Stage 3.5 — the canvas</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Looks great! Let&#x27;s do 3.5, I&#x27;m interested in seeing what the large canvas looks like.</p></blockquote>
+<p><em>Claude added the canvas large-N view: a Grid/Canvas toggle that, in canvas mode, hides the editable grid and draws the whole triangle as coloured cells (raising the N cap from 40 to 512), with the left diagonal stroked in accent and the Gilbreath read-out still live. This is where the <code>{0,d}</code>-block and Sierpinski structure from the paper&#x27;s figures becomes visible at a glance.</em></p>
+<hr>
+<h2>6. Stage 4 — publish, the paper, and a spike</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The Canvas looks great! Let&#x27;s do Stage 4. The Gilbreath paper appeared on the arXiv recently, and I wrote a discussion blog post. While you&#x27;re waiting for the app to build, can you add a new paper entry to tao-web for this paper (which is to be submitted), and add links to the arXiv and blog post on the app? Actually I guess the paper YAML can acquire a new entry for an applet link, next to the arXiv and discussion links; going forward I can imagine implementing other visualization tools for my future papers.</p></blockquote>
+<p><em>Claude wrote the app&#x27;s intro text (linking the arXiv preprint and the blog discussion), catalogued the app under a new &quot;Number theory&quot; category, and added the paper to the works database. To let the paper link back to its companion tool, it introduced a general <strong><code>applet</code> link type</strong> (rendered as &quot;interactive tool&quot;) — so the paper and the app now cross-reference each other, a pattern any future paper can reuse.</em></p>
+<p><strong>Terence</strong> (mid-build):</p>
+<blockquote><p>A spike sounds like another good idea for a custom initial data: some initial value d at some position n, with everyone else set to zero, with d and n settable as text boxes.</p></blockquote>
+<p><em>Claude added the <strong>single spike</strong> generator — value <code>d</code> at position <code>n</code>, zero elsewhere. With <code>d = 1</code> the array is Pascal&#x27;s triangle, so parity colouring draws a Sierpinski gasket (exactly the paper&#x27;s single-non-zero-entry example). It also added a small <strong>Examples</strong> dropdown of one-click configurations drawn from the paper: normalized gaps collapsing to all-1s, the Sierpinski spike, the parity obstruction, and the Cramér (geometric) model.</em></p>
+<p><em>The app was then published — validated, built, committed, pushed, and confirmed live — alongside the new paper entry.</em></p>
+<hr>
+<p><em>From &quot;illustrate the Gilbreath conjecture&quot; to a published tool: an editable difference-triangle with prime, gap, spike, and random-model generators, parity/magnitude colouring, a live check of the conjecture on the left diagonal, and a large-N canvas that surfaces the fractal block structure — a companion to the paper, and cross-linked with it.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>
