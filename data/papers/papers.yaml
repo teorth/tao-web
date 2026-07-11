@@ -1,5 +1,32 @@
 # Imported from math.ucla.edu/~tao/preprints/ subpages + reconciled with newer Google-Docs versions -- maintain by hand.
 works:
+- id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
+  kind: paper
+  title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
+  coauthors:
+  - Zachary Chase
+  - Zach Hunter
+  year: 2026
+  status: preprint
+  venue: "Preprint, to be submitted"
+  arxiv: '2607.08712'
+  tags:
+  - additive-combinatorics-number-theory
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2607.08712"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/07/11/gilbreaths-conjecture-a-cramer-random-model-and-a-deterministic-analysis/"
+  - type: applet
+    url: "apps/gilbreath.html"
+  abstract: >-
+    Gilbreath's conjecture asserts that starting from the sequence of primes and taking successive
+    absolute differences to form a triangular array, the left diagonal consists entirely of ones after
+    the first row. We show that the analogue for a Cramér random model — with normalized prime gaps
+    replaced by geometric random variables of logarithmic size — holds almost surely, give preliminary
+    analysis of the associated continuous probabilistic model, and prove a deterministic "inverse
+    theorem" isolating the obstructions to the conjecture: long blocks of zeroes, or very long shallow
+    {0,d}-valued blocks for some d ≥ 2.
 - id: polynomial-towers-and-inverse-gowers-theory-for-bounded-expo
   kind: paper
   title: Polynomial towers and inverse Gowers theory for bounded-exponent groups

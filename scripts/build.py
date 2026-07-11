@@ -384,8 +384,8 @@ def build_links_page(doc: dict) -> tuple[str, str]:
 
 
 _LINK_LABEL = {"arxiv": "arXiv", "journal": "journal", "discussion": "discussion",
-               "slides": "slides", "pdf": "pdf", "note": "link", "blog": "blog"}
-_LINK_PRIO = {"journal": 0, "arxiv": 1, "pdf": 2, "note": 3, "discussion": 4, "slides": 5, "blog": 6}
+               "slides": "slides", "pdf": "pdf", "note": "link", "blog": "blog", "applet": "interactive tool"}
+_LINK_PRIO = {"journal": 0, "arxiv": 1, "pdf": 2, "note": 3, "discussion": 4, "slides": 5, "blog": 6, "applet": 7}
 
 _PAPERS_JS = """
 <script>

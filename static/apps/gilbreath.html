@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gilbreath array explorer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  /* --- Stage 1: editable triangular grid --- */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; align-items: flex-end; }
+  .toolbar .field { display: flex; flex-direction: column; gap: .25rem; }
+  .toolbar label { font-size: .78rem; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .03em; }
+  /* math variables opt out of the label uppercasing and read as italic math */
+  .var { text-transform: none; letter-spacing: 0; font-style: italic;
+    font-family: "Cambria Math", Cambria, Georgia, "Times New Roman", serif; }
+  .toolbar input[type="number"] { width: 5.5em; }
+  .toolbar select { max-width: 24em; }
+  .toolbar .field[hidden] { display: none; }  /* [hidden] must beat .field's flex */
+  .toolbar button { padding: .42rem .9rem; }
+  .toolbar button[disabled] { opacity: .5; cursor: not-allowed; }
+
+  #board { display: flex; align-items: flex-start; gap: 1.2rem; margin-top: 1rem; }
+  #arrayScroll { overflow-x: auto; flex: 1 1 auto; padding-bottom: .4rem; }
+  #triangle { width: max-content; margin-inline: auto; font-family: var(--mono); }
+
+  .arow { display: flex; gap: var(--gap); height: var(--rowh); align-items: center; }
+  .cell, .arow input {
+    width: var(--cell); height: 1.7rem; box-sizing: border-box;
+    font-family: var(--mono); font-size: .95rem; text-align: center;
+    border-radius: 5px; padding: 0 .1rem;
+  }
+  .cell { display: flex; align-items: center; justify-content: center;
+    color: var(--ink); background: var(--panel); border: 1px solid var(--line); }
+  .arow input {
+    color: var(--ink); background: var(--accent-soft);
+    border: 1px solid var(--accent); font-weight: 600;
+  }
+  .arow input:focus { outline: 2px solid var(--accent); outline-offset: 0; }
+  .arow input.bad { border-color: var(--danger); background: transparent;
+    outline-color: var(--danger); color: var(--danger); }
+
+  /* stats rail, one line per row, aligned to the triangle's rows */
+  #rail { flex: 0 0 auto; font-family: var(--mono); font-size: .8rem;
+    color: var(--muted); border-left: 1px solid var(--line); padding-left: 1rem; }
+  #rail .railhead { height: var(--rowh); display: flex; align-items: center;
+    font-weight: 700; color: var(--ink); }
+  .railrow { height: var(--rowh); display: flex; align-items: center; gap: .8rem;
+    white-space: nowrap; }
+  .railrow .k { color: var(--muted); }
+  .railrow .v { color: var(--ink); }
+
+  .toprowhead { height: var(--rowh); display: flex; align-items: center;
+    font-weight: 700; color: var(--accent); }
+  #msg { color: var(--danger); font-size: .85rem; min-height: 1.2em; margin-top: .6rem; }
+
+  /* Stage 3: colouring, left-diagonal highlight, Gilbreath read-out */
+  .chkrow { display: flex; align-items: center; gap: .4rem; font-size: .85rem;
+    color: var(--ink); height: 1.9rem; }
+  .chkrow label { text-transform: none; letter-spacing: 0; font-weight: 400;
+    font-size: .85rem; color: var(--ink); }
+  .cell.diag, .arow input.diag { box-shadow: inset 0 0 0 2px var(--accent); font-weight: 700; }
+  #legend { display: flex; flex-wrap: wrap; gap: .35rem 1rem; align-items: center;
+    font-size: .82rem; color: var(--muted); margin-top: .9rem; min-height: 1.1em; }
+  #legend span { display: inline-flex; align-items: center; }
+  #legend .swatch { width: 1em; height: 1em; border-radius: 3px;
+    border: 1px solid var(--line); margin-right: .35rem; }
+  #gilb { margin-top: .6rem; font-size: .9rem; min-height: 1.2em; }
+  #gilb .diagvals { font-family: var(--mono); color: var(--muted); }
+  #gilb.hold { color: #2f9e57; }
+  #gilb.warn { color: var(--ink); }
+  /* Stage 3.5: canvas large-N view */
+  #canvasWrap { margin-top: 1rem; overflow-x: auto; }
+  #cv { display: block; max-width: 100%; height: auto; image-rendering: pixelated;
+    border: 1px solid var(--line); background: var(--panel); }
+  .canvcap { color: var(--muted); font-size: .82rem; margin: .5rem 0 0; }
+  :root { --rowh: 2rem; --gap: .35rem; --cell: 3ch; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Gilbreath array explorer</h1>
+    <p class="lede">Enter a top row of numbers; each row below is the sequence of
+      <em>absolute differences</em> of the row above, so an <span class="var">N</span>-term top row
+      generates a triangular array. <strong>Gilbreath&rsquo;s conjecture</strong> (Proth 1878,
+      Gilbreath 1958) asserts that when the top row is the primes, the left edge below the first row is
+      entirely&nbsp;1s. Build the array from primes, prime gaps, a single spike, or the random models
+      studied in the paper; colour it by parity or magnitude; toggle the live left-diagonal check; and
+      view large arrays on a canvas.</p>
+    <p class="prov">A visual companion to the paper &ldquo;Gilbreath&rsquo;s conjecture: a Cram&eacute;r
+      random model and a deterministic analysis&rdquo; (Zachary Chase, Zach Hunter, Terence Tao) &mdash;
+      <a href="https://arxiv.org/abs/2607.08712">arXiv preprint</a> &middot;
+      <a href="https://terrytao.wordpress.com/2026/07/11/gilbreaths-conjecture-a-cramer-random-model-and-a-deterministic-analysis/">blog discussion</a>.
+      Runs entirely in your browser.</p>
+  </header>
+
+  <div class="card">
+    <div class="toolbar">
+      <div class="field">
+        <label for="n">Length <span class="var">N</span></label>
+        <input id="n" type="number" min="1" max="40" step="1" value="5">
+      </div>
+      <div class="field">
+        <label for="view">View</label>
+        <select id="view">
+          <option value="grid">Grid (editable)</option>
+          <option value="canvas">Canvas (large N)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="example">Example</label>
+        <select id="example">
+          <option value="">&mdash; load an example &mdash;</option>
+          <option value="norm">Normalized gaps &rarr; all 1s</option>
+          <option value="sierpinski">Sierpinski spike</option>
+          <option value="evenobstruction">Parity obstruction</option>
+          <option value="cramer">Cram&eacute;r model (geometric)</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="gen">Top row</label>
+        <select id="gen">
+          <option value="primes">First N primes</option>
+          <option value="gaps">Prime gaps</option>
+          <option value="norm">Normalized prime gaps</option>
+          <option value="zeros">All zeroes</option>
+          <option value="spike">Single spike</option>
+          <option value="uniform">Uniform on {0,&hellip;,m&minus;1}</option>
+          <option value="unieven">Uniform even {0,2,&hellip;}</option>
+          <option value="uniodd">Uniform odd {1,3,&hellip;}</option>
+          <option value="geom">Geometric (parameter p)</option>
+          <option value="exp">Exponential (mean &lambda;)</option>
+          <option value="custom">Custom (manual entry)</option>
+        </select>
+      </div>
+      <div class="field" id="fieldM" hidden>
+        <label for="mParam"><span class="var">m</span> (values 0&hellip;<span class="var">m</span>&minus;1)</label>
+        <input id="mParam" type="number" min="1" step="1" value="6">
+      </div>
+      <div class="field" id="fieldP" hidden>
+        <label for="pParam"><span class="var">p</span> (0 &lt; <span class="var">p</span> &lt; 1)</label>
+        <input id="pParam" type="number" min="0" max="1" step="0.05" value="0.3">
+      </div>
+      <div class="field" id="fieldLam" hidden>
+        <label for="lamParam"><span class="var">&lambda;</span> (mean &gt; 0)</label>
+        <input id="lamParam" type="number" min="0" step="0.5" value="3">
+      </div>
+      <div class="field" id="fieldSpikeVal" hidden>
+        <label for="spikeVal"><span class="var">d</span> (spike value)</label>
+        <input id="spikeVal" type="number" step="1" value="1">
+      </div>
+      <div class="field" id="fieldSpikePos" hidden>
+        <label for="spikePos"><span class="var">n</span> (position)</label>
+        <input id="spikePos" type="number" min="1" step="1" value="1">
+      </div>
+      <div class="field" id="fieldRegen">
+        <label aria-hidden="true">&nbsp;</label>
+        <button id="regen" type="button">Regenerate</button>
+      </div>
+      <div class="field">
+        <label for="color">Colouring</label>
+        <select id="color">
+          <option value="none">None</option>
+          <option value="parity">Parity</option>
+          <option value="magnitude">Magnitude</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="diag">Left diagonal</label>
+        <div class="chkrow"><input id="diag" type="checkbox" checked>
+          <label for="diag">highlight &amp; check</label></div>
+      </div>
+    </div>
+
+    <div id="board">
+      <div id="arrayScroll">
+        <div class="toprowhead">Top row (editable)</div>
+        <div id="triangle"></div>
+      </div>
+      <div id="rail">
+        <div class="railhead">Row stats</div>
+        <div id="railBody"></div>
+      </div>
+    </div>
+    <div id="canvasWrap" hidden>
+      <canvas id="cv"></canvas>
+      <p class="canvcap" id="canvcap"></p>
+    </div>
+    <div id="legend"></div>
+    <div id="gilb" role="status"></div>
+    <div id="msg" role="alert"></div>
+  </div>
+
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="gilbreath.js"></script>
+<script>
+  (function () {
+    var G = window.Gilbreath;
+    var $ = function (id) { return document.getElementById(id); };
+    var nInput = $("n"), gen = $("gen"), regen = $("regen"), fieldRegen = $("fieldRegen"),
+        mParam = $("mParam"), pParam = $("pParam"), lamParam = $("lamParam"),
+        fieldM = $("fieldM"), fieldP = $("fieldP"), fieldLam = $("fieldLam"),
+        spikeVal = $("spikeVal"), spikePos = $("spikePos"),
+        fieldSpikeVal = $("fieldSpikeVal"), fieldSpikePos = $("fieldSpikePos"),
+        color = $("color"), diag = $("diag"), legend = $("legend"), gilb = $("gilb"),
+        view = $("view"), example = $("example"), board = $("board"), canvasWrap = $("canvasWrap"),
+        cv = $("cv"), canvcap = $("canvcap"),
+        triangle = $("triangle"), railBody = $("railBody"), msg = $("msg");
+
+    var GRID_MAX_N = 40, CANVAS_MAX_N = 512, maxN = GRID_MAX_N;  // N cap depends on view
+    var CANVAS_W = 720, CANVAS_H = 640;                          // canvas fit box (px)
+
+    // Parity palette (fixed pastels with dark text -> readable in light or dark).
+    var PARITY = {
+      even:    { bg: "#dce8fb", fg: "#14315f" },
+      odd:     { bg: "#fde3d6", fg: "#6a2a12" },
+      neutral: { bg: "#eceef1", fg: "#4a4d55" },
+    };
+    // Magnitude palette: 0 is a quiet grey, k>=1 cycles hues (dark text throughout).
+    function magColor(idx) {
+      if (idx <= 0) return { bg: "#eceef1", fg: "#4a4d55" };
+      return { bg: "hsl(" + ((idx * 57) % 360) + ",62%,79%)", fg: "#20232a" };
+    }
+    // Paint one cell (input or div) for the current scheme, or clear for "none".
+    function paint(el, x) {
+      var c = null;
+      if (color.value === "parity") c = PARITY[G.parityClass(x)];
+      else if (color.value === "magnitude") c = magColor(G.magnitudeIndex(x));
+      el.style.background = c ? c.bg : "";
+      el.style.color = c ? c.fg : "";
+    }
+
+    var CELL_MIN = 3;              // minimum cell width, in ch
+    var GAP_CH = 1.4;              // must track --gap (0.35rem ~ 1.4ch at .95rem mono)
+    // generators worth re-rolling (Regenerate is shown only for these)
+    var RANDOM = { uniform: 1, unieven: 1, uniodd: 1, geom: 1, exp: 1 };
+    var USES_M = { uniform: 1, unieven: 1, uniodd: 1 };  // generators using the m box
+
+    function clampN() {
+      var v = Math.round(Number(nInput.value) || 0);
+      return Math.max(1, Math.min(maxN, v));
+    }
+
+    // Format a value for display: integers verbatim, reals rounded and trimmed.
+    function fmt(x) {
+      if (!isFinite(x)) return String(x);
+      if (Number.isInteger(x)) return Object.is(x, -0) ? "0" : String(x);
+      var r = Math.round(x * 1e4) / 1e4;
+      if (Object.is(r, -0)) r = 0;
+      return String(r);
+    }
+
+    // --- Parameter readers: validate, clamp, and reflect the clamp back. ---
+    // Uniform-odd needs m >= 2 for the value 1 to exist; others need m >= 1.
+    function minM() { return gen.value === "uniodd" ? 2 : 1; }
+    function mVal() {
+      var m = Math.max(minM(), Math.round(Number(mParam.value) || 0));
+      if (String(m) !== mParam.value) mParam.value = m;
+      return m;
+    }
+    function pVal() {
+      var p = Number(pParam.value);
+      if (!isFinite(p)) p = 0.3;
+      return Math.min(0.999, Math.max(0.001, p));
+    }
+    function lamVal() {
+      var l = Number(lamParam.value);
+      return (isFinite(l) && l > 0) ? l : 1;
+    }
+
+    // A fresh PRNG per draw (Math.random-seeded so Regenerate/param edits reroll).
+    function freshRng() { return G.mulberry32((Math.random() * 0xffffffff) >>> 0); }
+
+    // Values for the current generator (null for Custom, which keeps the inputs).
+    function genValues(n) {
+      switch (gen.value) {
+        case "primes":  return G.genPrimes(n);
+        case "gaps":    return G.genPrimeGaps(n);
+        case "norm":    return G.genNormalizedGaps(n);
+        case "zeros":   return G.genZeros(n);
+        case "spike":   return G.genSpike(n, Math.round(Number(spikePos.value) || 1), Number(spikeVal.value) || 0);
+        case "uniform": return G.genUniform(n, mVal(), freshRng());
+        case "unieven": return G.genUniformEven(n, mVal(), freshRng());
+        case "uniodd":  return G.genUniformOdd(n, mVal(), freshRng());
+        case "geom":    return G.genGeometric(n, pVal(), freshRng());
+        case "exp":     return G.genExponential(n, lamVal(), freshRng());
+      }
+      return null;
+    }
+
+    // (Re)build the editable top-row input row from an array of values.
+    function buildTopFrom(vals) {
+      triangle.innerHTML = "";
+      var row = document.createElement("div");
+      row.className = "arow";
+      for (var j = 0; j < vals.length; j++) {
+        var inp = document.createElement("input");
+        inp.type = "text";
+        inp.inputMode = "decimal";
+        inp.setAttribute("aria-label", "top row entry " + (j + 1));
+        inp.value = String(vals[j]);
+        row.appendChild(inp);
+      }
+      triangle.appendChild(row);
+    }
+
+    function currentInputVals() {
+      return [].map.call(triangle.querySelectorAll(".arow input"),
+        function (i) { return i.value; });
+    }
+
+    // Read the top row, validating each cell; returns array of numbers or null.
+    function readTop() {
+      var inputs = triangle.querySelectorAll(".arow input"), vals = [], ok = true;
+      for (var i = 0; i < inputs.length; i++) {
+        var raw = inputs[i].value.trim();
+        var x = raw === "" ? NaN : Number(raw);
+        var good = raw !== "" && isFinite(x);
+        inputs[i].classList.toggle("bad", !good);
+        if (!good) { ok = false; } else { vals.push(x); }
+      }
+      return ok ? vals : null;
+    }
+
+    // Legend for the current colouring scheme.
+    function renderLegend() {
+      var g = color.value, h = "";
+      function sw(bg) { return '<span class="swatch" style="background:' + bg + '"></span>'; }
+      if (g === "parity") {
+        h = '<span>' + sw(PARITY.even.bg) + 'even</span>' +
+            '<span>' + sw(PARITY.odd.bg) + 'odd</span>' +
+            '<span>' + sw(PARITY.neutral.bg) + 'non-integer</span>';
+      } else if (g === "magnitude") {
+        h = '<span class="k" style="margin-right:.2rem">colour = &lfloor;|x|&rfloor;</span>';
+        for (var i = 0; i <= 5; i++) h += '<span>' + sw(magColor(i).bg) + i + '</span>';
+        h += '<span>&hellip;</span>';
+      }
+      legend.innerHTML = h;
+    }
+
+    // Live Gilbreath read-out on the left diagonal a_(i,1), i >= 1.
+    function renderGilb(rows) {
+      if (!diag.checked) { gilb.textContent = ""; gilb.className = ""; return; }
+      var st = G.gilbreathStatus(rows);
+      if (!st.diagonal.length) {
+        gilb.className = "";
+        gilb.textContent = "Left diagonal: needs at least two rows.";
+        return;
+      }
+      var vals = '<span class="diagvals">[' + st.diagonal.map(fmt).join(", ") + ']</span>';
+      if (st.allOnes) {
+        gilb.className = "hold";
+        gilb.innerHTML = "Left diagonal below the top row is <strong>all&nbsp;1s</strong> " +
+          "&mdash; Gilbreath&rsquo;s conjecture holds for this array. " + vals;
+      } else if (st.zeroOne) {
+        gilb.className = "warn";
+        gilb.innerHTML = "Left diagonal is all <strong>0s and 1s</strong> (not yet all&nbsp;1s). " + vals;
+      } else {
+        gilb.className = "warn";
+        gilb.innerHTML = "Left diagonal leaves {0,1} at row " + st.firstBadRow +
+          " (value " + fmt(st.diagonal[st.firstBadRow - 1]) + "). " + vals;
+      }
+    }
+
+    // The current top row as numbers, without needing the editable inputs
+    // (Custom reads whatever the inputs hold; generators sample directly).
+    function getTop(n) {
+      if (gen.value === "custom") {
+        var raw = currentInputVals(), out = [];
+        for (var i = 0; i < n; i++) {
+          var x = Number(raw[i]);
+          out.push((raw[i] !== undefined && raw[i] !== "" && isFinite(x)) ? x : 0);
+        }
+        return out;
+      }
+      return genValues(n);
+    }
+
+    function cellFill(x) {
+      if (color.value === "parity") return PARITY[G.parityClass(x)].bg;
+      if (color.value === "magnitude") return magColor(G.magnitudeIndex(x)).bg;
+      return "#c9ccd3";   // "none": a plain silhouette
+    }
+    function accentColor() {
+      var c = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+      return (c && c.trim()) || "#3a5bd9";
+    }
+
+    // Large-N view: draw the whole triangle to a canvas as coloured cells.
+    function drawCanvas() {
+      renderLegend();
+      msg.textContent = "";
+      var n = clampN();
+      if (String(n) !== nInput.value) nInput.value = n;
+      var rows = G.computeArray(getTop(n));
+
+      var cell = Math.max(1, Math.floor(Math.min(CANVAS_W, CANVAS_H) / n));
+      var W = n * cell, H = n * cell;
+      cv.width = W; cv.height = H;
+      var ctx = cv.getContext("2d");
+      ctx.clearRect(0, 0, W, H);
+      for (var i = 0; i < n; i++) {
+        var y = i * cell, xoff = i * cell / 2;
+        for (var j = 0; j < rows[i].length; j++) {
+          ctx.fillStyle = cellFill(rows[i][j]);
+          ctx.fillRect(Math.round(xoff + j * cell), y, cell, cell);
+        }
+      }
+      if (diag.checked && n > 1) {          // mark the left diagonal
+        ctx.strokeStyle = accentColor();
+        ctx.lineWidth = Math.max(1.5, cell * 0.35);
+        ctx.beginPath();
+        for (var k = 1; k < n; k++) {
+          var cx = k * cell / 2 + cell / 2, cy = k * cell + cell / 2;
+          if (k === 1) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+        }
+        ctx.stroke();
+      }
+      canvcap.textContent = "N = " + n + " · " + rows.length +
+        " rows · cell " + cell + "px · non-editable (switch to Grid to edit)";
+      renderGilb(rows);
+    }
+
+    // Render according to the active view.
+    function refresh() {
+      if (view.value === "canvas") drawCanvas();
+      else regenerate();
+    }
+
+    // Recompute + render every row below the top, plus the stats rail.
+    function renderLower() {
+      renderLegend();
+      // clear previously rendered lower rows (keep the top input row)
+      var extra = [].slice.call(triangle.querySelectorAll(".arow")).slice(1);
+      extra.forEach(function (r) { r.remove(); });
+      railBody.innerHTML = "";
+
+      var top = readTop();
+      if (!top) {
+        msg.textContent = "Every top-row entry must be a number.";
+        gilb.textContent = ""; gilb.className = "";
+        return;
+      }
+      msg.textContent = "";
+
+      var rows = G.computeArray(top);
+
+      // size cells to the widest entry across the whole array
+      var maxLen = 0;
+      rows.forEach(function (r) {
+        r.forEach(function (v) { maxLen = Math.max(maxLen, fmt(v).length); });
+      });
+      var cellCh = Math.max(CELL_MIN, maxLen + 1);
+      triangle.style.setProperty("--cell", cellCh + "ch");
+      var halfStep = (cellCh + GAP_CH) / 2;   // ch offset per row for the stagger
+
+      // top row: indentation + (re)colour its editable cells
+      var topRow = triangle.querySelector(".arow");
+      topRow.style.paddingLeft = "0ch";
+      var topInputs = topRow.querySelectorAll("input");
+      for (var t = 0; t < topInputs.length; t++) paint(topInputs[t], rows[0][t]);
+
+      for (var i = 1; i < rows.length; i++) {
+        var row = document.createElement("div");
+        row.className = "arow";
+        row.style.paddingLeft = (i * halfStep) + "ch";
+        for (var j = 0; j < rows[i].length; j++) {
+          var c = document.createElement("div");
+          c.className = "cell";
+          c.textContent = fmt(rows[i][j]);
+          paint(c, rows[i][j]);
+          if (j === 0 && diag.checked) c.classList.add("diag");  // left diagonal
+          row.appendChild(c);
+        }
+        triangle.appendChild(row);
+      }
+
+      // stats rail, one line per row
+      for (var d = 0; d < rows.length; d++) {
+        var st = G.rowStats(rows[d]);
+        var rr = document.createElement("div");
+        rr.className = "railrow";
+        rr.innerHTML =
+          '<span><span class="k">mean</span> <span class="v">' + fmt(st.mean) + '</span></span>' +
+          '<span><span class="k">max</span> <span class="v">' + fmt(st.max) + '</span></span>';
+        railBody.appendChild(rr);
+      }
+
+      renderGilb(rows);
+    }
+
+    // Show only the parameter box(es) the current generator needs; the
+    // Regenerate button is meaningful only for the random generators.
+    function refreshParamUI() {
+      var g = gen.value;
+      fieldM.hidden = !USES_M[g];
+      fieldP.hidden = g !== "geom";
+      fieldLam.hidden = g !== "exp";
+      fieldSpikeVal.hidden = g !== "spike";
+      fieldSpikePos.hidden = g !== "spike";
+      fieldRegen.hidden = !RANDOM[g];   // hide Regenerate for non-random models
+      mParam.min = minM();
+    }
+
+    // Refill the top row from the current generator (Custom keeps existing
+    // values, padded/truncated to N), then recompute everything below.
+    function regenerate() {
+      var n = clampN();
+      if (String(n) !== nInput.value) nInput.value = n;
+      if (gen.value === "custom") {
+        var prev = currentInputVals(), vals = [];
+        for (var j = 0; j < n; j++) vals.push(prev[j] !== undefined ? prev[j] : "0");
+        buildTopFrom(vals);
+      } else {
+        buildTopFrom(genValues(n).map(fmt));
+      }
+      renderLower();
+    }
+
+    // Editing any top-row cell switches to Custom mode (keeping what's typed).
+    triangle.addEventListener("input", function (e) {
+      if (!e.target || e.target.tagName !== "INPUT") return;
+      if (gen.value !== "custom") { gen.value = "custom"; refreshParamUI(); }
+      renderLower();
+    });
+    gen.addEventListener("change", function () { refreshParamUI(); refresh(); });
+    regen.addEventListener("click", refresh);
+    color.addEventListener("change", refresh);   // recolour (grid) / redraw (canvas)
+    diag.addEventListener("change", refresh);     // toggle highlight + read-out
+    nInput.addEventListener("change", refresh);
+    nInput.addEventListener("input", refresh);
+    [mParam, pParam, lamParam, spikeVal, spikePos].forEach(function (el) {
+      var resampleIfGen = function () { if (gen.value !== "custom") refresh(); };
+      el.addEventListener("input", resampleIfGen);
+      el.addEventListener("change", resampleIfGen);
+    });
+
+    // Apply a view without rendering (shared by the toggle and the examples).
+    function setView(v) {
+      view.value = v;
+      var canvas = v === "canvas";
+      maxN = canvas ? CANVAS_MAX_N : GRID_MAX_N;
+      nInput.max = maxN;
+      board.hidden = canvas;
+      canvasWrap.hidden = !canvas;
+      // "None" colouring is uninformative at scale; default to Parity on entry.
+      if (canvas && color.value === "none") color.value = "parity";
+    }
+    view.addEventListener("change", function () { setView(view.value); refresh(); });
+
+    // One-click configurations drawn from the paper.
+    function applyExample(key) {
+      switch (key) {
+        case "norm":            setView("grid");   gen.value = "norm";    nInput.value = 14; color.value = "none"; break;
+        case "sierpinski":      setView("canvas"); gen.value = "spike";   nInput.value = 64; spikePos.value = 32; spikeVal.value = 1; color.value = "parity"; break;
+        case "evenobstruction": setView("canvas"); gen.value = "unieven"; nInput.value = 48; mParam.value = 6;  color.value = "magnitude"; break;
+        case "cramer":          setView("canvas"); gen.value = "geom";    nInput.value = 48; pParam.value = 0.3; color.value = "magnitude"; break;
+        default: return;
+      }
+      diag.checked = true;
+      refreshParamUI();
+      refresh();
+    }
+    example.addEventListener("change", function () {
+      var k = example.value; example.value = "";   // momentary action
+      applyExample(k);
+    });
+
+    refreshParamUI();
+    refresh();
+  })();
+</script>
+</body>
+</html>

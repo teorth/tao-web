@@ -27,6 +27,17 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/spacetime-diagram-making-of.html
+# --- Number theory (original app, first published here) ---
+- name: Gilbreath array explorer
+  category: Number theory
+  status: original
+  date: "2026-07-11"
+  description: >-
+    Enter a top row — the primes, prime gaps, a single spike, or various random models — and watch the
+    triangular array of successive absolute differences build up, with parity or magnitude colouring,
+    a live check of Gilbreath's conjecture on the left diagonal, and a zoomed-out canvas view for large
+    arrays. A companion to the paper on Gilbreath's conjecture by Zachary Chase, Zach Hunter and Terence Tao.
+  url: apps/gilbreath.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
