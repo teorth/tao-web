@@ -879,8 +879,13 @@ def build_applets(doc: dict) -> str:
             src = f'<div class="src">First published {html.escape(a["date"])} on this site.</div>'
         elif a.get("year"):
             src = f'<div class="src">{java}</div>'
+        wu = ""
+        if a.get("writeup"):
+            w = a["writeup"]
+            lbl = html.escape(w.get("label") or "The making of this app")
+            wu = f'<div class="src"><a href="{html.escape(w["url"])}">{lbl} &rarr;</a></div>'
         return (f'<div class="app"><div class="nm">{nm}</div>{pill}'
-                f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}</div>')
+                f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}{wu}</div>')
 
     applets = doc.get("applets", [])
     cats = []

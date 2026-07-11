@@ -34,6 +34,16 @@
           "description": { "type": "string" },
           "url": { "type": "string", "description": "Working version (local ported page or live external app)." },
           "source": { "type": "string", "description": "Original page (usually a dead Java applet)." },
+          "writeup": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["url"],
+            "description": "Optional link to a longer write-up / making-of page for this app.",
+            "properties": {
+              "label": { "type": "string" },
+              "url": { "type": "string" }
+            }
+          },
           "note": { "type": "string" }
         }
       }

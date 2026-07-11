@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Spacetime Diagram applet — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }  /* the h2 top-borders already separate sections */
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Spacetime Diagram applet</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="spacetime-diagram.html">spacetime-diagram applet</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/spacetime-diagram.html">1+1-dimensional special-relativity spacetime-diagram applet</a> for <a href="https://github.com/teorth/tao-web">tao-web</a>, from first sketch to publication.</em></p>
+<p><strong>How to read this.</strong> The point is to convey the <em>process</em>, not to reproduce the raw log, so:</p>
+<ul><li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim. A few of the earliest ones, and a handful of short clarifications, are <em>condensed</em> from a session summary (the full text had already scrolled out of the log) — these are marked <em>(condensed)</em>.</li><li><strong>Claude&#x27;s replies</strong> — mainly code edits to two files, <code>spacetime.js</code> (physics core) and <code>spacetime-diagram.html</code> (the app) — are replaced by short <em>italic summaries</em> of what changed. The actual diffs are omitted.</li><li>Unrelated threads from the same sessions (other website edits, reboots, meta-questions) are left out.</li></ul>
+<p>The whole thing was built incrementally over several sittings, kept uncommitted for local testing until the very end. Physics was verified with small headless Node unit tests throughout.</p>
+<hr>
+<h2>1. The idea, and a plan</h2>
+<p><strong>Terence</strong> <em>(condensed):</em></p>
+<blockquote><p>I&#x27;m thinking of coding a new applet for the website, after some local testing: a spacetime-diagram simulator for 1+1-dimensional special relativity. The interface should feel a bit like <em>Euclid: The Game</em> — you construct <strong>events</strong> (points in spacetime), <strong>light rays</strong> (null lines), <strong>inertial objects</strong> (timelike lines), <strong>lines of simultaneity</strong> (spacelike lines), and <strong>observers</strong> (timelike polygonal paths). Eventually I&#x27;d like a sophisticated click-and-drag editor, and the ability to &quot;experience&quot; an observer&#x27;s worldline; but as a first stage, entering objects by coordinates in the currently active frame — with an API to switch to other frames — is fine. The goal is to visualize the standard relativity &quot;paradoxes&quot; (twin paradox, pole and barn, …) as an aid for undergraduates, in the same spirit as the linear-algebra and complex-analysis apps. Let&#x27;s workshop the idea first and come up with a staged implementation plan.</p></blockquote>
+<p><em>Claude proposed reusing the site&#x27;s existing canvas machinery (<code>plane.js</code> / <code>applet.css</code>), sketched the Minkowski conventions (natural units c = 1, so light is at 45°), and laid out a staged plan: (1) a coordinate-entry MVP with switchable frames, (2) a drag editor, (3) a construction language, (4) subjective observer experience, (5) dynamics and appearance. It then asked two questions: how should the frames be laid out, and what to build first after the MVP.</em></p>
+<p><strong>Terence</strong> <em>(condensed — answers to those questions):</em></p>
+<blockquote><p>I like the dual-panel idea, except that <strong>both panels can be &quot;active&quot;</strong>: by default both start off as the same frame, but each can be manipulated independently. At some stage one can run an animation tracing an observer&#x27;s worldline — one frame stays a fixed inertial frame with the observer&#x27;s subjective state a little coloured dot moving along the worldline, while in the other frame the dot stays pinned at the origin and the rest of the universe moves around it (cf. the heliocentric and geocentric views of the solar system). For the next step after the MVP: the <strong>drag interface</strong>.</p></blockquote>
+<p><em>Claude built Stage 0 + a first Stage 1 MVP: two independently boostable panels, coordinate entry for all object types, per-panel frame controls, and a twin-paradox preset.</em></p>
+<hr>
+<h2>2. &quot;The travellers are tachyons&quot; — and a pivot</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>At a later stage, we can give observers and inertial objects (rest-frame) colour and (inertial) mass, and be able to view their (red-shifted) colour, relativistic mass, energy, and momentum somehow (e.g. by mouseover), but this can be a Stage 5.</p><p>I think your time and space conventions are inverted — <strong>the travellers are tachyons right now!</strong></p><p>Eventually we need the ability to rename objects, etc. I&#x27;m thinking an <strong>Inkscape-type interface</strong> where one might have several modes selectable from a sidebar, such as clicking on an observer to select it and then dragging its nodes one at a time. Actually we&#x27;re basically coding a dual-panel Inkscape editor now that I think about it.</p></blockquote>
+<p><em>Claude fixed the inverted axes — the drawing code had been mapping space and time the wrong way, so timelike worldlines rendered as if faster-than-light — and reframed the roadmap around the &quot;dual-panel Inkscape editor&quot; idea, moving colour/mass/energy to Stage 5.</em></p>
+<hr>
+<h2>3. Building the editor (Stage 1)</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Great! I have a clearer idea of what I want for the GUI now, so I&#x27;d like to refine Stage 1.</p><p>The dual-frame elements are already great, except: at any time <strong>one of the two frames should have the &quot;focus&quot;</strong> (left by default; clicking a frame focuses it), indicated subtly — e.g. a slightly thicker border. The focus frame is the one whose coordinates are displayed.</p><p>The &quot;Scene&quot; option would, in the Inkscape model, fit under a <strong>menu bar</strong> (like &quot;File / Open…&quot;), freeing screen real estate. On a <strong>left sidebar</strong>, Inkscape-style icons: a pointer to select any object in either frame, plus one icon per object type. With the pointer selected, clicking an existing object brings up editable text fields above the frames — the object&#x27;s name and its parameters <strong>as seen in the focused frame</strong> (so clicking the other frame instantly changes the numbers). The observer editor will need one box per (t, x) vertex, with buttons to insert/remove points, plus a Delete button. With an object mode selected, you create by clicking (events), click-and-drag (worldlines / light rays / simultaneity lines, like circles in the Möbius app), or multi-clicking (observers, like a polygonal path in Inkscape). A <strong>snap-to</strong> should map a click near an existing object onto it. Physically illegal objects (faster-than-light, etc.) simply aren&#x27;t created.</p><p>If a rich enough editor exists, <strong>Stage 3 isn&#x27;t needed.</strong></p></blockquote>
+<p><em>Claude built the full editor: menu bar (Scene presets, object picker), the tool sidebar (pointer + five object types), the focus-frame concept, frame-aware editable properties (observer as per-vertex rows with insert/remove), rename, delete, and click/drag/multi-click creation with snapping. Stage 3 was dropped.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>A small feature request: a <strong>&quot;swap&quot; button</strong> (maybe a double-arrow icon) between the two frames that interchanges them (and swaps the focus).</p></blockquote>
+<p><em>Added.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Observer names should default to &quot;Observer 1&quot;, &quot;Observer 2&quot;, … rather than &quot;undefined&quot;. Also, the edges of an observer path aren&#x27;t drawn until it&#x27;s finalized — this object type needs an explicit <strong>&quot;Complete&quot; button</strong> (or Enter), because the GUI can&#x27;t otherwise know when you&#x27;re done. Draw the unfinished path in <strong>grey</strong>; on completion it turns colourful and is added.</p><p>The legend at the bottom should distinguish objects by <strong>shape/style, not colour</strong> (dots = events; dashed = light rays and simultaneity lines; solid = timelike), since objects will soon have colours.</p><p>Two more sidebar tools: a <strong>&quot;hand grab&quot;</strong> mode to translate a frame by dragging (ideally with a clenching-hand cursor), and a <strong>&quot;boost&quot;</strong> mode to Lorentz-boost a frame by dragging within a cone.</p></blockquote>
+<p><em>Claude added the grey-then-commit observer flow with a Complete button, a shape-based legend, and the hand (pan) and boost tools. A follow-up clarified the boost math: even when the drag&#x27;s start and end points are at different Minkowski distances from the origin, apply the boost that maps the ray through one to the ray through the other. Another aligned the Delete key with the Delete button.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The edit pane has variable height (it grows as an observer gets more vertices), which pushes the frame canvases down and makes multi-click placement annoying — give it a fixed height with a scrollbar. The <strong>boost sliders are indexed to the (hidden) lab frame</strong> rather than to each other; per the principle-of-relativity discussion, each slider should read relative to the <em>opposite</em> frame. The two align buttons both point right — replace them with an up/down arrow pair around the swap button. While laying an observer path, show a grey rubber-band edge to the cursor. Add <strong>zoom in/out</strong> buttons (also scroll-wheel and +/− keys on the focused frame). And display each frame&#x27;s <strong>spacetime-origin offset</strong> in the other frame&#x27;s coordinates.</p></blockquote>
+<p><em>Claude reworked the layout (fixed-height scrolling edit pane, later moved below the canvases), made the sliders and origin readouts relative, added the rubber-band observer edge, zoom controls, and a consolidated align/swap control cluster.</em></p>
+<hr>
+<h2>4. Relativity by design: hiding the lab frame</h2>
+<p><em>(Claude had made the frame readouts relative to each other and removed any way to select the &quot;lab&quot; frame directly; Terence confirmed the intent.)</em></p>
+<p><strong>Terence</strong> <em>(condensed):</em></p>
+<blockquote><p>Yes exactly. The lab frame is needed for the back-end implementation, but should be <strong>invisible to the end user</strong>, who can only access the two visible frames. With no way to read off lab coordinates, they&#x27;d have no way to determine them — 100% in the spirit of the principle of relativity.</p></blockquote>
+<p><em>The lab frame stayed a pure backend construct: no &quot;select lab&quot; option, no lab label; each panel shows its velocity relative to the other (0 = co-moving), and the rest-frame dropdown only offers objects&#x27; rest frames.</em></p>
+<p><strong>Terence</strong> <em>(condensed):</em></p>
+<blockquote><p>As a variant of snap-to, the interface can try to make the object being constructed <strong>physically possible</strong>. A light ray that isn&#x27;t quite 45° snaps to the nearest 45° line; a line of simultaneity drifting toward lightlike/timelike has its slope top out just short of 45°.</p></blockquote>
+<p><em>Creation became self-correcting: light rays snap to the nearer null direction; timelike/spacelike lines are clamped toward, but never across, the light cone; illegal observer steps are refused.</em></p>
+<hr>
+<h2>5. Colour, redshift, mass, energy</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>In the edit panel add a <strong>colour</strong> (a rainbow, except events and simultaneity lines can be any colour), and <strong>inertial mass</strong> (inertial and observer objects only, default 1). For inertial objects, light rays, and observers, frequency and wavelength are tied to colour and displayed (nm, THz); editing any one updates the others. This colour is the <strong>rest-frame</strong> colour (inertial objects and observers) or the current-frame colour (light rays) — store light-ray colour in the lab frame but render in the current frame. So these objects show different colours in different frames due to redshift, and an observer even shows different colours per segment. Also display the relativistic <strong>mass/energy and momentum</strong> (c = 1), and observed colour, as non-editable fields — for observers, one interval per consecutive pair of nodes.</p></blockquote>
+<p><em>Claude added the colour model (hex for events/simultaneity; a visible-spectrum wavelength — named dropdown + rainbow slider + nm + THz — for the rest), rest mass, and derived read-only E, p, γ and observed-colour fields, with the Doppler physics (<code>gamma</code>, <code>dopplerNm</code>, <code>wavelengthToRgb</code>, etc.) added to the core and unit-tested. Several clarifications shaped the Doppler model:</em></p>
+<ul><li><em>a <strong>named</strong> colour is pinned to one canonical frequency (even though &quot;red&quot; really spans a band);</em></li><li><em>colours that come out ultraviolet or infrared display as the nearest human-visible colour;</em></li><li><em>the shift is from the viewpoint of an observer on the frame&#x27;s <strong>x = 0</strong> line, so a worldline flips from blue (approaching x = 0) to red (receding) as it crosses — so each drawn segment is split at x = 0, and the frequency/colour readout splits into approaching/receding parts.</em></li></ul>
+<p><strong>Terence:</strong></p>
+<blockquote><p>When using the hand or boost tool, keep the previously focused object in focus, so I can watch its statistics change in the edit pane as I use the tool.</p></blockquote>
+<p><em>Done — the boost/pan tools now update a held selection&#x27;s readouts live.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The labels changing colour with the shift was more visually annoying than I expected. Make <strong>all objects labelled by their rest colour</strong>, except light rays, which should all use a single constant colour (say black). Changing the frame changes the segment colours but not the text.</p></blockquote>
+<p><em>Applied: names render in rest colour (light rays in black); only the worldline strokes Doppler-shift.</em></p>
+<hr>
+<h2>6. Direct manipulation (Stage 2)</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I think we&#x27;re ready for <strong>Stage 2</strong> — editing a selected object by dragging. Events: pick up and drag. Inertial / light / simultaneity lines: drag the <strong>reference point</strong> (translate, keeping orientation) or click the line body and drag (re-orient, like creation). Observers: move individual nodes, but an interior node must stay within the <strong>forward light cone of the previous node and the backward light cone of the next</strong> (both displayed); an endpoint is constrained by just one cone.</p></blockquote>
+<p><em>Claude added grab-handles and edit-drag modes for every object type, with the observer&#x27;s neighbouring light cones drawn as constraints during a node drag, and live statistic/colour updates throughout.</em></p>
+<hr>
+<h2>7. Light rays as segments; light energy; &quot;Show c&quot;</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>A significant change to the light-ray object. Right now it&#x27;s an infinite null line with one marked point. For illustrating emission/absorption (and reflection = absorption of one ray + emission of another), I&#x27;d rather light rays be null <strong>line segments</strong>. Internally: an initial spacetime point, a left/right orientation, and the elapsed lab-frame time — hidden from the user, who sees the initial and final points and the orientation in the focus frame. On creation, the moving endpoint snaps to the light-cone boundary of the initial point (illegal if it&#x27;s in the past). When editing, both endpoints are editable and stay on that null cone.</p><p>Two more, roughly independent. To illustrate energy/mass conservation, give light rays an <strong>energy and momentum</strong> (stored in the lab frame): either is editable, but E = pc forces them equal. (We don&#x27;t enforce Planck&#x27;s law — a ray can be many photons.) And a <strong>Settings ▸ Show c</strong> toggle (like a Word-Wrap tick) that appends powers of c to the relevant quantities: x, v, p get a &quot;c&quot;; energy gets &quot;c²&quot;; frequency, wavelength, and dimensionless quantities are unchanged.</p></blockquote>
+<p><em>Light rays became null segments (<code>{initial point, direction, lab elapsed}</code>), with cone-snapping creation/editing and an E = p energy carried in the lab frame and shown in the focus frame. The Settings menu gained &quot;Show c&quot;, appending the right powers of c in the edit pane only.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>A bug: in light-ray mode, once a ray exists I can only start a new one if the first click isn&#x27;t on a previous ray — because clicking a ray selects it. But clicking a ray that&#x27;s <strong>already focused</strong> should start a new ray, so I can draw a chain of reflections.</p></blockquote>
+<p><em>Fixed: clicking the already-focused object in a creation mode starts a fresh object rather than re-selecting.</em></p>
+<hr>
+<h2>8. Proper time</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Give each inertial worldline and observer an assigned <strong>proper time at its initial point</strong> (default 0). In the observer edit panel, show each vertex&#x27;s proper time next to its (t, x), as non-editable text. And in pointer mode, when an inertial object or observer is selected, <strong>hovering</strong> over it should reveal the proper time at that point as hovertext.</p></blockquote>
+<p><em>Added a <code>tau0</code> per worldline, a read-only τ column in the observer editor, and proper-time hovertext at the nearest point on the selected worldline (all frame-invariant).</em></p>
+<hr>
+<h2>9. The hyperbola (a sixth object)</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Create a sixth object type: a <strong>hyperbola</strong>, all points at a constant spacetime interval from a centre — a timelike-cone hyperbola, a spacelike-cone hyperbola, or the light cone itself, depending on the sign of the interval. It&#x27;s the Minkowski analogue of a circle, with a GUI like the circles in the Möbius app. Store the centre in lab coordinates and an interval (any sign). Edit-panel attributes: colour (arbitrary, not redshifted), centre (in the focus frame), and the (Lorentz- invariant) interval. Creation: click-drag A → B to draw all points at the same interval to A as B.</p><p>One small thing: the natural icon for the hyperbola tool is a hyperbola — but I&#x27;d used that for the <strong>boost</strong> tool. Give the boost tool a different icon, maybe boosted t- and x-axes.</p></blockquote>
+<p><em>Claude added the hyperbola object (constant-interval &quot;Minkowski circle&quot;, two branches via cosh/sinh, light-cone degenerate case), Möbius-style drag creation, and centre/interval editing; the boost tool got a crossed-axes icon. A follow-up set the line style by causal character:</em></p>
+<blockquote><p>The hyperbola&#x27;s style can match other objects of the same causality: negative interval → timelike → <strong>solid</strong>; positive → spacelike → <strong>dotted</strong>; zero → light cone → <strong>dashed</strong>.</p></blockquote>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Minor GUI: the &quot;rest frame: rest frame…&quot; dropdown is redundant — drop the extra label; show &quot;(no rest frames)&quot; when none exist. Add a Settings option besides &quot;Show c&quot;: <strong>&quot;Apply redshift&quot;</strong> (default on) — when off, every object shows its rest colour regardless of velocity. And in observer segments you&#x27;re using β for apparent velocity; please use <strong>v</strong>.</p></blockquote>
+<p><em>All three done.</em></p>
+<hr>
+<h2>10. Subjective experience of time (Stage 4)</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Ready for <strong>Stage 4: subjective experience of time.</strong> A subjective-experience button (a YouTube-style &quot;play&quot; triangle) in the sidebar. Select an object, and a YouTube-like <strong>timeline</strong> appears in the edit panel with a current-time marker; you can play in real time or scrub, with a speed control (0.5×, 2×, …). Observers have a finite timeline; inertial objects a doubly-infinite one (so add from/to boxes, default the marked point&#x27;s τ ± 5).</p><p>While an object is selected, the <strong>non-focused frame becomes the co-moving frame</strong> at the observer&#x27;s current subjective position and velocity (defaulting, at a node, to the velocity <em>before</em> the jump). Pressing play animates it (with all Doppler shifts). At a velocity transition I&#x27;d like a <strong>smooth slew</strong> through intermediate velocities rather than a discontinuous jump.</p><p>Two features that can be deferred: (a) a panel recording what the observer <strong>&quot;sees&quot;</strong> in its backward light cone — each visible object&#x27;s apparent displacement, velocity, frequency, wavelength, energy, momentum (objects appearing/disappearing as the cone sweeps); and (b) <strong>marks on the timeline</strong> where the worldline meets another object (an event, a simultaneity line, another observer), taking care with degeneracies (a colocation over an interval marks a band, not a point).</p></blockquote>
+<p><em>Claude built the playback engine: a scrubber with play/pause and speed, driven by proper time; the non-focused panel switches to the co-moving frame, with rapidity slewed smoothly through observer nodes; frames are saved on entry and restored on exit. Several clarifications refined it:</em></p>
+<ul><li><em>first clicking a worldline sets the subjective location to <strong>that click point</strong> (not the start);</em></li><li><em>the non-focused subjective frame gets a soft <strong>pink &quot;subjective&quot; border/label</strong>, and clicks on it are disabled;</em></li><li><em>if no object is focused, the subjective frame simply doesn&#x27;t appear;</em></li><li><em>in the focused frame, a large <strong>hollow &quot;You are here&quot; ring</strong> marks the subjective event; clicking the worldline <strong>recenters</strong> there.</em></li></ul>
+<p><strong>Terence:</strong></p>
+<blockquote><p>When first clicking a worldline, set the subjective location to the click location immediately — right now it defaults to the initial location (fine for the dropdown selector, but the click should jump straight there rather than needing a double-click).</p></blockquote>
+<p><em>Fixed.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Let&#x27;s now implement the deferred features.</p></blockquote>
+<p><em>Claude added the two deferred pieces:</em></p>
+<ul><li><em>a <strong>backward-light-cone &quot;seen&quot; panel</strong>: past null rays from the subjective event to every other worldline give emission events, each reported with apparent position (± = direction), relative velocity, Doppler-shifted colour, E and p; a fast or bending source can show two images (left/right), and a colocated object shows a single &quot;•&quot; entry;</em></li><li><em>red <strong>timeline marks</strong> where the experienced worldline crosses another object — ticks for point crossings, bands for colinear overlaps.</em></li></ul>
+<p><strong>Terence:</strong></p>
+<blockquote><p>When in subjective mode, the <strong>name tag</strong> of the experienced object should ride with the hollow circle, not stay pinned to its start point. And add a timeline tick for when an event E is <strong>observed</strong> subjectively — i.e. when E&#x27;s <em>forward</em> light cone meets the worldline (this generalizes the colocation tick; when E is actually on the worldline, only one tick).</p></blockquote>
+<p><em>Both added — the label follows the &quot;you are here&quot; ring, and events register both colocation and light-cone-observation ticks.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The tooltips for the ticks are reporting an error message: &quot;Value must be less than or equal to 6.98…&quot;.</p></blockquote>
+<p><em>That was the range input&#x27;s native validation bubble leaking through the tick overlay. Claude moved the marks to a strip above the slider and clamped the slider&#x27;s value to the timeline bounds.</em></p>
+<hr>
+<h2>11. Import / export</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I&#x27;d like to <strong>import/export</strong> the applet state as JSON, via the Scene menu. The state is the objects (all their data) plus the two frames (the current tool needn&#x27;t be stored) — the existing Scenes are essentially already this. Export downloads a JSON; import opens a file picker and converts it back, returning an error if it fails, with <strong>physicality checked</strong> during import. JSON is pure text and the parser won&#x27;t execute anything, so the security risk is acceptable.</p></blockquote>
+<p><em>Claude added Scene ▸ Export/Import JSON: export serializes the lab-frame objects and both frames to a downloadable file; import fully validates structure and physicality (|β| &lt; 1, future-timelike observer steps, positive light-ray durations) before touching the scene, alerting on any failure.</em></p>
+<hr>
+<h2>12. Polish: scenes, guidance text, undo/redo</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I think we basically have a fully functional applet. Last things: (a) update the intro text in the HTML to describe the applet and give some GUI guidance; and (b) flesh out a few more scenes. For the <strong>twin paradox</strong>, add a second inertial worldline for Alpha Centauri, which the traveller briefly visits. And a <strong>pole-and-barn</strong> scene: the two barn edges and the two pole edges are distinct inertial objects, but with different synchronizations — the barn edges synchronized in the barn&#x27;s rest frame at τ = 0, the pole edges in the pole&#x27;s rest frame at τ = 0.</p></blockquote>
+<p><em>Claude rewrote the header text and &quot;How to use&quot; section and added the scenes (Alpha Centauri in the twin paradox; a pole-and-barn with the pole rest-length 6 contracting to 3.6 &lt; the barn&#x27;s 4). A follow-up asked for a <strong>light-clock</strong> scene — two mirrors at rest in the standard frame with a light pulse bouncing between them (period 4; boost to see time dilation) — which was added.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The note that units are natural is now only true by default — we have a &quot;Show c&quot; option now.</p></blockquote>
+<p><em>Softened the guidance text accordingly.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>In the pole-and-barn scene, set the second frame to the frame of the <strong>pole</strong>, rather than the barn.</p></blockquote>
+<p><em>Done.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>In the Scene menu, add <strong>Undo (Ctrl-Z)</strong> and <strong>Redo (Ctrl-Y)</strong> for any state-changing action. Keep the entire edit history if feasible so undos chain; otherwise store just the last state. The history needn&#x27;t go in the JSON export. Grey the menu items out at the ends of the history.</p></blockquote>
+<p><em>Claude added full chained undo/redo — a deep-copied snapshot at every commit point, greyed out at the history ends, with Ctrl-Z / Ctrl-Y / Ctrl-Shift-Z — excluded from the export.</em></p>
+<hr>
+<h2>13. Publication</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I think it&#x27;s now ready to publish this as a new app on the applets page (with today&#x27;s date recorded as the publication date). In addition to the Ported / Live tags, we can have an <strong>&quot;Original&quot;</strong> tag to indicate that the app was first published on this site.</p></blockquote>
+<p><em>Claude added an <code>original</code> applet status to the catalogue schema and build (a blue &quot;Original&quot; pill plus an optional publication date rendered as &quot;First published … on this site&quot;), catalogued the app under a new <strong>Relativity</strong> category dated 2026-07-11, built and previewed the page, committed the two new app files alongside the schema/build/catalogue changes, and pushed — the deploy went green, and the applet is now live.</em></p>
+<hr>
+<p><em>From &quot;let&#x27;s workshop a spacetime applet&quot; to a published tool: a dual-frame Minkowski editor with six object types, relativistic Doppler colouring, energy/momentum/proper-time readouts, a subjective &quot;experience&quot; mode with a live backward-light-cone view, undo/redo, JSON import/export, and a set of worked relativity scenes — built entirely through the conversation above.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>

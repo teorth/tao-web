@@ -24,6 +24,9 @@ applets:
     (co-moving frame plus a live backward-light-cone view). Includes worked scenes (twin paradox, pole and
     barn, light clock) and JSON import/export.
   url: apps/spacetime-diagram.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/spacetime-diagram-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
