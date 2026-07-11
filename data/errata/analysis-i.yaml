@@ -740,7 +740,7 @@ editions:
   - id: corrected-third-edition-0023
     page: '56'
     text: "After Definition 3.4.1, replace “a challenge to the reader” with “an exercise to the reader”.\
-      \ In Definition 3.4.1, “$S$ is a set in $X$” should be “latex S$ is a subset of $X$“."
+      \ In Definition 3.4.1, “$S$ is a set in $X$” should be “$S$ is a subset of $X$“."
   - id: corrected-third-edition-0024
     page: '62'
     text: "Replace Remark 3.5.5 with “One can show that the Cartesian product $X \\times Y$ is indeed\

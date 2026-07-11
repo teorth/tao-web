@@ -379,7 +379,7 @@ editions:
   - id: errata-0082
     page: '106'
     text: "In Exercise 2.75, the hypothesis $b > 1/2$ is missing. In Exercise 2.74, $C^0_t L^4_x$ should\
-      \ be $C^0_t L^2_x$, and all occurrences of $latex{\\mathbb T}^2$ should be ${\\mathbb T}$."
+      \ be $C^0_t L^2_x$, and all occurrences of ${\\mathbb T}^2$ should be ${\\mathbb T}$."
   - id: errata-0192
     page: '106'
     date: '2026-07-10'

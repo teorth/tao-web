@@ -349,8 +349,7 @@ editions:
     text: In the hint for Exercise 6.3.1, replace Exercise 6.2.1 with Exercise 6.2.2.
   - id: fourth-edition-0063
     page: "?"
-    text: "In the proof of Theorem 6.3.8, “an $0 < \\delta_j < r\" should be \"a$latex 0 < \\delta_j <\
-      \ r$”."
+    text: "In the proof of Theorem 6.3.8, “an $0 < \\delta_j < r$” should be “a $0 < \\delta_j < r$”."
   - id: fourth-edition-0064
     page: '132'
     text: "In the proof of Theorem 6.5.4, “the $e_i$ variable” should be “the $x_i$ variable”."

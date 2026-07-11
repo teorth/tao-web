@@ -188,7 +188,7 @@ editions:
       lambda-1}$."
   - id: volume-i-0034
     page: '149'
-    text: "In Exercise 2.8.6(1), “${\\mathcal X}$-valued” should be $latex {\\mathcal X}-measurable”."
+    text: "In Exercise 2.8.6(1), “${\\mathcal X}$-valued” should be “${\\mathcal X}$-measurable”."
   - id: volume-i-0035
     page: '150'
     text: In Exercise 2.8.9, Corollary 2.8.12 should be Corollary 2.8.16.
@@ -363,7 +363,7 @@ editions:
     text: In the discussion before (2.53), the manifold should be complete in addition to smooth and connected.
   - id: volume-ii-0012
     page: '81'
-    text: "After (2.60), $latex\\phi^*(t) \\dot \\phi(t)$ should be $\\phi_*(t) \\dot \\phi(t)$."
+    text: "After (2.60), $\\phi^*(t) \\dot \\phi(t)$ should be $\\phi_*(t) \\dot \\phi(t)$."
   - id: volume-ii-0013
     page: "?"
     text: "In (2.67), $Riem^\\delta_{\\alpha \\gamma \\beta}$ should be $Riem^\\delta_{\\gamma \\alpha\

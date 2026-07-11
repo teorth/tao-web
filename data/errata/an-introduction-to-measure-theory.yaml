@@ -486,7 +486,7 @@ editions:
       \ first line, $-\\infty < b < a < \\infty$ should be $-\\infty < a < b < \\infty$."
   - id: errata-0105
     page: '161'
-    text: "In Exercise 1.7.18 (i), $latex Y \\in B_Y$ should be $F \\in B_Y$. In the second display, $\\\
+    text: "In Exercise 1.7.18 (i), $Y \\in B_Y$ should be $F \\in B_Y$. In the second display, $\\\
       { \\pi_Y^{-1}(E): E \\in {\\mathcal B}_Y \\}$ should be $\\{ \\pi_Y^{-1}(F): F \\in {\\mathcal B}_Y\
       \ \\}$"
   - id: errata-0106

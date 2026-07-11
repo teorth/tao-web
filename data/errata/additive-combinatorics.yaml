@@ -365,7 +365,7 @@ editions:
       \ In Exercise 4.6.2: $\\hbox{Sym}_0$ should be $\\hbox{Sym}_1$ (two occurrences)."
   - id: revised-edition-0064
     page: '189'
-    text: "In the discussion after Theorem 4.42, the bound $E(A,A) \\geq |A|^2$ should be $latex E(A,A)\
+    text: "In the discussion after Theorem 4.42, the bound $E(A,A) \\geq |A|^2$ should be $E(A,A)\
       \ >= P(A) |A|^3$."
   - id: revised-edition-0065
     page: '191'
@@ -979,7 +979,7 @@ editions:
   - id: first-edition-0093
     page: '194'
     text: "In the first display, $e(x+jr,\\xi)$ should be $e(\\xi \\cdot (x+jr))$. After the second display,\
-      \ ${\\Bbb E}_Z f$ should equal latex \\delta^2$ rather than $\\delta$."
+      \ ${\\Bbb E}_Z f$ should equal $\\delta^2$ rather than $\\delta$."
   - id: first-edition-0094
     page: '195'
     text: "first line: $S_{err}$ should be $\\Gamma_{err}$. In the first display, $10 \\log \\frac{1}{\\\
