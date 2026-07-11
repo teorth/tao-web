@@ -871,21 +871,23 @@ def build_applets(doc: dict) -> str:
         pill = f'<span class="pill {a["status"]}">{_APPLET_STATUS[a["status"]]}</span>'
         note = f' {html.escape(a["note"])}' if a.get("note") else ""
         java = "Java, " + str(a["year"]) if a.get("year") else "Java"
-        src = ""
+        # All sub-lines share one .src cell (it is pinned to grid-row 3, so
+        # separate .src divs would overlap); stack them with <br>.
+        lines = []
         if a.get("source"):
             lbl = "original applet" if a["status"] in ("to-port", "retired") else "original"
-            src = f'<div class="src"><a href="{html.escape(a["source"])}">{lbl}</a> ({java})</div>'
+            lines.append(f'<a href="{html.escape(a["source"])}">{lbl}</a> ({java})')
         elif a.get("date"):
-            src = f'<div class="src">First published {html.escape(a["date"])} on this site.</div>'
+            lines.append(f'First published {html.escape(a["date"])} on this site.')
         elif a.get("year"):
-            src = f'<div class="src">{java}</div>'
-        wu = ""
+            lines.append(java)
         if a.get("writeup"):
             w = a["writeup"]
-            lbl = html.escape(w.get("label") or "The making of this app")
-            wu = f'<div class="src"><a href="{html.escape(w["url"])}">{lbl} &rarr;</a></div>'
+            wlbl = html.escape(w.get("label") or "The making of this app")
+            lines.append(f'<a href="{html.escape(w["url"])}">{wlbl} &rarr;</a>')
+        src = f'<div class="src">{"<br>".join(lines)}</div>' if lines else ""
         return (f'<div class="app"><div class="nm">{nm}</div>{pill}'
-                f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}{wu}</div>')
+                f'<div class="ds">{html.escape(a["description"])}{note}</div>{src}</div>')
 
     applets = doc.get("applets", [])
     cats = []
