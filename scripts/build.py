@@ -1032,8 +1032,12 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
             yr = f'{html.escape(str(s["start"]))}&ndash;{html.escape(str(s["end"]))}'
             prows.append(f'<li><span class="year">{yr}</span> {jname(s)}'
                          f'<span class="coauth"> &middot; {html.escape(s["role"])}</span></li>')
+        note = (cv or {}).get("editorial_note")
+        note_html = (f'<p class="sub"><a href="{html.escape(note["url"])}">'
+                     f'{html.escape(note["text"])}</a></p>') if note else ""
         body += ('<details class="section" id="editorial">'
                  f'<summary>Editorial roles <span class="count">({len(active)} active)</span></summary>'
+                 f'{note_html}'
                  f'<ul class="book-list">{"".join(arows)}</ul>'
                  '<details class="section">'
                  f'<summary>Former editorial roles <span class="count">({len(prior)})</span></summary>'

@@ -40,6 +40,10 @@
         "properties": {
           "title": { "type": "string" }, "organization": { "type": "string" }, "url": { "type": "string" }
         } } },
+    "editorial_note": {
+      "type": "object", "additionalProperties": false, "required": ["text", "url"],
+      "description": "Optional link shown atop the front-page Editorial roles dropdown (e.g. author submission guidance).",
+      "properties": { "text": { "type": "string" }, "url": { "type": "string" } } },
     "education": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["degree", "year", "institution"],
       "properties": {

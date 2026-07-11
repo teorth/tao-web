@@ -713,6 +713,9 @@ lectures:
   venue: online
   date: '2022'
   topic: Mathematical thinking
+editorial_note:
+  text: Advice on submitting papers to journals
+  url: "https://www.math.ucla.edu/~tao/submissions.html"
 service:
 - start: '2025'
   organization: Foundation for Science and AI Research (SAIR)
