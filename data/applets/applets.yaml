@@ -57,6 +57,9 @@ applets:
     conditioning by rejection sampling, multiple plot windows, and a theoretical pdf/pmf overlay, with
     classic-paradox presets (Monty Hall, Berkson, base-rate, …); a full language reference is on the page.
   url: apps/random-variables.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/random-variables-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
