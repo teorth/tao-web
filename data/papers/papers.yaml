@@ -107,6 +107,23 @@ works:
     level to turn it into a genuine puzzle. Incorporates reader feedback (a move counter, decimal
     rounding) and notes that the single-solution nature of linear equations makes them especially suited
     to this approach.
+- id: would-it-be-possible-to-create-a-tool-to-automatically-di
+  kind: short-story
+  title: "Would it be possible to create a tool to automatically diagram papers?"
+  year: 2023
+  venue: Blog post
+  tags:
+  - machine-assisted
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2023/02/18/would-it-be-possible-to-create-a-tool-to-automatically-diagram-papers/"
+  abstract: >-
+    Asks whether one could automatically generate a diagram of a mathematical paper's logical structure
+    — a directed graph whose nodes are the theorems, lemmas, and definitions and whose edges show which
+    results feed into which. A crude version could parse LaTeX theorem/proof environments and their
+    cross-references; a language model could go further, recovering dependencies stated only informally
+    (“repeating the argument of Section 3”) and judging which results deserve a box. The main
+    difficulties are informal proofs, implicit dependencies, and the subjective choice of what to include.
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
