@@ -312,8 +312,10 @@
     <p class="muted">A random variable is <strong>fixed by its definition and cannot be reassigned</strong> —
       in particular <code>X = X + 1</code> is an error. (A random variable is a quantity, not a mutable
       cell of memory.)</p>
-    <p class="muted">Names that clash with a reserved word — a keyword, function, distribution, constructor,
-      or statistic (e.g. <code>Normal</code>, <code>Mean</code>, <code>and</code>) — are rejected, so pick another.</p>
+    <p class="muted">Names that clash with a reserved word — a keyword, function, distribution, or constructor
+      (e.g. <code>Normal</code>, <code>SUM</code>, <code>and</code>) — are rejected, so pick another. (Statistic
+      names like <code>P</code> or <code>Median</code> are <em>not</em> reserved, since they live only inside
+      the <code>statistic</code> command.)</p>
     <p class="muted">Conventions (recommended, not enforced): <strong>Capitalised</strong> names for
       random variables, <strong>lower-case</strong> for constants, <strong>UPPERCASE</strong> for functions.</p>
   </div></details>
@@ -331,7 +333,7 @@
 
   <details><summary>Operators &amp; comparisons</summary><div class="dbody">
     <table>
-      <tr><td><code>+ &nbsp; &minus; &nbsp; * &nbsp; / &nbsp; ^</code></td><td>arithmetic (<code>^</code> is power); unary minus too</td></tr>
+      <tr><td><code>+ &nbsp; &minus; &nbsp; * &nbsp; / &nbsp; ^</code></td><td>arithmetic (<code>^</code> is power, also written <code>**</code>); unary minus too</td></tr>
       <tr><td><code>&lt; &nbsp; &lt;= &nbsp; &gt; &nbsp; &gt;= &nbsp; == &nbsp; !=</code></td><td>comparisons — each gives an <strong>event</strong> (see below)</td></tr>
     </table>
     <p class="muted">Example: <code>E = (X &gt; 3)</code> is an event, displayed True/False with its empirical probability; used in arithmetic it counts as 0/1, so <code>(X&gt;3) + (Y&gt;3)</code> is a running tally.</p>
@@ -1374,7 +1376,7 @@ function highlight(src) {
     }
     return '';
   };
-  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|&&|\|\|?|[-+*/^=<>(),!])|([\s\S])/g;
+  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|&&|\*\*|\|\|?|[-+*/^=<>(),!])|([\s\S])/g;
   let out = '', m;
   while ((m = re.exec(src))) {
     if (m[1] != null) out += `<span class="c">${esc(m[1])}</span>`;

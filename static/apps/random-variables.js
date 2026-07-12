@@ -191,7 +191,7 @@ function asSingleCall(body) {
 function tokenize(src) {
   const toks = [];
   let i = 0;
-  const two = { ':=': 1, '<=': 1, '>=': 1, '==': 1, '!=': 1, '..': 1, '&&': 1, '||': 1 };
+  const two = { ':=': 1, '<=': 1, '>=': 1, '==': 1, '!=': 1, '..': 1, '&&': 1, '||': 1, '**': 1 };
   while (i < src.length) {
     const c = src[i];
     if (c === ' ' || c === '\t' || c === '\r' || c === '\n') { i++; continue; }
@@ -214,9 +214,9 @@ function tokenize(src) {
       toks.push({ t: 'id', v: src.slice(i, j) });
       i = j; continue;
     }
-    // two-char ops
+    // two-char ops ('**' is a Python-style alias for '^' = power)
     const pair = src.slice(i, i + 2);
-    if (two[pair]) { toks.push({ t: 'op', v: pair }); i += 2; continue; }
+    if (two[pair]) { toks.push({ t: 'op', v: pair === '**' ? '^' : pair }); i += 2; continue; }
     // single-char ops ('!' is boolean NOT; '!=' handled above; '|' is the
     // conditioning bar in (X | E), distinct from '||' = boolean or)
     if ('+-*/^(),{}<>=!|'.includes(c)) { toks.push({ t: 'op', v: c }); i++; continue; }
