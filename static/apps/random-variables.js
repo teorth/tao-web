@@ -73,6 +73,7 @@ const STAT_DEF = {
   Mean: { kind: 'moment', argc: 1 }, Var: { kind: 'moment', argc: 1 },
   SD: { kind: 'moment', argc: 1 }, Cov: { kind: 'moment', argc: 2 },
   Corr: { kind: 'moment', argc: 2 },
+  P: { kind: 'moment', argc: 1, event: true }, // probability of an event = Mean of its indicator
   Median: { kind: 'quantile', argc: 1, pct: 50 },
   Q1: { kind: 'quantile', argc: 1, pct: 25 }, Q3: { kind: 'quantile', argc: 1, pct: 75 },
   Percentile: { kind: 'quantile', argc: 2, pctArg: true }, // Percentile(expr, p in [0,100])
@@ -84,25 +85,27 @@ const STAT_DEF = {
 const STAT_ALIAS = {
   mean: 'Mean', average: 'Mean', var: 'Var', variance: 'Var', sd: 'SD', std: 'SD',
   stdev: 'SD', cov: 'Cov', covariance: 'Cov', corr: 'Corr', correlation: 'Corr',
+  p: 'P', prob: 'P', probability: 'P',
   median: 'Median', med: 'Median', q1: 'Q1', q3: 'Q3',
   percentile: 'Percentile', pctile: 'Percentile', mode: 'Mode',
   entropy: 'Entropy', shannon: 'Entropy', max: 'Max', maximum: 'Max', min: 'Min', minimum: 'Min',
 };
-const STAT_NAMES = 'Mean, SD, Var, Cov, Corr, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min';
+const STAT_NAMES = 'Mean, SD, Var, Cov, Corr, P, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min';
 const SAMPLE_CAP = 2048; // ring-buffer size for quantile/mode statistics
 
 // Reserved identifiers a user may NOT reuse as a variable/constant/event name.
 // Checked case-insensitively: even where the parser could disambiguate (e.g. a
 // variable Boolean vs the constructor Boolean), shadowing is bad practice, so we
 // forbid it and teach a clearer name. Built from every keyword, operator word,
-// function, distribution, constructor alias, and statistic (canonical + alias).
+// function, distribution, and constructor alias — everything that can appear in an
+// EXPRESSION. Statistics (Mean, P, Cov, …) are deliberately NOT reserved: they live
+// only inside the `statistic` command, so they can't shadow anything in an
+// expression, and this keeps natural names like `p`, `sd`, `cov` free for variables.
 const RESERVED = new Set();
 for (const w of ['let', 'plot', 'statistic', 'track', 'condition', 'on', 'and', 'or', 'not', 'xor', 'if', 'then', 'else', 'true', 'false']) RESERVED.add(w);
 for (const s of FUNCS) RESERVED.add(s.toLowerCase());
 for (const s of DISTS) RESERVED.add(s.toLowerCase());
 for (const s of Object.keys(DIST_ALIAS)) RESERVED.add(s);
-for (const s of Object.keys(STAT_DEF)) RESERVED.add(s.toLowerCase());
-for (const s of Object.keys(STAT_ALIAS)) RESERVED.add(s);
 
 // Canonical, whitespace-independent string for an AST. `X > 3` and `X>3` render
 // identically, while `X > 3` and `X > 2+1` stay distinct — exactly the identity
@@ -153,6 +156,33 @@ function splitArgs(s) {
   }
   if (cur.trim()) out.push(cur.trim());
   return out;
+}
+// Index of the first top-level single '|' (a conditioning bar, not '||'), or -1.
+// Used to desugar Cov(X, Y | E) into Cov((X|E), (Y|E)) at the statistic level.
+function topLevelBar(s) {
+  let depth = 0;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (ch === '(' || ch === '{') depth++;
+    else if (ch === ')' || ch === '}') depth--;
+    else if (ch === '|' && depth === 0) {
+      if (s[i + 1] === '|' || s[i - 1] === '|') { i++; continue; } // skip the || (or) operator
+      return i;
+    }
+  }
+  return -1;
+}
+// If `body` is exactly Name( … ) with the closing paren at the very end, return
+// {name, args}; otherwise null (so Max(X) - Min(X) is treated as a combination).
+function asSingleCall(body) {
+  const m = body.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+  if (!m) return null;
+  let depth = 0, i = m[0].length - 1;
+  for (; i < body.length; i++) {
+    if (body[i] === '(') depth++;
+    else if (body[i] === ')') { depth--; if (depth === 0) break; }
+  }
+  return i === body.length - 1 ? { name: m[1], args: body.slice(m[0].length, i) } : null;
 }
 
 // ===========================================================================
@@ -605,31 +635,71 @@ function compile(src) {
         plots.push(parts.length === 2 ? { mode: '2d', a: parts[0], b: parts[1] } : { mode: '1d', a: parts[0] });
         continue;
       }
-      // statistic Stat(expr[, expr])   (alias: track ...) — an empirical observable
-      const mStat = line.match(/^(?:statistic|track)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*$/i);
+      // statistic <expr>   (alias: track ...) — an empirical observable. <expr> is a
+      // statistic call (Mean(X), Cov(X,Y), P(E), …) or an ARITHMETIC combination of
+      // statistics and numbers, e.g. Max(X) - Min(X). Because the line opens with the
+      // `statistic` keyword the whole expression is parsed in "statistic context":
+      // numerals are constant statistics, statistic-calls are leaves, and + - * / ^
+      // (with parentheses) combine them. A bare random variable is NOT a statistic.
+      const mStat = line.match(/^(?:statistic|track)\s+(.+)$/i);
       if (mStat) {
-        const canon = STAT_ALIAS[mStat[1].toLowerCase()];
-        if (!canon) throw new Error(`Unknown statistic '${mStat[1]}' (use ${STAT_NAMES})`);
-        const def = STAT_DEF[canon];
-        const argStrs = splitArgs(mStat[2]);
-        if (argStrs.length !== def.argc) throw new Error(`${canon} expects ${def.argc} argument${def.argc > 1 ? 's' : ''}`);
-        const tr = { stat: canon, kind: def.kind, label: `${canon}(${argStrs.join(', ')})` };
-        if (def.pctArg) { // last argument is a numeric percentage in [0, 100]
-          let p; try { p = evalConst(parseExpression(argStrs[1]), ctx); } catch (_) { p = NaN; }
-          if (!(p >= 0 && p <= 100)) throw new Error('Percentile expects a percentage between 0 and 100');
-          tr.pct = p;
-          tr.exprs = [finalize(parseExpression(argStrs[0]), ctx)];
+        const body = mStat[1].trim();
+        const subs = [];
+        // build a sub-statistic (its own accumulator) from a canonical name + raw args
+        const makeSub = (canon, rawArgs) => {
+          const def = STAT_DEF[canon];
+          if (rawArgs.length !== def.argc) throw new Error(`${canon} expects ${def.argc} argument${def.argc > 1 ? 's' : ''}`);
+          const sub = { stat: canon, kind: def.kind };
+          if (def.pctArg) { // last argument is a numeric percentage in [0, 100]
+            let p; try { p = evalConst(rawArgs[1], ctx); } catch (_) { p = NaN; }
+            if (!(p >= 0 && p <= 100)) throw new Error('Percentile expects a percentage between 0 and 100');
+            sub.pct = p; sub.exprs = [finalize(rawArgs[0], ctx)];
+          } else {
+            sub.exprs = rawArgs.map((a) => finalize(a, ctx));
+            if (def.pct != null) sub.pct = def.pct;
+          }
+          if (def.event && !nodeIsEvent(sub.exprs[0], ctx.variables)) throw new Error(`${canon}(…) expects an event (a True/False quantity)`);
+          let tu = null; for (const e of sub.exprs) tu = unifyU(tu, universeOf(e)); sub.uKey = uKeyOf(tu || []);
+          if (def.kind === 'moment') sub.acc = { n: 0, mx: 0, my: 0, Mx2: 0, My2: 0, Cxy: 0 };
+          else if (def.kind === 'extreme') sub.acc = { n: 0, hi: -Infinity, lo: Infinity };
+          else sub.buf = { data: [], i: 0, cap: SAMPLE_CAP };
+          subs.push(sub); return { t: 'sub', i: subs.length - 1 };
+        };
+        // turn a parsed combinator AST into a statistic-combinator tree
+        const toComb = (node) => {
+          if (node.t === 'num') return { t: 'num', v: node.v };
+          if (node.t === 'unop' && node.op === '-') return { t: 'unop', op: '-', a: toComb(node.a) };
+          if (node.t === 'binop' && '+-*/^'.includes(node.op)) return { t: 'binop', op: node.op, a: toComb(node.a), b: toComb(node.b) };
+          if (node.t === 'ref') {
+            if (ctx.constants.has(node.name)) return { t: 'num', v: ctx.constants.get(node.name) };  // a constant is a trivial statistic
+            if (ctx.variables.has(node.name)) throw new Error(`'${node.name}' is a random variable, not a statistic — wrap it, e.g. Mean(${node.name})`);
+            const sc = STAT_ALIAS[node.name.toLowerCase()];
+            if (sc) throw new Error(`${node.name} is a statistic — give it arguments, e.g. ${sc}(X)`);
+            throw new Error(`unknown name '${node.name}' in a statistic`);
+          }
+          if (node.t === 'call') {
+            const c = STAT_ALIAS[node.name.toLowerCase()];
+            if (!c) throw new Error(`'${node.name}' is not a statistic (statistics: ${STAT_NAMES})`);
+            return makeSub(c, node.args);
+          }
+          throw new Error('a statistic may only combine statistics (Mean, Cov, …) and numbers with + - * / ^');
+        };
+        // a lone statistic call gets the trailing "| E" conditioning sugar:
+        // Cov(X, Y | E) == Cov((X|E), (Y|E)); Percentile(X | E, 50) conditions only X.
+        const single = asSingleCall(body), sName = single && STAT_ALIAS[single.name.toLowerCase()];
+        let combinator;
+        if (sName) {
+          let argsSrc = single.args, cond = null;
+          const bar = topLevelBar(argsSrc);
+          if (bar >= 0 && splitArgs(argsSrc.slice(bar + 1)).length <= 1) { cond = argsSrc.slice(bar + 1).trim(); argsSrc = argsSrc.slice(0, bar).trim(); }
+          let argStrs = splitArgs(argsSrc);
+          if (cond) argStrs = argStrs.map((a, i) => (STAT_DEF[sName].pctArg && i === argStrs.length - 1) ? a : `(${a} | ${cond})`);
+          combinator = makeSub(sName, argStrs.map((s) => parseExpression(s)));
         } else {
-          tr.exprs = argStrs.map((s) => finalize(parseExpression(s), ctx));
-          if (def.pct != null) tr.pct = def.pct;
+          combinator = toComb(parseExpression(body));
         }
-        // all argument expressions of a statistic must share one universe
-        let tu = null; for (const e of tr.exprs) tu = unifyU(tu, universeOf(e));
-        tr.uKey = uKeyOf(tu || []);
-        if (tr.kind === 'moment') tr.acc = { n: 0, mx: 0, my: 0, Mx2: 0, My2: 0, Cxy: 0 };
-        else if (tr.kind === 'extreme') tr.acc = { n: 0, hi: -Infinity, lo: Infinity };
-        else tr.buf = { data: [], i: 0, cap: SAMPLE_CAP };
-        trackers.push(tr);
+        const uKey = subs.length && subs.every((s) => s.uKey === subs[0].uKey) ? subs[0].uKey : '';
+        trackers.push({ label: body, subs, combinator, uKey });
         continue;
       }
       // let NAME = EXPR   (constant)   [ := accepted as a lenient alias ]
@@ -741,25 +811,25 @@ function compile(src) {
     try { const v = num(e, U); return (typeof v === 'number' && isFinite(v)) ? v : null; }
     catch (_) { return null; }
   }
-  // Update each tracker from its universe's accepted draw this tick: moment stats
-  // keep exact online moments; sample stats push into a bounded ring buffer.
+  // Update each sub-statistic from its universe's accepted draw this tick: moment
+  // stats keep exact online moments; sample stats push into a bounded ring buffer.
   function updateTrackers(uinfo) {
-    for (const t of trackers) {
-      const info = uinfo[t.uKey];
+    for (const t of trackers) for (const sub of t.subs) {
+      const info = uinfo[sub.uKey];
       if (!info || !info.accepted) continue;
-      const U = uRuntime.get(t.uKey);
-      const x = safeNum(t.exprs[0], U);
+      const U = uRuntime.get(sub.uKey);
+      const x = safeNum(sub.exprs[0], U);
       if (x == null) continue;
-      if (t.kind === 'moment') {
+      if (sub.kind === 'moment') {
         let y = null;
-        if (t.exprs.length === 2) { y = safeNum(t.exprs[1], U); if (y == null) continue; }
-        const a = t.acc; a.n++;
+        if (sub.exprs.length === 2) { y = safeNum(sub.exprs[1], U); if (y == null) continue; }
+        const a = sub.acc; a.n++;
         const dx = x - a.mx; a.mx += dx / a.n; a.Mx2 += dx * (x - a.mx);
         if (y != null) { const dy = y - a.my; a.my += dy / a.n; a.My2 += dy * (y - a.my); a.Cxy += dx * (y - a.my); }
-      } else if (t.kind === 'extreme') {
-        const a = t.acc; a.n++; if (x > a.hi) a.hi = x; if (x < a.lo) a.lo = x;
+      } else if (sub.kind === 'extreme') {
+        const a = sub.acc; a.n++; if (x > a.hi) a.hi = x; if (x < a.lo) a.lo = x;
       } else {
-        const b = t.buf; b.data[b.i % b.cap] = x; b.i++;
+        const b = sub.buf; b.data[b.i % b.cap] = x; b.i++;
       }
     }
   }
@@ -776,11 +846,12 @@ function compile(src) {
     for (const c of freqMap(arr).values()) { const p = c / m; h -= p * Math.log2(p); }
     return h;
   }
-  // Population-convention moment stats (÷ n, matching the per-variable mean±sd).
-  function trackerValue(t) {
+  // Value of one sub-statistic. Population-convention moments (÷ n, matching the
+  // per-variable mean±sd). Returns null until it has enough data.
+  function subValue(t) {
     if (t.kind === 'moment') {
       const a = t.acc;
-      if (t.stat === 'Mean') return a.n >= 1 ? a.mx : null;
+      if (t.stat === 'Mean' || t.stat === 'P') return a.n >= 1 ? a.mx : null;
       if (a.n < 2) return null;
       switch (t.stat) {
         case 'Var': return a.Mx2 / a.n;
@@ -797,8 +868,18 @@ function compile(src) {
     if (t.kind === 'entropy') return entropyOf(arr);
     return quantileOf(arr, t.pct);
   }
+  // Combine sub-statistics with arithmetic; null propagates (not enough data yet).
+  function evalComb(node, subs) {
+    switch (node.t) {
+      case 'num': return node.v;
+      case 'sub': return subValue(subs[node.i]);
+      case 'unop': { const a = evalComb(node.a, subs); return a == null ? null : -a; }
+      case 'binop': { const a = evalComb(node.a, subs), b = evalComb(node.b, subs); return (a == null || b == null) ? null : scalarBin(node.op, a, b); }
+      default: return null;
+    }
+  }
   const readTrackers = () => trackers.map((t) => ({
-    label: t.label, stat: t.stat, value: trackerValue(t),
+    label: t.label, value: evalComb(t.combinator, t.subs),
     uKey: t.uKey, uLabel: uLabel((universeReg.get(t.uKey) || { path: [] }).path),
   }));
 

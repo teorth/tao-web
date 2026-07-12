@@ -424,9 +424,17 @@
       (or <code>track …</code>) and its live empirical value appears in the Values panel. The argument can
       be any expression, e.g. <code>statistic Mean(X*Y)</code>.</p>
     <table><tbody id="doc-stat"></tbody></table>
-    <p class="muted">Mean, SD, Var, Cov, Corr and Max/Min are exact over the whole run; the quantile,
+    <p>Two conveniences:</p>
+    <table>
+      <tr><td><code>statistic Cov(X, Y | E)</code></td><td>a trailing <code>| E</code> conditions the whole statistic — here it means <code>Cov((X|E), (Y|E))</code></td></tr>
+      <tr><td><code>statistic Max(X) - Min(X)</code></td><td>combine statistics (and numbers) with <code>+ − * / ^</code> and parentheses to make a new one (the range, here)</td></tr>
+    </table>
+    <p class="muted">Statistics are their own kind of object — they only live inside <code>statistic</code>
+      and never mix into ordinary expressions (a statistic depends on the whole history, not one draw). A
+      compound statistic may span universes, since it just combines numbers.</p>
+    <p class="muted">Mean, SD, Var, Cov, Corr, P and Max/Min are exact over the whole run; the quantile,
       mode, and entropy statistics are estimated from the most recent few thousand samples. Names are
-      case-insensitive and accept common aliases (average, variance, stdev, covariance, correlation, …).</p>
+      case-insensitive and accept common aliases (average, variance, stdev, covariance, correlation, prob, …).</p>
   </div></details>
 
   <details><summary>The plot panel &amp; theory overlay</summary><div class="dbody">
@@ -439,9 +447,11 @@
   </div></details>
 
   <details><summary>Out of scope (by design)</summary><div class="dbody">
-    <p>This is a teaching sandbox for building intuition, not a full numerical environment. It deliberately
-      does <strong>not</strong> attempt:</p>
+    <p>This is a small <strong>declarative language</strong> for describing probability, deliberately
+      <em>not</em> a general-purpose (Turing-complete) programming language — readability for a student
+      comes before raw expressive power. It does <strong>not</strong> attempt:</p>
     <table>
+      <tr><td><strong>General-purpose programming</strong></td><td>no loops, user-defined functions, recursion, or mutable variables — every line stays a readable declaration, not an algorithm.</td></tr>
       <tr><td><strong>Random matrices</strong></td><td>eigenvalue statistics (gap distributions, …) need complex numbers and their own machinery — a different tool.</td></tr>
       <tr><td><strong>Conditioning on a random variable</strong></td><td>only conditioning on <em>events</em> is supported; the conditional expectation E[X | Y] (a coarser σ-algebra) needs measure theory and can't be built empirically.</td></tr>
       <tr><td><strong>3-D plots</strong></td><td>views are 1-D and 2-D only.</td></tr>
@@ -1288,6 +1298,7 @@ const GLOSSARY = {
   SD:         { cat: 'stat', sig: 'SD(x)', desc: 'Standard deviation of x (exact).' },
   Cov:        { cat: 'stat', sig: 'Cov(x, y)', desc: 'Covariance of x and y (exact).' },
   Corr:       { cat: 'stat', sig: 'Corr(x, y)', desc: 'Correlation of x and y, in [−1, 1] (exact).' },
+  P:          { cat: 'stat', sig: 'P(E)', desc: 'Probability of an event E (its running frequency).' },
   Median:     { cat: 'stat', sig: 'Median(x)', desc: 'Middle value — the 50th percentile (sampled).' },
   Q1:         { cat: 'stat', sig: 'Q1(x)', desc: 'Lower quartile — the 25th percentile (sampled).' },
   Q3:         { cat: 'stat', sig: 'Q3(x)', desc: 'Upper quartile — the 75th percentile (sampled).' },
@@ -1298,7 +1309,8 @@ const GLOSSARY = {
   Min:        { cat: 'stat', sig: 'Min(x)', desc: 'Smallest value seen so far (exact).' },
 };
 const STAT_CANON = { mean: 'Mean', average: 'Mean', var: 'Var', variance: 'Var', sd: 'SD', std: 'SD', stdev: 'SD',
-  cov: 'Cov', covariance: 'Cov', corr: 'Corr', correlation: 'Corr', median: 'Median', med: 'Median', q1: 'Q1', q3: 'Q3',
+  cov: 'Cov', covariance: 'Cov', corr: 'Corr', correlation: 'Corr', p: 'P', prob: 'P', probability: 'P',
+  median: 'Median', med: 'Median', q1: 'Q1', q3: 'Q3',
   percentile: 'Percentile', pctile: 'Percentile', mode: 'Mode', entropy: 'Entropy', shannon: 'Entropy',
   max: 'Max', maximum: 'Max', min: 'Min', minimum: 'Min' };
 
@@ -1316,9 +1328,9 @@ const HL_DIST_CANON = { unif: 'Unif', uniform: 'Unif', exp: 'Exp', exponential: 
   toss: 'Boolean', chance: 'Boolean' };
 const HL_FN = new Set(['SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'NUNIQUE', 'DISTINCT',
   'MAX', 'MIN', 'ABS', 'SQRT', 'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN', 'FLOOR', 'CEIL', 'ROUND', 'SIGN', 'IF']);
-const HL_STAT = new Set(['Mean', 'Var', 'SD', 'Cov', 'Corr', 'Median', 'Q1', 'Q3', 'Percentile', 'Mode', 'Entropy',
-  'Max', 'Min', 'Average', 'Variance', 'Stdev', 'Std', 'Covariance', 'Correlation', 'Med', 'Pctile', 'Shannon',
-  'Maximum', 'Minimum']);
+const HL_STAT = new Set(['Mean', 'Var', 'SD', 'Cov', 'Corr', 'P', 'Prob', 'Probability', 'Median', 'Q1', 'Q3',
+  'Percentile', 'Mode', 'Entropy', 'Max', 'Min', 'Average', 'Variance', 'Stdev', 'Std', 'Covariance',
+  'Correlation', 'Med', 'Pctile', 'Shannon', 'Maximum', 'Minimum']);
 const escAttr = (s) => esc(s).replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
 // glossary entry for a classified identifier (k=keyword, b=bool op, d=dist, f=function, s=statistic)
 function glossFor(id, c) {
