@@ -9,7 +9,7 @@
   /* Base tokens (--bg / --panel / --ink / --muted / --line / --accent /
      --accent-soft / --danger / --axis / --mono / --sans) come from applet.css
      and are light+dark aware; here we add only the app-specific extras. */
-  :root { --panel2: var(--accent-soft); --accent2: #e0862f; --warn: var(--danger); --ok: #2f9e57; }
+  :root { --panel2: var(--accent-soft); --accent2: #e0862f; --warn: var(--danger); --ok: #2f9e57; --event: #b5179e; }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
@@ -81,6 +81,8 @@
   .hl .set{ color: #1d9a9a; }                          /* {..} sets */
   .hl .cn { color: #5a7a9a; }                          /* constants (deterministic) */
   .hl .v  { color: var(--ink); }                       /* random variables (plain ink) */
+  .hl .ev { color: var(--event); }                     /* event variables */
+  .hl .b  { color: var(--event); font-style: italic; } /* boolean operators: and, or, not, xor */
   .hl .op { color: var(--muted); }                     /* operators */
   .hl span { pointer-events: auto; }                   /* so hit-testing can find a token when the textarea is briefly disabled */
   .rv-tip { position: fixed; z-index: 60; max-width: 320px; pointer-events: none;
@@ -95,7 +97,11 @@
   th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); font-size: 13px; }
   th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
   td.name { color: var(--ink); font-family: "SFMono-Regular", Consolas, monospace; font-weight: 700; }
+  td.name.ev { color: var(--event); }               /* event names */
   td.v { color: var(--accent); font-family: "SFMono-Regular", Consolas, monospace; }
+  td.v .bool { font-weight: 700; }
+  td.v .bool.t { color: var(--ok); }                 /* True */
+  td.v .bool.f { color: var(--muted); }              /* False */
   td.stat { color: var(--muted); font-size: 12px; }
   .consts { color: var(--muted); font-size: 12px; margin-top: 8px; }
   /* empirical-statistics trackers (rendered GUI: labels carry the math look) */
@@ -210,7 +216,8 @@
           <tr><td><code>G = Normal(0, 1)</code></td><td>Gaussian (mean, sd)</td></tr>
           <tr><td colspan="2" style="color:var(--muted)">also Bernoulli(p), Binomial(n,p), Poisson(λ), Geometric(p)</td></tr>
           <tr><td><code>Z = X + Y</code></td><td>derived — stays coupled to X, Y</td></tr>
-          <tr><td><code>I = (X &gt; 3)</code></td><td>indicator, gives 0 or 1</td></tr>
+          <tr><td><code>E = (X &gt; 3)</code></td><td>an event — True/False, with P(·)</td></tr>
+          <tr><td><code>C = Coin()</code> · <code>E and C</code></td><td>Boolean(1/2); combine with and/or/not</td></tr>
           <tr><td><code>let n = 100</code></td><td>a constant (sizes, parameters)</td></tr>
           <tr><td><code>V = Sample(Exp(1), n)</code></td><td>n independent copies → a vector</td></tr>
           <tr><td><code>M = AVERAGE(V)</code></td><td>SUM, AVERAGE, MAX, MIN, STDEV, COUNT</td></tr>
@@ -280,7 +287,7 @@
 
   <details><summary>Assignments, constants &amp; comments</summary><div class="dbody">
     <table>
-      <tr><td><code>Name = expr</code></td><td>define a <strong>random variable</strong></td></tr>
+      <tr><td><code>Name = expr</code></td><td>define a <strong>random variable</strong> (an <strong>event</strong> if <code>expr</code> is a comparison or boolean)</td></tr>
       <tr><td><code>let name = expr</code></td><td>define a <strong>constant</strong> — a fixed number, used for parameters and vector sizes</td></tr>
       <tr><td><code>a == b</code></td><td>equality test (gives 1 or 0); a single <code>=</code> is assignment</td></tr>
       <tr><td><code>:=</code></td><td>accepted as an alias for <code>=</code></td></tr>
@@ -289,6 +296,8 @@
     <p class="muted">A random variable is <strong>fixed by its definition and cannot be reassigned</strong> —
       in particular <code>X = X + 1</code> is an error. (A random variable is a quantity, not a mutable
       cell of memory.)</p>
+    <p class="muted">Names that clash with a reserved word — a keyword, function, distribution, constructor,
+      or statistic (e.g. <code>Normal</code>, <code>Mean</code>, <code>and</code>) — are rejected, so pick another.</p>
     <p class="muted">Conventions (recommended, not enforced): <strong>Capitalised</strong> names for
       random variables, <strong>lower-case</strong> for constants, <strong>UPPERCASE</strong> for functions.</p>
   </div></details>
@@ -307,9 +316,27 @@
   <details><summary>Operators &amp; comparisons</summary><div class="dbody">
     <table>
       <tr><td><code>+ &nbsp; &minus; &nbsp; * &nbsp; / &nbsp; ^</code></td><td>arithmetic (<code>^</code> is power); unary minus too</td></tr>
-      <tr><td><code>&lt; &nbsp; &lt;= &nbsp; &gt; &nbsp; &gt;= &nbsp; == &nbsp; !=</code></td><td>comparisons — each gives a 0/1 <strong>indicator</strong> random variable</td></tr>
+      <tr><td><code>&lt; &nbsp; &lt;= &nbsp; &gt; &nbsp; &gt;= &nbsp; == &nbsp; !=</code></td><td>comparisons — each gives an <strong>event</strong> (see below)</td></tr>
     </table>
-    <p class="muted">Example: <code>I = (X &gt; 3)</code> is 1 when X exceeds 3, else 0; its mean estimates P(X &gt; 3).</p>
+    <p class="muted">Example: <code>E = (X &gt; 3)</code> is an event, displayed True/False with its empirical probability; used in arithmetic it counts as 0/1, so <code>(X&gt;3) + (Y&gt;3)</code> is a running tally.</p>
+  </div></details>
+
+  <details><summary>Events (True/False) &amp; the <code>Boolean</code> coin</summary><div class="dbody">
+    <p>An <strong>event</strong> is a True/False random quantity — anything built from a comparison, a
+      boolean combination, or the <code>Boolean</code> constructor. Events show in the Values panel as
+      <strong>True</strong>/<strong>False</strong> with their empirical probability P(·), and coerce to
+      0/1 wherever a number is expected (so <code>Mean(E)</code> estimates P(E)).</p>
+    <table>
+      <tr><td><code>Boolean(p = 1/2)</code></td><td>a coin: True with probability p (aliases <code>Coin</code>, <code>Flip</code>, <code>Toss</code>, <code>Bool</code>, <code>Chance</code>)</td></tr>
+      <tr><td><code>E = X &gt; 3</code></td><td>name an event from a comparison</td></tr>
+    </table>
+    <p>Combine events with boolean operators. Three interchangeable spellings: word operators
+      (primary), symbols <code>&amp;&amp;</code>&nbsp;<code>||</code>&nbsp;<code>!</code>, and Excel-style
+      functions <code>AND</code>/<code>OR</code>/<code>NOT</code>/<code>XOR</code> (variadic, so
+      <code>AND(A, B, C)</code>; any nonzero value counts as True).</p>
+    <table><tbody id="doc-bool"></tbody></table>
+    <p class="muted">Example: <code>H1 = Coin()</code>, <code>H2 = Coin()</code>, <code>both = H1 and H2</code> —
+      then P(both) settles near 0.25, a picture of independence.</p>
   </div></details>
 
   <details><summary>Functions</summary><div class="dbody">
@@ -319,6 +346,9 @@
     <table><tbody id="doc-fn-math"></tbody></table>
     <h4>Logic</h4>
     <table><tbody id="doc-fn-logic"></tbody></table>
+    <p class="muted"><code>IF</code> also has the word form <code>if C then A else B</code>. The boolean
+      functions <code>AND</code>, <code>OR</code>, <code>NOT</code>, <code>XOR</code> live in the Events
+      section above.</p>
     <p class="muted"><code>MAX</code> and <code>MIN</code> also accept several scalar arguments, e.g. <code>MAX(X, Y, 0)</code>.</p>
   </div></details>
 
@@ -339,10 +369,15 @@
       <tr><td><code>plot X</code></td><td>1-D view (fading dots + histogram)</td></tr>
       <tr><td><code>plot X, Y</code></td><td>2-D scatter</td></tr>
       <tr><td>several <code>plot</code> lines</td><td>open several plot windows at once (stacked)</td></tr>
-      <tr><td><code>condition on E</code></td><td>rejection sampling: keep only the ticks where the 0/1 condition <code>E</code> holds. It conditions the shared ω for <em>every</em> variable, so dependence can appear (e.g. an independent square collapses into a disk).</td></tr>
+      <tr><td><code>condition on E</code></td><td>rejection sampling: keep only the ticks where the event <code>E</code> holds. It conditions the shared ω for <em>every</em> variable, so dependence can appear (e.g. an independent square collapses into a disk).</td></tr>
     </table>
     <p class="muted">If a condition is very unlikely, the app caps the number of tries per tick; the
       acceptance rate is shown under the Values panel.</p>
+    <p class="muted">Scope: this app conditions only on <strong>events</strong> (True/False). It does
+      not implement the more advanced notion of conditioning on a <em>random variable</em> — the
+      conditional expectation E[X | Y], which lives in a coarser σ-algebra, needs measure theory and
+      cannot be built empirically — and it certainly does not attempt conditioning on arbitrary
+      σ-algebras.</p>
   </div></details>
 
   <details><summary>Empirical statistics (<code>statistic</code> / <code>track</code>)</summary><div class="dbody">
@@ -379,6 +414,15 @@
  *  APP: presets, controls, panels, canvas                               *
  * ===================================================================== */
 const PRESETS = {
+  'Blank — write your own':
+`# A blank canvas — write your own program.
+# Define random variables with =, constants with let, events from comparisons,
+# then choose what to show with a plot line. For example:
+#
+#   X = Normal()
+#   Y = Normal()
+#   plot X, Y
+`,
   'Dice — independent vs coupled':
 `# Two fair dice, plus two things built from them.
 X = Unif({1..6})
@@ -438,6 +482,65 @@ statistic Entropy(X)   # ~ log2(6) = 2.585 bits, since the die is uniform
 statistic Max(X)
 statistic Min(X)
 plot X`,
+  'Two coins — independence':
+`# Events are True/False. Two fair coins; watch the probabilities settle.
+H1 = Coin()          # Boolean(1/2): True with prob 1/2
+H2 = Coin()
+both = H1 and H2     # P ~ 0.25 = 1/2 x 1/2  (independence)
+either = H1 or H2    # P ~ 0.75
+plot both`,
+  'Inclusion–exclusion — two dice':
+`# P(A or B) = P(A) + P(B) - P(A and B), visible in the live probabilities.
+X = Unif({1..6})
+Y = Unif({1..6})
+A = X == 6           # a six on the first die
+B = Y == 6           # a six on the second
+A_or_B = A or B      # ~ 11/36
+A_and_B = A and B    # ~ 1/36
+plot A_or_B`,
+  'Dice game — payoff (if / then / else)':
+`# A payoff that branches on the roll. if ... then ... else nests, like IF(...).
+X = Unif({1..6})
+payoff = if X == 6 then 10 else if X >= 4 then 2 else -1
+statistic Mean(payoff)   # the expected payoff per roll
+plot payoff`,
+  'Monty Hall — should you switch?':
+`# You pick one of three doors; the host opens a goat door; do you switch?
+# Switching wins exactly when your first pick was wrong — so 2/3 of the time.
+car = Unif({1..3})          # the prize door
+pick = Unif({1..3})         # your first guess
+stay_wins = pick == car     # keep your door -> wins ~ 1/3
+switch_wins = pick != car   # switch -> wins ~ 2/3
+plot switch_wins`,
+  'Two children — one is a boy':
+`# A family has two children, at least one a boy. Then P(both boys) = 1/3, not 1/2.
+older = Coin()      # True = boy
+younger = Coin()
+condition on older or younger    # given: at least one is a boy
+both_boys = older and younger
+plot both_boys`,
+  "Berkson's paradox — selection bias":
+`# Talent and looks are independent in the population. But among those selected
+# for EITHER (the famous, the admitted) they become negatively correlated.
+talent = Normal(0, 1)
+looks = Normal(0, 1)
+condition on talent > 1 or looks > 1
+statistic Corr(talent, looks)    # now negative — from the selection alone
+plot talent, looks`,
+  'Base-rate fallacy — a medical test':
+`# A rare disease (1%) and a good test (99% sensitive, 5% false positives).
+# After a POSITIVE result the chance you are sick is still only ~1 in 6.
+sick = Boolean(0.01)
+positive = if sick then Boolean(0.99) else Boolean(0.05)
+condition on positive
+plot sick`,
+  'St. Petersburg — a divergent mean':
+`# Toss a coin until the first head at toss N; win 2^N. The average payoff never
+# settles — the theoretical expectation is infinite.
+N = Geometric(1/2)
+payoff = 2 ^ N
+statistic Mean(payoff)   # keeps drifting up as rare huge payoffs land
+plot payoff`,
   'Exponential clock':
 `Y = Exp(3)
 plot Y`,
@@ -484,6 +587,7 @@ const PRESET_OPTS = {
 };
 function applyPreset(name) {
   $('src').value = PRESETS[name];
+  presetSel.value = name;   // keep the dropdown in sync with what is loaded
   syncHL();
   const o = PRESET_OPTS[name] || {};
   if ('fuzz' in o) { state.fuzz = o.fuzz; $('fuzz').value = Math.round(o.fuzz * 100); $('fuzzV').textContent = Math.round(o.fuzz * 100); }
@@ -699,6 +803,7 @@ function trailAlpha(i, n) { return 0.05 + 0.32 * (i / Math.max(1, n - 1)); }
 function draw1D(w, h, win) {
   const m = 42, cy = h * 0.60, hmax = h * 0.40;
   const band = state.fuzz * h * 0.42;
+  const isEv = !!(state.prog && state.prog.isEventVar(win.a));  // event -> False/True axis
   const b = win.bounds;
   const [lo, hi] = padRange(b.minX, b.maxX);
   const X = (v) => m + (v - lo) / (hi - lo) * (w - 2 * m);
@@ -741,10 +846,13 @@ function draw1D(w, h, win) {
   cx.strokeStyle = COL.axis; cx.lineWidth = 1;
   cx.beginPath(); cx.moveTo(m, cy); cx.lineTo(w - m, cy); cx.stroke();
   cx.fillStyle = COL.tick; cx.font = '11px sans-serif'; cx.textAlign = 'center';
-  for (const t of niceTicks(lo, hi, 7)) {
-    const px = X(t);
+  // events are False/True, not a 0..1 continuum (no fuzzy-logic values in between)
+  const xticks = isEv ? [{ v: 0, label: 'False' }, { v: 1, label: 'True' }]
+    : niceTicks(lo, hi, 7).map((t) => ({ v: t, label: fmt(t) }));
+  for (const tk of xticks) {
+    const px = X(tk.v);
     cx.strokeStyle = COL.axis; cx.beginPath(); cx.moveTo(px, cy - 4); cx.lineTo(px, cy + 4); cx.stroke();
-    cx.fillText(fmt(t), px, cy + 18);
+    cx.fillText(tk.label, px, cy + 18);
   }
   // theoretical pdf / pmf overlay (when tractable), on the shared scale
   drawTheory1D(X, cy, hmax, lo, hi, th, peak, w, h);
@@ -762,7 +870,8 @@ function draw1D(w, h, win) {
   if (last && typeof cur === 'number') {
     const yy = (style === 'hist') ? cy : cy - last.jit * band;
     cx.fillStyle = currentColor(); cx.beginPath(); cx.arc(X(cur), yy, 4.5, 0, 7); cx.fill();
-    cx.fillStyle = COL.tick; cx.textAlign = 'left'; cx.fillText(`${win.a} = ${fmt(cur)}`, m, 20);
+    cx.fillStyle = COL.tick; cx.textAlign = 'left';
+    cx.fillText(`${win.a} = ${isEv ? (cur ? 'True' : 'False') : fmt(cur)}`, m, 20);
   }
 }
 
@@ -799,7 +908,7 @@ function theoryFor(name) {
       return { kind: 'pdf', lo: 0, hi: Infinity, pdf: (x) => r * Math.exp(-r * x) }; }
     case 'Normal': case 'Gaussian': { const mu = num(0), sd = num(1); if (mu == null || sd == null || sd <= 0) return null;
       return { kind: 'pdf', lo: -Infinity, hi: Infinity, pdf: (x) => Math.exp(-((x - mu) ** 2) / (2 * sd * sd)) / (sd * Math.sqrt(2 * Math.PI)) }; }
-    case 'Bernoulli': { const p = num(0); if (p == null) return null;
+    case 'Bernoulli': case 'Boolean': { const p = num(0); if (p == null) return null;
       return { kind: 'pmf', points: [{ v: 0, p: 1 - p }, { v: 1, p }] }; }
     case 'Binomial': { const nn = num(0), p = num(1); if (nn == null || p == null) return null;
       const pts = []; for (let k = 0; k <= nn; k++) pts.push({ v: k, p: binomPmf(nn, p, k) }); return { kind: 'pmf', points: pts }; }
@@ -889,16 +998,22 @@ function updatePanels() {
   let rows = '';
   for (const name of prog.varOrder) {
     const v = state.lastValues[name];
+    const isEv = prog.isEventVar(name);
     let vs = '—', st = '';
     if (v !== undefined) {
       if (Array.isArray(v)) vs = fmtVec(v);
-      else {
+      else if (isEv) {
+        // events display as True/False, with the running mean shown as P(·)
+        vs = `<span class="bool ${v !== 0 ? 't' : 'f'}">${v !== 0 ? 'True' : 'False'}</span>`;
+        const s = state.stats[name];
+        if (s && s.n >= 1) st = `P ≈ ${fmt(s.mean)}`;
+      } else {
         vs = fmt(v);
         const s = state.stats[name];
         if (s && s.n > 1) st = `${fmt(s.mean)} ± ${fmt(Math.sqrt(s.M2 / s.n))}`;
       }
     }
-    rows += `<tr><td class="name">${name}</td><td class="v">${vs}</td><td class="stat">${st}</td></tr>`;
+    rows += `<tr><td class="name${isEv ? ' ev' : ''}">${name}</td><td class="v">${vs}</td><td class="stat">${st}</td></tr>`;
   }
   $('vals').innerHTML = rows;
   if (prog.constants.size) {
@@ -987,16 +1102,26 @@ const GLOSSARY = {
   track:     { cat: 'command', sig: 'track Stat(…)', desc: 'Alias of statistic.' },
   condition: { cat: 'command', sig: 'condition on E', desc: 'Rejection sampling: keep only the ticks where the 0/1 condition E holds.' },
   on:        { cat: 'command', sig: 'condition on E', desc: 'Part of the condition command.' },
-  // distributions
-  Unif:      { cat: 'dist', sig: 'Unif(a, b)  ·  Unif({…})', desc: 'Uniform: continuous on the interval [a, b], or discrete on a set such as {1..6} (a die).' },
-  Exp:       { cat: 'dist', sig: 'Exp(rate)', desc: 'Exponential with rate λ (mean 1/λ).' },
-  Normal:    { cat: 'dist', sig: 'Normal(μ, σ)', desc: 'Gaussian with mean μ and standard deviation σ (also Gaussian).' },
-  Gaussian:  { cat: 'dist', alias: 'Normal', sig: 'Gaussian(μ, σ)', desc: 'Alias of Normal(μ, σ).' },
-  Bernoulli: { cat: 'dist', sig: 'Bernoulli(p)', desc: '1 with probability p, otherwise 0.' },
-  Binomial:  { cat: 'dist', sig: 'Binomial(n, p)', desc: 'Number of successes in n independent p-trials.' },
-  Poisson:   { cat: 'dist', sig: 'Poisson(λ)', desc: 'Poisson counts with mean λ.' },
-  Geometric: { cat: 'dist', sig: 'Geometric(p)', desc: 'Trials up to and including the first success; support {1, 2, 3, …}, mean 1/p.' },
+  // distributions (omitted trailing parameters fall back to the defaults shown)
+  Unif:      { cat: 'dist', sig: 'Unif(a = 0, b = 1)  ·  Unif({…})', desc: 'Uniform: continuous on the interval [a, b], or discrete on a set such as {1..6} (a die).' },
+  Exp:       { cat: 'dist', sig: 'Exp(rate = 1)', desc: 'Exponential with rate λ (mean 1/λ). Aliases: Exponential.' },
+  Normal:    { cat: 'dist', sig: 'Normal(μ = 0, σ = 1)', desc: 'Gaussian with mean μ and standard deviation σ. Aliases: Gaussian, Norm.' },
+  Gaussian:  { cat: 'dist', alias: 'Normal', sig: 'Gaussian(μ = 0, σ = 1)', desc: 'Alias of Normal.' },
+  Bernoulli: { cat: 'dist', sig: 'Bernoulli(p = 1/2)', desc: '1 with probability p, otherwise 0. Aliases: Bern.' },
+  Binomial:  { cat: 'dist', sig: 'Binomial(n = 1, p = 1/2)', desc: 'Number of successes in n independent p-trials. Aliases: Bin.' },
+  Poisson:   { cat: 'dist', sig: 'Poisson(λ = 1)', desc: 'Poisson counts with mean λ. Aliases: Pois.' },
+  Geometric: { cat: 'dist', sig: 'Geometric(p = 1/2)', desc: 'Trials up to and including the first success; support {1, 2, 3, …}, mean 1/p. Aliases: Geom.' },
+  Boolean:   { cat: 'dist', sig: 'Boolean(p = 1/2)', desc: 'A True/False event that is True with probability p — a coin. Aliases: Coin, Flip, Toss, Bool, Chance.' },
   Sample:    { cat: 'dist', sig: 'Sample(dist, n)', desc: 'A length-n vector of independent draws from dist (n is a constant).' },
+  // boolean operators on events. Word form (primary), symbol aliases (&&, ||, !),
+  // and Excel-style functions AND/OR/NOT/XOR (variadic; any nonzero value = True).
+  and: { cat: 'bool', sig: 'E and F  ·  AND(E, F, …)', desc: 'Event that all of the events occur (also E && F).' },
+  or:  { cat: 'bool', sig: 'E or F  ·  OR(E, F, …)', desc: 'Event that at least one of the events occurs (also E || F).' },
+  not: { cat: 'bool', sig: 'not E  ·  NOT(E)', desc: 'Event that E does not occur (also !E).' },
+  xor: { cat: 'bool', sig: 'E xor F  ·  XOR(E, F, …)', desc: 'Event that an odd number of the events occur (exactly one, for two).' },
+  if:   { cat: 'command', sig: 'if C then A else B', desc: 'A when the event C holds, else B — the word form of IF(C, A, B).' },
+  then: { cat: 'command', sig: 'if C then A else B', desc: 'Separates the condition from the “true” value of an if-expression.' },
+  else: { cat: 'command', sig: 'if C then A else B', desc: 'Introduces the “false” value of an if-expression.' },
   // functions — reductions (vector → scalar)
   SUM:     { cat: 'reduce', sig: 'SUM(v)', desc: 'Sum of the entries of a vector.' },
   PROD:    { cat: 'reduce', sig: 'PROD(v)', desc: 'Product of the entries of a vector.' },
@@ -1021,7 +1146,7 @@ const GLOSSARY = {
   ROUND: { cat: 'math', sig: 'ROUND(x)', desc: 'Round to the nearest integer.' },
   SIGN:  { cat: 'math', sig: 'SIGN(x)', desc: '−1, 0, or 1 according to the sign of x.' },
   // functions — logic
-  IF: { cat: 'logic', sig: 'IF(condition, a, b)', desc: 'a when the condition holds, else b.' },
+  IF: { cat: 'logic', sig: 'IF(C, a, b)  ·  if C then a else b', desc: 'a when the condition C holds, else b (two spellings of the same thing).' },
   // statistics (canonical; aliases resolve through STAT_CANON)
   Mean:       { cat: 'stat', sig: 'Mean(x)', desc: 'Running average of x (exact).' },
   Var:        { cat: 'stat', sig: 'Var(x)', desc: 'Variance of x (exact).' },
@@ -1044,23 +1169,35 @@ const STAT_CANON = { mean: 'Mean', average: 'Mean', var: 'Var', variance: 'Var',
 
 // ---- syntax highlighting (a colorized overlay, IDE-style) ----
 const HL_KW = new Set(['let', 'plot', 'statistic', 'track', 'condition', 'on']);
-const HL_DIST = new Set(['Unif', 'Exp', 'Normal', 'Gaussian', 'Bernoulli', 'Binomial', 'Poisson', 'Geometric', 'Sample']);
+const HL_CTRL = new Set(['if', 'then', 'else']);   // word-control (lower-case; keeps IF() a function)
+const HL_BOOL = new Set(['and', 'or', 'not', 'xor']);
+const HL_DIST = new Set(['Unif', 'Uniform', 'Exp', 'Exponential', 'Normal', 'Gaussian', 'Gauss', 'Norm',
+  'Bernoulli', 'Bern', 'Binomial', 'Bin', 'Poisson', 'Pois', 'Geometric', 'Geom', 'Sample',
+  'Boolean', 'Bool', 'Coin', 'Flip', 'Toss', 'Chance']);
+const HL_DIST_CANON = { unif: 'Unif', uniform: 'Unif', exp: 'Exp', exponential: 'Exp', normal: 'Normal',
+  gaussian: 'Normal', gauss: 'Normal', norm: 'Normal', bernoulli: 'Bernoulli', bern: 'Bernoulli',
+  binomial: 'Binomial', bin: 'Binomial', poisson: 'Poisson', pois: 'Poisson', geometric: 'Geometric',
+  geom: 'Geometric', sample: 'Sample', boolean: 'Boolean', bool: 'Boolean', coin: 'Boolean', flip: 'Boolean',
+  toss: 'Boolean', chance: 'Boolean' };
 const HL_FN = new Set(['SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'MAX', 'MIN', 'ABS', 'SQRT',
   'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN', 'FLOOR', 'CEIL', 'ROUND', 'SIGN', 'IF']);
 const HL_STAT = new Set(['Mean', 'Var', 'SD', 'Cov', 'Corr', 'Median', 'Q1', 'Q3', 'Percentile', 'Mode', 'Entropy',
   'Max', 'Min', 'Average', 'Variance', 'Stdev', 'Std', 'Covariance', 'Correlation', 'Med', 'Pctile', 'Shannon',
   'Maximum', 'Minimum']);
 const escAttr = (s) => esc(s).replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
-// glossary entry for a classified identifier (k=keyword, d=dist, f=function, s=statistic)
+// glossary entry for a classified identifier (k=keyword, b=bool op, d=dist, f=function, s=statistic)
 function glossFor(id, c) {
-  if (c === 'k') return GLOSSARY[id.toLowerCase()];
-  if (c === 'd' || c === 'f') return GLOSSARY[id];
+  if (c === 'k' || c === 'b') return GLOSSARY[id.toLowerCase()];
+  if (c === 'd') return GLOSSARY[HL_DIST_CANON[id.toLowerCase()] || id];
+  if (c === 'f') return GLOSSARY[id];
   if (c === 's') return GLOSSARY[STAT_CANON[id.toLowerCase()] || id];
   return null;
 }
 function highlight(src) {
   const consts = new Set();            // names introduced with `let` -> deterministic
   const defs = new Map();              // name -> {kind, rhs}  (for definition-on-hover)
+  // events are classified authoritatively by the last successful compile
+  const progEvents = new Set(state.prog ? state.prog.eventNames : []);
   for (const raw of src.split('\n')) {
     const line = raw.replace(/#.*/, '');
     const ml = line.match(/^\s*let\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.*)$/i);
@@ -1069,16 +1206,19 @@ function highlight(src) {
     if (mv) defs.set(mv[1], { kind: 'random variable', rhs: mv[2].trim() });
   }
   const cls = (id) => HL_KW.has(id.toLowerCase()) ? 'k'
+    : HL_CTRL.has(id) ? 'k'
+    : HL_BOOL.has(id.toLowerCase()) ? 'b'
     : HL_DIST.has(id) ? 'd' : HL_FN.has(id) ? 'f' : HL_STAT.has(id) ? 's'
+    : progEvents.has(id) ? 'ev'
     : consts.has(id) ? 'cn' : 'v';
   const tipFor = (id, c) => {
     const g = glossFor(id, c);
     if (g) return `${g.sig}\n${g.desc}`;
     const d = defs.get(id);
-    if (d && d.rhs) return `${d.kind}\n${id} = ${d.rhs}`;
+    if (d && d.rhs) return `${progEvents.has(id) ? 'event' : d.kind}\n${id} = ${d.rhs}`;
     return '';
   };
-  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|[-+*/^=<>(),])|([\s\S])/g;
+  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|&&|\|\||[-+*/^=<>(),!])|([\s\S])/g;
   let out = '', m;
   while ((m = re.exec(src))) {
     if (m[1] != null) out += `<span class="c">${esc(m[1])}</span>`;
@@ -1144,7 +1284,7 @@ function renderDocs() {
       .map((g) => row(g.sig, g.desc)).join('');
   };
   fill('doc-dist', 'dist'); fill('doc-fn-reduce', 'reduce'); fill('doc-fn-math', 'math');
-  fill('doc-fn-logic', 'logic'); fill('doc-stat', 'stat');
+  fill('doc-fn-logic', 'logic'); fill('doc-stat', 'stat'); fill('doc-bool', 'bool');
 }
 renderDocs();
 

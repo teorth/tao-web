@@ -15,8 +15,38 @@
 
 const DISTS = new Set([
   'Unif', 'Exp', 'Normal', 'Gaussian', 'Bernoulli',
-  'Binomial', 'Poisson', 'Geometric'
+  'Binomial', 'Poisson', 'Geometric',
+  'Boolean'   // event constructor: True/False with probability p (a coin)
 ]);
+
+// Distribution / event-constructor aliases (looked up case-insensitively).
+// NOTE: bare 'exp' is deliberately ABSENT so it keeps hitting the EXP function /
+// the "distributions are Capitalised" hint, rather than silently meaning Exp(·).
+const DIST_ALIAS = {
+  unif: 'Unif', uniform: 'Unif',
+  exponential: 'Exp',
+  normal: 'Normal', gaussian: 'Normal', gauss: 'Normal', norm: 'Normal',
+  bernoulli: 'Bernoulli', bern: 'Bernoulli',
+  binomial: 'Binomial', bin: 'Binomial',
+  poisson: 'Poisson', pois: 'Poisson',
+  geometric: 'Geometric', geom: 'Geometric',
+  boolean: 'Boolean', bool: 'Boolean', coin: 'Boolean', flip: 'Boolean', toss: 'Boolean', chance: 'Boolean',
+};
+// Event constructors: sampled like Bernoulli(p) but TYPED as an event (True/False).
+const EVENT_CTORS = new Set(['Boolean']);
+// Excel-style boolean functions that RETURN an event (the word operators
+// and/or/not/xor are the other spelling of the same connectives).
+const EVENT_FUNCS = new Set(['AND', 'OR', 'NOT', 'XOR']);
+// Default parameters, filled in when trailing arguments are omitted, so e.g.
+// Normal() means Normal(0, 1), Boolean() a fair coin, Binomial(10) a fair-coin
+// count. (Unif's single-scalar form is ambiguous, so it is never partial-filled.)
+const DIST_DEFAULTS = {
+  Unif: [0, 1], Exp: [1], Normal: [0, 1], Gaussian: [0, 1],
+  Bernoulli: [0.5], Binomial: [1, 0.5], Poisson: [1], Geometric: [0.5], Boolean: [0.5],
+};
+// Operators that produce an event (a 0/1 indicator, displayed as True/False).
+const CMP_OPS = new Set(['<', '>', '<=', '>=', '==', '!=']);
+const BOOL_OPS = new Set(['and', 'or', 'xor']);
 
 const FUNCS = new Set([
   // reductions (vector -> scalar)
@@ -26,8 +56,10 @@ const FUNCS = new Set([
   // elementwise scalar maths
   'ABS', 'SQRT', 'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN',
   'FLOOR', 'CEIL', 'ROUND', 'SIGN',
-  // logic
-  'IF'
+  // logic (IF is also writable as the word form `if C then A else B`;
+  // AND/OR/XOR are variadic and NOT is unary — each normalises any nonzero
+  // argument to True, any zero to False, and returns an event)
+  'IF', 'AND', 'OR', 'NOT', 'XOR'
 ]);
 
 // Empirical statistics accumulated over the time series of samples. These are
@@ -58,6 +90,54 @@ const STAT_ALIAS = {
 };
 const STAT_NAMES = 'Mean, SD, Var, Cov, Corr, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min';
 const SAMPLE_CAP = 2048; // ring-buffer size for quantile/mode statistics
+
+// Reserved identifiers a user may NOT reuse as a variable/constant/event name.
+// Checked case-insensitively: even where the parser could disambiguate (e.g. a
+// variable Boolean vs the constructor Boolean), shadowing is bad practice, so we
+// forbid it and teach a clearer name. Built from every keyword, operator word,
+// function, distribution, constructor alias, and statistic (canonical + alias).
+const RESERVED = new Set();
+for (const w of ['let', 'plot', 'statistic', 'track', 'condition', 'on', 'and', 'or', 'not', 'xor', 'if', 'then', 'else']) RESERVED.add(w);
+for (const s of FUNCS) RESERVED.add(s.toLowerCase());
+for (const s of DISTS) RESERVED.add(s.toLowerCase());
+for (const s of Object.keys(DIST_ALIAS)) RESERVED.add(s);
+for (const s of Object.keys(STAT_DEF)) RESERVED.add(s.toLowerCase());
+for (const s of Object.keys(STAT_ALIAS)) RESERVED.add(s);
+
+// Canonical, whitespace-independent string for an AST. `X > 3` and `X>3` render
+// identically, while `X > 3` and `X > 2+1` stay distinct — exactly the identity
+// rule events (and, later, universes) use to decide when two events are "equal".
+function astToStr(node) {
+  switch (node.t) {
+    case 'num': return String(node.v);
+    case 'const': case 'var': return node.name;
+    case 'set': return '{' + node.values.join(',') + '}';
+    case 'vec': return '[' + node.items.map(astToStr).join(',') + ']';
+    case 'dist': case 'call': return node.name + '(' + node.args.map(astToStr).join(',') + ')';
+    case 'unop': return node.op === 'not' ? '(not ' + astToStr(node.a) + ')' : '(' + node.op + astToStr(node.a) + ')';
+    case 'binop': {
+      const word = BOOL_OPS.has(node.op);
+      return '(' + astToStr(node.a) + (word ? ' ' + node.op + ' ' : node.op) + astToStr(node.b) + ')';
+    }
+    default: return '?';
+  }
+}
+// Is this finalised node an event (0/1 indicator, shown as True/False)?
+function nodeIsEvent(node, variables) {
+  if (!node) return false;
+  switch (node.t) {
+    case 'binop': return CMP_OPS.has(node.op) || BOOL_OPS.has(node.op);
+    case 'unop': return node.op === 'not';
+    case 'dist': return !!node.isEvent;
+    case 'var': { const e = variables.get(node.name); return !!(e && e.isEvent); }
+    case 'call':
+      if (EVENT_FUNCS.has(node.name)) return true;
+      // if/IF is an event exactly when both of its branches are events
+      if (node.name === 'IF') return nodeIsEvent(node.args[1], variables) && nodeIsEvent(node.args[2], variables);
+      return false;
+    default: return false;
+  }
+}
 // split "a, b" on top-level commas only (so nested calls like IF(x,1,0) survive)
 function splitArgs(s) {
   const out = []; let depth = 0, cur = '';
@@ -77,7 +157,7 @@ function splitArgs(s) {
 function tokenize(src) {
   const toks = [];
   let i = 0;
-  const two = { ':=': 1, '<=': 1, '>=': 1, '==': 1, '!=': 1, '..': 1 };
+  const two = { ':=': 1, '<=': 1, '>=': 1, '==': 1, '!=': 1, '..': 1, '&&': 1, '||': 1 };
   while (i < src.length) {
     const c = src[i];
     if (c === ' ' || c === '\t' || c === '\r' || c === '\n') { i++; continue; }
@@ -103,8 +183,8 @@ function tokenize(src) {
     // two-char ops
     const pair = src.slice(i, i + 2);
     if (two[pair]) { toks.push({ t: 'op', v: pair }); i += 2; continue; }
-    // single-char ops
-    if ('+-*/^(),{}<>='.includes(c)) { toks.push({ t: 'op', v: c }); i++; continue; }
+    // single-char ops ('!' is boolean NOT; '!=' already handled above)
+    if ('+-*/^(),{}<>=!'.includes(c)) { toks.push({ t: 'op', v: c }); i++; continue; }
     throw new Error(`Unexpected character '${c}'`);
   }
   return toks;
@@ -124,7 +204,28 @@ function makeParser(toks) {
     return next();
   }
 
-  function parseExpr() { return parseCompare(); }
+  function parseExpr() { return parseOr(); }
+
+  // boolean layer (lowest precedence): not > and > or/xor, all below comparisons.
+  // Words (and/or/not/xor) arrive as identifiers; &&, ||, ! are symbol aliases.
+  const kw = (w) => peek() && peek().t === 'id' && peek().v.toLowerCase() === w;
+  function parseOr() {
+    let a = parseAnd();
+    while (kw('or') || kw('xor') || isOp('||')) {
+      const raw = next(); const op = raw.t === 'op' ? 'or' : raw.v.toLowerCase();
+      a = { t: 'binop', op, a, b: parseAnd() };
+    }
+    return a;
+  }
+  function parseAnd() {
+    let a = parseNot();
+    while (kw('and') || isOp('&&')) { next(); a = { t: 'binop', op: 'and', a, b: parseNot() }; }
+    return a;
+  }
+  function parseNot() {
+    if (kw('not') || isOp('!')) { next(); return { t: 'unop', op: 'not', a: parseNot() }; }
+    return parseCompare();
+  }
 
   function parseCompare() {
     let a = parseAdd();
@@ -161,6 +262,19 @@ function makeParser(toks) {
     if (isOp('(')) { next(); const e = parseExpr(); expect(')'); return e; }
     if (isOp('{')) return parseSet();
     if (t.t === 'id') {
+      // word-form conditional `if C then A else B` (the IF(...) call is handled below).
+      // Only the bare word triggers it — `if` immediately followed by `(` is a call.
+      if (t.v.toLowerCase() === 'if' && !(toks[p + 1] && toks[p + 1].t === 'op' && toks[p + 1].v === '(')) {
+        next(); // 'if'
+        const cond = parseExpr();
+        if (!kw('then')) throw new Error("expected 'then' in 'if … then … else …'");
+        next();
+        const a = parseExpr();
+        if (!kw('else')) throw new Error("expected 'else' in 'if … then … else …'");
+        next();
+        const b = parseExpr();
+        return { t: 'call', name: 'IF', args: [cond, a, b] };
+      }
       next();
       if (isOp('(')) { // call
         next();
@@ -228,7 +342,7 @@ function finalize(node, ctx) {
     case 'unop': return { t: 'unop', op: node.op, a: finalize(node.a, ctx) };
     case 'binop': return { t: 'binop', op: node.op, a: finalize(node.a, ctx), b: finalize(node.b, ctx) };
     case 'call': {
-      const name = node.name;
+      let name = node.name;
       if (name === 'Sample') {
         if (node.args.length !== 2) throw new Error('Sample expects (distribution, count)');
         const n = Math.round(evalConst(node.args[1], ctx));
@@ -237,10 +351,18 @@ function finalize(node, ctx) {
         for (let k = 0; k < n; k++) items.push(finalize(clone(node.args[0]), ctx));
         return { t: 'vec', items };
       }
+      // resolve a distribution / constructor alias (Uniform, Coin, Norm, ...)
+      if (!FUNCS.has(name) && !DISTS.has(name) && DIST_ALIAS[name.toLowerCase()]) name = DIST_ALIAS[name.toLowerCase()];
       if (DISTS.has(name)) {
         // set arguments stay as-is; scalar args get finalised
         const args = node.args.map((a) => (a.t === 'set' ? a : finalize(a, ctx)));
-        return { t: 'dist', name, args, id: ctx.nextId() };
+        // fill omitted trailing parameters from the defaults (Normal() -> Normal(0,1),
+        // Boolean() -> fair coin); Unif's single-scalar form is left alone (ambiguous).
+        const defs = DIST_DEFAULTS[name];
+        if (defs && !(name === 'Unif' && args.length === 1)) {
+          for (let k = args.length; k < defs.length; k++) args.push({ t: 'num', v: defs[k] });
+        }
+        return { t: 'dist', name, args, id: ctx.nextId(), isEvent: EVENT_CTORS.has(name) };
       }
       if (FUNCS.has(name)) {
         return { t: 'call', name, args: node.args.map((a) => finalize(a, ctx)) };
@@ -263,7 +385,7 @@ function evalConst(node, ctx) {
     case 'ref':
       if (ctx.constants.has(node.name)) return ctx.constants.get(node.name);
       throw new Error(`'${node.name}' is not a constant (only constants may appear here)`);
-    case 'unop': { const a = evalConst(node.a, ctx); return node.op === '-' ? -a : a; }
+    case 'unop': { const a = evalConst(node.a, ctx); return node.op === '-' ? -a : node.op === 'not' ? (a === 0 ? 1 : 0) : a; }
     case 'binop': return scalarBin(node.op, evalConst(node.a, ctx), evalConst(node.b, ctx));
     case 'call':
       if (FUNCS.has(node.name)) return callFn(node.name, node.args.map((a) => evalConst(a, ctx)));
@@ -289,6 +411,10 @@ function scalarBin(op, x, y) {
     case '>=': return x >= y ? 1 : 0;
     case '==': return x === y ? 1 : 0;
     case '!=': return x !== y ? 1 : 0;
+    // boolean combinators on events (any nonzero value counts as true)
+    case 'and': return (x !== 0 && y !== 0) ? 1 : 0;
+    case 'or': return (x !== 0 || y !== 0) ? 1 : 0;
+    case 'xor': return ((x !== 0) !== (y !== 0)) ? 1 : 0;
     default: throw new Error(`Unknown operator ${op}`);
   }
 }
@@ -305,8 +431,8 @@ function mapBin(op, a, b) {
 }
 
 function mapUn(op, a) {
-  if (Array.isArray(a)) return a.map((x) => (op === '-' ? -x : x));
-  return op === '-' ? -a : a;
+  const f = op === '-' ? (x) => -x : op === 'not' ? (x) => (x === 0 ? 1 : 0) : (x) => x;
+  return Array.isArray(a) ? a.map(f) : f(a);
 }
 
 function toArr(x) { return Array.isArray(x) ? x : [x]; }
@@ -347,6 +473,12 @@ function callFn(name, args) {
     case 'ROUND': return mapMath(Math.round);
     case 'SIGN': return mapMath(Math.sign);
     case 'IF': return asScalar(args[0]) !== 0 ? args[1] : args[2];
+    // Excel-style boolean functions: flatten any vector args, normalise nonzero
+    // -> True / zero -> False, and return a 0/1 event.
+    case 'AND': { const v = args.flatMap((a) => (Array.isArray(a) ? a : [a])); return v.every((x) => x !== 0) ? 1 : 0; }
+    case 'OR': { const v = args.flatMap((a) => (Array.isArray(a) ? a : [a])); return v.some((x) => x !== 0) ? 1 : 0; }
+    case 'XOR': { const v = args.flatMap((a) => (Array.isArray(a) ? a : [a])); return (v.filter((x) => x !== 0).length % 2 === 1) ? 1 : 0; }
+    case 'NOT': return asScalar(args[0]) === 0 ? 1 : 0;
     default: throw new Error(`Unknown function ${name}`);
   }
 }
@@ -380,6 +512,12 @@ function compile(src) {
   const conditions = [];
   const plots = []; // {mode:'1d'|'2d', a, b}
   const trackers = []; // {stat, label, exprs:[ast], acc} — empirical statistics
+
+  // Reject names that collide with a reserved word/function/distribution/statistic.
+  function guardName(name) {
+    if (RESERVED.has(name.toLowerCase()))
+      throw new Error(`'${name}' is a reserved name (a keyword, function, distribution or statistic); pick another — e.g. a lower-case name for a constant`);
+  }
 
   const lines = src.split('\n');
   for (let ln = 0; ln < lines.length; ln++) {
@@ -427,6 +565,7 @@ function compile(src) {
       const mLet = line.match(/^let\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.+)$/i);
       if (mLet) {
         const name = mLet[1];
+        guardName(name);
         if (ctx.constants.has(name)) throw new Error(`'${name}' is already a constant`);
         if (ctx.variables.has(name)) throw new Error(`'${name}' is already a random variable`);
         ctx.constants.set(name, evalConst(parseExpression(mLet[2]), ctx));
@@ -436,13 +575,17 @@ function compile(src) {
       const mAssign = line.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.+)$/);
       if (mAssign) {
         const name = mAssign[1];
+        guardName(name);
         if (ctx.constants.has(name)) throw new Error(`'${name}' is already a constant`);
         // Random variables are immutable here: no reassignment, and in particular
         // no 'X = X + 1' — that is the mutable-cell mindset this app is meant to
         // dispel; a variable is fixed once by its definition.
         if (ctx.variables.has(name)) throw new Error(`'${name}' is already defined; random variables cannot be reassigned`);
         const ast = finalize(parseExpression(mAssign[2]), ctx);
-        ctx.variables.set(name, { ast });
+        // An event (comparison / boolean combo / Boolean(...)) is a 0/1 indicator
+        // shown as True/False; record its canonical form for later (universes).
+        const isEvent = nodeIsEvent(ast, ctx.variables);
+        ctx.variables.set(name, { ast, isEvent, canon: isEvent ? astToStr(ast) : null });
         varOrder.push(name);
         continue;
       }
@@ -489,6 +632,8 @@ function compile(src) {
       case 'Exp': return sampleExp(num(args[0]));
       case 'Normal': case 'Gaussian': return sampleNormal(num(args[0]), num(args[1]));
       case 'Bernoulli': return Math.random() < num(args[0]) ? 1 : 0;
+      case 'Boolean': return Math.random() < num(args[0]) ? 1 : 0; // event-typed coin
+
       case 'Binomial': return sampleBinomial(Math.round(num(args[0])), num(args[1]));
       case 'Poisson': return samplePoisson(num(args[0]));
       case 'Geometric': return sampleGeom(num(args[0]));
@@ -592,6 +737,9 @@ function compile(src) {
     return !Array.isArray(evalNode(variables.get(n).ast));
   });
   const astOf = (n) => { const e = variables.get(n); return e ? e.ast : null; };
+  const eventNames = varOrder.filter((n) => variables.get(n).isEvent);
+  const isEventVar = (n) => { const e = variables.get(n); return !!(e && e.isEvent); };
+  const readEvents = () => eventNames.map((n) => ({ name: n, canon: variables.get(n).canon }));
 
   return {
     varOrder,
@@ -601,6 +749,10 @@ function compile(src) {
     hasConditions: conditions.length > 0,
     hasTrackers: trackers.length > 0,
     readTrackers,
+    eventNames,
+    hasEvents: eventNames.length > 0,
+    isEventVar,
+    readEvents,
     step,
     probe,
     scalarVars,
