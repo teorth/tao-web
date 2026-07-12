@@ -421,6 +421,8 @@
       if (!fin(vals.t, vals.x, vals.s2)) return err("Enter numbers.");
       o.a = fr.displayToLab(vals.t, vals.x); o.s2 = vals.s2;         // s² is Lorentz-invariant
     } else if (o.kind === "observer") {
+      for (var k = 0; k < vals.pts.length; k++)
+        if (!fin(vals.pts[k][0], vals.pts[k][1])) return err("Enter numbers.");
       var pts = vals.pts.map(function (q) { return fr.displayToLab(q[0], q[1]); });
       for (var i = 0; i < pts.length - 1; i++)
         if (!ST.futureTimelike(pts[i], pts[i + 1])) return err("Segment " + (i + 1) + " must be timelike and move forward in time.");
