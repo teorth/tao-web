@@ -169,6 +169,8 @@ works:
     url: "https://arxiv.org/abs/2503.20170"
   - type: discussion
     url: "https://terrytao.wordpress.com/2025/03/26/decomposing-a-factorial-into-large-factors/"
+  - type: repository
+    url: "https://github.com/teorth/erdos-guy-selfridge"
 - id: some-variants-of-the-periodic-tiling-conjecture
   kind: paper
   title: Some variants of the periodic tiling conjecture
@@ -313,6 +315,8 @@ works:
     url: "https://arxiv.org/abs/2511.02864"
   - type: discussion
     url: "https://terrytao.wordpress.com/2025/11/05/mathematical-exploration-and-discovery-at-scale/"
+  - type: repository
+    url: "https://github.com/google-deepmind/alphaevolve_repository_of_problems"
 - id: the-equational-theories-project-advancing-collaborative-math
   kind: paper
   title: "The Equational Theories Project: Advancing Collaborative Mathematical Research at Scale"
@@ -362,6 +366,8 @@ works:
     url: "https://arxiv.org/abs/2512.07087"
   - type: discussion
     url: "https://terrytao.wordpress.com/2025/12/09/the-equational-theories-project-advancing-collaborative-mathematical-research-at-scale/"
+  - type: repository
+    url: "https://github.com/teorth/equational_theories"
 - id: marton-s-conjecture-for-abelian-groups-of-finite-torsion
   kind: paper
   title: "Marton's conjecture for abelian groups of finite torsion"
@@ -381,6 +387,8 @@ works:
     url: "https://arxiv.org/abs/2404.02244"
   - type: discussion
     url: "https://terrytao.wordpress.com/2024/04/04/martons-conjecture-in-abelian-groups-with-bounded-torsion/"
+  - type: repository
+    url: "https://github.com/teorth/pfr"
 - id: on-product-representations-of-squares
   kind: paper
   title: On product representations of squares
@@ -643,6 +651,8 @@ works:
     url: "https://arxiv.org/abs/2311.05762"
   - type: discussion
     url: "https://terrytao.wordpress.com/2023/11/13/on-a-conjecture-of-marton/"
+  - type: repository
+    url: "https://github.com/teorth/pfr"
 - id: adjoint-brascamp-lieb-inequalities
   kind: paper
   title: Adjoint Brascamp-Lieb inequalities
@@ -673,6 +683,8 @@ works:
     url: "http://arxiv.org/abs/2310.05328"
   - type: discussion
     url: "https://terrytao.wordpress.com/2023/10/10/a-maclaurin-type-inequality/"
+  - type: repository
+    url: "https://github.com/teorth/symmetric_project"
 - id: sums-of-gue-matrices-and-concentration-of-hives-from-correla
   kind: paper
   title: Sums of GUE matrices and concentration of hives from correlation decay of eigengaps
@@ -1169,6 +1181,8 @@ works:
     url: "https://arxiv.org/abs/1904.12438"
   - type: discussion
     url: "https://terrytao.wordpress.com/2019/04/30/11075/"
+  - type: repository
+    url: "https://github.com/teorth/dbn_upper_bound"
 - id: large-prime-gaps-and-probabilistic-models
   kind: paper
   title: Large prime gaps and probabilistic models

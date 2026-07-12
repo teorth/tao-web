@@ -47,7 +47,7 @@
               "additionalProperties": false,
               "required": ["type", "url"],
               "properties": {
-                "type": { "type": "string", "enum": ["arxiv", "journal", "discussion", "slides", "pdf", "note", "blog", "applet"] },
+                "type": { "type": "string", "enum": ["arxiv", "journal", "discussion", "slides", "pdf", "note", "blog", "applet", "repository"] },
                 "url": { "type": "string", "minLength": 1 }
               }
             }
