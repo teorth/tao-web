@@ -1,5 +1,22 @@
 # Imported from math.ucla.edu/~tao/preprints/ subpages + reconciled with newer Google-Docs versions -- maintain by hand.
 works:
+- id: visualising-random-variables
+  kind: short-story
+  title: Visualising random variables
+  year: 2016
+  venue: Blog post
+  tags:
+  - probability
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2016/05/13/visualising-random-variables/"
+  - type: applet
+    url: "apps/random-variables.html"
+  abstract: >-
+    A blog post proposing that a random variable be visualized as an animated quantity that fluctuates
+    as its underlying sample point is resampled, with coupling, independence, and conditioning all
+    emerging from a single shared source of randomness. The companion interactive app (in development)
+    makes these animations live.
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"

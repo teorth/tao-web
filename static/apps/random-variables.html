@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Random Variable Visualizer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css" />
+<style>
+  /* Base tokens (--bg / --panel / --ink / --muted / --line / --accent /
+     --accent-soft / --danger / --axis / --mono / --sans) come from applet.css
+     and are light+dark aware; here we add only the app-specific extras. */
+  :root { --panel2: var(--accent-soft); --accent2: #e0862f; --warn: var(--danger); --ok: #2f9e57; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg); color: var(--ink);
+    font: 14px/1.45 -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  }
+  .page { max-width: 1120px; margin: 0 auto; padding: 0 16px 2rem; }
+  /* --- intro header --- */
+  .intro { padding: 1.4rem 0 1rem; }
+  .intro .back { margin: 0 0 .4rem; font-size: 13px; }
+  .intro .back a { color: var(--accent); text-decoration: none; }
+  .intro h1 { font-size: 1.7rem; margin: 0 0 .2rem; display: inline-block; }
+  .badge { display: inline-block; margin-left: .55rem; vertical-align: middle;
+    font-size: .64rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700;
+    color: var(--accent2); border: 1px solid var(--accent2); border-radius: 999px; padding: .12rem .5rem; }
+  .intro .lede { font-size: 1.02rem; line-height: 1.55; max-width: 60rem; margin: .5rem 0; }
+  .intro .lede code, .docs code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .intro .prov { color: var(--muted); font-size: .9rem; max-width: 60rem; margin: .5rem 0 0; }
+  .intro .prov a, .docs a { color: var(--accent); }
+  /* work-in-progress callout */
+  .wip { margin: .9rem 0 1rem; padding: .6rem .9rem; max-width: 60rem; font-size: .92rem;
+    background: var(--accent-soft); border-left: 3px solid var(--accent2); border-radius: 6px; }
+  .wip strong { color: var(--accent2); }
+  .bar {
+    display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap;
+    padding: 9px 14px; border: 1px solid var(--line); border-radius: 8px;
+    background: var(--panel); margin-bottom: 8px;
+  }
+  .bar .grp { display: flex; align-items: center; gap: 6px; }
+  .bar label { color: var(--muted); font-size: 12px; }
+  button {
+    background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 11px; cursor: pointer; font-size: 13px;
+  }
+  button:hover { border-color: var(--accent); }
+  button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  button:disabled { opacity: .45; cursor: default; }
+  input[type=range] { width: 120px; accent-color: var(--accent); }
+  input[type=number] { width: 74px; background: var(--panel2); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 5px; padding: 3px 6px; }
+  select { background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 5px; padding: 4px 6px; }
+  .val { color: var(--accent); font-variant-numeric: tabular-nums; min-width: 30px; display: inline-block; }
+  main { height: min(72vh, 640px); min-height: 440px; display: grid;
+    grid-template-columns: 340px 330px 1fr; gap: 1px; background: var(--line);
+    border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .col { background: var(--bg); display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+  .col h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
+    margin: 0; padding: 8px 12px 6px; border-bottom: 1px solid var(--line); }
+  .col .body { padding: 10px 12px; overflow: auto; flex: 1; min-height: 0; }
+  textarea {
+    width: 100%; height: 100%; min-height: 220px; resize: none; background: var(--panel);
+    color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 10px;
+    font: 13px/1.5 "SFMono-Regular", Consolas, "Liberation Mono", monospace; tab-size: 2;
+  }
+  .col.editor .body { display: flex; flex-direction: column; gap: 8px; }
+  .editor-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); font-size: 13px; }
+  th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+  td.name { color: var(--ink); font-family: "SFMono-Regular", Consolas, monospace; }
+  td.v { color: var(--accent); font-family: "SFMono-Regular", Consolas, monospace; }
+  td.stat { color: var(--muted); font-size: 12px; }
+  .consts { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  .status { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted);
+    display: flex; flex-direction: column; gap: 3px; }
+  .status b { color: var(--ink); font-weight: 600; }
+  .status .warn { color: var(--warn); }
+  .plotwrap { flex: 1; min-height: 0; position: relative; }
+  canvas { width: 100%; height: 100%; display: block; }
+  .plotctl { display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    padding: 8px 12px; border-bottom: 1px solid var(--line); }
+  .err { color: var(--warn); white-space: pre-wrap; font-family: monospace; font-size: 12px; margin: 0; }
+  details.cheat { font-size: 12px; color: var(--muted); }
+  details.cheat summary { cursor: pointer; color: var(--accent); }
+  details.cheat code { color: var(--ink); background: var(--panel2); padding: 1px 4px; border-radius: 4px; }
+  details.cheat table td { border: none; padding: 2px 8px 2px 0; vertical-align: top; }
+  footer { padding: 1rem 0 0; margin-top: 1.3rem; border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 12px; }
+  footer a { color: var(--accent); }
+  .theory-msg { position: absolute; right: 10px; bottom: 8px; color: var(--muted); font-size: 11px; opacity: .8; }
+  /* --- language reference (bottom of page) --- */
+  .docs { margin-top: 1.7rem; }
+  .docs > h2 { font-size: 1.2rem; margin: 0 0 .3rem; }
+  .docs > p { color: var(--muted); max-width: 60rem; margin: .3rem 0 1rem; }
+  .docs details { border: 1px solid var(--line); border-radius: 8px; margin: .5rem 0; background: var(--panel); }
+  .docs summary { cursor: pointer; padding: .6rem .9rem; font-weight: 600; list-style: none; }
+  .docs summary::-webkit-details-marker { display: none; }
+  .docs summary::before { content: "\25B8"; color: var(--muted); margin-right: .5rem;
+    display: inline-block; transition: transform .15s; }
+  .docs details[open] > summary::before { transform: rotate(90deg); }
+  .docs .dbody { padding: 0 .9rem 1rem; }
+  .docs .dbody p { max-width: 60rem; }
+  .docs table { width: auto; }
+  .docs table td { border: none; padding: .25rem 1.2rem .25rem 0; vertical-align: top; font-size: 13px; }
+  .docs table td:first-child { white-space: nowrap; }
+  .docs .muted { color: var(--muted); }
+  .docs h4 { margin: 1rem 0 .3rem; font-size: .95rem; }
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; height: auto; grid-auto-rows: minmax(260px, auto); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+<header class="intro">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <h1>Random Variable Visualizer</h1><span class="badge">pre-alpha</span>
+  <p class="lede">An interactive take on the idea that a <strong>random variable is a quantity that
+    fluctuates as its underlying randomness ω is resampled</strong>. Write a short, Excel-like program
+    &mdash; <code>X = Unif({1..6})</code>, <code>Y = Exp(3)</code>, <code>Z = X + Y</code>,
+    <code>condition on …</code> &mdash; and watch the values, running statistics, and animated
+    Monte-Carlo plots update live. There is <strong>one shared ω per tick</strong>, so every variable is
+    drawn together and coupling and independence come out exact and automatic.</p>
+  <div class="wip"><strong>Work in progress.</strong> This is a pre-alpha: the app and its little
+    language are still evolving, and behaviour may change or break between versions. Feedback is welcome
+    &mdash; and the <a href="#reference">language reference</a> at the foot of the page lists what works
+    today.</div>
+  <p class="prov">A companion to Terence Tao's 2016 blog post
+    <a href="https://terrytao.wordpress.com/2016/05/13/visualising-random-variables/">&ldquo;Visualising
+    random variables&rdquo;</a>, whose animated-GIF illustrations this app makes interactive; several
+    features were suggested by that post's commenters. Runs entirely in your browser. Coded with the
+    assistance of Claude Code.</p>
+</header>
+
+<div class="bar">
+  <div class="grp">
+    <button id="run" class="primary">▶ Run</button>
+    <button id="pause">⏸ Pause</button>
+    <button id="step">⏭ Step</button>
+  </div>
+  <div class="grp"><label>speed</label><input type="range" id="rate" min="1" max="300" value="30"><span class="val" id="rateV">30</span><label>/s</label></div>
+  <div class="grp"><label>trail</label><input type="range" id="trail" min="50" max="5000" value="1200" step="50"><span class="val" id="trailV">1200</span></div>
+  <div class="grp">
+    <label>conditioning</label>
+    <select id="condmode">
+      <option value="instant">instant (hide rejections)</option>
+      <option value="visible">show rejections</option>
+    </select>
+    <label>max tries</label><input type="number" id="maxtry" value="10000" min="1" step="100">
+  </div>
+  <div class="grp"><label>preset</label>
+    <select id="preset"></select>
+  </div>
+  <div class="grp"><button id="share">🔗 Copy share link</button><span class="val" id="sharemsg" style="color:var(--muted)"></span></div>
+</div>
+
+<main>
+  <div class="col editor">
+    <h2>Program</h2>
+    <div class="body">
+      <textarea id="src" spellcheck="false"></textarea>
+      <div class="editor-row">
+        <button id="run2" class="primary">▶ Run program</button>
+        <span id="parsemsg" style="color:var(--muted);font-size:12px"></span>
+      </div>
+      <pre id="err" class="err"></pre>
+      <details class="cheat">
+        <summary>language cheat-sheet</summary>
+        <p style="margin:6px 0"><b>Random variables</b> and <b>constants</b> both use <code>=</code> (constants take a leading <code>let</code>); equality is <code>==</code>; commands are plain words.</p>
+        <table>
+          <tr><td><code>X = Unif({1..6})</code></td><td>uniform on a set (dice)</td></tr>
+          <tr><td><code>U = Unif(0, 1)</code></td><td>uniform on an interval</td></tr>
+          <tr><td><code>Y = Exp(3)</code></td><td>exponential, rate 3</td></tr>
+          <tr><td><code>G = Normal(0, 1)</code></td><td>Gaussian (mean, sd)</td></tr>
+          <tr><td colspan="2" style="color:var(--muted)">also Bernoulli(p), Binomial(n,p), Poisson(λ), Geometric(p)</td></tr>
+          <tr><td><code>Z = X + Y</code></td><td>derived — stays coupled to X, Y</td></tr>
+          <tr><td><code>I = (X &gt; 3)</code></td><td>indicator, gives 0 or 1</td></tr>
+          <tr><td><code>let n = 100</code></td><td>a constant (sizes, parameters)</td></tr>
+          <tr><td><code>V = Sample(Exp(1), n)</code></td><td>n independent copies → a vector</td></tr>
+          <tr><td><code>M = AVERAGE(V)</code></td><td>SUM, AVERAGE, MAX, MIN, STDEV, COUNT</td></tr>
+          <tr><td><code>condition on X^2+Y^2 &lt;= 1</code></td><td>reject states where it fails</td></tr>
+          <tr><td><code>plot X</code> · <code>plot X, Y</code></td><td>choose what the right panel shows</td></tr>
+        </table>
+        <p style="margin:6px 0;color:var(--muted)">Convention (not enforced): <b>Capitalised</b> names for random variables, <b>lower-case</b> for constants, <b>UPPERCASE</b> for functions.</p>
+      </details>
+    </div>
+  </div>
+
+  <div class="col">
+    <h2>Values (live)</h2>
+    <div class="body">
+      <table>
+        <thead><tr><th>variable</th><th>value</th><th>mean ± sd</th></tr></thead>
+        <tbody id="vals"></tbody>
+      </table>
+      <div class="consts" id="consts"></div>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="col">
+    <h2>Plot</h2>
+    <div class="plotctl">
+      <div class="grp" id="pModeWrap"><label>mode</label>
+        <select id="pmode"><option value="1d">1-D (line)</option><option value="2d">2-D (scatter)</option></select>
+      </div>
+      <div class="grp" id="pAWrap"><label>x</label><select id="pA"></select></div>
+      <div class="grp" id="pBwrap"><label>y</label><select id="pB"></select></div>
+      <div class="grp" id="pAspectWrap"><label><input type="checkbox" id="lockaspect"> 1:1</label></div>
+      <div class="grp" id="pStyleWrap"><label>style</label>
+        <select id="pstyle"><option value="both">dots + histogram</option><option value="dots">dots</option><option value="hist">histogram</option></select>
+      </div>
+      <div class="grp"><label>fuzz</label><input type="range" id="fuzz" min="0" max="100" value="40"><span class="val" id="fuzzV">40</span></div>
+      <div class="grp"><label>colors</label>
+        <select id="colormode"><option value="highlight">highlight current</option><option value="gradient">continuous gradient</option></select>
+      </div>
+      <div class="grp"><label><input type="checkbox" id="theory" checked> theory</label></div>
+    </div>
+    <div class="plotwrap"><canvas id="cv"></canvas><div class="theory-msg" id="theorymsg"></div></div>
+  </div>
+</main>
+
+<section class="docs" id="reference">
+  <h2>Language reference</h2>
+  <p>The app runs a small, Excel-like expression language. Each line is one statement, and
+    <code>#</code> begins a comment. Everything listed here is supported today; this reference will grow
+    as the language does.</p>
+
+  <details open><summary>The model — one shared ω</summary><div class="dbody">
+    <p>A <strong>random variable</strong> is stored as an <em>expression</em> over independent primitive
+      draws, not as a fixed number. Every tick a single shared sample point <strong>ω</strong> is drawn
+      and <em>all</em> primitives are resampled together, so:</p>
+    <table>
+      <tr><td><code>Z = X + Y</code></td><td>stays coupled to <code>X</code> and <code>Y</code> (same ω)</td></tr>
+      <tr><td><code>W = X - X</code></td><td>is exactly <code>0</code>, always</td></tr>
+      <tr><td>two separate draws</td><td>are independent automatically</td></tr>
+    </table>
+    <p class="muted">Reusing a name refers to the same variable; writing a fresh
+      <code>Distribution(...)</code> makes a new, independent one.</p>
+  </div></details>
+
+  <details><summary>Assignments, constants &amp; comments</summary><div class="dbody">
+    <table>
+      <tr><td><code>Name = expr</code></td><td>define a <strong>random variable</strong></td></tr>
+      <tr><td><code>let name = expr</code></td><td>define a <strong>constant</strong> — a fixed number, used for parameters and vector sizes</td></tr>
+      <tr><td><code>a == b</code></td><td>equality test (gives 1 or 0); a single <code>=</code> is assignment</td></tr>
+      <tr><td><code>:=</code></td><td>accepted as an alias for <code>=</code></td></tr>
+      <tr><td><code># …</code></td><td>comment to the end of the line</td></tr>
+    </table>
+    <p class="muted">Conventions (recommended, not enforced): <strong>Capitalised</strong> names for
+      random variables, <strong>lower-case</strong> for constants, <strong>UPPERCASE</strong> for functions.</p>
+  </div></details>
+
+  <details><summary>Distributions</summary><div class="dbody">
+    <table>
+      <tr><td><code>Unif(a, b)</code></td><td>continuous uniform on the interval [a, b]</td></tr>
+      <tr><td><code>Unif({…})</code></td><td>discrete uniform on a set, e.g. <code>Unif({1..6})</code> (a die)</td></tr>
+      <tr><td><code>Exp(rate)</code></td><td>exponential with rate λ (mean 1/λ)</td></tr>
+      <tr><td><code>Normal(μ, σ)</code></td><td>Gaussian, mean μ and standard deviation σ (also <code>Gaussian(μ, σ)</code>)</td></tr>
+      <tr><td><code>Bernoulli(p)</code></td><td>1 with probability p, otherwise 0</td></tr>
+      <tr><td><code>Binomial(n, p)</code></td><td>number of successes in n independent p-trials</td></tr>
+      <tr><td><code>Poisson(λ)</code></td><td>Poisson counts with mean λ</td></tr>
+      <tr><td><code>Geometric(p)</code></td><td>trials up to and including the first success; support {1, 2, 3, …}, mean 1/p</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary>Sets (for discrete uniforms)</summary><div class="dbody">
+    <table>
+      <tr><td><code>{1..6}</code></td><td>the integer range 1, 2, …, 6</td></tr>
+      <tr><td><code>{1, 2, 5, 10}</code></td><td>an explicit set of values</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary>Operators &amp; comparisons</summary><div class="dbody">
+    <table>
+      <tr><td><code>+ &nbsp; &minus; &nbsp; * &nbsp; / &nbsp; ^</code></td><td>arithmetic (<code>^</code> is power); unary minus too</td></tr>
+      <tr><td><code>&lt; &nbsp; &lt;= &nbsp; &gt; &nbsp; &gt;= &nbsp; == &nbsp; !=</code></td><td>comparisons — each gives a 0/1 <strong>indicator</strong> random variable</td></tr>
+    </table>
+    <p class="muted">Example: <code>I = (X &gt; 3)</code> is 1 when X exceeds 3, else 0; its mean estimates P(X &gt; 3).</p>
+  </div></details>
+
+  <details><summary>Functions</summary><div class="dbody">
+    <h4>Reductions (vector → scalar)</h4>
+    <p><code>SUM</code>, <code>PROD</code>, <code>AVERAGE</code> (= <code>MEAN</code>), <code>COUNT</code>,
+      <code>STDEV</code>, <code>VAR</code>, <code>MAX</code>, <code>MIN</code>.</p>
+    <h4>Elementwise maths</h4>
+    <p><code>ABS</code>, <code>SQRT</code>, <code>EXP</code>, <code>LOG</code> (= <code>LN</code>),
+      <code>SIN</code>, <code>COS</code>, <code>TAN</code>, <code>FLOOR</code>, <code>CEIL</code>,
+      <code>ROUND</code>, <code>SIGN</code>.</p>
+    <h4>Logic</h4>
+    <p><code>IF(condition, a, b)</code> — <code>a</code> when the condition holds, else <code>b</code>.</p>
+    <p class="muted"><code>MAX</code> and <code>MIN</code> also accept several scalar arguments, e.g. <code>MAX(X, Y, 0)</code>.</p>
+  </div></details>
+
+  <details><summary>Vectors &amp; the central limit theorem</summary><div class="dbody">
+    <table>
+      <tr><td><code>Sample(dist, n)</code></td><td>a length-<code>n</code> vector of <strong>independent</strong> draws from <code>dist</code> (<code>n</code> is a constant)</td></tr>
+    </table>
+    <p>Combine with a reduction to watch concentration in action:</p>
+    <table>
+      <tr><td><code>let n = 100</code></td><td></td></tr>
+      <tr><td><code>S = (SUM(Sample(Unif(0,1), n)) &minus; n/2) / SQRT(n/12)</code></td><td></td></tr>
+      <tr><td><code>plot S</code></td><td>a standardised sum → approaches a standard normal as n grows</td></tr>
+    </table>
+  </div></details>
+
+  <details><summary>Commands: plot &amp; condition</summary><div class="dbody">
+    <table>
+      <tr><td><code>plot X</code></td><td>1-D view (fading dots + histogram)</td></tr>
+      <tr><td><code>plot X, Y</code></td><td>2-D scatter</td></tr>
+      <tr><td>several <code>plot</code> lines</td><td>open several plot windows at once (stacked)</td></tr>
+      <tr><td><code>condition on E</code></td><td>rejection sampling: keep only the ticks where the 0/1 condition <code>E</code> holds. It conditions the shared ω for <em>every</em> variable, so dependence can appear (e.g. an independent square collapses into a disk).</td></tr>
+    </table>
+    <p class="muted">If a condition is very unlikely, the app caps the number of tries per tick; the
+      acceptance rate is shown under the Values panel.</p>
+  </div></details>
+
+  <details><summary>The plot panel &amp; theory overlay</summary><div class="dbody">
+    <p>Controls: <strong>style</strong> (dots / histogram / both), <strong>fuzz</strong> (spreads
+      coincident points so density shows), <strong>colours</strong> (highlight the current sample, or a
+      continuous gradient trail), <strong>1:1</strong> aspect lock for 2-D, and <strong>theory</strong>.
+      When <em>theory</em> is on and the plotted variable is a single primitive distribution, its exact
+      pdf/pmf is drawn over the histogram; for derived variables it reads &ldquo;unavailable&rdquo;
+      rather than guessing.</p>
+  </div></details>
+</section>
+
+<footer>
+  Based on Terence Tao, <a href="https://terrytao.wordpress.com/2016/05/13/visualising-random-variables/" target="_blank" rel="noopener">“Visualising random variables”</a> (2016);
+  with visualization ideas contributed by that post's commenters (2-D scatter &amp; correlated normals, continuous color trails, Monte-Carlo density).
+  Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.
+</footer>
+</div><!-- /.page -->
+
+<script src="random-variables.js"></script>
+<script>
+/* ===================================================================== *
+ *  APP: presets, controls, panels, canvas                               *
+ * ===================================================================== */
+const PRESETS = {
+  'Dice — independent vs coupled':
+`# Two fair dice, plus two things built from them.
+X = Unif({1..6})
+Y = Unif({1..6})
+Z = X + Y          # the (independent) sum
+W = 7 - X          # perfectly glued to X
+# Uncomment ONE plot line (or just change the y-axis dropdown):
+plot X, Y          # two independent dice - fills a square
+# plot X, W        # coupled: collapses onto the anti-diagonal line
+# plot X, Z        # sum vs a die - a diagonal band`,
+  'Dice — three coupled views':
+`# One pair of dice, three relationships at once (multiple plot windows).
+X = Unif({1..6})
+Y = Unif({1..6})   # independent of X
+Z = X + Y          # the sum
+W = 7 - X          # perfectly glued to X
+plot X, Y          # independent -> fills the square
+plot X, Z          # sum vs a die -> a diagonal band
+plot X, W          # coupled -> collapses onto the anti-diagonal`,
+  'Sum of two dice — triangle':
+`X = Unif({1..6})
+Y = Unif({1..6})
+Z = X + Y
+plot Z`,
+  'Uniform disk — by conditioning':
+`# X, Y start independent (a square). Conditioning bends them into a disk:
+# conditioning creates dependence.
+X = Unif(-1, 1)
+Y = Unif(-1, 1)
+condition on X^2 + Y^2 <= 1
+plot X, Y`,
+  'Central limit theorem':
+`# Standardised average of n uniforms. Raise n and watch the bell tighten.
+let n = 20
+S = (SUM(Sample(Unif(0,1), n)) - n/2) / SQRT(n / 12)
+plot S`,
+  'Correlated Gaussians':
+`# Correlation built from two independent normals (here about 0.8).
+Z1 = Normal(0, 1)
+Z2 = Normal(0, 1)
+X = Z1
+Y = 0.8 * Z1 + 0.6 * Z2
+plot X, Y`,
+  'Exponential clock':
+`Y = Exp(3)
+plot Y`,
+  'Mixed Poisson — hierarchical':
+`# A Poisson whose rate is itself random: over-dispersed counts.
+Rate = Exp(1)
+N = Poisson(Rate)
+plot N`,
+};
+
+const $ = (id) => document.getElementById(id);
+const state = {
+  prog: null, running: false, rate: 30, trailLen: 1200, maxTry: 10000, instant: true,
+  plots: [], style1d: 'both',           // plots: one window per `plot` command
+  fuzz: 0.4, colorMode: 'highlight', theory: true, lockAspect: false,
+  lastValues: {}, stats: {},
+  accepted: 0, attempts: 0, starved: false, acc: 0,
+};
+// A plot window owns its own trail + bounds (so windows are independent).
+function makeWin(mode, a, b) {
+  return { mode: (mode === '2d' && b) ? '2d' : '1d', a: a || null, b: b || null, trail: [], bounds: { has: false } };
+}
+// trail color: newest -> oldest.  Gradient runs warm (recent) to cool (old).
+const C_NEW = [242, 178, 90], C_OLD = [70, 120, 205];
+function lerp(a, b, t) { return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]; }
+function trailColor(frac) { // frac: 0 oldest .. 1 newest
+  if (state.colorMode === 'gradient') {
+    const c = lerp(C_OLD, C_NEW, frac);
+    return `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${0.12 + 0.5 * frac})`;
+  }
+  return `rgba(${COL.dot},${0.05 + 0.32 * frac})`;
+}
+function currentColor() { return state.colorMode === 'gradient' ? `rgb(${C_NEW[0]},${C_NEW[1]},${C_NEW[2]})` : COL.cur; }
+
+// ---- presets dropdown ----
+const presetSel = $('preset');
+for (const name of Object.keys(PRESETS)) {
+  const o = document.createElement('option'); o.value = name; o.textContent = name; presetSel.appendChild(o);
+}
+// Per-preset display options, applied on selection / initial load.
+const PRESET_OPTS = {
+  'Dice — independent vs coupled': { lockAspect: true, fuzz: 0.15 },
+  'Dice — three coupled views': { lockAspect: false, fuzz: 0.15 },
+};
+function applyPreset(name) {
+  $('src').value = PRESETS[name];
+  const o = PRESET_OPTS[name] || {};
+  if ('fuzz' in o) { state.fuzz = o.fuzz; $('fuzz').value = Math.round(o.fuzz * 100); $('fuzzV').textContent = Math.round(o.fuzz * 100); }
+  if ('lockAspect' in o) { state.lockAspect = o.lockAspect; $('lockaspect').checked = o.lockAspect; }
+  run();
+}
+presetSel.addEventListener('change', () => applyPreset(presetSel.value));
+
+// ---- helpers ----
+function fmt(v) {
+  if (typeof v !== 'number' || !isFinite(v)) return String(v);
+  if (Number.isInteger(v)) return String(v);
+  const a = Math.abs(v);
+  if (a >= 1e5 || a < 1e-4) return v.toExponential(2);
+  return (Math.round(v * 1000) / 1000).toString();
+}
+function fmtVec(a) {
+  const head = a.slice(0, 5).map(fmt).join(', ');
+  return `[${head}${a.length > 5 ? ', …' : ''}]  len ${a.length}`;
+}
+
+// ---- compile / run ----
+function run() {
+  state.running = false;
+  let prog;
+  try {
+    prog = compile($('src').value);
+    $('err').textContent = '';
+    $('parsemsg').textContent = `${prog.varOrder.length} variable(s), ${prog.constants.size} constant(s)` +
+      (prog.hasConditions ? `, ${prog.conditions.length} condition(s)` : '');
+  } catch (e) {
+    $('err').textContent = e.message;
+    $('parsemsg').textContent = 'parse error';
+    return;
+  }
+  state.prog = prog;
+  // one plot window per `plot` command; fall back to a single auto-picked window
+  const scal = prog.scalarVars();
+  state.plots = [];
+  for (const cfg of (prog.plots || [])) {
+    if (!scal.includes(cfg.a)) continue;
+    const b = cfg.mode === '2d' && scal.includes(cfg.b) ? cfg.b : null;
+    state.plots.push(makeWin(cfg.mode, cfg.a, b));
+  }
+  if (!state.plots.length) state.plots.push(makeWin('1d', scal[0] || null, scal[1] || scal[0] || null));
+  resetData();
+  populatePlotSelects(scal);
+  syncPlotControls();
+  state.running = true;
+  $('pause').textContent = '⏸ Pause';
+}
+
+function resetData() {
+  state.stats = {}; state.lastValues = {}; state.accepted = 0; state.attempts = 0;
+  state.starved = false; state.acc = 0; clearTrail();
+}
+function clearTrail() { for (const w of state.plots) { w.trail = []; w.bounds = { has: false }; } }
+
+function populatePlotSelects(scal) {
+  const A = $('pA'), B = $('pB');
+  A.innerHTML = ''; B.innerHTML = '';
+  for (const n of scal) {
+    A.appendChild(new Option(n, n));
+    B.appendChild(new Option(n, n));
+  }
+  if (scal.length === 0) { A.appendChild(new Option('(no scalar vars)', '')); B.appendChild(new Option('(none)', '')); }
+}
+function syncPlotControls() {
+  const multi = state.plots.length > 1;
+  const w0 = state.plots[0] || makeWin('1d', null, null);
+  $('pmode').value = w0.mode;
+  if (w0.a) $('pA').value = w0.a;
+  if (w0.b) $('pB').value = w0.b;
+  $('pstyle').value = state.style1d;
+  $('fuzz').value = Math.round(state.fuzz * 100); $('fuzzV').textContent = Math.round(state.fuzz * 100);
+  $('colormode').value = state.colorMode;
+  $('theory').checked = state.theory;
+  $('lockaspect').checked = state.lockAspect;
+  const any2d = state.plots.some((w) => w.mode === '2d');
+  const any1d = state.plots.some((w) => w.mode === '1d');
+  // the per-axis pickers only make sense for one window; the program drives multiples
+  $('pModeWrap').style.display = multi ? 'none' : '';
+  $('pAWrap').style.display = multi ? 'none' : '';
+  $('pBwrap').style.display = (!multi && w0.mode === '2d') ? '' : 'none';
+  $('pAspectWrap').style.display = any2d ? '' : 'none';
+  $('pStyleWrap').style.display = any1d ? '' : 'none';
+}
+
+// ---- sampling tick ----
+function tick() {
+  const prog = state.prog; if (!prog) return;
+  if (state.instant) {
+    const r = prog.step(state.maxTry);
+    state.attempts += r.attempts;
+    if (r.accepted) { state.accepted++; record(r.values); state.starved = false; }
+    else state.starved = true;
+  } else {
+    const r = prog.probe();
+    state.attempts++;
+    if (r.accepted) { state.accepted++; record(r.values); state.starved = false; }
+    // rejected frames simply aren't recorded (the animation "skips")
+  }
+  state.acc = state.attempts ? state.accepted / state.attempts : 0;
+}
+
+function record(values) {
+  state.lastValues = values;
+  for (const name in values) {
+    const v = values[name];
+    if (Array.isArray(v)) continue;
+    const s = state.stats[name] || (state.stats[name] = { n: 0, mean: 0, M2: 0 });
+    s.n++; const d = v - s.mean; s.mean += d / s.n; s.M2 += d * (v - s.mean);
+  }
+  // per-window trails
+  for (const w of state.plots) {
+    const xa = values[w.a];
+    if (typeof xa !== 'number') continue;
+    if (w.mode === '2d') {
+      const xb = values[w.b];
+      if (typeof xb !== 'number') continue;
+      w.trail.push({ x: xa, y: xb, jx: Math.random() - 0.5, jy: Math.random() - 0.5 }); expand(w.bounds, xa, xb);
+    } else {
+      w.trail.push({ x: xa, jit: Math.random() - 0.5 }); expand(w.bounds, xa, null);
+    }
+    while (w.trail.length > state.trailLen) w.trail.shift();
+  }
+}
+function expand(b, x, y) {
+  if (!b.has) { b.minX = b.maxX = x; b.minY = b.maxY = (y == null ? 0 : y); b.has = true; return; }
+  b.minX = Math.min(b.minX, x); b.maxX = Math.max(b.maxX, x);
+  if (y != null) { b.minY = Math.min(b.minY, y); b.maxY = Math.max(b.maxY, y); }
+}
+
+// ---- rendering ----
+const cv = $('cv'), cx = cv.getContext('2d');
+function padRange(min, max) {
+  let span = max - min;
+  if (span < 1e-9) { const c = Math.abs(max) || 1; return [max - c * 0.5 - 0.5, max + c * 0.5 + 0.5]; }
+  const pad = span * 0.08; return [min - pad, max + pad];
+}
+function niceTicks(min, max, count) {
+  const span = (max - min) || 1;
+  const step0 = span / count;
+  const mag = Math.pow(10, Math.floor(Math.log10(step0)));
+  const norm = step0 / mag;
+  let step = norm < 1.5 ? 1 : norm < 3 ? 2 : norm < 7 ? 5 : 10;
+  step *= mag;
+  const out = [];
+  for (let v = Math.ceil(min / step) * step; v <= max + 1e-9; v += step) out.push(Math.round(v / step) * step);
+  return out;
+}
+// Canvas palette read from the applet.css tokens, so the plot follows the
+// site's light/dark theme (was a hardcoded dark palette).
+function hexToRgb(h) {
+  h = (h || '').trim();
+  let m = h.match(/^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i);
+  if (m) return `${parseInt(m[1], 16)},${parseInt(m[2], 16)},${parseInt(m[3], 16)}`;
+  m = h.match(/^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i);
+  if (m) return `${parseInt(m[1] + m[1], 16)},${parseInt(m[2] + m[2], 16)},${parseInt(m[3] + m[3], 16)}`;
+  return '58,91,217';
+}
+function readCOL() {
+  const cs = getComputedStyle(document.documentElement), v = (n) => cs.getPropertyValue(n).trim();
+  const dot = hexToRgb(v('--accent') || '#3a5bd9');
+  return {
+    bg: v('--bg') || '#fff', axis: v('--axis') || v('--line') || '#999',
+    tick: v('--muted') || '#888', dot, cur: v('--accent2') || '#e0862f',
+    hist: `rgba(${dot},0.16)`, theory: v('--ink') || '#1b1d21',
+  };
+}
+let COL = readCOL();
+
+function draw() {
+  COL = readCOL();   // refresh so a light/dark theme switch is reflected live
+  updatePanels();
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth, h = cv.clientHeight;
+  if (cv.width !== Math.round(w * dpr) || cv.height !== Math.round(h * dpr)) { cv.width = w * dpr; cv.height = h * dpr; }
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  cx.clearRect(0, 0, w, h);
+  cx.fillStyle = COL.bg; cx.fillRect(0, 0, w, h);
+  $('theorymsg').textContent = '';                 // per-window notes are drawn on the canvas now
+  const wins = state.plots.filter((x) => x.a);
+  if (!state.prog || !wins.length) { hint(w, h); return; }
+  // one sub-window per plot, stacked vertically — 1-D plots then align on x
+  const N = wins.length, rh = h / N;
+  for (let i = 0; i < N; i++) {
+    const win = wins[i];
+    cx.save();
+    cx.translate(0, i * rh);
+    if (i > 0) { cx.strokeStyle = COL.axis; cx.globalAlpha = .5; cx.beginPath(); cx.moveTo(0, 0); cx.lineTo(w, 0); cx.stroke(); cx.globalAlpha = 1; }
+    if (win.bounds.has) {
+      if (win.mode === '2d') draw2D(w, rh, win); else draw1D(w, rh, win);
+    } else {
+      cx.fillStyle = COL.tick; cx.font = '13px sans-serif'; cx.textAlign = 'center';
+      cx.fillText('sampling…', w / 2, rh / 2);
+    }
+    cx.restore();
+  }
+}
+function hint(w, h) {
+  cx.fillStyle = COL.tick; cx.font = '13px sans-serif'; cx.textAlign = 'center';
+  cx.fillText(state.prog ? 'sampling…' : 'press Run to start', w / 2, h / 2);
+}
+// small muted note in a window's lower-right corner (per-region, canvas-drawn)
+function regionNote(text, rw, rh) {
+  cx.fillStyle = COL.tick; cx.font = '11px sans-serif'; cx.textAlign = 'right'; cx.globalAlpha = .85;
+  cx.fillText(text, rw - 10, rh - 8); cx.globalAlpha = 1; cx.textAlign = 'left';
+}
+function trailAlpha(i, n) { return 0.05 + 0.32 * (i / Math.max(1, n - 1)); }
+
+function draw1D(w, h, win) {
+  const m = 42, cy = h * 0.60, hmax = h * 0.40;
+  const band = state.fuzz * h * 0.42;
+  const b = win.bounds;
+  const [lo, hi] = padRange(b.minX, b.maxX);
+  const X = (v) => m + (v - lo) / (hi - lo) * (w - 2 * m);
+  const style = state.style1d;
+  const n = win.trail.length;
+  // Shared vertical scale for the histogram and the theoretical curve, so the
+  // two are directly comparable (both measured against the theoretical peak).
+  // Previously each was normalised to its OWN max, which made a flat pmf's bars
+  // always undershoot the equal-height theoretical stems (the empirical max got
+  // pinned to full height, leaving every other bar below the theory).
+  const th = state.theory ? theoryFor(win.a) : null;
+  let peak = 0;                          // theory peak: probability (pmf) or density (pdf)
+  if (th && th.kind === 'pmf') {
+    const inr = th.points.filter((p) => p.v >= lo && p.v <= hi);
+    peak = inr.length ? Math.max(...inr.map((p) => p.p)) : 0;
+  } else if (th && th.kind === 'pdf') {
+    for (let i = 0; i <= 200; i++) { const x = lo + (hi - lo) * i / 200; const y = (x >= th.lo && x <= th.hi) ? th.pdf(x) : 0; if (y > peak) peak = y; }
+  }
+  // histogram — binned over the EMPIRICAL [min,max] so edges land on the data
+  // (e.g. the Exp support starts exactly at 0 instead of a negative padded edge)
+  if ((style === 'hist' || style === 'both') && n > 0) {
+    const nb = 48, lo2 = b.minX, span2 = (b.maxX - b.minX) || 1, binW = span2 / nb;
+    const counts = new Array(nb).fill(0);
+    for (const p of win.trail) { let k = Math.floor((p.x - lo2) / span2 * nb); if (k === nb) k = nb - 1; if (k >= 0 && k < nb) counts[k]++; }
+    // Bar height shares the theory's units when available: empirical probability
+    // (count/n) against a pmf, or empirical density ((count/n)/binW) against a
+    // pdf. With no theory (derived variables) fall back to self-normalisation.
+    let barH;
+    if (th && th.kind === 'pmf' && peak > 0) barH = (k) => (counts[k] / n) / peak * hmax;
+    else if (th && th.kind === 'pdf' && peak > 0) barH = (k) => ((counts[k] / n) / binW) / peak * hmax;
+    else { const cmax = Math.max(1, ...counts); barH = (k) => counts[k] / cmax * hmax; }
+    cx.fillStyle = COL.hist;
+    for (let k = 0; k < nb; k++) {
+      const x0 = X(lo2 + k / nb * span2), x1 = X(lo2 + (k + 1) / nb * span2);
+      const bh = barH(k);
+      if (bh > 0) cx.fillRect(x0, cy - bh, Math.max(1, x1 - x0 - 1), bh);
+    }
+  }
+  // axis + ticks
+  cx.strokeStyle = COL.axis; cx.lineWidth = 1;
+  cx.beginPath(); cx.moveTo(m, cy); cx.lineTo(w - m, cy); cx.stroke();
+  cx.fillStyle = COL.tick; cx.font = '11px sans-serif'; cx.textAlign = 'center';
+  for (const t of niceTicks(lo, hi, 7)) {
+    const px = X(t);
+    cx.strokeStyle = COL.axis; cx.beginPath(); cx.moveTo(px, cy - 4); cx.lineTo(px, cy + 4); cx.stroke();
+    cx.fillText(fmt(t), px, cy + 18);
+  }
+  // theoretical pdf / pmf overlay (when tractable), on the shared scale
+  drawTheory1D(X, cy, hmax, lo, hi, th, peak, w, h);
+  // fading dots — fuzz on the perpendicular axis (the value itself stays exact)
+  if (style === 'dots' || style === 'both') {
+    for (let i = 0; i < n; i++) {
+      const p = win.trail[i];
+      cx.fillStyle = trailColor(n === 1 ? 1 : i / (n - 1));
+      cx.beginPath(); cx.arc(X(p.x), cy - p.jit * band, 2.1, 0, 7); cx.fill();
+    }
+  }
+  // current value = newest trail point, sharing the same fuzz so it sits in the cloud
+  const last = n > 0 ? win.trail[n - 1] : null;
+  const cur = state.lastValues[win.a];
+  if (last && typeof cur === 'number') {
+    const yy = (style === 'hist') ? cy : cy - last.jit * band;
+    cx.fillStyle = currentColor(); cx.beginPath(); cx.arc(X(cur), yy, 4.5, 0, 7); cx.fill();
+    cx.fillStyle = COL.tick; cx.textAlign = 'left'; cx.fillText(`${win.a} = ${fmt(cur)}`, m, 20);
+  }
+}
+
+// ---- theoretical distribution overlay (graceful: only when computable) ----
+function ceApp(node, C) { // deterministic eval; null if it touches randomness
+  switch (node.t) {
+    case 'num': return node.v;
+    case 'const': return C.get(node.name);
+    case 'unop': { const a = ceApp(node.a, C); return a == null ? null : (node.op === '-' ? -a : a); }
+    case 'binop': { const a = ceApp(node.a, C), b = ceApp(node.b, C); return (a == null || b == null) ? null : scalarBin(node.op, a, b); }
+    default: return null;
+  }
+}
+function binomPmf(n, p, k) {
+  if (p <= 0) return k === 0 ? 1 : 0;
+  if (p >= 1) return k === n ? 1 : 0;
+  let logc = 0; for (let i = 1; i <= k; i++) logc += Math.log(n - k + i) - Math.log(i);
+  return Math.exp(logc + k * Math.log(p) + (n - k) * Math.log(1 - p));
+}
+function theoryFor(name) {
+  const prog = state.prog; if (!prog || !prog.astOf) return null;
+  const ast = prog.astOf(name); if (!ast || ast.t !== 'dist') return null; // only bare primitives (v1)
+  const C = prog.constants, num = (i) => ceApp(ast.args[i], C);
+  switch (ast.name) {
+    case 'Unif': {
+      if (ast.args.length === 1 && ast.args[0].t === 'set') {
+        const s = ast.args[0].values, p = 1 / s.length;
+        return { kind: 'pmf', points: s.map((v) => ({ v, p })) };
+      }
+      const a = num(0), b = num(1); if (a == null || b == null || b <= a) return null;
+      return { kind: 'pdf', lo: a, hi: b, pdf: () => 1 / (b - a) };
+    }
+    case 'Exp': { const r = num(0); if (r == null || r <= 0) return null;
+      return { kind: 'pdf', lo: 0, hi: Infinity, pdf: (x) => r * Math.exp(-r * x) }; }
+    case 'Normal': case 'Gaussian': { const mu = num(0), sd = num(1); if (mu == null || sd == null || sd <= 0) return null;
+      return { kind: 'pdf', lo: -Infinity, hi: Infinity, pdf: (x) => Math.exp(-((x - mu) ** 2) / (2 * sd * sd)) / (sd * Math.sqrt(2 * Math.PI)) }; }
+    case 'Bernoulli': { const p = num(0); if (p == null) return null;
+      return { kind: 'pmf', points: [{ v: 0, p: 1 - p }, { v: 1, p }] }; }
+    case 'Binomial': { const nn = num(0), p = num(1); if (nn == null || p == null) return null;
+      const pts = []; for (let k = 0; k <= nn; k++) pts.push({ v: k, p: binomPmf(nn, p, k) }); return { kind: 'pmf', points: pts }; }
+    case 'Poisson': { const lam = num(0); if (lam == null || lam < 0) return null;
+      if (lam === 0) return { kind: 'pmf', points: [{ v: 0, p: 1 }] };
+      const pts = []; const kmax = Math.max(10, Math.ceil(lam + 4 * Math.sqrt(lam + 1)));
+      let logp = -lam; for (let k = 0; k <= kmax; k++) { pts.push({ v: k, p: Math.exp(logp) }); logp += Math.log(lam) - Math.log(k + 1); }
+      return { kind: 'pmf', points: pts }; }
+    case 'Geometric': { const p = num(0); if (p == null || p <= 0 || p >= 1) return null;
+      const pts = []; const kmax = Math.max(10, Math.ceil(Math.log(0.001) / Math.log(1 - p)));
+      for (let k = 1; k <= kmax; k++) pts.push({ v: k, p: p * Math.pow(1 - p, k - 1) }); return { kind: 'pmf', points: pts }; }
+  }
+  return null;
+}
+function drawTheory1D(X, cy, hmax, lo, hi, th, peak, rw, rh) {
+  if (!state.theory) return;
+  if (!th || !(peak > 0)) { regionNote('theoretical curve unavailable', rw, rh); return; }
+  cx.strokeStyle = COL.theory; cx.fillStyle = COL.theory; cx.lineWidth = 1.5;
+  if (th.kind === 'pdf') {
+    cx.beginPath();
+    for (let i = 0; i <= 200; i++) {
+      const x = lo + (hi - lo) * i / 200, y = (x >= th.lo && x <= th.hi) ? th.pdf(x) : 0;
+      const py = cy - y / peak * hmax;
+      if (i === 0) cx.moveTo(X(x), py); else cx.lineTo(X(x), py);
+    }
+    cx.stroke();
+  } else {
+    for (const p of th.points.filter((p) => p.v >= lo && p.v <= hi)) {
+      const px = X(p.v), ph = p.p / peak * hmax;
+      cx.beginPath(); cx.moveTo(px, cy); cx.lineTo(px, cy - ph); cx.stroke();
+      cx.beginPath(); cx.arc(px, cy - ph, 2.6, 0, 7); cx.fill();
+    }
+  }
+}
+
+function draw2D(w, h, win) {
+  const m = 46;
+  const b = win.bounds;
+  const [lox, hix] = padRange(b.minX, b.maxX);
+  const [loy, hiy] = padRange(b.minY, b.maxY);
+  const spanX = hix - lox, spanY = hiy - loy;
+  let X, Y, left = m, top = m, plotW = w - 2 * m, plotH = h - 2 * m;
+  if (state.lockAspect) {
+    const s = Math.min(plotW / spanX, plotH / spanY);
+    plotW = s * spanX; plotH = s * spanY;
+    left = (w - plotW) / 2; top = (h - plotH) / 2;
+    X = (v) => left + (v - lox) * s;
+    Y = (v) => (top + plotH) - (v - loy) * s;
+  } else {
+    X = (v) => m + (v - lox) / spanX * (w - 2 * m);
+    Y = (v) => (h - m) - (v - loy) / spanY * (h - 2 * m);
+  }
+  const right = left + plotW, bot = top + plotH;
+  // isotropic fuzz: a pixel radius (added after projection) so the jitter cloud
+  // stays round regardless of the region's aspect ratio (was data-space fx/fy,
+  // which stretched with a non-square window).
+  const F = state.fuzz * 0.12 * Math.min(plotW, plotH);
+  // grid + ticks
+  cx.lineWidth = 1; cx.fillStyle = COL.tick; cx.font = '11px sans-serif';
+  cx.textAlign = 'center';
+  for (const t of niceTicks(lox, hix, 7)) { if (t < lox || t > hix) continue; const px = X(t); cx.strokeStyle = COL.axis; cx.globalAlpha = .4; cx.beginPath(); cx.moveTo(px, top); cx.lineTo(px, bot); cx.stroke(); cx.globalAlpha = 1; cx.fillText(fmt(t), px, bot + 15); }
+  cx.textAlign = 'right';
+  for (const t of niceTicks(loy, hiy, 6)) { if (t < loy || t > hiy) continue; const py = Y(t); cx.strokeStyle = COL.axis; cx.globalAlpha = .4; cx.beginPath(); cx.moveTo(left, py); cx.lineTo(right, py); cx.stroke(); cx.globalAlpha = 1; cx.fillText(fmt(t), left - 6, py + 3); }
+  cx.strokeStyle = COL.axis; cx.strokeRect(left, top, plotW, plotH);
+  // fading scatter (fuzz spreads coincident points so density shows)
+  const n = win.trail.length;
+  for (let i = 0; i < n; i++) {
+    const p = win.trail[i];
+    cx.fillStyle = trailColor(n === 1 ? 1 : i / (n - 1));
+    cx.beginPath(); cx.arc(X(p.x) + p.jx * F, Y(p.y) + p.jy * F, 2.1, 0, 7); cx.fill();
+  }
+  // current point (newest, same fuzz)
+  const last = n > 0 ? win.trail[n - 1] : null;
+  const a = state.lastValues[win.a], bv = state.lastValues[win.b];
+  if (last && typeof a === 'number' && typeof bv === 'number') {
+    cx.fillStyle = currentColor(); cx.beginPath(); cx.arc(X(a) + last.jx * F, Y(bv) + last.jy * F, 4.5, 0, 7); cx.fill();
+    cx.fillStyle = COL.tick; cx.textAlign = 'left';
+    cx.fillText(`${win.a} = ${fmt(a)}   ${win.b} = ${fmt(bv)}`, left, Math.max(12, top - 8));
+  }
+  if (state.theory) regionNote('theoretical heat map unavailable in 2-D', w, h);
+}
+
+// ---- panels (table + status) ----
+function updatePanels() {
+  const prog = state.prog; if (!prog) return;
+  let rows = '';
+  for (const name of prog.varOrder) {
+    const v = state.lastValues[name];
+    let vs = '—', st = '';
+    if (v !== undefined) {
+      if (Array.isArray(v)) vs = fmtVec(v);
+      else {
+        vs = fmt(v);
+        const s = state.stats[name];
+        if (s && s.n > 1) st = `${fmt(s.mean)} ± ${fmt(Math.sqrt(s.M2 / s.n))}`;
+      }
+    }
+    rows += `<tr><td class="name">${name}</td><td class="v">${vs}</td><td class="stat">${st}</td></tr>`;
+  }
+  $('vals').innerHTML = rows;
+  if (prog.constants.size) {
+    $('consts').innerHTML = 'constants: ' + [...prog.constants].map(([k, val]) => `${k} = ${fmt(val)}`).join(' · ');
+  } else $('consts').innerHTML = '';
+
+  // status
+  let s = `<div><b>${state.accepted.toLocaleString()}</b> samples drawn · ${state.rate}/s · trail ${state.trailLen}</div>`;
+  if (prog.hasConditions) {
+    const pct = (state.acc * 100);
+    const cls = pct < 1 ? ' warn' : '';
+    s += `<div class="${cls}">acceptance ≈ <b>${pct.toFixed(pct < 1 ? 3 : 1)}%</b> (${state.accepted.toLocaleString()} kept / ${state.attempts.toLocaleString()} tried)</div>`;
+    if (state.instant && state.starved) s += `<div class="warn">hit the ${state.maxTry.toLocaleString()}-try cap — event may be too rare</div>`;
+  }
+  $('status').innerHTML = s;
+}
+
+// ---- animation loop ----
+let lastTs = null, carry = 0;
+function frame(ts) {
+  if (state.running && state.prog) {
+    if (lastTs == null) lastTs = ts;
+    carry += (ts - lastTs) / 1000 * state.rate; lastTs = ts;
+    let budget = 400;
+    while (carry >= 1 && budget-- > 0) { tick(); carry -= 1; }
+  } else { lastTs = null; carry = 0; }
+  draw();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+// ---- control wiring ----
+$('run').onclick = $('run2').onclick = run;
+$('pause').onclick = () => {
+  if (!state.prog) return;
+  state.running = !state.running;
+  $('pause').textContent = state.running ? '⏸ Pause' : '▶ Resume';
+};
+$('step').onclick = () => { if (state.prog) { state.running = false; $('pause').textContent = '▶ Resume'; tick(); } };
+$('rate').oninput = (e) => { state.rate = +e.target.value; $('rateV').textContent = state.rate; };
+$('trail').oninput = (e) => { state.trailLen = +e.target.value; $('trailV').textContent = state.trailLen;
+  for (const w of state.plots) while (w.trail.length > state.trailLen) w.trail.shift(); };
+$('maxtry').oninput = (e) => { state.maxTry = Math.max(1, +e.target.value | 0); };
+$('condmode').onchange = (e) => { state.instant = e.target.value === 'instant'; };
+$('pmode').onchange = (e) => { const w0 = state.plots[0]; if (w0) { w0.mode = e.target.value; if (w0.mode === '2d' && !w0.b) w0.b = $('pB').value || null; } syncPlotControls(); clearTrail(); };
+$('pA').onchange = (e) => { const w0 = state.plots[0]; if (w0) w0.a = e.target.value; clearTrail(); };
+$('pB').onchange = (e) => { const w0 = state.plots[0]; if (w0) w0.b = e.target.value; clearTrail(); };
+$('pstyle').onchange = (e) => { state.style1d = e.target.value; };
+$('fuzz').oninput = (e) => { state.fuzz = (+e.target.value) / 100; $('fuzzV').textContent = e.target.value; };
+$('colormode').onchange = (e) => { state.colorMode = e.target.value; };
+$('theory').onchange = (e) => { state.theory = e.target.checked; };
+$('lockaspect').onchange = (e) => { state.lockAspect = e.target.checked; };
+
+// ---- shareable scenarios (program encoded in the URL hash) ----
+function encodeState() { return btoa(unescape(encodeURIComponent($('src').value))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+function decodeState(s) { s = s.replace(/-/g, '+').replace(/_/g, '/'); while (s.length % 4) s += '='; return decodeURIComponent(escape(atob(s))); }
+function loadFromHash() {
+  const m = location.hash.match(/[#&]p=([^&]+)/);
+  if (m) { try { $('src').value = decodeState(m[1]); return true; } catch (e) { /* malformed hash */ } }
+  return false;
+}
+$('share').onclick = () => {
+  const url = location.href.split('#')[0] + '#p=' + encodeState();
+  try { history.replaceState(null, '', url); } catch (e) { /* file:// may block */ }
+  const toast = (msg) => { $('sharemsg').textContent = msg; setTimeout(() => { $('sharemsg').textContent = ''; }, 2500); };
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(url).then(() => toast('copied ✓'), () => toast('link in address bar'));
+  else toast('link in address bar');
+};
+
+// ---- boot ----
+if (!loadFromHash()) applyPreset('Dice — independent vs coupled');
+else run();
+</script>
+</body>
+</html>

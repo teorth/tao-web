@@ -77,10 +77,12 @@ def md_links(s: str) -> str:
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
   --line:#e3e3e3; --accent:#7a1f1f; --stub-bg:#fff4e5; --stub-fg:#8a5a00; --card:#fafafa;
-  --ok-bg:#e6f4ec; --ok-fg:#1f7a4d; --new-bg:#e7edfb; --new-fg:#2a4b9b; }
+  --ok-bg:#e6f4ec; --ok-fg:#1f7a4d; --new-bg:#e7edfb; --new-fg:#2a4b9b;
+  --dev-bg:#efe7fb; --dev-fg:#6b3fb0; }
 @media (prefers-color-scheme: dark) { :root { --fg:#e6e6e6; --bg:#151515; --muted:#9a9a9a;
   --line:#333; --accent:#e08a8a; --stub-bg:#3a2e12; --stub-fg:#e8c06a; --card:#1d1d1d;
-  --ok-bg:#17321f; --ok-fg:#7fce9f; --new-bg:#1a2438; --new-fg:#9db4f0; } }
+  --ok-bg:#17321f; --ok-fg:#7fce9f; --new-bg:#1a2438; --new-fg:#9db4f0;
+  --dev-bg:#281f3a; --dev-fg:#c0a4f0; } }
 * { box-sizing: border-box; }
 body { font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--fg); background: var(--bg); margin: 0; }
@@ -191,6 +193,7 @@ ol.works > li { display: grid; grid-template-columns: 3.2rem 1fr; gap: .5rem;
   padding: .12rem .5rem; border-radius: 999px; white-space: nowrap; height: fit-content; }
 .pill.ported, .pill.live { color: var(--ok-fg); background: var(--ok-bg); }
 .pill.original { color: var(--new-fg); background: var(--new-bg); }
+.pill.in-development { color: var(--dev-fg); background: var(--dev-bg); }
 .pill.to-port { color: var(--stub-fg); background: var(--stub-bg); }
 .pill.retired { color: var(--muted); background: var(--card); border: 1px solid var(--line); }
 @media print {
@@ -861,7 +864,8 @@ def build_projects(projects: dict) -> str:
     return page("Terence Tao — collaborative projects", "\n".join(body))
 
 
-_APPLET_STATUS = {"ported": "Ported", "live": "Live", "to-port": "To port", "retired": "Retired", "original": "Original"}
+_APPLET_STATUS = {"ported": "Ported", "live": "Live", "to-port": "To port", "retired": "Retired",
+                  "original": "Original", "in-development": "In development"}
 
 
 def build_applets(doc: dict) -> str:
@@ -883,7 +887,7 @@ def build_applets(doc: dict) -> str:
         elif a.get("year"):
             lines.append(java)
         # AI-use disclosure for the apps built in this repo.
-        if a["status"] == "original":
+        if a["status"] in ("original", "in-development"):
             lines.append('<span class="ai">Coded with the assistance of Claude Code.</span>')
         elif a["status"] == "ported":
             lines.append('<span class="ai">Ported with the assistance of Claude Code.</span>')
@@ -905,6 +909,7 @@ def build_applets(doc: dict) -> str:
     if doc.get("description"):
         body.append(f'<div class="cv-bio"><p>{html.escape(doc["description"])}</p></div>')
     body.append('<p class="legend"><strong>Status:</strong> Original = first published here &middot; '
+                'In development = published here but still a work in progress &middot; '
                 'Ported = runs here now &middot; Live = works elsewhere &middot; '
                 'To port = old Java, not yet rebuilt &middot; Retired = superseded.</p>')
     notes = doc.get("category_notes") or {}
