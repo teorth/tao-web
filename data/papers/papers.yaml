@@ -71,6 +71,42 @@ works:
     predicates and variables — and the post discusses the difficulties a hand-coded implementation runs
     into as the logic grows (pattern matching with many or infinitely many matches, and side conditions
     on variables).
+- id: gamifying-algebra
+  kind: short-story
+  title: Gamifying algebra
+  year: 2012
+  venue: Blog post
+  tags:
+  - education
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2012/04/15/gamifying-algebra/"
+  - type: applet
+    url: "https://scratch.mit.edu/projects/teorth/2472326"
+  abstract: >-
+    Proposes turning the solving of a linear equation into a game: the player applies a restricted set
+    of moves (subtract from both sides, divide, …) to isolate the unknown while the game handles the
+    arithmetic, isolating the strategic thinking that makes algebra hard for beginners. Includes a quick
+    Scratch prototype and envisions progressive levels reaching simultaneous equations, quadratics, and
+    inequalities.
+- id: new-version-of-algebra-game
+  kind: short-story
+  title: New version of algebra game
+  year: 2012
+  venue: Blog post
+  tags:
+  - education
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2012/04/18/new-version-of-algebra-game/"
+  - type: applet
+    url: "https://scratch.mit.edu/projects/teorth/2477436"
+  abstract: >-
+    A follow-up presenting a more developed algebra game with 12 progressively harder levels of solving
+    a linear equation in one unknown, where the moves available are deliberately restricted at each
+    level to turn it into a genuine puzzle. Incorporates reader feedback (a move counter, decimal
+    rounding) and notes that the single-solution nature of linear equations makes them especially suited
+    to this approach.
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
