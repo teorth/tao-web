@@ -30,6 +30,47 @@ const FUNCS = new Set([
   'IF'
 ]);
 
+// Empirical statistics accumulated over the time series of samples. These are
+// NOT functions (they don't turn random variables into random variables); they
+// turn a stream of samples into a number, so they live in their own namespace,
+// usable only in the `statistic` / `track` command (case-insensitive; aliases).
+// kind: 'moment' (exact online moments), 'quantile' (from a bounded sample
+// buffer; `pct` is the percentile, or pctArg means a percentage argument),
+// 'mode' (most frequent value in the buffer).
+const STAT_DEF = {
+  Mean: { kind: 'moment', argc: 1 }, Var: { kind: 'moment', argc: 1 },
+  SD: { kind: 'moment', argc: 1 }, Cov: { kind: 'moment', argc: 2 },
+  Corr: { kind: 'moment', argc: 2 },
+  Median: { kind: 'quantile', argc: 1, pct: 50 },
+  Q1: { kind: 'quantile', argc: 1, pct: 25 }, Q3: { kind: 'quantile', argc: 1, pct: 75 },
+  Percentile: { kind: 'quantile', argc: 2, pctArg: true }, // Percentile(expr, p in [0,100])
+  Mode: { kind: 'mode', argc: 1 },
+  Entropy: { kind: 'entropy', argc: 1 }, // Shannon entropy in bits (discrete only)
+  // running extremes over the sample stream (NOT the MAX/MIN vector functions)
+  Max: { kind: 'extreme', argc: 1 }, Min: { kind: 'extreme', argc: 1 },
+};
+const STAT_ALIAS = {
+  mean: 'Mean', average: 'Mean', var: 'Var', variance: 'Var', sd: 'SD', std: 'SD',
+  stdev: 'SD', cov: 'Cov', covariance: 'Cov', corr: 'Corr', correlation: 'Corr',
+  median: 'Median', med: 'Median', q1: 'Q1', q3: 'Q3',
+  percentile: 'Percentile', pctile: 'Percentile', mode: 'Mode',
+  entropy: 'Entropy', shannon: 'Entropy', max: 'Max', maximum: 'Max', min: 'Min', minimum: 'Min',
+};
+const STAT_NAMES = 'Mean, SD, Var, Cov, Corr, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min';
+const SAMPLE_CAP = 2048; // ring-buffer size for quantile/mode statistics
+// split "a, b" on top-level commas only (so nested calls like IF(x,1,0) survive)
+function splitArgs(s) {
+  const out = []; let depth = 0, cur = '';
+  for (const ch of s) {
+    if (ch === '(' || ch === '{') depth++;
+    else if (ch === ')' || ch === '}') depth--;
+    if (ch === ',' && depth === 0) { out.push(cur.trim()); cur = ''; }
+    else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+
 // ===========================================================================
 // Tokeniser
 // ===========================================================================
@@ -338,6 +379,7 @@ function compile(src) {
   const varOrder = [];
   const conditions = [];
   const plots = []; // {mode:'1d'|'2d', a, b}
+  const trackers = []; // {stat, label, exprs:[ast], acc} — empirical statistics
 
   const lines = src.split('\n');
   for (let ln = 0; ln < lines.length; ln++) {
@@ -357,11 +399,37 @@ function compile(src) {
         plots.push(parts.length >= 2 ? { mode: '2d', a: parts[0], b: parts[1] } : { mode: '1d', a: parts[0] });
         continue;
       }
+      // statistic Stat(expr[, expr])   (alias: track ...) — an empirical observable
+      const mStat = line.match(/^(?:statistic|track)\s+([A-Za-z_][A-Za-z0-9_]*)\s*\((.*)\)\s*$/i);
+      if (mStat) {
+        const canon = STAT_ALIAS[mStat[1].toLowerCase()];
+        if (!canon) throw new Error(`Unknown statistic '${mStat[1]}' (use ${STAT_NAMES})`);
+        const def = STAT_DEF[canon];
+        const argStrs = splitArgs(mStat[2]);
+        if (argStrs.length !== def.argc) throw new Error(`${canon} expects ${def.argc} argument${def.argc > 1 ? 's' : ''}`);
+        const tr = { stat: canon, kind: def.kind, label: `${canon}(${argStrs.join(', ')})` };
+        if (def.pctArg) { // last argument is a numeric percentage in [0, 100]
+          let p; try { p = evalConst(parseExpression(argStrs[1]), ctx); } catch (_) { p = NaN; }
+          if (!(p >= 0 && p <= 100)) throw new Error('Percentile expects a percentage between 0 and 100');
+          tr.pct = p;
+          tr.exprs = [finalize(parseExpression(argStrs[0]), ctx)];
+        } else {
+          tr.exprs = argStrs.map((s) => finalize(parseExpression(s), ctx));
+          if (def.pct != null) tr.pct = def.pct;
+        }
+        if (tr.kind === 'moment') tr.acc = { n: 0, mx: 0, my: 0, Mx2: 0, My2: 0, Cxy: 0 };
+        else if (tr.kind === 'extreme') tr.acc = { n: 0, hi: -Infinity, lo: Infinity };
+        else tr.buf = { data: [], i: 0, cap: SAMPLE_CAP };
+        trackers.push(tr);
+        continue;
+      }
       // let NAME = EXPR   (constant)   [ := accepted as a lenient alias ]
       const mLet = line.match(/^let\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.+)$/i);
       if (mLet) {
-        const val = evalConst(parseExpression(mLet[2]), ctx);
-        ctx.constants.set(mLet[1], val);
+        const name = mLet[1];
+        if (ctx.constants.has(name)) throw new Error(`'${name}' is already a constant`);
+        if (ctx.variables.has(name)) throw new Error(`'${name}' is already a random variable`);
+        ctx.constants.set(name, evalConst(parseExpression(mLet[2]), ctx));
         continue;
       }
       // NAME = EXPR   (random variable)   [ := accepted as a lenient alias ]
@@ -369,9 +437,13 @@ function compile(src) {
       if (mAssign) {
         const name = mAssign[1];
         if (ctx.constants.has(name)) throw new Error(`'${name}' is already a constant`);
+        // Random variables are immutable here: no reassignment, and in particular
+        // no 'X = X + 1' — that is the mutable-cell mindset this app is meant to
+        // dispel; a variable is fixed once by its definition.
+        if (ctx.variables.has(name)) throw new Error(`'${name}' is already defined; random variables cannot be reassigned`);
         const ast = finalize(parseExpression(mAssign[2]), ctx);
         ctx.variables.set(name, { ast });
-        if (!varOrder.includes(name)) varOrder.push(name);
+        varOrder.push(name);
         continue;
       }
       throw new Error('Could not parse statement');
@@ -430,6 +502,66 @@ function compile(src) {
     return true;
   }
 
+  // ---- empirical statistics: running moments over accepted frames ----------
+  function safeNum(e) {
+    try { const v = num(e); return (typeof v === 'number' && isFinite(v)) ? v : null; }
+    catch (_) { return null; }
+  }
+  // Update each tracker from the current (accepted) omega: moment stats keep
+  // exact online moments; sample stats push into a bounded ring buffer.
+  function updateTrackers() {
+    for (const t of trackers) {
+      const x = safeNum(t.exprs[0]);
+      if (x == null) continue;
+      if (t.kind === 'moment') {
+        let y = null;
+        if (t.exprs.length === 2) { y = safeNum(t.exprs[1]); if (y == null) continue; }
+        const a = t.acc; a.n++;
+        const dx = x - a.mx; a.mx += dx / a.n; a.Mx2 += dx * (x - a.mx);
+        if (y != null) { const dy = y - a.my; a.my += dy / a.n; a.My2 += dy * (y - a.my); a.Cxy += dx * (y - a.my); }
+      } else if (t.kind === 'extreme') {
+        const a = t.acc; a.n++; if (x > a.hi) a.hi = x; if (x < a.lo) a.lo = x;
+      } else {
+        const b = t.buf; b.data[b.i % b.cap] = x; b.i++;
+      }
+    }
+  }
+  function quantileOf(arr, pct) { // linear-interpolated percentile
+    const s = arr.slice().sort((a, b) => a - b), m = s.length;
+    if (m === 1) return s[0];
+    const r = (pct / 100) * (m - 1), lo = Math.floor(r), f = r - lo;
+    return lo + 1 < m ? s[lo] + f * (s[lo + 1] - s[lo]) : s[lo];
+  }
+  function freqMap(arr) { const m = new Map(); for (const v of arr) m.set(v, (m.get(v) || 0) + 1); return m; }
+  function modeOf(arr) { let best = arr[0], bc = 0; for (const [v, c] of freqMap(arr)) if (c > bc) { bc = c; best = v; } return best; }
+  function entropyOf(arr) { // Shannon entropy in bits of the empirical distribution
+    const m = arr.length; let h = 0;
+    for (const c of freqMap(arr).values()) { const p = c / m; h -= p * Math.log2(p); }
+    return h;
+  }
+  // Population-convention moment stats (÷ n, matching the per-variable mean±sd).
+  function trackerValue(t) {
+    if (t.kind === 'moment') {
+      const a = t.acc;
+      if (t.stat === 'Mean') return a.n >= 1 ? a.mx : null;
+      if (a.n < 2) return null;
+      switch (t.stat) {
+        case 'Var': return a.Mx2 / a.n;
+        case 'SD': return Math.sqrt(a.Mx2 / a.n);
+        case 'Cov': return a.Cxy / a.n;
+        case 'Corr': { const d = Math.sqrt(a.Mx2 * a.My2); return d > 0 ? a.Cxy / d : null; }
+      }
+      return null;
+    }
+    if (t.kind === 'extreme') { const a = t.acc; if (a.n < 1) return null; return t.stat === 'Max' ? a.hi : a.lo; }
+    const arr = t.buf.data;
+    if (arr.length < 1) return null;
+    if (t.kind === 'mode') return modeOf(arr);
+    if (t.kind === 'entropy') return entropyOf(arr);
+    return quantileOf(arr, t.pct);
+  }
+  const readTrackers = () => trackers.map((t) => ({ label: t.label, stat: t.stat, value: trackerValue(t) }));
+
   // Draw one accepted frame. Returns {accepted, attempts, values}.
   function step(maxAttempts = 10000) {
     let attempts = 0, accepted = false;
@@ -441,6 +573,7 @@ function compile(src) {
     // Evaluate every variable under the (accepted) omega — same caches => coupled.
     const values = {};
     for (const name of varOrder) values[name] = evalNode(variables.get(name).ast);
+    if (accepted) updateTrackers();   // same omega => statistics stay coupled too
     return { accepted, attempts, values };
   }
 
@@ -450,6 +583,7 @@ function compile(src) {
     const accepted = conditions.length === 0 || conditionsHold();
     const values = {};
     for (const name of varOrder) values[name] = evalNode(variables.get(name).ast);
+    if (accepted) updateTrackers();
     return { accepted, values };
   }
 
@@ -465,6 +599,8 @@ function compile(src) {
     conditions,
     plots,
     hasConditions: conditions.length > 0,
+    hasTrackers: trackers.length > 0,
+    readTrackers,
     step,
     probe,
     scalarVars,

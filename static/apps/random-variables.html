@@ -61,20 +61,49 @@
   .col h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted);
     margin: 0; padding: 8px 12px 6px; border-bottom: 1px solid var(--line); }
   .col .body { padding: 10px 12px; overflow: auto; flex: 1; min-height: 0; }
-  textarea {
-    width: 100%; height: 100%; min-height: 220px; resize: none; background: var(--panel);
-    color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 10px;
+  /* syntax-highlighted editor: a colorized <pre> under a transparent-text textarea */
+  .editor-wrap { position: relative; flex: 1; min-height: 220px; }
+  .editor-wrap .hl, .editor-wrap textarea {
+    position: absolute; inset: 0; margin: 0; padding: 10px; box-sizing: border-box;
     font: 13px/1.5 "SFMono-Regular", Consolas, "Liberation Mono", monospace; tab-size: 2;
+    border: 1px solid var(--line); border-radius: 6px;
+    white-space: pre-wrap; overflow-wrap: break-word; overflow: auto;
   }
+  .editor-wrap .hl { background: var(--panel); color: var(--ink); pointer-events: none; z-index: 0; }
+  .editor-wrap textarea { background: transparent; color: transparent; caret-color: var(--ink); resize: none; z-index: 1; }
+  .editor-wrap textarea::selection { background: rgba(120,150,255,.30); }
+  .hl .c  { color: var(--muted); font-style: italic; } /* comments */
+  .hl .k  { color: var(--accent2); }                   /* keywords: let, plot, statistic, condition */
+  .hl .d  { color: var(--accent); }                    /* distributions */
+  .hl .f  { color: #7c5cff; }                          /* functions */
+  .hl .s  { color: #2f9e57; }                          /* statistics */
+  .hl .n  { color: #d98324; }                          /* numbers */
+  .hl .set{ color: #1d9a9a; }                          /* {..} sets */
+  .hl .cn { color: #5a7a9a; }                          /* constants (deterministic) */
+  .hl .v  { color: var(--ink); }                       /* random variables (plain ink) */
+  .hl .op { color: var(--muted); }                     /* operators */
+  .hl span { pointer-events: auto; }                   /* so hit-testing can find a token when the textarea is briefly disabled */
+  .rv-tip { position: fixed; z-index: 60; max-width: 320px; pointer-events: none;
+    background: var(--panel2); color: var(--ink); border: 1px solid var(--line);
+    border-radius: 6px; padding: 7px 9px; font-size: 12px; line-height: 1.45;
+    box-shadow: 0 4px 16px rgba(0,0,0,.18); }
+  .rv-tip .tsig  { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-weight: 600; }
+  .rv-tip .tdesc { color: var(--muted); margin-top: 3px; }
   .col.editor .body { display: flex; flex-direction: column; gap: 8px; }
   .editor-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
   table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
   th, td { text-align: left; padding: 4px 6px; border-bottom: 1px solid var(--line); font-size: 13px; }
   th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
-  td.name { color: var(--ink); font-family: "SFMono-Regular", Consolas, monospace; }
+  td.name { color: var(--ink); font-family: "SFMono-Regular", Consolas, monospace; font-weight: 700; }
   td.v { color: var(--accent); font-family: "SFMono-Regular", Consolas, monospace; }
   td.stat { color: var(--muted); font-size: 12px; }
   .consts { color: var(--muted); font-size: 12px; margin-top: 8px; }
+  /* empirical-statistics trackers (rendered GUI: labels carry the math look) */
+  .trackers { margin-top: 10px; font-size: 12px; }
+  .trackers .thead { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; font-size: 11px; margin-bottom: 3px; }
+  .trackers > div:not(.thead) { display: flex; justify-content: space-between; gap: 10px; padding: 1px 0; }
+  .trackers .tname { font-family: "SFMono-Regular", Consolas, monospace; color: var(--ink); }
+  .trackers .v { color: var(--accent); font-family: "SFMono-Regular", Consolas, monospace; font-variant-numeric: tabular-nums; }
   .status { padding: 8px 12px; border-top: 1px solid var(--line); font-size: 12px; color: var(--muted);
     display: flex; flex-direction: column; gap: 3px; }
   .status b { color: var(--ink); font-weight: 600; }
@@ -142,15 +171,15 @@
     <button id="pause">⏸ Pause</button>
     <button id="step">⏭ Step</button>
   </div>
-  <div class="grp"><label>speed</label><input type="range" id="rate" min="1" max="300" value="30"><span class="val" id="rateV">30</span><label>/s</label></div>
-  <div class="grp"><label>trail</label><input type="range" id="trail" min="50" max="5000" value="1200" step="50"><span class="val" id="trailV">1200</span></div>
+  <div class="grp"><label>speed</label><input type="range" id="rate" min="-2" max="8" step="1" value="5"><span class="val" id="rateV">32</span><label>/s</label></div>
+  <div class="grp"><label>trail</label><input type="range" id="trail" min="5" max="13" value="10" step="1"><span class="val" id="trailV">1024</span></div>
   <div class="grp">
     <label>conditioning</label>
     <select id="condmode">
       <option value="instant">instant (hide rejections)</option>
       <option value="visible">show rejections</option>
     </select>
-    <label>max tries</label><input type="number" id="maxtry" value="10000" min="1" step="100">
+    <label>max tries</label><input type="number" id="maxtry" value="10000" min="100" step="100">
   </div>
   <div class="grp"><label>preset</label>
     <select id="preset"></select>
@@ -162,7 +191,10 @@
   <div class="col editor">
     <h2>Program</h2>
     <div class="body">
-      <textarea id="src" spellcheck="false"></textarea>
+      <div class="editor-wrap">
+        <pre id="hl" class="hl" aria-hidden="true"></pre>
+        <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
+      </div>
       <div class="editor-row">
         <button id="run2" class="primary">▶ Run program</button>
         <span id="parsemsg" style="color:var(--muted);font-size:12px"></span>
@@ -183,6 +215,8 @@
           <tr><td><code>V = Sample(Exp(1), n)</code></td><td>n independent copies → a vector</td></tr>
           <tr><td><code>M = AVERAGE(V)</code></td><td>SUM, AVERAGE, MAX, MIN, STDEV, COUNT</td></tr>
           <tr><td><code>condition on X^2+Y^2 &lt;= 1</code></td><td>reject states where it fails</td></tr>
+          <tr><td><code>statistic Cov(X, Y)</code></td><td>track an empirical statistic live</td></tr>
+          <tr><td colspan="2" style="color:var(--muted)">also Mean, SD, Var, Corr, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min</td></tr>
           <tr><td><code>plot X</code> · <code>plot X, Y</code></td><td>choose what the right panel shows</td></tr>
         </table>
         <p style="margin:6px 0;color:var(--muted)">Convention (not enforced): <b>Capitalised</b> names for random variables, <b>lower-case</b> for constants, <b>UPPERCASE</b> for functions.</p>
@@ -198,6 +232,7 @@
         <tbody id="vals"></tbody>
       </table>
       <div class="consts" id="consts"></div>
+      <div class="trackers" id="trackers"></div>
     </div>
     <div class="status" id="status"></div>
   </div>
@@ -251,21 +286,15 @@
       <tr><td><code>:=</code></td><td>accepted as an alias for <code>=</code></td></tr>
       <tr><td><code># …</code></td><td>comment to the end of the line</td></tr>
     </table>
+    <p class="muted">A random variable is <strong>fixed by its definition and cannot be reassigned</strong> —
+      in particular <code>X = X + 1</code> is an error. (A random variable is a quantity, not a mutable
+      cell of memory.)</p>
     <p class="muted">Conventions (recommended, not enforced): <strong>Capitalised</strong> names for
       random variables, <strong>lower-case</strong> for constants, <strong>UPPERCASE</strong> for functions.</p>
   </div></details>
 
   <details><summary>Distributions</summary><div class="dbody">
-    <table>
-      <tr><td><code>Unif(a, b)</code></td><td>continuous uniform on the interval [a, b]</td></tr>
-      <tr><td><code>Unif({…})</code></td><td>discrete uniform on a set, e.g. <code>Unif({1..6})</code> (a die)</td></tr>
-      <tr><td><code>Exp(rate)</code></td><td>exponential with rate λ (mean 1/λ)</td></tr>
-      <tr><td><code>Normal(μ, σ)</code></td><td>Gaussian, mean μ and standard deviation σ (also <code>Gaussian(μ, σ)</code>)</td></tr>
-      <tr><td><code>Bernoulli(p)</code></td><td>1 with probability p, otherwise 0</td></tr>
-      <tr><td><code>Binomial(n, p)</code></td><td>number of successes in n independent p-trials</td></tr>
-      <tr><td><code>Poisson(λ)</code></td><td>Poisson counts with mean λ</td></tr>
-      <tr><td><code>Geometric(p)</code></td><td>trials up to and including the first success; support {1, 2, 3, …}, mean 1/p</td></tr>
-    </table>
+    <table><tbody id="doc-dist"></tbody></table>
   </div></details>
 
   <details><summary>Sets (for discrete uniforms)</summary><div class="dbody">
@@ -285,14 +314,11 @@
 
   <details><summary>Functions</summary><div class="dbody">
     <h4>Reductions (vector → scalar)</h4>
-    <p><code>SUM</code>, <code>PROD</code>, <code>AVERAGE</code> (= <code>MEAN</code>), <code>COUNT</code>,
-      <code>STDEV</code>, <code>VAR</code>, <code>MAX</code>, <code>MIN</code>.</p>
+    <table><tbody id="doc-fn-reduce"></tbody></table>
     <h4>Elementwise maths</h4>
-    <p><code>ABS</code>, <code>SQRT</code>, <code>EXP</code>, <code>LOG</code> (= <code>LN</code>),
-      <code>SIN</code>, <code>COS</code>, <code>TAN</code>, <code>FLOOR</code>, <code>CEIL</code>,
-      <code>ROUND</code>, <code>SIGN</code>.</p>
+    <table><tbody id="doc-fn-math"></tbody></table>
     <h4>Logic</h4>
-    <p><code>IF(condition, a, b)</code> — <code>a</code> when the condition holds, else <code>b</code>.</p>
+    <table><tbody id="doc-fn-logic"></tbody></table>
     <p class="muted"><code>MAX</code> and <code>MIN</code> also accept several scalar arguments, e.g. <code>MAX(X, Y, 0)</code>.</p>
   </div></details>
 
@@ -317,6 +343,17 @@
     </table>
     <p class="muted">If a condition is very unlikely, the app caps the number of tries per tick; the
       acceptance rate is shown under the Values panel.</p>
+  </div></details>
+
+  <details><summary>Empirical statistics (<code>statistic</code> / <code>track</code>)</summary><div class="dbody">
+    <p>Unlike functions (which turn random variables into random variables), a <strong>statistic</strong>
+      turns the whole stream of samples into a single number. Declare one with <code>statistic …</code>
+      (or <code>track …</code>) and its live empirical value appears in the Values panel. The argument can
+      be any expression, e.g. <code>statistic Mean(X*Y)</code>.</p>
+    <table><tbody id="doc-stat"></tbody></table>
+    <p class="muted">Mean, SD, Var, Cov, Corr and Max/Min are exact over the whole run; the quantile,
+      mode, and entropy statistics are estimated from the most recent few thousand samples. Names are
+      case-insensitive and accept common aliases (average, variance, stdev, covariance, correlation, …).</p>
   </div></details>
 
   <details><summary>The plot panel &amp; theory overlay</summary><div class="dbody">
@@ -358,6 +395,10 @@ X = Unif({1..6})
 Y = Unif({1..6})   # independent of X
 Z = X + Y          # the sum
 W = 7 - X          # perfectly glued to X
+# Watch each empirical correlation settle to its true value:
+statistic Correlation(X, Y)   # independent -> 0
+statistic Correlation(X, Z)   # X vs the sum  -> 1/sqrt(2) ~ 0.707
+statistic Correlation(X, W)   # perfectly anti-glued -> -1
 plot X, Y          # independent -> fills the square
 plot X, Z          # sum vs a die -> a diagonal band
 plot X, W          # coupled -> collapses onto the anti-diagonal`,
@@ -384,7 +425,19 @@ Z1 = Normal(0, 1)
 Z2 = Normal(0, 1)
 X = Z1
 Y = 0.8 * Z1 + 0.6 * Z2
+statistic Corr(X, Y)   # empirical correlation converges to about 0.8
+statistic Cov(X, Y)
 plot X, Y`,
+  'Empirical statistics — a die':
+`# Each statistic below is estimated live from the stream of samples.
+X = Unif({1..6})
+statistic Mean(X)
+statistic SD(X)
+statistic Median(X)
+statistic Entropy(X)   # ~ log2(6) = 2.585 bits, since the die is uniform
+statistic Max(X)
+statistic Min(X)
+plot X`,
   'Exponential clock':
 `Y = Exp(3)
 plot Y`,
@@ -397,7 +450,7 @@ plot N`,
 
 const $ = (id) => document.getElementById(id);
 const state = {
-  prog: null, running: false, rate: 30, trailLen: 1200, maxTry: 10000, instant: true,
+  prog: null, running: false, rate: 32, trailLen: 1024, maxTry: 10000, instant: true,
   plots: [], style1d: 'both',           // plots: one window per `plot` command
   fuzz: 0.4, colorMode: 'highlight', theory: true, lockAspect: false,
   lastValues: {}, stats: {},
@@ -431,6 +484,7 @@ const PRESET_OPTS = {
 };
 function applyPreset(name) {
   $('src').value = PRESETS[name];
+  syncHL();
   const o = PRESET_OPTS[name] || {};
   if ('fuzz' in o) { state.fuzz = o.fuzz; $('fuzz').value = Math.round(o.fuzz * 100); $('fuzzV').textContent = Math.round(o.fuzz * 100); }
   if ('lockAspect' in o) { state.lockAspect = o.lockAspect; $('lockaspect').checked = o.lockAspect; }
@@ -459,7 +513,8 @@ function run() {
     prog = compile($('src').value);
     $('err').textContent = '';
     $('parsemsg').textContent = `${prog.varOrder.length} variable(s), ${prog.constants.size} constant(s)` +
-      (prog.hasConditions ? `, ${prog.conditions.length} condition(s)` : '');
+      (prog.hasConditions ? `, ${prog.conditions.length} condition(s)` : '') +
+      (prog.hasTrackers ? `, ${prog.readTrackers().length} statistic(s)` : '');
   } catch (e) {
     $('err').textContent = e.message;
     $('parsemsg').textContent = 'parse error';
@@ -828,6 +883,7 @@ function draw2D(w, h, win) {
 }
 
 // ---- panels (table + status) ----
+function esc(s) { return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 function updatePanels() {
   const prog = state.prog; if (!prog) return;
   let rows = '';
@@ -846,8 +902,14 @@ function updatePanels() {
   }
   $('vals').innerHTML = rows;
   if (prog.constants.size) {
-    $('consts').innerHTML = 'constants: ' + [...prog.constants].map(([k, val]) => `${k} = ${fmt(val)}`).join(' · ');
+    $('consts').innerHTML = 'constants: ' + [...prog.constants].map(([k, val]) => `<i>${esc(k)}</i> = ${fmt(val)}`).join(' · ');
   } else $('consts').innerHTML = '';
+
+  if (prog.hasTrackers) {
+    $('trackers').innerHTML = '<div class="thead">Empirical statistics</div>' +
+      prog.readTrackers().map((t) =>
+        `<div><span class="tname">${esc(t.label)}</span><span class="v">${t.value == null ? '—' : fmt(t.value)}</span></div>`).join('');
+  } else $('trackers').innerHTML = '';
 
   // status
   let s = `<div><b>${state.accepted.toLocaleString()}</b> samples drawn · ${state.rate}/s · trail ${state.trailLen}</div>`;
@@ -882,8 +944,11 @@ $('pause').onclick = () => {
   $('pause').textContent = state.running ? '⏸ Pause' : '▶ Resume';
 };
 $('step').onclick = () => { if (state.prog) { state.running = false; $('pause').textContent = '▶ Resume'; tick(); } };
-$('rate').oninput = (e) => { state.rate = +e.target.value; $('rateV').textContent = state.rate; };
-$('trail').oninput = (e) => { state.trailLen = +e.target.value; $('trailV').textContent = state.trailLen;
+// speed slider is a power-of-2 exponent (index -2..8 -> 0.25 .. 256 ticks/s):
+// discrete, log-scale, so slow speeds (0.25) and fast ones are both reachable
+// without a hundred near-identical high settings.
+$('rate').oninput = (e) => { state.rate = Math.pow(2, +e.target.value); $('rateV').textContent = state.rate; };
+$('trail').oninput = (e) => { state.trailLen = Math.pow(2, +e.target.value); $('trailV').textContent = state.trailLen;
   for (const w of state.plots) while (w.trail.length > state.trailLen) w.trail.shift(); };
 $('maxtry').oninput = (e) => { state.maxTry = Math.max(1, +e.target.value | 0); };
 $('condmode').onchange = (e) => { state.instant = e.target.value === 'instant'; };
@@ -913,9 +978,180 @@ $('share').onclick = () => {
   else toast('link in address bar');
 };
 
+// ---- language glossary: one source of truth for hover tips AND the docs tables ----
+const GLOSSARY = {
+  // commands / reserved words (keyed lower-case)
+  let:       { cat: 'command', sig: 'let name = value', desc: 'Define a constant — a fixed number, used for parameters and vector sizes.' },
+  plot:      { cat: 'command', sig: 'plot X   /   plot X, Y', desc: 'Open a plot window: one variable (1-D) or two (2-D scatter).' },
+  statistic: { cat: 'command', sig: 'statistic Stat(…)', desc: 'Track an empirical statistic of the whole sample stream, shown live in the Values panel.' },
+  track:     { cat: 'command', sig: 'track Stat(…)', desc: 'Alias of statistic.' },
+  condition: { cat: 'command', sig: 'condition on E', desc: 'Rejection sampling: keep only the ticks where the 0/1 condition E holds.' },
+  on:        { cat: 'command', sig: 'condition on E', desc: 'Part of the condition command.' },
+  // distributions
+  Unif:      { cat: 'dist', sig: 'Unif(a, b)  ·  Unif({…})', desc: 'Uniform: continuous on the interval [a, b], or discrete on a set such as {1..6} (a die).' },
+  Exp:       { cat: 'dist', sig: 'Exp(rate)', desc: 'Exponential with rate λ (mean 1/λ).' },
+  Normal:    { cat: 'dist', sig: 'Normal(μ, σ)', desc: 'Gaussian with mean μ and standard deviation σ (also Gaussian).' },
+  Gaussian:  { cat: 'dist', alias: 'Normal', sig: 'Gaussian(μ, σ)', desc: 'Alias of Normal(μ, σ).' },
+  Bernoulli: { cat: 'dist', sig: 'Bernoulli(p)', desc: '1 with probability p, otherwise 0.' },
+  Binomial:  { cat: 'dist', sig: 'Binomial(n, p)', desc: 'Number of successes in n independent p-trials.' },
+  Poisson:   { cat: 'dist', sig: 'Poisson(λ)', desc: 'Poisson counts with mean λ.' },
+  Geometric: { cat: 'dist', sig: 'Geometric(p)', desc: 'Trials up to and including the first success; support {1, 2, 3, …}, mean 1/p.' },
+  Sample:    { cat: 'dist', sig: 'Sample(dist, n)', desc: 'A length-n vector of independent draws from dist (n is a constant).' },
+  // functions — reductions (vector → scalar)
+  SUM:     { cat: 'reduce', sig: 'SUM(v)', desc: 'Sum of the entries of a vector.' },
+  PROD:    { cat: 'reduce', sig: 'PROD(v)', desc: 'Product of the entries of a vector.' },
+  AVERAGE: { cat: 'reduce', sig: 'AVERAGE(v)', desc: 'Mean of a vector (= MEAN).' },
+  MEAN:    { cat: 'reduce', alias: 'AVERAGE', sig: 'MEAN(v)', desc: 'Alias of AVERAGE.' },
+  COUNT:   { cat: 'reduce', sig: 'COUNT(v)', desc: 'Number of entries in a vector.' },
+  STDEV:   { cat: 'reduce', sig: 'STDEV(v)', desc: 'Standard deviation of a vector’s entries.' },
+  VAR:     { cat: 'reduce', sig: 'VAR(v)', desc: 'Variance of a vector’s entries.' },
+  MAX:     { cat: 'reduce', sig: 'MAX(v)  ·  MAX(a, b, …)', desc: 'Largest entry of a vector, or the largest of several scalars.' },
+  MIN:     { cat: 'reduce', sig: 'MIN(v)  ·  MIN(a, b, …)', desc: 'Smallest entry of a vector, or the smallest of several scalars.' },
+  // functions — elementwise maths
+  ABS:   { cat: 'math', sig: 'ABS(x)', desc: 'Absolute value.' },
+  SQRT:  { cat: 'math', sig: 'SQRT(x)', desc: 'Square root.' },
+  EXP:   { cat: 'math', sig: 'EXP(x)', desc: 'Exponential eˣ.' },
+  LOG:   { cat: 'math', sig: 'LOG(x)', desc: 'Natural logarithm (= LN).' },
+  LN:    { cat: 'math', alias: 'LOG', sig: 'LN(x)', desc: 'Alias of LOG (natural logarithm).' },
+  SIN:   { cat: 'math', sig: 'SIN(x)', desc: 'Sine (x in radians).' },
+  COS:   { cat: 'math', sig: 'COS(x)', desc: 'Cosine (x in radians).' },
+  TAN:   { cat: 'math', sig: 'TAN(x)', desc: 'Tangent (x in radians).' },
+  FLOOR: { cat: 'math', sig: 'FLOOR(x)', desc: 'Round down to an integer.' },
+  CEIL:  { cat: 'math', sig: 'CEIL(x)', desc: 'Round up to an integer.' },
+  ROUND: { cat: 'math', sig: 'ROUND(x)', desc: 'Round to the nearest integer.' },
+  SIGN:  { cat: 'math', sig: 'SIGN(x)', desc: '−1, 0, or 1 according to the sign of x.' },
+  // functions — logic
+  IF: { cat: 'logic', sig: 'IF(condition, a, b)', desc: 'a when the condition holds, else b.' },
+  // statistics (canonical; aliases resolve through STAT_CANON)
+  Mean:       { cat: 'stat', sig: 'Mean(x)', desc: 'Running average of x (exact).' },
+  Var:        { cat: 'stat', sig: 'Var(x)', desc: 'Variance of x (exact).' },
+  SD:         { cat: 'stat', sig: 'SD(x)', desc: 'Standard deviation of x (exact).' },
+  Cov:        { cat: 'stat', sig: 'Cov(x, y)', desc: 'Covariance of x and y (exact).' },
+  Corr:       { cat: 'stat', sig: 'Corr(x, y)', desc: 'Correlation of x and y, in [−1, 1] (exact).' },
+  Median:     { cat: 'stat', sig: 'Median(x)', desc: 'Middle value — the 50th percentile (sampled).' },
+  Q1:         { cat: 'stat', sig: 'Q1(x)', desc: 'Lower quartile — the 25th percentile (sampled).' },
+  Q3:         { cat: 'stat', sig: 'Q3(x)', desc: 'Upper quartile — the 75th percentile (sampled).' },
+  Percentile: { cat: 'stat', sig: 'Percentile(x, p)', desc: 'The p-th percentile, p between 0 and 100 (sampled).' },
+  Mode:       { cat: 'stat', sig: 'Mode(x)', desc: 'Most frequent value — for discrete variables (sampled).' },
+  Entropy:    { cat: 'stat', sig: 'Entropy(x)', desc: 'Shannon entropy in bits — for discrete variables (sampled).' },
+  Max:        { cat: 'stat', sig: 'Max(x)', desc: 'Largest value seen so far (exact).' },
+  Min:        { cat: 'stat', sig: 'Min(x)', desc: 'Smallest value seen so far (exact).' },
+};
+const STAT_CANON = { mean: 'Mean', average: 'Mean', var: 'Var', variance: 'Var', sd: 'SD', std: 'SD', stdev: 'SD',
+  cov: 'Cov', covariance: 'Cov', corr: 'Corr', correlation: 'Corr', median: 'Median', med: 'Median', q1: 'Q1', q3: 'Q3',
+  percentile: 'Percentile', pctile: 'Percentile', mode: 'Mode', entropy: 'Entropy', shannon: 'Entropy',
+  max: 'Max', maximum: 'Max', min: 'Min', minimum: 'Min' };
+
+// ---- syntax highlighting (a colorized overlay, IDE-style) ----
+const HL_KW = new Set(['let', 'plot', 'statistic', 'track', 'condition', 'on']);
+const HL_DIST = new Set(['Unif', 'Exp', 'Normal', 'Gaussian', 'Bernoulli', 'Binomial', 'Poisson', 'Geometric', 'Sample']);
+const HL_FN = new Set(['SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'MAX', 'MIN', 'ABS', 'SQRT',
+  'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN', 'FLOOR', 'CEIL', 'ROUND', 'SIGN', 'IF']);
+const HL_STAT = new Set(['Mean', 'Var', 'SD', 'Cov', 'Corr', 'Median', 'Q1', 'Q3', 'Percentile', 'Mode', 'Entropy',
+  'Max', 'Min', 'Average', 'Variance', 'Stdev', 'Std', 'Covariance', 'Correlation', 'Med', 'Pctile', 'Shannon',
+  'Maximum', 'Minimum']);
+const escAttr = (s) => esc(s).replace(/"/g, '&quot;').replace(/\n/g, '&#10;');
+// glossary entry for a classified identifier (k=keyword, d=dist, f=function, s=statistic)
+function glossFor(id, c) {
+  if (c === 'k') return GLOSSARY[id.toLowerCase()];
+  if (c === 'd' || c === 'f') return GLOSSARY[id];
+  if (c === 's') return GLOSSARY[STAT_CANON[id.toLowerCase()] || id];
+  return null;
+}
+function highlight(src) {
+  const consts = new Set();            // names introduced with `let` -> deterministic
+  const defs = new Map();              // name -> {kind, rhs}  (for definition-on-hover)
+  for (const raw of src.split('\n')) {
+    const line = raw.replace(/#.*/, '');
+    const ml = line.match(/^\s*let\s+([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.*)$/i);
+    if (ml) { consts.add(ml[1]); defs.set(ml[1], { kind: 'constant', rhs: ml[2].trim() }); continue; }
+    const mv = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*(?::=|=(?!=))\s*(.*)$/);
+    if (mv) defs.set(mv[1], { kind: 'random variable', rhs: mv[2].trim() });
+  }
+  const cls = (id) => HL_KW.has(id.toLowerCase()) ? 'k'
+    : HL_DIST.has(id) ? 'd' : HL_FN.has(id) ? 'f' : HL_STAT.has(id) ? 's'
+    : consts.has(id) ? 'cn' : 'v';
+  const tipFor = (id, c) => {
+    const g = glossFor(id, c);
+    if (g) return `${g.sig}\n${g.desc}`;
+    const d = defs.get(id);
+    if (d && d.rhs) return `${d.kind}\n${id} = ${d.rhs}`;
+    return '';
+  };
+  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|[-+*/^=<>(),])|([\s\S])/g;
+  let out = '', m;
+  while ((m = re.exec(src))) {
+    if (m[1] != null) out += `<span class="c">${esc(m[1])}</span>`;
+    else if (m[2] != null) out += `<span class="n">${m[2]}</span>`;
+    else if (m[3] != null) {
+      const c = cls(m[3]), tip = tipFor(m[3], c);
+      out += `<span class="${c}"${tip ? ` data-tip="${escAttr(tip)}"` : ''}>${esc(m[3])}</span>`;
+    }
+    else if (m[4] != null) out += `<span class="set">${esc(m[4])}</span>`;
+    else if (m[5] != null) out += `<span class="op">${esc(m[5])}</span>`;
+    else out += esc(m[6]);
+  }
+  return out;
+}
+function syncHL() {
+  const src = $('src');
+  $('hl').innerHTML = highlight(src.value) + '\n';   // trailing NL keeps last-line height
+  $('hl').scrollTop = src.scrollTop; $('hl').scrollLeft = src.scrollLeft;
+}
+$('src').addEventListener('input', syncHL);
+$('src').addEventListener('scroll', () => { $('hl').scrollTop = $('src').scrollTop; $('hl').scrollLeft = $('src').scrollLeft; });
+
+// ---- hover tips over the editor (IDE-style) ----
+// The textarea sits above the colorized overlay; to hit-test a token we briefly
+// disable the textarea's pointer events and read the span underneath the cursor.
+const tip = document.createElement('div');
+tip.className = 'rv-tip'; tip.style.display = 'none';
+document.body.appendChild(tip);
+let tipSpan = null;
+function hideTip() { tip.style.display = 'none'; tipSpan = null; }
+function spanAt(x, y) {
+  const ta = $('src'), prev = ta.style.pointerEvents;
+  ta.style.pointerEvents = 'none';
+  const el = document.elementFromPoint(x, y);
+  ta.style.pointerEvents = prev;
+  return el && el.closest ? el.closest('#hl span[data-tip]') : null;
+}
+$('src').addEventListener('mousemove', (e) => {
+  const span = spanAt(e.clientX, e.clientY);
+  if (!span) { hideTip(); return; }
+  if (span !== tipSpan) {
+    tipSpan = span;
+    const parts = (span.getAttribute('data-tip') || '').split('\n');
+    tip.innerHTML = `<div class="tsig">${esc(parts[0] || '')}</div>` +
+      (parts[1] ? `<div class="tdesc">${esc(parts[1])}</div>` : '');
+    tip.style.display = 'block';
+  }
+  const pad = 14, tw = tip.offsetWidth, th = tip.offsetHeight;
+  let px = e.clientX + pad, py = e.clientY + pad;
+  if (px + tw > window.innerWidth - 8) px = e.clientX - pad - tw;
+  if (py + th > window.innerHeight - 8) py = e.clientY - pad - th;
+  tip.style.left = px + 'px'; tip.style.top = py + 'px';
+});
+$('src').addEventListener('mouseleave', hideTip);
+$('src').addEventListener('scroll', hideTip);
+
+// ---- reference tables built from the same glossary (no duplication) ----
+function renderDocs() {
+  const row = (sig, desc) => `<tr><td><code>${esc(sig)}</code></td><td>${esc(desc)}</td></tr>`;
+  const fill = (id, cat) => {
+    const el = $(id); if (!el) return;
+    el.innerHTML = Object.values(GLOSSARY).filter((g) => g.cat === cat && !g.alias)
+      .map((g) => row(g.sig, g.desc)).join('');
+  };
+  fill('doc-dist', 'dist'); fill('doc-fn-reduce', 'reduce'); fill('doc-fn-math', 'math');
+  fill('doc-fn-logic', 'logic'); fill('doc-stat', 'stat');
+}
+renderDocs();
+
 // ---- boot ----
 if (!loadFromHash()) applyPreset('Dice — independent vs coupled');
 else run();
+syncHL();
 </script>
 </body>
 </html>
