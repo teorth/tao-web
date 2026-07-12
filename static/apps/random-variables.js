@@ -36,7 +36,7 @@ const DIST_ALIAS = {
 const EVENT_CTORS = new Set(['Boolean']);
 // Excel-style boolean functions that RETURN an event (the word operators
 // and/or/not/xor are the other spelling of the same connectives).
-const EVENT_FUNCS = new Set(['AND', 'OR', 'NOT', 'XOR']);
+const EVENT_FUNCS = new Set(['AND', 'OR', 'NOT', 'XOR', 'DISTINCT']);
 // Default parameters, filled in when trailing arguments are omitted, so e.g.
 // Normal() means Normal(0, 1), Boolean() a fair coin, Binomial(10) a fair-coin
 // count. (Unif's single-scalar form is ambiguous, so it is never partial-filled.)
@@ -50,7 +50,7 @@ const BOOL_OPS = new Set(['and', 'or', 'xor']);
 
 const FUNCS = new Set([
   // reductions (vector -> scalar)
-  'SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR',
+  'SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'NUNIQUE', 'DISTINCT',
   // variadic / vector
   'MAX', 'MIN',
   // elementwise scalar maths
@@ -467,6 +467,8 @@ function callFn(name, args) {
     case 'SUM': return toArr(args[0]).reduce((s, x) => s + x, 0);
     case 'PROD': return toArr(args[0]).reduce((s, x) => s * x, 1);
     case 'COUNT': return toArr(args[0]).length;
+    case 'NUNIQUE': return new Set(toArr(args[0])).size;                 // number of distinct values
+    case 'DISTINCT': { const v = toArr(args[0]); return new Set(v).size === v.length ? 1 : 0; } // event: all distinct?
     case 'AVERAGE':
     case 'MEAN': { const a = toArr(args[0]); return a.reduce((s, x) => s + x, 0) / a.length; }
     case 'VAR':

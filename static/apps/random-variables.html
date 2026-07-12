@@ -34,6 +34,7 @@
   .wip { margin: .9rem 0 1rem; padding: .6rem .9rem; max-width: 60rem; font-size: .92rem;
     background: var(--accent-soft); border-left: 3px solid var(--accent2); border-radius: 6px; }
   .wip strong { color: var(--accent2); }
+  .hint { max-width: 60rem; margin: .2rem 0 1rem; font-size: .92rem; color: var(--muted); }
   .bar {
     display: flex; align-items: center; gap: 14px 18px; flex-wrap: wrap;
     padding: 9px 14px; border: 1px solid var(--line); border-radius: 8px;
@@ -161,15 +162,18 @@
   <p class="lede">An interactive take on the idea that a <strong>random variable is a quantity that
     fluctuates as its underlying randomness ω is resampled</strong>. Write a short, Excel-like program
     &mdash; <code>X = Unif({1..6})</code>, <code>Y = Exp(3)</code>, <code>Z = X + Y</code> &mdash; and
-    watch the values, empirical statistics, and animated Monte-Carlo plots update live. There is
-    <strong>one shared ω per tick</strong>, so every variable is drawn together and coupling and
-    independence come out exact and automatic. <strong>Events</strong> (True/False) and their
+    watch the values, empirical statistics, and animated Monte-Carlo plots update live. Absent any
+    conditioning there is <strong>one shared ω per tick</strong>, so every variable is drawn together and
+    coupling and independence come out exact and automatic. <strong>Events</strong> (True/False) and their
     probabilities are first-class, and <strong>conditioning</strong> a variable, <code>(X | E)</code>,
     opens its own <strong>universe</strong> so the conditional can sit beside the unconditional.</p>
   <div class="wip"><strong>Work in progress.</strong> This is a pre-alpha: the app and its little
     language are still evolving, and behaviour may change or break between versions. Feedback is welcome
     &mdash; and the <a href="#reference">language reference</a> at the foot of the page lists what works
     today.</div>
+  <p class="hint"><strong>New here?</strong> Pick an example from the <strong>preset</strong> menu in the
+    toolbar (Monty Hall, the birthday paradox, …), watch it run, then edit the program and press
+    <strong>Run</strong>. The <a href="#reference">language reference</a> explains every piece.</p>
   <p class="prov">A companion to Terence Tao's 2016 blog post
     <a href="https://terrytao.wordpress.com/2016/05/13/visualising-random-variables/">&ldquo;Visualising
     random variables&rdquo;</a>, whose animated-GIF illustrations this app makes interactive; several
@@ -270,7 +274,7 @@
       </div>
       <div class="grp"><label title="Overlay the exact pdf/pmf when the variable is a single primitive distribution"><input type="checkbox" id="theory" checked> theory</label></div>
     </div>
-    <div class="plotwrap"><canvas id="cv"></canvas><div class="theory-msg" id="theorymsg"></div></div>
+    <div class="plotwrap"><canvas id="cv" role="img" aria-label="Animated Monte-Carlo plot of the sampled variables"></canvas><div class="theory-msg" id="theorymsg"></div></div>
   </div>
 </main>
 
@@ -283,7 +287,8 @@
   <details open><summary>The model — one shared ω</summary><div class="dbody">
     <p>A <strong>random variable</strong> is stored as an <em>expression</em> over independent primitive
       draws, not as a fixed number. Every tick a single shared sample point <strong>ω</strong> is drawn
-      and <em>all</em> primitives are resampled together, so:</p>
+      and <em>all</em> primitives are resampled together (in the default universe — each conditioned
+      universe has its own ω, below), so:</p>
     <table>
       <tr><td><code>Z = X + Y</code></td><td>stays coupled to <code>X</code> and <code>Y</code> (same ω)</td></tr>
       <tr><td><code>W = X - X</code></td><td>is exactly <code>0</code>, always</td></tr>
@@ -431,6 +436,20 @@
       When <em>theory</em> is on and the plotted variable is a single primitive distribution, its exact
       pdf/pmf is drawn over the histogram; for derived variables it reads &ldquo;unavailable&rdquo;
       rather than guessing.</p>
+  </div></details>
+
+  <details><summary>Out of scope (by design)</summary><div class="dbody">
+    <p>This is a teaching sandbox for building intuition, not a full numerical environment. It deliberately
+      does <strong>not</strong> attempt:</p>
+    <table>
+      <tr><td><strong>Random matrices</strong></td><td>eigenvalue statistics (gap distributions, …) need complex numbers and their own machinery — a different tool.</td></tr>
+      <tr><td><strong>Conditioning on a random variable</strong></td><td>only conditioning on <em>events</em> is supported; the conditional expectation E[X | Y] (a coarser σ-algebra) needs measure theory and can't be built empirically.</td></tr>
+      <tr><td><strong>3-D plots</strong></td><td>views are 1-D and 2-D only.</td></tr>
+      <tr><td><strong>Theory curves for complex distributions</strong></td><td>the exact pdf/pmf overlay is drawn only for a single primitive distribution; derived variables (convolutions, ratios, …) show &ldquo;unavailable&rdquo; rather than a guess.</td></tr>
+    </table>
+    <p class="muted">For any of these, reach for a full-powered environment — <strong>MATLAB</strong>,
+      <strong>R</strong>, or <strong>NumPy/SciPy</strong>. This applet can only do so much, and aims to do a
+      few things clearly rather than everything.</p>
   </div></details>
 </section>
 
@@ -581,6 +600,25 @@ N = Geometric(1/2)
 payoff = 2 ^ N
 statistic Mean(payoff)   # keeps drifting up as rare huge payoffs land
 plot payoff`,
+  'Birthday paradox — 23 people':
+`# With just 23 people, a shared birthday is more likely than not (~50.7%).
+let n = 23
+birthdays = Sample(Unif({1..365}), n)   # n independent birthdays
+shared = not DISTINCT(birthdays)         # some two coincide?
+plot shared`,
+  "Simpson's paradox — kidney stones":
+`# Treatment B looks better OVERALL, yet A is better for BOTH stone sizes —
+# because A is given more often to the harder (large-stone) cases.
+large = Boolean(0.49)
+A = if large then Boolean(0.767) else Boolean(0.244)   # treatment A vs B
+recover = if A then (if large then Boolean(0.73) else Boolean(0.93)) else (if large then Boolean(0.69) else Boolean(0.87))
+statistic Mean(recover | A)              # A overall ~ 0.78
+statistic Mean(recover | not A)          # B overall ~ 0.83   (B wins overall)
+statistic Mean(recover | A and large)        # A, large ~ 0.73
+statistic Mean(recover | not A and large)    # B, large ~ 0.69  (A wins)
+statistic Mean(recover | A and not large)     # A, small ~ 0.93
+statistic Mean(recover | not A and not large) # B, small ~ 0.87  (A wins)
+plot recover`,
   'Conditioning — a variable and its conditional':
 `# (X | E) is a fresh copy of X drawn where E holds — its OWN universe, shown
 # beside the unconditioned X. They are independent; you can't mix them.
@@ -669,6 +707,7 @@ function run() {
   } catch (e) {
     $('err').textContent = e.message;
     $('parsemsg').textContent = 'parse error';
+    markErrorLine(e.message);
     return;
   }
   state.prog = prog;
@@ -695,6 +734,15 @@ function resetData() {
   state.starved = false; state.acc = 0; clearTrail();
 }
 function clearTrail() { for (const w of state.plots) { w.trail = []; w.bounds = { has: false }; } }
+// On a parse error like "Line 3: …", select that line in the editor so the eye lands on it.
+function markErrorLine(msg) {
+  const m = /Line (\d+)/.exec(msg || '');
+  if (!m) return;
+  const ln = +m[1] - 1, src = $('src'), lines = src.value.split('\n');
+  if (ln < 0 || ln >= lines.length) return;
+  let start = 0; for (let i = 0; i < ln; i++) start += lines[i].length + 1;
+  try { src.focus(); src.setSelectionRange(start, start + lines[ln].length); } catch (e) { /* ignore */ }
+}
 
 function populatePlotSelects(scal) {
   const A = $('pA'), B = $('pB');
@@ -1213,6 +1261,8 @@ const GLOSSARY = {
   AVERAGE: { cat: 'reduce', sig: 'AVERAGE(v)', desc: 'Mean of a vector (= MEAN).' },
   MEAN:    { cat: 'reduce', alias: 'AVERAGE', sig: 'MEAN(v)', desc: 'Alias of AVERAGE.' },
   COUNT:   { cat: 'reduce', sig: 'COUNT(v)', desc: 'Number of entries in a vector.' },
+  NUNIQUE: { cat: 'reduce', sig: 'NUNIQUE(v)', desc: 'Number of distinct values in a vector.' },
+  DISTINCT: { cat: 'reduce', sig: 'DISTINCT(v)', desc: 'Event: True when all entries of a vector are distinct (no repeats).' },
   STDEV:   { cat: 'reduce', sig: 'STDEV(v)', desc: 'Standard deviation of a vector’s entries.' },
   VAR:     { cat: 'reduce', sig: 'VAR(v)', desc: 'Variance of a vector’s entries.' },
   MAX:     { cat: 'reduce', sig: 'MAX(v)  ·  MAX(a, b, …)', desc: 'Largest entry of a vector, or the largest of several scalars.' },
@@ -1264,8 +1314,8 @@ const HL_DIST_CANON = { unif: 'Unif', uniform: 'Unif', exp: 'Exp', exponential: 
   binomial: 'Binomial', bin: 'Binomial', poisson: 'Poisson', pois: 'Poisson', geometric: 'Geometric',
   geom: 'Geometric', sample: 'Sample', boolean: 'Boolean', bool: 'Boolean', coin: 'Boolean', flip: 'Boolean',
   toss: 'Boolean', chance: 'Boolean' };
-const HL_FN = new Set(['SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'MAX', 'MIN', 'ABS', 'SQRT',
-  'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN', 'FLOOR', 'CEIL', 'ROUND', 'SIGN', 'IF']);
+const HL_FN = new Set(['SUM', 'PROD', 'AVERAGE', 'MEAN', 'COUNT', 'STDEV', 'VAR', 'NUNIQUE', 'DISTINCT',
+  'MAX', 'MIN', 'ABS', 'SQRT', 'EXP', 'LOG', 'LN', 'SIN', 'COS', 'TAN', 'FLOOR', 'CEIL', 'ROUND', 'SIGN', 'IF']);
 const HL_STAT = new Set(['Mean', 'Var', 'SD', 'Cov', 'Corr', 'Median', 'Q1', 'Q3', 'Percentile', 'Mode', 'Entropy',
   'Max', 'Min', 'Average', 'Variance', 'Stdev', 'Std', 'Covariance', 'Correlation', 'Med', 'Pctile', 'Shannon',
   'Maximum', 'Minimum']);
