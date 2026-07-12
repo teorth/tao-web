@@ -17,6 +17,39 @@ works:
     as its underlying sample point is resampled, with coupling, independence, and conditioning all
     emerging from a single shared source of randomness. The companion interactive app (in development)
     makes these animations live.
+- id: nines-of-safety-a-proposed-unit-of-measurement-of-risk
+  kind: short-story
+  title: "Nines of safety: a proposed unit of measurement of risk"
+  year: 2021
+  venue: Blog post
+  tags:
+  - probability
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2021/10/03/nines-of-safety-a-proposed-unit-of-measurement-of-risk/"
+  abstract: >-
+    Proposes measuring the safety of an activity in “nines”: k nines means the probability of an adverse
+    outcome is at most 10^(−k) (so k = −log10 of the failure probability; 1, 2, 3 nines = 90%, 99%,
+    99.9% safe). Independent protective measures stacked as defense in depth (the Swiss-cheese model)
+    add their nines, since failure probabilities multiply; repeated exposures over time erode safety by
+    about log10(m) nines after m trials. Includes a table of everyday risks in nines and the effect of
+    masks, distancing, and vaccines.
+- id: a-bayesian-probability-worksheet
+  kind: short-story
+  title: A Bayesian probability worksheet
+  year: 2022
+  venue: Blog post
+  tags:
+  - probability
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2022/10/07/a-bayesian-probability-worksheet/"
+  abstract: >-
+    A step-by-step worksheet for updating the odds between a null and an alternative hypothesis in light
+    of new evidence: posterior odds = prior odds × likelihood ratio (Bayes factor), recovering the
+    posterior probabilities. Worked through several examples (a COVID test and the base-rate fallacy,
+    Monty Hall, Sleeping Beauty), stressing that the hypotheses must be stated precisely. A candidate
+    for a future interactive tao-web app.
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
