@@ -97,7 +97,7 @@ const SAMPLE_CAP = 2048; // ring-buffer size for quantile/mode statistics
 // forbid it and teach a clearer name. Built from every keyword, operator word,
 // function, distribution, constructor alias, and statistic (canonical + alias).
 const RESERVED = new Set();
-for (const w of ['let', 'plot', 'statistic', 'track', 'condition', 'on', 'and', 'or', 'not', 'xor', 'if', 'then', 'else']) RESERVED.add(w);
+for (const w of ['let', 'plot', 'statistic', 'track', 'condition', 'on', 'and', 'or', 'not', 'xor', 'if', 'then', 'else', 'true', 'false']) RESERVED.add(w);
 for (const s of FUNCS) RESERVED.add(s.toLowerCase());
 for (const s of DISTS) RESERVED.add(s.toLowerCase());
 for (const s of Object.keys(DIST_ALIAS)) RESERVED.add(s);
@@ -110,6 +110,7 @@ for (const s of Object.keys(STAT_ALIAS)) RESERVED.add(s);
 function astToStr(node) {
   switch (node.t) {
     case 'num': return String(node.v);
+    case 'bool': return node.v ? 'True' : 'False';
     case 'const': case 'var': return node.name;
     case 'set': return '{' + node.values.join(',') + '}';
     case 'vec': return '[' + node.items.map(astToStr).join(',') + ']';
@@ -119,6 +120,7 @@ function astToStr(node) {
       const word = BOOL_OPS.has(node.op);
       return '(' + astToStr(node.a) + (word ? ' ' + node.op + ' ' : node.op) + astToStr(node.b) + ')';
     }
+    case 'given': return '(' + astToStr(node.expr) + ' | ' + astToStr(node.event) + ')';
     default: return '?';
   }
 }
@@ -126,9 +128,11 @@ function astToStr(node) {
 function nodeIsEvent(node, variables) {
   if (!node) return false;
   switch (node.t) {
+    case 'bool': return true;
     case 'binop': return CMP_OPS.has(node.op) || BOOL_OPS.has(node.op);
     case 'unop': return node.op === 'not';
     case 'dist': return !!node.isEvent;
+    case 'given': return nodeIsEvent(node.expr, variables); // (E | F) is an event iff E is
     case 'var': { const e = variables.get(node.name); return !!(e && e.isEvent); }
     case 'call':
       if (EVENT_FUNCS.has(node.name)) return true;
@@ -183,8 +187,9 @@ function tokenize(src) {
     // two-char ops
     const pair = src.slice(i, i + 2);
     if (two[pair]) { toks.push({ t: 'op', v: pair }); i += 2; continue; }
-    // single-char ops ('!' is boolean NOT; '!=' already handled above)
-    if ('+-*/^(),{}<>=!'.includes(c)) { toks.push({ t: 'op', v: c }); i++; continue; }
+    // single-char ops ('!' is boolean NOT; '!=' handled above; '|' is the
+    // conditioning bar in (X | E), distinct from '||' = boolean or)
+    if ('+-*/^(),{}<>=!|'.includes(c)) { toks.push({ t: 'op', v: c }); i++; continue; }
     throw new Error(`Unexpected character '${c}'`);
   }
   return toks;
@@ -204,7 +209,15 @@ function makeParser(toks) {
     return next();
   }
 
-  function parseExpr() { return parseOr(); }
+  function parseExpr() { return parseGiven(); }
+
+  // conditioning bar (lowest precedence of all): (X | E) reads "X given E".
+  // `|` is distinct from `||` (boolean or). Left-associative so (X | E) | F nests.
+  function parseGiven() {
+    let a = parseOr();
+    while (isOp('|')) { next(); a = { t: 'given', expr: a, event: parseOr() }; }
+    return a;
+  }
 
   // boolean layer (lowest precedence): not > and > or/xor, all below comparisons.
   // Words (and/or/not/xor) arrive as identifiers; &&, ||, ! are symbol aliases.
@@ -335,12 +348,15 @@ function finalize(node, ctx) {
     case 'num': return node;
     case 'set': return node;
     case 'ref': {
+      const lc = node.name.toLowerCase();
+      if (lc === 'true' || lc === 'false') return { t: 'bool', v: lc === 'true' ? 1 : 0 }; // boolean literals (events)
       if (ctx.variables.has(node.name)) return { t: 'var', name: node.name };
       if (ctx.constants.has(node.name)) return { t: 'const', name: node.name };
       throw new Error(`Unknown identifier '${node.name}'`);
     }
     case 'unop': return { t: 'unop', op: node.op, a: finalize(node.a, ctx) };
     case 'binop': return { t: 'binop', op: node.op, a: finalize(node.a, ctx), b: finalize(node.b, ctx) };
+    case 'given': return { t: 'given', expr: finalize(node.expr, ctx), event: finalize(node.event, ctx) };
     case 'call': {
       let name = node.name;
       if (name === 'Sample') {
@@ -382,6 +398,7 @@ function finalize(node, ctx) {
 function evalConst(node, ctx) {
   switch (node.t) {
     case 'num': return node.v;
+    case 'bool': return node.v;
     case 'ref':
       if (ctx.constants.has(node.name)) return ctx.constants.get(node.name);
       throw new Error(`'${node.name}' is not a constant (only constants may appear here)`);
@@ -519,6 +536,48 @@ function compile(src) {
       throw new Error(`'${name}' is a reserved name (a keyword, function, distribution or statistic); pick another — e.g. a lower-case name for a constant`);
   }
 
+  // ---- universes: a tree of probability spaces (default + conditioning edges) ----
+  // A universe is identified by the ORDERED path of canonical events from the
+  // default space (conditioning does not freely commute once sampling is
+  // interleaved, so we keep the path — not an unordered set). `(X | E)` creates a
+  // child universe; expressions may not mix quantities from different universes.
+  const universeReg = new Map();          // key -> { path:[canon], parentKey, eventAst }
+  universeReg.set('', { path: [], parentKey: null, eventAst: null });
+  const uKeyOf = (path) => path.join('␟');
+  const uLabel = (path) => path.map((c) => c.replace(/^\((.*)\)$/, '$1')).join(', ');
+  function unifyU(a, b) {                  // null = universe-agnostic (constants); throws on a real mix
+    if (a === null) return b;
+    if (b === null) return a;
+    if (uKeyOf(a) === uKeyOf(b)) return a;
+    throw new Error(`cannot mix quantities from different universes ('${uLabel(a) || 'default'}' vs '${uLabel(b) || 'default'}')`);
+  }
+  // Universe (path) of a finalised expression; registers any (·|E) universes en route.
+  function universeOf(node) {
+    switch (node.t) {
+      case 'num': case 'bool': case 'const': case 'set': return null;    // universe-agnostic
+      case 'dist': { let u = []; for (const a of node.args) if (a.t !== 'set') u = unifyU(u, universeOf(a)); return u === null ? [] : u; }
+      case 'var': { const e = ctx.variables.get(node.name); return e ? (e.universe || null) : null; }
+      case 'unop': return universeOf(node.a);
+      case 'binop': return unifyU(universeOf(node.a), universeOf(node.b));
+      case 'vec': { let u = null; for (const it of node.items) u = unifyU(u, universeOf(it)); return u; }
+      case 'call': { let u = null; for (const a of node.args) u = unifyU(u, universeOf(a)); return u; }
+      case 'given': {
+        const parent = universeOf(node.expr) || [];                      // the thing being conditioned
+        const ev = universeOf(node.event);
+        // the event is evaluated in the CHILD draw, so it may reference the parent
+        // universe or the default one (default variables transport down); it may
+        // NOT reference some unrelated (sibling) universe.
+        if (ev !== null && ev.length && uKeyOf(ev) !== uKeyOf(parent))
+          throw new Error(`the conditioning event is from universe '${uLabel(ev)}', not the one being conditioned ('${uLabel(parent) || 'default'}')`);
+        const path = parent.concat([astToStr(node.event)]);
+        const key = uKeyOf(path);
+        if (!universeReg.has(key)) universeReg.set(key, { path, parentKey: uKeyOf(parent), eventAst: node.event });
+        return path;
+      }
+      default: return null;
+    }
+  }
+
   const lines = src.split('\n');
   for (let ln = 0; ln < lines.length; ln++) {
     let line = lines[ln];
@@ -529,12 +588,19 @@ function compile(src) {
     try {
       // condition on EXPR
       const mCond = line.match(/^condition\s+on\s+(.+)$/i);
-      if (mCond) { conditions.push(finalize(parseExpression(mCond[1]), ctx)); continue; }
+      if (mCond) {
+        const ev = finalize(parseExpression(mCond[1]), ctx);
+        const u = universeOf(ev);
+        if (u && u.length) throw new Error(`'condition on' takes a default-universe event; '${uLabel(u)}' is already conditioned (use (X | …) for that)`);
+        conditions.push(ev); continue;
+      }
       // plot A  |  plot A, B   (multiple `plot` lines -> multiple windows)
       const mPlot = line.match(/^plot\s+(.+)$/i);
       if (mPlot) {
         const parts = mPlot[1].split(',').map((s) => s.trim());
-        plots.push(parts.length >= 2 ? { mode: '2d', a: parts[0], b: parts[1] } : { mode: '1d', a: parts[0] });
+        if (parts.length > 2) throw new Error(`plot takes one variable (1-D) or two (2-D), not ${parts.length}`);
+        if (parts.some((p) => !p)) throw new Error('plot has an empty variable name (check for a stray comma)');
+        plots.push(parts.length === 2 ? { mode: '2d', a: parts[0], b: parts[1] } : { mode: '1d', a: parts[0] });
         continue;
       }
       // statistic Stat(expr[, expr])   (alias: track ...) — an empirical observable
@@ -555,6 +621,9 @@ function compile(src) {
           tr.exprs = argStrs.map((s) => finalize(parseExpression(s), ctx));
           if (def.pct != null) tr.pct = def.pct;
         }
+        // all argument expressions of a statistic must share one universe
+        let tu = null; for (const e of tr.exprs) tu = unifyU(tu, universeOf(e));
+        tr.uKey = uKeyOf(tu || []);
         if (tr.kind === 'moment') tr.acc = { n: 0, mx: 0, my: 0, Mx2: 0, My2: 0, Cxy: 0 };
         else if (tr.kind === 'extreme') tr.acc = { n: 0, hi: -Infinity, lo: Infinity };
         else tr.buf = { data: [], i: 0, cap: SAMPLE_CAP };
@@ -585,7 +654,8 @@ function compile(src) {
         // An event (comparison / boolean combo / Boolean(...)) is a 0/1 indicator
         // shown as True/False; record its canonical form for later (universes).
         const isEvent = nodeIsEvent(ast, ctx.variables);
-        ctx.variables.set(name, { ast, isEvent, canon: isEvent ? astToStr(ast) : null });
+        const universe = universeOf(ast);   // which universe this variable is native to
+        ctx.variables.set(name, { ast, isEvent, canon: isEvent ? astToStr(ast) : null, universe });
         varOrder.push(name);
         continue;
       }
@@ -595,72 +665,92 @@ function compile(src) {
     }
   }
 
-  // ---- per-frame evaluation with caches -----------------------------------
-  let leafCache = {}, varCache = {};
+  // ---- per-universe evaluation with caches --------------------------------
   const constants = ctx.constants, variables = ctx.variables;
 
-  function evalNode(node) {
+  // Materialise a runtime object per universe, with its FLATTENED conditions
+  // (default's global conditions, plus one event per edge down to it). Each
+  // universe owns its own leaf/var caches, so different universes draw
+  // independently while variables within one universe stay coupled.
+  const uRuntime = new Map();
+  function buildU(key) {
+    if (uRuntime.has(key)) return uRuntime.get(key);
+    const info = universeReg.get(key);
+    const conds = info.parentKey === null ? conditions.slice()
+      : buildU(info.parentKey).conditions.concat([info.eventAst]);
+    const U = { key, path: info.path, conditions: conds, leafCache: {}, varCache: {} };
+    uRuntime.set(key, U); return U;
+  }
+  for (const key of universeReg.keys()) buildU(key);
+  const varU = (name) => { const e = variables.get(name); return uRuntime.get(uKeyOf((e && e.universe) || [])); };
+
+  function evalNode(node, U) {
     switch (node.t) {
       case 'num': return node.v;
+      case 'bool': return node.v;
       case 'const': return constants.get(node.name);
       case 'var': {
-        if (node.name in varCache) return varCache[node.name];
-        const v = evalNode(variables.get(node.name).ast);
-        varCache[node.name] = v; return v;
+        if (node.name in U.varCache) return U.varCache[node.name];
+        const v = evalNode(variables.get(node.name).ast, U);
+        U.varCache[node.name] = v; return v;
       }
       case 'dist': {
-        if (node.id in leafCache) return leafCache[node.id];
-        const v = sampleDist(node.name, node.args);
-        leafCache[node.id] = v; return v;
+        if (node.id in U.leafCache) return U.leafCache[node.id];
+        const v = sampleDist(node.name, node.args, U);
+        U.leafCache[node.id] = v; return v;
       }
-      case 'vec': return node.items.map(evalNode);
-      case 'unop': return mapUn(node.op, evalNode(node.a));
-      case 'binop': return mapBin(node.op, evalNode(node.a), evalNode(node.b));
-      case 'call': return callFn(node.name, node.args.map(evalNode));
+      case 'given': return evalNode(node.expr, U);   // conditioning enforced by U's rejection
+      case 'vec': return node.items.map((it) => evalNode(it, U));
+      case 'unop': return mapUn(node.op, evalNode(node.a, U));
+      case 'binop': return mapBin(node.op, evalNode(node.a, U), evalNode(node.b, U));
+      case 'call': return callFn(node.name, node.args.map((a) => evalNode(a, U)));
       default: throw new Error(`Cannot evaluate ${node.t}`);
     }
   }
-  function num(node) { return asScalar(evalNode(node)); }
-  function sampleDist(name, args) {
+  const num = (node, U) => asScalar(evalNode(node, U));
+  function sampleDist(name, args, U) {
+    const nm = (i) => num(args[i], U);
     switch (name) {
       case 'Unif':
         if (args.length === 1 && args[0].t === 'set') {
           const s = args[0].values; return s[Math.floor(Math.random() * s.length)];
         }
-        if (args.length === 2) { const a = num(args[0]), b = num(args[1]); return a + (b - a) * Math.random(); }
+        if (args.length === 2) { const a = nm(0), b = nm(1); return a + (b - a) * Math.random(); }
         throw new Error('Unif expects (a,b) or a set {..}');
-      case 'Exp': return sampleExp(num(args[0]));
-      case 'Normal': case 'Gaussian': return sampleNormal(num(args[0]), num(args[1]));
-      case 'Bernoulli': return Math.random() < num(args[0]) ? 1 : 0;
-      case 'Boolean': return Math.random() < num(args[0]) ? 1 : 0; // event-typed coin
-
-      case 'Binomial': return sampleBinomial(Math.round(num(args[0])), num(args[1]));
-      case 'Poisson': return samplePoisson(num(args[0]));
-      case 'Geometric': return sampleGeom(num(args[0]));
+      case 'Exp': return sampleExp(nm(0));
+      case 'Normal': case 'Gaussian': return sampleNormal(nm(0), nm(1));
+      case 'Bernoulli': return Math.random() < nm(0) ? 1 : 0;
+      case 'Boolean': return Math.random() < nm(0) ? 1 : 0; // event-typed coin
+      case 'Binomial': return sampleBinomial(Math.round(nm(0)), nm(1));
+      case 'Poisson': return samplePoisson(nm(0));
+      case 'Geometric': return sampleGeom(nm(0));
       default: throw new Error(`Unknown distribution ${name}`);
     }
   }
 
-  function freshOmega() { leafCache = {}; varCache = {}; }
-  function conditionsHold() {
-    for (const c of conditions) if (asScalar(evalNode(c)) === 0) return false;
+  const freshOmega = (U) => { U.leafCache = {}; U.varCache = {}; };
+  function holdsIn(U) {
+    for (const c of U.conditions) if (asScalar(evalNode(c, U)) === 0) return false;
     return true;
   }
 
   // ---- empirical statistics: running moments over accepted frames ----------
-  function safeNum(e) {
-    try { const v = num(e); return (typeof v === 'number' && isFinite(v)) ? v : null; }
+  function safeNum(e, U) {
+    try { const v = num(e, U); return (typeof v === 'number' && isFinite(v)) ? v : null; }
     catch (_) { return null; }
   }
-  // Update each tracker from the current (accepted) omega: moment stats keep
-  // exact online moments; sample stats push into a bounded ring buffer.
-  function updateTrackers() {
+  // Update each tracker from its universe's accepted draw this tick: moment stats
+  // keep exact online moments; sample stats push into a bounded ring buffer.
+  function updateTrackers(uinfo) {
     for (const t of trackers) {
-      const x = safeNum(t.exprs[0]);
+      const info = uinfo[t.uKey];
+      if (!info || !info.accepted) continue;
+      const U = uRuntime.get(t.uKey);
+      const x = safeNum(t.exprs[0], U);
       if (x == null) continue;
       if (t.kind === 'moment') {
         let y = null;
-        if (t.exprs.length === 2) { y = safeNum(t.exprs[1]); if (y == null) continue; }
+        if (t.exprs.length === 2) { y = safeNum(t.exprs[1], U); if (y == null) continue; }
         const a = t.acc; a.n++;
         const dx = x - a.mx; a.mx += dx / a.n; a.Mx2 += dx * (x - a.mx);
         if (y != null) { const dy = y - a.my; a.my += dy / a.n; a.My2 += dy * (y - a.my); a.Cxy += dx * (y - a.my); }
@@ -705,41 +795,64 @@ function compile(src) {
     if (t.kind === 'entropy') return entropyOf(arr);
     return quantileOf(arr, t.pct);
   }
-  const readTrackers = () => trackers.map((t) => ({ label: t.label, stat: t.stat, value: trackerValue(t) }));
+  const readTrackers = () => trackers.map((t) => ({
+    label: t.label, stat: t.stat, value: trackerValue(t),
+    uKey: t.uKey, uLabel: uLabel((universeReg.get(t.uKey) || { path: [] }).path),
+  }));
 
-  // Draw one accepted frame. Returns {accepted, attempts, values}.
-  function step(maxAttempts = 10000) {
-    let attempts = 0, accepted = false;
-    do {
-      freshOmega();
-      attempts++;
-      if (conditions.length === 0 || conditionsHold()) { accepted = true; break; }
-    } while (attempts < maxAttempts);
-    // Evaluate every variable under the (accepted) omega — same caches => coupled.
+  // Sample EVERY universe this tick (each rejection-samples its own omega), then
+  // read each variable in its native universe. Returns {accepted, attempts,
+  // values, universes} where `universes` maps a universe key -> {accepted, attempts}.
+  function sampleUniverses(maxAttempts) {
+    const uinfo = {};
+    for (const U of uRuntime.values()) {
+      let attempts = 0, accepted = false;
+      do {
+        freshOmega(U); attempts++;
+        if (U.conditions.length === 0 || holdsIn(U)) { accepted = true; break; }
+      } while (maxAttempts > 1 && attempts < maxAttempts);
+      uinfo[U.key] = { accepted, attempts };
+    }
     const values = {};
-    for (const name of varOrder) values[name] = evalNode(variables.get(name).ast);
-    if (accepted) updateTrackers();   // same omega => statistics stay coupled too
-    return { accepted, attempts, values };
+    for (const name of varOrder) {
+      const U = varU(name);
+      if (uinfo[U.key].accepted) values[name] = evalNode(variables.get(name).ast, U);
+    }
+    updateTrackers(uinfo);
+    const d = uinfo[''] || { accepted: true, attempts: 1 };
+    return { accepted: d.accepted, attempts: d.attempts, values, universes: uinfo };
   }
-
-  // Draw exactly one raw omega (no retry). Lets the UI show rejections.
-  function probe() {
-    freshOmega();
-    const accepted = conditions.length === 0 || conditionsHold();
-    const values = {};
-    for (const name of varOrder) values[name] = evalNode(variables.get(name).ast);
-    if (accepted) updateTrackers();
-    return { accepted, values };
-  }
+  const step = (maxAttempts = 10000) => sampleUniverses(maxAttempts);
+  const probe = () => sampleUniverses(1);   // one raw draw per universe (no retry)
 
   const scalarVars = () => varOrder.filter((n) => {
-    freshOmega();
-    return !Array.isArray(evalNode(variables.get(n).ast));
+    const U = varU(n); freshOmega(U);
+    return !Array.isArray(evalNode(variables.get(n).ast, U));
   });
+
+  // Validate plot targets now that every variable is known, so a bad `plot` line
+  // is a reported error rather than a silent skip / fallback to the first variable.
+  {
+    const scalarSet = new Set(scalarVars());
+    const uk = (n) => uKeyOf(variables.get(n).universe || []);
+    for (const pl of plots) {
+      for (const nm of (pl.mode === '2d' ? [pl.a, pl.b] : [pl.a])) {
+        if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(nm)) throw new Error(`plot expects a variable name, not '${nm}' — name it first, e.g. Y = ${nm}`);
+        if (constants.has(nm)) throw new Error(`cannot plot '${nm}': it is a constant, not a random variable`);
+        if (!variables.has(nm)) throw new Error(`cannot plot '${nm}': unknown variable`);
+        if (!scalarSet.has(nm)) throw new Error(`cannot plot '${nm}': it is a vector, not a scalar`);
+      }
+      if (pl.mode === '2d' && uk(pl.a) !== uk(pl.b))
+        throw new Error(`cannot plot '${pl.a}, ${pl.b}' together: they live in different universes`);
+    }
+  }
   const astOf = (n) => { const e = variables.get(n); return e ? e.ast : null; };
   const eventNames = varOrder.filter((n) => variables.get(n).isEvent);
   const isEventVar = (n) => { const e = variables.get(n); return !!(e && e.isEvent); };
   const readEvents = () => eventNames.map((n) => ({ name: n, canon: variables.get(n).canon }));
+  // universe helpers for the UI
+  const varUniverse = (n) => uKeyOf((variables.get(n) || {}).universe || []);
+  const universeList = () => [...uRuntime.values()].map((U) => ({ key: U.key, path: U.path, label: uLabel(U.path) }));
 
   return {
     varOrder,
@@ -753,6 +866,9 @@ function compile(src) {
     hasEvents: eventNames.length > 0,
     isEventVar,
     readEvents,
+    hasUniverses: uRuntime.size > 1,
+    varUniverse,
+    universeList,
     step,
     probe,
     scalarVars,

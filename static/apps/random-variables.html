@@ -103,6 +103,10 @@
   td.v .bool.t { color: var(--ok); }                 /* True */
   td.v .bool.f { color: var(--muted); }              /* False */
   td.stat { color: var(--muted); font-size: 12px; }
+  tr.uhead td { color: var(--event); font-weight: 600; font-size: 11px; text-transform: uppercase;
+    letter-spacing: .04em; padding-top: 9px; border-bottom: 1px solid var(--line);
+    font-family: "SFMono-Regular", Consolas, monospace; }
+  tr.uhead:first-child td { padding-top: 2px; }
   .consts { color: var(--muted); font-size: 12px; margin-top: 8px; }
   /* empirical-statistics trackers (rendered GUI: labels carry the math look) */
   .trackers { margin-top: 10px; font-size: 12px; }
@@ -156,10 +160,12 @@
   <h1>Random Variable Visualizer</h1><span class="badge">pre-alpha</span>
   <p class="lede">An interactive take on the idea that a <strong>random variable is a quantity that
     fluctuates as its underlying randomness ω is resampled</strong>. Write a short, Excel-like program
-    &mdash; <code>X = Unif({1..6})</code>, <code>Y = Exp(3)</code>, <code>Z = X + Y</code>,
-    <code>condition on …</code> &mdash; and watch the values, running statistics, and animated
-    Monte-Carlo plots update live. There is <strong>one shared ω per tick</strong>, so every variable is
-    drawn together and coupling and independence come out exact and automatic.</p>
+    &mdash; <code>X = Unif({1..6})</code>, <code>Y = Exp(3)</code>, <code>Z = X + Y</code> &mdash; and
+    watch the values, empirical statistics, and animated Monte-Carlo plots update live. There is
+    <strong>one shared ω per tick</strong>, so every variable is drawn together and coupling and
+    independence come out exact and automatic. <strong>Events</strong> (True/False) and their
+    probabilities are first-class, and <strong>conditioning</strong> a variable, <code>(X | E)</code>,
+    opens its own <strong>universe</strong> so the conditional can sit beside the unconditional.</p>
   <div class="wip"><strong>Work in progress.</strong> This is a pre-alpha: the app and its little
     language are still evolving, and behaviour may change or break between versions. Feedback is welcome
     &mdash; and the <a href="#reference">language reference</a> at the foot of the page lists what works
@@ -173,24 +179,24 @@
 
 <div class="bar">
   <div class="grp">
-    <button id="run" class="primary">▶ Run</button>
-    <button id="pause">⏸ Pause</button>
-    <button id="step">⏭ Step</button>
+    <button id="run" class="primary" title="Compile and run the program">▶ Run</button>
+    <button id="pause" title="Pause or resume the animation">⏸ Pause</button>
+    <button id="step" title="Draw a single sample (one tick)">⏭ Step</button>
   </div>
-  <div class="grp"><label>speed</label><input type="range" id="rate" min="-2" max="8" step="1" value="5"><span class="val" id="rateV">32</span><label>/s</label></div>
-  <div class="grp"><label>trail</label><input type="range" id="trail" min="5" max="13" value="10" step="1"><span class="val" id="trailV">1024</span></div>
+  <div class="grp"><label>speed</label><input type="range" id="rate" min="-2" max="8" step="1" value="5" title="Samples drawn per second (powers of 2)"><span class="val" id="rateV">32</span><label>/s</label></div>
+  <div class="grp"><label>trail</label><input type="range" id="trail" min="5" max="13" value="10" step="1" title="How many recent samples stay visible in the plots (powers of 2)"><span class="val" id="trailV">1024</span></div>
   <div class="grp">
     <label>conditioning</label>
-    <select id="condmode">
+    <select id="condmode" title="Instant hides rejected draws; “show rejections” animates the rejection sampling">
       <option value="instant">instant (hide rejections)</option>
       <option value="visible">show rejections</option>
     </select>
-    <label>max tries</label><input type="number" id="maxtry" value="10000" min="100" step="100">
+    <label>max tries</label><input type="number" id="maxtry" value="10000" min="100" step="100" title="Give up after this many rejected draws per tick (rare-event cap)">
   </div>
   <div class="grp"><label>preset</label>
-    <select id="preset"></select>
+    <select id="preset" title="Load an example program"></select>
   </div>
-  <div class="grp"><button id="share">🔗 Copy share link</button><span class="val" id="sharemsg" style="color:var(--muted)"></span></div>
+  <div class="grp"><button id="share" title="Copy a shareable link with the program encoded in the URL">🔗 Copy share link</button><span class="val" id="sharemsg" style="color:var(--muted)"></span></div>
 </div>
 
 <main>
@@ -202,7 +208,8 @@
         <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off"></textarea>
       </div>
       <div class="editor-row">
-        <button id="run2" class="primary">▶ Run program</button>
+        <button id="run2" class="primary" title="Compile and run the program (Ctrl/Cmd+Enter)">▶ Run program</button>
+        <button id="copyprog" title="Copy the program to the clipboard">⧉ Copy</button>
         <span id="parsemsg" style="color:var(--muted);font-size:12px"></span>
       </div>
       <pre id="err" class="err"></pre>
@@ -221,7 +228,8 @@
           <tr><td><code>let n = 100</code></td><td>a constant (sizes, parameters)</td></tr>
           <tr><td><code>V = Sample(Exp(1), n)</code></td><td>n independent copies → a vector</td></tr>
           <tr><td><code>M = AVERAGE(V)</code></td><td>SUM, AVERAGE, MAX, MIN, STDEV, COUNT</td></tr>
-          <tr><td><code>condition on X^2+Y^2 &lt;= 1</code></td><td>reject states where it fails</td></tr>
+          <tr><td><code>condition on X^2+Y^2 &lt;= 1</code></td><td>reject states where it fails (global)</td></tr>
+          <tr><td><code>Y = (X | X &gt; 3)</code></td><td>condition one variable — its own universe</td></tr>
           <tr><td><code>statistic Cov(X, Y)</code></td><td>track an empirical statistic live</td></tr>
           <tr><td colspan="2" style="color:var(--muted)">also Mean, SD, Var, Corr, Median, Q1, Q3, Percentile, Mode, Entropy, Max, Min</td></tr>
           <tr><td><code>plot X</code> · <code>plot X, Y</code></td><td>choose what the right panel shows</td></tr>
@@ -248,19 +256,19 @@
     <h2>Plot</h2>
     <div class="plotctl">
       <div class="grp" id="pModeWrap"><label>mode</label>
-        <select id="pmode"><option value="1d">1-D (line)</option><option value="2d">2-D (scatter)</option></select>
+        <select id="pmode" title="1-D view (one variable) or 2-D scatter (two variables)"><option value="1d">1-D (line)</option><option value="2d">2-D (scatter)</option></select>
       </div>
-      <div class="grp" id="pAWrap"><label>x</label><select id="pA"></select></div>
-      <div class="grp" id="pBwrap"><label>y</label><select id="pB"></select></div>
-      <div class="grp" id="pAspectWrap"><label><input type="checkbox" id="lockaspect"> 1:1</label></div>
+      <div class="grp" id="pAWrap"><label>x</label><select id="pA" title="Variable on the x-axis"></select></div>
+      <div class="grp" id="pBwrap"><label>y</label><select id="pB" title="Variable on the y-axis (2-D)"></select></div>
+      <div class="grp" id="pAspectWrap"><label title="Lock a 1:1 aspect ratio (equal x and y scales)"><input type="checkbox" id="lockaspect"> 1:1</label></div>
       <div class="grp" id="pStyleWrap"><label>style</label>
-        <select id="pstyle"><option value="both">dots + histogram</option><option value="dots">dots</option><option value="hist">histogram</option></select>
+        <select id="pstyle" title="Show fading dots, a histogram, or both"><option value="both">dots + histogram</option><option value="dots">dots</option><option value="hist">histogram</option></select>
       </div>
-      <div class="grp"><label>fuzz</label><input type="range" id="fuzz" min="0" max="100" value="40"><span class="val" id="fuzzV">40</span></div>
+      <div class="grp"><label>fuzz</label><input type="range" id="fuzz" min="0" max="100" value="40" title="Spread coincident points slightly so density is visible"><span class="val" id="fuzzV">40</span></div>
       <div class="grp"><label>colors</label>
-        <select id="colormode"><option value="highlight">highlight current</option><option value="gradient">continuous gradient</option></select>
+        <select id="colormode" title="Highlight the current sample, or draw a continuous age gradient"><option value="highlight">highlight current</option><option value="gradient">continuous gradient</option></select>
       </div>
-      <div class="grp"><label><input type="checkbox" id="theory" checked> theory</label></div>
+      <div class="grp"><label title="Overlay the exact pdf/pmf when the variable is a single primitive distribution"><input type="checkbox" id="theory" checked> theory</label></div>
     </div>
     <div class="plotwrap"><canvas id="cv"></canvas><div class="theory-msg" id="theorymsg"></div></div>
   </div>
@@ -283,6 +291,9 @@
     </table>
     <p class="muted">Reusing a name refers to the same variable; writing a fresh
       <code>Distribution(...)</code> makes a new, independent one.</p>
+    <p class="muted">Conditioning a variable with <code>(X | E)</code> draws it in a separate
+      <strong>universe</strong> — its own ω, resampled until <code>E</code> holds — so a conditional is
+      independent of the original and of other universes (see the conditioning section below).</p>
   </div></details>
 
   <details><summary>Assignments, constants &amp; comments</summary><div class="dbody">
@@ -329,6 +340,7 @@
     <table>
       <tr><td><code>Boolean(p = 1/2)</code></td><td>a coin: True with probability p (aliases <code>Coin</code>, <code>Flip</code>, <code>Toss</code>, <code>Bool</code>, <code>Chance</code>)</td></tr>
       <tr><td><code>E = X &gt; 3</code></td><td>name an event from a comparison</td></tr>
+      <tr><td><code>True</code> · <code>False</code></td><td>the constant events (always / never)</td></tr>
     </table>
     <p>Combine events with boolean operators. Three interchangeable spellings: word operators
       (primary), symbols <code>&amp;&amp;</code>&nbsp;<code>||</code>&nbsp;<code>!</code>, and Excel-style
@@ -337,6 +349,24 @@
     <table><tbody id="doc-bool"></tbody></table>
     <p class="muted">Example: <code>H1 = Coin()</code>, <code>H2 = Coin()</code>, <code>both = H1 and H2</code> —
       then P(both) settles near 0.25, a picture of independence.</p>
+  </div></details>
+
+  <details><summary>Conditioning a variable: <code>(X | E)</code> &amp; universes</summary><div class="dbody">
+    <p><code>(X | E)</code> reads &ldquo;<strong>X given E</strong>&rdquo; — a fresh copy of <code>X</code>
+      drawn in the world where the event <code>E</code> holds. Unlike <code>condition on</code> (which
+      filters <em>every</em> variable), <code>(X | E)</code> makes a <strong>new</strong> quantity in its
+      own <strong>universe</strong>, so the conditioned copy can sit <em>beside</em> the original:</p>
+    <table>
+      <tr><td><code>Y = (X | X &gt; 3)</code></td><td><code>X</code> restricted to <code>X &gt; 3</code> — its own universe</td></tr>
+      <tr><td><code>P = (both | atLeastOne)</code></td><td>an event given an event</td></tr>
+      <tr><td><code>(X | E and F)</code> · <code>((X | E) | F)</code></td><td>condition on several events</td></tr>
+    </table>
+    <p>Quantities from different universes are independent draws and <strong>cannot be mixed</strong>:
+      <code>X + (X | E)</code> is an error, and a 2-D <code>plot A, B</code> needs both in one universe.
+      Same-universe quantities stay coupled, e.g. <code>plot (X|E), (Y|E)</code>. Each plot shows its
+      universe as a <code>| E</code> tag; the Values panel groups variables by universe.</p>
+    <p class="muted">Try it: <code>X = Unif(0, 10)</code>, <code>Y = (X | X &gt; 3)</code>, then
+      <code>plot X</code> and <code>plot Y</code> — the unconditioned spread beside the conditioned one.</p>
   </div></details>
 
   <details><summary>Functions</summary><div class="dbody">
@@ -367,10 +397,13 @@
   <details><summary>Commands: plot &amp; condition</summary><div class="dbody">
     <table>
       <tr><td><code>plot X</code></td><td>1-D view (fading dots + histogram)</td></tr>
-      <tr><td><code>plot X, Y</code></td><td>2-D scatter</td></tr>
+      <tr><td><code>plot X, Y</code></td><td>2-D scatter (both variables must live in one universe)</td></tr>
       <tr><td>several <code>plot</code> lines</td><td>open several plot windows at once (stacked)</td></tr>
-      <tr><td><code>condition on E</code></td><td>rejection sampling: keep only the ticks where the event <code>E</code> holds. It conditions the shared ω for <em>every</em> variable, so dependence can appear (e.g. an independent square collapses into a disk).</td></tr>
+      <tr><td><code>condition on E</code></td><td>rejection sampling: keep only the ticks where the event <code>E</code> holds. This is <em>global</em> — it conditions the shared ω for <em>every</em> variable, so dependence can appear (an independent square collapses into a disk). To condition just one variable instead, use <code>(X | E)</code> (see &ldquo;Conditioning a variable&rdquo; above).</td></tr>
     </table>
+    <p class="muted"><code>plot</code> takes <strong>variable names</strong> (name an expression first,
+      e.g. <code>Y = (X | X&gt;3)</code>, then <code>plot Y</code>). Plotting an unknown name, a constant,
+      or a vector reports an error rather than guessing.</p>
     <p class="muted">If a condition is very unlikely, the app caps the number of tries per tick; the
       acceptance rate is shown under the Values panel.</p>
     <p class="muted">Scope: this app conditions only on <strong>events</strong> (True/False). It does
@@ -513,20 +546,27 @@ stay_wins = pick == car     # keep your door -> wins ~ 1/3
 switch_wins = pick != car   # switch -> wins ~ 2/3
 plot switch_wins`,
   'Two children — one is a boy':
-`# A family has two children, at least one a boy. Then P(both boys) = 1/3, not 1/2.
+`# Two children. "Given at least one boy" and "given the older is a boy" are
+# DIFFERENT conditions — 1/3 vs 1/2 — shown as two universes side by side.
 older = Coin()      # True = boy
 younger = Coin()
-condition on older or younger    # given: at least one is a boy
-both_boys = older and younger
-plot both_boys`,
+both = older and younger
+given_any = (both | older or younger)   # at least one boy -> P ~ 1/3
+given_older = (both | older)            # the older is a boy -> P ~ 1/2
+plot given_any
+plot given_older`,
   "Berkson's paradox — selection bias":
-`# Talent and looks are independent in the population. But among those selected
-# for EITHER (the famous, the admitted) they become negatively correlated.
+`# Talent and looks are independent in the population, yet negatively correlated
+# among those selected for EITHER. Compare the two universes side by side.
 talent = Normal(0, 1)
 looks = Normal(0, 1)
-condition on talent > 1 or looks > 1
-statistic Corr(talent, looks)    # now negative — from the selection alone
-plot talent, looks`,
+sel = talent > 1 or looks > 1     # selected if either is high
+t_sel = (talent | sel)
+l_sel = (looks | sel)
+statistic Corr(talent, looks)     # in the population: ~ 0
+statistic Corr(t_sel, l_sel)      # among the selected: negative
+plot talent, looks                # independent square
+plot t_sel, l_sel                 # selection cuts the corner -> a downward tilt`,
   'Base-rate fallacy — a medical test':
 `# A rare disease (1%) and a good test (99% sensitive, 5% false positives).
 # After a POSITIVE result the chance you are sick is still only ~1 in 6.
@@ -541,6 +581,13 @@ N = Geometric(1/2)
 payoff = 2 ^ N
 statistic Mean(payoff)   # keeps drifting up as rare huge payoffs land
 plot payoff`,
+  'Conditioning — a variable and its conditional':
+`# (X | E) is a fresh copy of X drawn where E holds — its OWN universe, shown
+# beside the unconditioned X. They are independent; you can't mix them.
+X = Unif(0, 10)
+Y = (X | X > 3)     # X restricted to X > 3
+plot X              # the full spread, 0..10
+plot Y              # only 3..10`,
   'Exponential clock':
 `Y = Exp(3)
 plot Y`,
@@ -561,7 +608,7 @@ const state = {
 };
 // A plot window owns its own trail + bounds (so windows are independent).
 function makeWin(mode, a, b) {
-  return { mode: (mode === '2d' && b) ? '2d' : '1d', a: a || null, b: b || null, trail: [], bounds: { has: false } };
+  return { mode: (mode === '2d' && b) ? '2d' : '1d', a: a || null, b: b || null, trail: [], bounds: { has: false }, uKey: '', uLabel: '' };
 }
 // trail color: newest -> oldest.  Gradient runs warm (recent) to cool (old).
 const C_NEW = [242, 178, 90], C_OLD = [70, 120, 205];
@@ -625,15 +672,17 @@ function run() {
     return;
   }
   state.prog = prog;
-  // one plot window per `plot` command; fall back to a single auto-picked window
+  // compile() has already validated the plot targets; build one window per `plot`
+  // command, falling back to an auto-picked window only when there were none.
   const scal = prog.scalarVars();
+  const ul = new Map(prog.universeList().map((u) => [u.key, u.label]));
+  const setU = (w) => { w.uKey = w.a ? prog.varUniverse(w.a) : ''; w.uLabel = ul.get(w.uKey) || ''; return w; };
   state.plots = [];
   for (const cfg of (prog.plots || [])) {
-    if (!scal.includes(cfg.a)) continue;
-    const b = cfg.mode === '2d' && scal.includes(cfg.b) ? cfg.b : null;
-    state.plots.push(makeWin(cfg.mode, cfg.a, b));
+    state.plots.push(setU(makeWin(cfg.mode, cfg.a, cfg.mode === '2d' ? cfg.b : null)));
   }
-  if (!state.plots.length) state.plots.push(makeWin('1d', scal[0] || null, scal[1] || scal[0] || null));
+  if (!state.plots.length) state.plots.push(setU(makeWin('1d', scal[0] || null, scal[1] || scal[0] || null)));
+  state.plotWarn = '';
   resetData();
   populatePlotSelects(scal);
   syncPlotControls();
@@ -798,6 +847,12 @@ function regionNote(text, rw, rh) {
   cx.fillStyle = COL.tick; cx.font = '11px sans-serif'; cx.textAlign = 'right'; cx.globalAlpha = .85;
   cx.fillText(text, rw - 10, rh - 8); cx.globalAlpha = 1; cx.textAlign = 'left';
 }
+// a plot's universe as a top-right breadcrumb (omitted for the default universe)
+function universeTag(win, rw) {
+  if (!win.uLabel) return;
+  cx.fillStyle = COL.cur; cx.font = 'italic 11px sans-serif'; cx.textAlign = 'right';
+  cx.fillText('| ' + win.uLabel, rw - 10, 14); cx.textAlign = 'left';
+}
 function trailAlpha(i, n) { return 0.05 + 0.32 * (i / Math.max(1, n - 1)); }
 
 function draw1D(w, h, win) {
@@ -873,12 +928,14 @@ function draw1D(w, h, win) {
     cx.fillStyle = COL.tick; cx.textAlign = 'left';
     cx.fillText(`${win.a} = ${isEv ? (cur ? 'True' : 'False') : fmt(cur)}`, m, 20);
   }
+  universeTag(win, w);
 }
 
 // ---- theoretical distribution overlay (graceful: only when computable) ----
 function ceApp(node, C) { // deterministic eval; null if it touches randomness
   switch (node.t) {
     case 'num': return node.v;
+    case 'bool': return node.v;
     case 'const': return C.get(node.name);
     case 'unop': { const a = ceApp(node.a, C); return a == null ? null : (node.op === '-' ? -a : a); }
     case 'binop': { const a = ceApp(node.a, C), b = ceApp(node.b, C); return (a == null || b == null) ? null : scalarBin(node.op, a, b); }
@@ -989,16 +1046,19 @@ function draw2D(w, h, win) {
     cx.fillText(`${win.a} = ${fmt(a)}   ${win.b} = ${fmt(bv)}`, left, Math.max(12, top - 8));
   }
   if (state.theory) regionNote('theoretical heat map unavailable in 2-D', w, h);
+  universeTag(win, w);
 }
 
 // ---- panels (table + status) ----
 function esc(s) { return String(s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
 function updatePanels() {
   const prog = state.prog; if (!prog) return;
-  let rows = '';
-  for (const name of prog.varOrder) {
+  const uLabels = new Map(prog.universeList().map((u) => [u.key, u.label]));
+  const rowFor = (name) => {
     const v = state.lastValues[name];
     const isEv = prog.isEventVar(name);
+    const uk = prog.varUniverse(name);
+    const title = prog.hasUniverses && uk !== '' ? ` title="native to the universe conditioned on ${esc(uLabels.get(uk) || '')}"` : '';
     let vs = '—', st = '';
     if (v !== undefined) {
       if (Array.isArray(v)) vs = fmtVec(v);
@@ -1013,7 +1073,23 @@ function updatePanels() {
         if (s && s.n > 1) st = `${fmt(s.mean)} ± ${fmt(Math.sqrt(s.M2 / s.n))}`;
       }
     }
-    rows += `<tr><td class="name${isEv ? ' ev' : ''}">${name}</td><td class="v">${vs}</td><td class="stat">${st}</td></tr>`;
+    return `<tr><td class="name${isEv ? ' ev' : ''}"${title}>${name}</td><td class="v">${vs}</td><td class="stat">${st}</td></tr>`;
+  };
+  // group variables by their native universe (default first), splitting the panel
+  const groups = new Map();
+  for (const name of prog.varOrder) {
+    const uk = prog.varUniverse(name);
+    if (!groups.has(uk)) groups.set(uk, []);
+    groups.get(uk).push(name);
+  }
+  const keys = [...groups.keys()].sort((a, b) => (a === '' ? -1 : b === '' ? 1 : 0));
+  let rows = '';
+  for (const uk of keys) {
+    if (prog.hasUniverses) {
+      const lbl = uk === '' ? 'default space' : '| ' + (uLabels.get(uk) || '');
+      rows += `<tr class="uhead"><td colspan="3">${esc(lbl)}</td></tr>`;
+    }
+    for (const name of groups.get(uk)) rows += rowFor(name);
   }
   $('vals').innerHTML = rows;
   if (prog.constants.size) {
@@ -1034,6 +1110,7 @@ function updatePanels() {
     s += `<div class="${cls}">acceptance ≈ <b>${pct.toFixed(pct < 1 ? 3 : 1)}%</b> (${state.accepted.toLocaleString()} kept / ${state.attempts.toLocaleString()} tried)</div>`;
     if (state.instant && state.starved) s += `<div class="warn">hit the ${state.maxTry.toLocaleString()}-try cap — event may be too rare</div>`;
   }
+  if (state.plotWarn) s += `<div class="warn">${esc(state.plotWarn)}</div>`;
   $('status').innerHTML = s;
 }
 
@@ -1091,6 +1168,14 @@ $('share').onclick = () => {
   if (navigator.clipboard && navigator.clipboard.writeText)
     navigator.clipboard.writeText(url).then(() => toast('copied ✓'), () => toast('link in address bar'));
   else toast('link in address bar');
+};
+$('copyprog').onclick = () => {
+  const prev = $('parsemsg').textContent;
+  const flash = (msg) => { $('parsemsg').textContent = msg; setTimeout(() => { $('parsemsg').textContent = prev; }, 1400); };
+  const text = $('src').value;
+  if (navigator.clipboard && navigator.clipboard.writeText)
+    navigator.clipboard.writeText(text).then(() => flash('program copied ✓'), () => { $('src').select(); flash('press Ctrl/Cmd+C to copy'); });
+  else { $('src').select(); try { document.execCommand('copy'); } catch (e) { /* ignore */ } flash('program copied ✓'); }
 };
 
 // ---- language glossary: one source of truth for hover tips AND the docs tables ----
@@ -1207,6 +1292,7 @@ function highlight(src) {
   }
   const cls = (id) => HL_KW.has(id.toLowerCase()) ? 'k'
     : HL_CTRL.has(id) ? 'k'
+    : (id.toLowerCase() === 'true' || id.toLowerCase() === 'false') ? 'ev'
     : HL_BOOL.has(id.toLowerCase()) ? 'b'
     : HL_DIST.has(id) ? 'd' : HL_FN.has(id) ? 'f' : HL_STAT.has(id) ? 's'
     : progEvents.has(id) ? 'ev'
@@ -1215,10 +1301,18 @@ function highlight(src) {
     const g = glossFor(id, c);
     if (g) return `${g.sig}\n${g.desc}`;
     const d = defs.get(id);
-    if (d && d.rhs) return `${progEvents.has(id) ? 'event' : d.kind}\n${id} = ${d.rhs}`;
+    if (d && d.rhs) {
+      let where = '';
+      if (state.prog && state.prog.hasUniverses && state.prog.varUniverse) {
+        const uk = state.prog.varUniverse(id);
+        const u = uk && state.prog.universeList().find((x) => x.key === uk);
+        if (u) where = `   (native to the universe conditioned on ${u.label})`;
+      }
+      return `${progEvents.has(id) ? 'event' : d.kind}\n${id} = ${d.rhs}${where}`;
+    }
     return '';
   };
-  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|&&|\|\||[-+*/^=<>(),!])|([\s\S])/g;
+  const re = /(#[^\n]*)|([0-9]+(?:\.[0-9]+)?)|([A-Za-z_][A-Za-z0-9_]*)|(\{[^}\n]*\})|(:=|==|!=|<=|>=|&&|\|\|?|[-+*/^=<>(),!])|([\s\S])/g;
   let out = '', m;
   while ((m = re.exec(src))) {
     if (m[1] != null) out += `<span class="c">${esc(m[1])}</span>`;
