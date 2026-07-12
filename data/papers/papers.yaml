@@ -50,6 +50,27 @@ works:
     posterior probabilities. Worked through several examples (a COVID test and the base-rate fallacy,
     Monty Hall, Sleeping Beauty), stressing that the hypotheses must be stated precisely. A candidate
     for a future interactive tao-web app.
+- id: qed-version-2-0-an-interactive-text-in-first-order-logic
+  kind: short-story
+  title: "QED version 2.0: an interactive text in first-order logic"
+  year: 2018
+  venue: Blog post
+  tags:
+  - logic
+  links:
+  - type: blog
+    url: "https://terrytao.wordpress.com/2018/08/18/qed-version-2-0-an-interactive-text-in-first-order-logic/"
+  - type: applet
+    url: "https://teorth.github.io/QED/QED.html"
+  - type: repository
+    url: "https://github.com/teorth/QED"
+  abstract: >-
+    Announces version 2.0 of QED, an interactive text and game for formal logic in which the reader
+    proves theorems by applying rules of inference rather than reading passively. Version 1.0 covered
+    propositional logic; version 2.0 extends to first-order logic with equality — quantifiers,
+    predicates and variables — and the post discusses the difficulties a hand-coded implementation runs
+    into as the logic grows (pattern matching with many or infinitely many matches, and side conditions
+    on variables).
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
