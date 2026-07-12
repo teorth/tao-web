@@ -41,13 +41,13 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/gilbreath-making-of.html
-# --- Probability (original app, still in development) ---
+# --- Probability (original app) ---
 - name: Random variable visualizer
   category: Probability
-  status: in-development
+  status: original
   date: "2026-07-12"
   description: >-
-    A pre-alpha, interactive realization of Tao's 2016 post “Visualising random variables”: write a
+    An interactive realization of Tao's 2016 post “Visualising random variables”: write a
     short Excel-like program (X = Unif({1..6}), Y = Exp(3), Z = X + Y) and watch the values, empirical
     statistics, and animated Monte-Carlo plots update live — with one shared ω per tick so coupling and
     independence come out exact. Random variables, events (True/False, with an empirical probability),
