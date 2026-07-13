@@ -74,6 +74,28 @@ def md_links(s: str) -> str:
     out.append(html.escape(s[last:]))
     return "".join(out)
 
+_EM = re.compile(r"\*([^*]+)\*")
+
+def _emph(t: str) -> str:
+    """Escape text and render *emphasis* as <em>."""
+    out, last = [], 0
+    for m in _EM.finditer(t):
+        out.append(html.escape(t[last:m.start()]))
+        out.append(f"<em>{html.escape(m.group(1))}</em>")
+        last = m.end()
+    out.append(html.escape(t[last:]))
+    return "".join(out)
+
+def md_inline(s: str) -> str:
+    """Inline markdown: [label](url) links and *emphasis*, safely escaped."""
+    out, last = [], 0
+    for m in _MDLINK.finditer(s):
+        out.append(_emph(s[last:m.start()]))
+        out.append(f'<a href="{html.escape(m.group(2))}">{html.escape(m.group(1))}</a>')
+        last = m.end()
+    out.append(_emph(s[last:]))
+    return "".join(out)
+
 CSS = """
 :root { color-scheme: light dark; --fg:#1a1a1a; --bg:#fff; --muted:#666;
   --line:#e3e3e3; --accent:#7a1f1f; --stub-bg:#fff4e5; --stub-fg:#8a5a00; --card:#fafafa;
@@ -919,6 +941,12 @@ def build_applets(doc: dict) -> str:
         note = (f'<p class="legend">{html.escape(notes[cat])}</p>' if cat in notes else "")
         rows = "".join(row(a) for a in applets if a["category"] == cat)
         body.append(_cv_section(cat, note + rows))
+    phil = doc.get("philosophy") or []
+    if phil:
+        items = "".join(
+            f'<p class="phil"><strong>{html.escape(p["heading"])}</strong> {md_inline(p["body"])}</p>'
+            for p in phil)
+        body.append(f'<section id="design-philosophy"><h2>Design philosophy</h2>{items}</section>')
     body.append("</div>")
     return page("Terence Tao — interactive tools", "\n".join(body))
 

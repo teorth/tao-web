@@ -12,4 +12,11 @@ repository — its data, text, or code — may be copied, redistributed, publish
 mirrored, or used to create derivative works without the prior written
 permission of the copyright holder.
 
-Corrections are welcome as GitHub issues or pull requests.
+The interactive applets under `static/apps/` are shared for transparency, not as
+a template. You are warmly welcome to be *inspired* by their concepts and design
+to build your own tools; please do not publish near-identical copies of these
+specific apps, or reuse their source as a base for your own. The applet code is
+AI-generated, has not been reviewed line-by-line, and is not maintained for reuse.
+
+Corrections and feedback are welcome as GitHub issues or pull requests; see
+CONTRIBUTING.md for the preferred channel.

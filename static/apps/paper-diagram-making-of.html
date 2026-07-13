@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Paper Diagram viewer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }  /* the h2 top-borders already separate sections */
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Paper Diagram viewer</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="paper-diagram.html">paper-diagram viewer</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/paper-diagram.html">Paper Diagram viewer</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — an app that renders a mathematical paper as an automatically laid-out dependency diagram of its theorems, lemmas and definitions — from a backlog idea to release.</em></p>
+<p><strong>How to read this.</strong> As with the other making-of transcripts, the point is to convey the <em>process</em>:</p>
+<ul><li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim (long ones trimmed with […]; one-word &quot;continue&quot; replies folded into the narration).</li><li><strong>Claude&#x27;s replies</strong> — the actual edits, across a DOM-free layout/logic core (<code>paper-diagram.js</code>), an export module (<code>paper-diagram-export.js</code>), the app page (<code>paper-diagram.html</code>) and per-paper diagram data files — are replaced by short <em>italic summaries</em> of what changed.</li><li>Meta-conversation (requests to write this transcript, unrelated site edits) is left out.</li></ul>
+<p>The logic core and exports were checked with headless Node unit tests throughout, and the UI wiring with a DOM-shim smoke test; the app was kept uncommitted for local testing until it was ready to publish.</p>
+<hr>
+<h2>1. The idea, recorded for later</h2>
+<p>The project began as one of several app ideas logged in the skill for future work:</p>
+<blockquote><p>Another idea based on <a href="https://terrytao.wordpress.com/2023/02/18/would-it-be-possible-to-create-a-tool-to-automatically-diagram-papers/">this blog post</a> […]. One needs an LLM to be able to take an arbitrary paper and extract out a diagram, and this is unviable as a public-facing applet due to arbitrary token expenditure etc. But perhaps what we can do is create a general file format (JSON?) for paper diagrams, a deterministic visualizer for reading such diagrams, and have an LLM backend that takes some of my papers and extracts out diagrams, which can then be stored as data files for this visualizer to use as examples, and supply some sort of editor (and/or JSON spec) for others to build their own diagrams, perhaps using their own AI agents.</p></blockquote>
+<p>The division of labour there — an LLM produces the diagrams offline; a small, deterministic app <em>reads</em> them — shaped everything that followed.</p>
+<h2>2. Format first</h2>
+<blockquote><p>I&#x27;d like to work a little on the paper diagram project. Specifically, to begin designing the JSON type data format for a diagram of theorems and lemmas connected by dependencies. qui.ver.app already does something similar; actually if there is enough compatibility that an export to quiver is feasible that would be nice (also export to tikz). I don&#x27;t know in advance exactly what attributes etc. I would want eventually so I&#x27;d like a design which is extensible, but JSON seems well suited for this.</p></blockquote>
+<p><em>Proposed a native <code>paper-diagram</code> JSON — nodes (<code>id</code>, <code>kind</code>, <code>label</code>, <code>name</code>, <code>statement</code>, <code>weight</code>, …) and typed dependency edges — with quiver and TikZ as lossy export targets rather than the storage format, since quiver&#x27;s positional model can&#x27;t hold statement metadata. Named fields (not positional arrays), open enums and preserve-unknown-fields on round-trip keep it extensible.</em></p>
+<blockquote><p>Yes, this all sounds good, I agree with the native plus export and the edge convention. Now that I think about it, I&#x27;d want the app to do most of the placement automatically, with a manual override if needed — similar to the LaTeX typesetting model. This is in contrast to quiver where all placement is done by hand. In particular it would be nice if after adding or removing a theorem, the diagram auto-adjusts by default […]. In particular I like using weight as a key piece of metadata rather than location. […] For prototyping purposes one can start with the Gilbreath paper, attached.</p></blockquote>
+<p><em>Settled the guiding principle: position is derived, not authored; <code>weight</code> drives size and emphasis, never layout. Hand-encoded the Gilbreath paper as the first diagram (25 nodes, 42 edges) to pin the format down.</em></p>
+<h2>3. The viewer, and automatic layout</h2>
+<p>After confirming the schema was a good enough base to start building, and a Stage 1 request:</p>
+<p><em>Built the DOM-free core: <code>load()</code> validates the diagram (rejecting duplicate ids, dangling edges, self-loops and cycles) and computes longest-path ranks; a layered (&quot;Sugiyama&quot;) layout turns the DAG into coordinates, with a force-directed &quot;balance&quot; relaxation as an on-demand alternative. Then an SVG viewer on the shared applet stylesheet, with pan, wheel-zoom, and a side panel.</em></p>
+<blockquote><p>I can see the demo now. The &quot;balanced&quot; mode squishes the nodes together horizontally […]. For the legend, adding an orientation might help, e.g. A --&gt; B &quot;B uses A&quot;, A ...&gt; B &quot;B generalizes A&quot;. In the current model did you assign different (subjective) weights to different lemmas/definitions, or are they all equal weight currently?</p></blockquote>
+<blockquote><p>Can you make some visual indicators for weight, e.g. thickness of borders? 1-5 is a good range I think for such a subjective measure, it would be pointless to attempt any finer graining than this.</p></blockquote>
+<p><em>Spread the balanced layout horizontally, annotated the legend with the edge conventions, and mapped weight 1–5 to border thickness and box size.</em></p>
+<h2>4. Read-only, and the LaTeX question</h2>
+<blockquote><p>Looks good. I was about to ask for a feature to edit the dependency graph in the GUI (e.g., to change weights), but I&#x27;m now thinking that the smarter thing to do is have LLMs edit the JSON directly in an offline mode […] and have the viewer be purely read-only. […] it may be better to just let users edit their JSONs directly via their favorite LLM than try to create a full fledged graph editor here.</p><p>With regard to LaTeX, I guess trying to have native LaTeX support is going to be extremely bloated. Unicode translation of LaTeX is clunky and breaks if the LaTeX is too advanced. […] Perhaps one compromise is a \pdfortexstring type approach where theorems can have both a LaTeX field and (optionally) a plain text field that would be the default display in this renderer, whereas the exports to quiver or TikZ would use the LaTeX version.</p></blockquote>
+<p><em>Adopted the split: every node may carry both a LaTeX <code>statement</code> and an optional plain-text <code>plain</code>; the viewer panel prefers <code>plain</code>, the exports use the LaTeX. No in-app math rendering (KaTeX was judged too heavy for a self-contained, no-CDN app).</em></p>
+<h2>5. Exports, and a file:// detour</h2>
+<p><em>Added the export module (<code>toTikz</code>, <code>toQuiver</code>/<code>toQuiverURL</code>) reading the live layout, opened via an overlay modal.</em> An empty-modal bug and non-functional buttons followed:</p>
+<blockquote><p>In the latest version the browser is hijacked by a window with copy download and X buttons but with no text displayed, and also no way to close the window.</p></blockquote>
+<blockquote><p>Works great! A separate issue is that the TikZ and quiver export buttons are reporting bugs, e.g., <code>Error: the export module (paper-diagram-export.js) did not load — try a hard refresh, and serve the page over http rather than file://</code></p></blockquote>
+<p><em>The strict Content-Security-Policy blocked the sibling export script under a <code>file://</code> opaque origin.</em> A short exchange established that the live site runs over http (GitHub Pages), and that a local server (VS Code&#x27;s Live Server, <code>http://127.0.0.1:5500</code>) is the right way to test locally. Two more issues surfaced in the process:</p>
+<blockquote><p>Back in the file:// version, I tested the TikZ. One issue is that latex <code>$</code> symbols are escaped out upon export, which for TikZ is not the wanted behavior. The quiver app can strip away the backslashes on the <code>$</code> but does not do so for underscores, so for instance <code>$c_i$</code> becomes <code>$c\_i$</code>.</p></blockquote>
+<blockquote><p><code>Uncaught SyntaxError: Unexpected end of input</code></p></blockquote>
+<p><em>Inlined the export module into the page (covered by the CSP&#x27;s <code>&#x27;unsafe-inline&#x27;</code>), keeping a synced standalone copy for the Node tests. Fixed the escaping so LaTeX text fields are emitted verbatim. The syntax error was a bare HTML fragment breaking Live Server&#x27;s reload-script injection — wrapped the page as a complete <code>&lt;!doctype html&gt;</code> document, a lesson folded back into the skill.</em></p>
+<h2>6. Light in-app editing</h2>
+<blockquote><p>Given that the TikZ and quiver exports adjust to user alterations, perhaps some minor edit capability is useful. I&#x27;m thinking of two types of edits. One is when a theorem is selected, that an edit button is enabled […] for theorem title, weight, LaTeX and plain text, and dependencies […]. The other capability would be to be able to drag theorems in and out of the main panel and into a panel of &quot;ignored&quot; theorems […]. When doing so, dependencies are updated transitively: so if one had A -&gt; B -&gt; C and B is dragged out […] then one is left with A -&gt; C. (one would need some rule to handle generalizations; let&#x27;s say that generalization is transitive but a hybrid of generalization and ordinary dependence reverts to dependence (as the &quot;dominant allele&quot;).</p></blockquote>
+<p><em>Reversed the read-only decision for light editing: the full source of truth <code>SRC</code> is the working copy; the displayed diagram is a derived view = <code>SRC</code> minus ignored nodes with edges transitively contracted (generalization∘generalization stays a generalization; any dependence in the path dominates). A node editor (fields + a dependency sub-editor) mutates <code>SRC</code> and re-validates on save; an &quot;ignored&quot; tray restores nodes. The literal drag-between-panels was replaced with a button-plus-tray, which is robust against the pan/zoom gestures.</em> Several refinements followed — the weight-threshold slider was reversed to fill toward the shown side, a truncated dependency dropdown was widened, and the kind legend became filter checkboxes.</p>
+<h2>7. A library of papers</h2>
+<blockquote><p>Well, I&#x27;d like to have a library of several papers, not just one. […] there&#x27;s no reason to restrict to my own papers, and actually diagramming some notable papers in my field would be interesting. Here is a notable recent paper (solving the Kakeya conjecture) worth diagramming, and then we can have a &quot;Load paper&quot; button or dropdown to select from the various papers in the library.</p></blockquote>
+<p><em>Made the viewer multi-paper with a dropdown; hand-encoded the Wang–Zahl Kakeya paper (56 nodes).</em> This raised a question of scale:</p>
+<blockquote><p>So, even with the network restrictions mentioned previously, the app is able to load data from the supplementary file paper-diagram-data.js? How scaleable is this? Would, say, a library of 100 paper diagrams be feasible in this model?</p></blockquote>
+<p><em>Explained the two-tier model: a small curated set drives the dropdown; the rest live as individual <code>diagrams/&lt;id&gt;.js</code> files loaded on demand by injecting a same-origin <code>&lt;script&gt;</code> (allowed under the CSP, unlike a network fetch), which scales to hundreds of papers with no per-paper cost until it is opened.</em></p>
+<blockquote><p>The JSON button serves as both import and export. Perhaps calling it &quot;Edit JSON&quot; instead […]. Also, would an export to SVG be possible? […] I envisage eventually all of my ~300 previous published papers coming with a diagram, and to have a link to a URL derived from this app page that loads that specific diagram and displays it.</p></blockquote>
+<p><em>Added a standalone SVG export, turned the JSON view into a real import (paste/edit → validate → load), and added <code>?paper=&lt;id&gt;</code> deep-links.</em></p>
+<blockquote><p>[…] currently, switching a paper changes the main header of the applet page to the title of the paper. I&#x27;d like the main header (and the text below) to be constant, and to have a subheader with the title of the paper closer to the applet (actually, I&#x27;d prefer if this header was more visibly part of the app itself than the surrounding HTML — an interface [where] actions inside the app alter the HTML outside of the ostensible boundaries of the app is a bad visual precedent […]). Also […] a small edit button to allow changing it directly […].</p></blockquote>
+<p><em>Moved the per-paper title and provenance inside the app&#x27;s own header strip, leaving the page header constant, with an inline rename button. The principle — an app must not reach outside its own box — later also removed a stray <code>document.title</code> mutation.</em></p>
+<h2>8. Disclosure, and a design philosophy</h2>
+<blockquote><p>Another point to add is that AI use will be disclosed on each of the pages containing AI-generated content. (Which would include this very section that we are drafting.)</p></blockquote>
+<blockquote><p>[…] the discussion of the paper dependency diagrams should be replaced with a more generic disclaimer that while many of the applets display only deterministic mathematical concepts, a few (such as the paper diagramming applet) contain subjective LLM-generated content that is not intended to be authoritative. […] I think a footnote suffices for AI disclosure.</p></blockquote>
+<p><em>Added a data-driven &quot;Design philosophy&quot; section to the applets page (visual-aids-not-authorities; private and self-contained; transparent but not a template; feedback prefers issues over code PRs), an editorial-reading disclaimer atop the paper-diagram app, and an AI-disclosure footer on the original apps.</em></p>
+<h2>9. Filling the library</h2>
+<blockquote><p>Let&#x27;s fill out the library some more. […] we can demote the Gilbreath paper to the library only, and focus only on spectacular papers by other authors. I enclose three very highly regarded papers, can you diagram them one by one […]?</p></blockquote>
+<p><em>Curated the dropdown to spectacular papers by other authors — Wiles&#x27;s proof of Fermat&#x27;s Last Theorem, Perelman&#x27;s Ricci-flow entropy formula, and Guth–Maynard on Dirichlet polynomials — with Gilbreath moved to the library-only catalogue.</em></p>
+<blockquote><p>Here is the paper that initially motivated the entire project […] &quot;A counterexample to the periodic tiling conjecture&quot; […]. In particular we included a diagram of the type this app produces. […] I notice that we also utilized the ability to give individual theorem boxes a background color. So, I guess the first thing to do is add a background color attribute in the JSON […] defaulting to white […]. Then make a diagram for this paper (ideally building upon the figure already in the paper) with some colorization […].</p></blockquote>
+<p><em>Added an optional per-node <code>color</code> field (rendered in the viewer and the SVG/TikZ exports, injection-safe, white by default) and diagrammed the periodic-tiling paper with its published tri-colour scheme.</em></p>
+<h2>10. More export targets, and unbundling</h2>
+<p><em>A guidance fix for the SVG export (its text must be saved as a <code>.svg</code> file), then two new formats:</em></p>
+<blockquote><p>Let&#x27;s add the Mermaid and Dot exports.</p></blockquote>
+<p><em>Added Graphviz DOT and Mermaid flowchart exports — portable text graphs re-laid-out by their own tools — bringing the total to six targets (SVG, TikZ, quiver, DOT, Mermaid, JSON). A compile failure in the TikZ of the tiling paper — bare underscores and Unicode in node names breaking <code>pdflatex</code> — was fixed by making the export escape LaTeX-special characters and map the common math Unicode, verified by compiling every diagram.</em></p>
+<blockquote><p>Would it be worth unbundling the pre-loaded papers out of the main js file and load them by the regular library load feature? […] this can make it easier to maintain.</p></blockquote>
+<p><em>Moved every diagram out to its own lazy file, leaving the data module a pure index — one uniform loading mechanism.</em></p>
+<h2>11. A 1975 landmark, and release</h2>
+<p>The last diagram was the paper that had been the project&#x27;s namesake motivation — Szemerédi&#x27;s 1975 proof of his theorem, which famously prints its own (deliberately non-acyclic) logical flow chart:</p>
+<blockquote><p>Here is the source. […] one notable thing about this paper is that it already contains a (non-acyclic) graph indicating the &quot;approximate&quot; flow chart; it would be interesting to see how your version of the diagram compares (obviously it cannot be faithful, but perhaps there will be parallels).</p></blockquote>
+<p><em>Encoded Szemerédi&#x27;s theorem as a 26-node DAG grouped by the paper&#x27;s sections — necessarily linearising the simultaneous induction its own flow chart draws as cycles, while keeping the same landmarks.</em></p>
+<blockquote><p>After this I think we are nearly ready to go live. […] can you run the audits listed in the skill and also review the app documentation and code as a whole, taking into account the design philosophy choices of this project, to see if you recommend any final feature changes before alpha release?</p></blockquote>
+<p><em>Ran the routine audits (no silent failure modes; documentation faithfulness; tests green; a complete HTML document; file:// vs http) and recommended no new features — only two small polish items and the remaining publishing steps.</em></p>
+<blockquote><p>Let&#x27;s implement your two minor ideas, catalog, generate a making of, and then push.</p></blockquote>
+<p><em>Added a multi-level undo for edits and deletes, made <code>section</code>/<code>external</code>/<code>ref</code> editable in the GUI, wrote the catalogue entry, and assembled this transcript — the last box before release.</em></p>
+<hr>
+<p><em>The app ships with its logic core, exports and rendering covered by Node unit tests and a DOM-shim smoke test. The pre-installed diagrams are LLM-generated editorial readings — a visual aid for orientation, not an authoritative account of any paper.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>

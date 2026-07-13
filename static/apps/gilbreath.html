@@ -194,7 +194,7 @@
     <div id="msg" role="alert"></div>
   </div>
 
-  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+  <footer>Coded with the assistance of Claude Code &middot; <a href="../applets.html#design-philosophy">Design philosophy</a> &middot; Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
 </div>
 
 <script src="gilbreath.js"></script>
@@ -369,16 +369,16 @@
 
     // The current top row as numbers, without needing the editable inputs
     // (Custom reads whatever the inputs hold; generators sample directly).
-    function getTop(n) {
-      if (gen.value === "custom") {
-        var raw = currentInputVals(), out = [];
-        for (var i = 0; i < n; i++) {
-          var x = Number(raw[i]);
-          out.push((raw[i] !== undefined && raw[i] !== "" && isFinite(x)) ? x : 0);
-        }
-        return out;
+    // The editable top-row inputs are the single source of truth; BOTH views
+    // read the array from here (the canvas must not re-draw its own values, or
+    // it desyncs from the grid — see reroll()/renderActive() below).
+    function topFromInputs(n) {
+      var raw = currentInputVals(), out = [];
+      for (var i = 0; i < n; i++) {
+        var x = Number(raw[i]);
+        out.push((raw[i] !== undefined && raw[i] !== "" && isFinite(x)) ? x : 0);
       }
-      return genValues(n);
+      return out;
     }
 
     function cellFill(x) {
@@ -397,7 +397,7 @@
       msg.textContent = "";
       var n = clampN();
       if (String(n) !== nInput.value) nInput.value = n;
-      var rows = G.computeArray(getTop(n));
+      var rows = G.computeArray(topFromInputs(n));
 
       var cell = Math.max(1, Math.floor(Math.min(CANVAS_W, CANVAS_H) / n));
       var W = n * cell, H = n * cell;
@@ -426,11 +426,27 @@
       renderGilb(rows);
     }
 
-    // Render according to the active view.
-    function refresh() {
-      if (view.value === "canvas") drawCanvas();
-      else regenerate();
+    // Rebuild the top-row inputs: reroll random generators, or keep custom entries.
+    function reroll() {
+      var n = clampN();
+      if (String(n) !== nInput.value) nInput.value = n;
+      if (gen.value === "custom") {
+        var prev = currentInputVals(), vals = [];
+        for (var j = 0; j < n; j++) vals.push(prev[j] !== undefined ? prev[j] : "0");
+        buildTopFrom(vals);
+      } else {
+        buildTopFrom(genValues(n).map(fmt));
+      }
     }
+    // Render whichever view is active from the CURRENT top row (no reroll).
+    function renderActive() {
+      if (view.value === "canvas") drawCanvas();
+      else renderLower();
+    }
+    // Full refresh: reroll the top row, then render the active view. This keeps
+    // the grid and canvas in sync — a preset updates the underlying grid at once,
+    // and a later view switch shows the same array instead of re-rolling.
+    function refresh() { reroll(); renderActive(); }
 
     // Recompute + render every row below the top, plus the stats rail.
     function renderLower() {
@@ -509,19 +525,6 @@
 
     // Refill the top row from the current generator (Custom keeps existing
     // values, padded/truncated to N), then recompute everything below.
-    function regenerate() {
-      var n = clampN();
-      if (String(n) !== nInput.value) nInput.value = n;
-      if (gen.value === "custom") {
-        var prev = currentInputVals(), vals = [];
-        for (var j = 0; j < n; j++) vals.push(prev[j] !== undefined ? prev[j] : "0");
-        buildTopFrom(vals);
-      } else {
-        buildTopFrom(genValues(n).map(fmt));
-      }
-      renderLower();
-    }
-
     // Editing any top-row cell switches to Custom mode (keeping what's typed).
     triangle.addEventListener("input", function (e) {
       if (!e.target || e.target.tagName !== "INPUT") return;
@@ -551,7 +554,7 @@
       // "None" colouring is uninformative at scale; default to Parity on entry.
       if (canvas && color.value === "none") color.value = "parity";
     }
-    view.addEventListener("change", function () { setView(view.value); refresh(); });
+    view.addEventListener("change", function () { setView(view.value); renderActive(); });
 
     // One-click configurations drawn from the paper.
     function applyExample(key) {

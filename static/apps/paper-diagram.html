@@ -1,0 +1,1248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper Diagram Viewer</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .page { max-width: 1120px; margin: 0 auto; padding: 1.2rem 1rem 3rem; }
+  .intro .lede { font-size: 1.02rem; line-height: 1.55; max-width: 60rem; margin: .5rem 0; }
+  .intro .lede code, .panel code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; margin: .4rem 0 0; }
+  .disclaimer { font-size: .9rem; line-height: 1.5; max-width: 60rem; margin: .6rem 0 0; padding: .5rem .7rem;
+    color: var(--muted); background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; }
+  .foot { margin: 1.6rem 0 0; padding-top: .8rem; border-top: 1px solid var(--line); color: var(--muted); font-size: .85rem; line-height: 1.5; }
+  .foot a { color: var(--accent); }
+  /* In-app title bar: the paper title lives INSIDE the app, not in the page's own header.
+     It reads as the top edge of the app card and joins flush onto the toolbar below. */
+  .apphead { margin: 1.4rem 0 0; padding: .55rem .8rem .6rem; background: var(--accent-soft);
+    border: 1px solid var(--line); border-bottom: none; border-radius: 10px 10px 0 0; }
+  .apphead-row { display: flex; align-items: center; gap: .5rem; }
+  .apphead .apptitle { margin: 0; font-size: 1.05rem; line-height: 1.3; font-weight: 700; }
+  .apphead .appprov { margin: .2rem 0 0; color: var(--muted); font-size: .86rem; }
+  .apphead .appprov:empty { display: none; }
+  .iconbtn { font: inherit; font-size: .9rem; line-height: 1; padding: .18rem .4rem; cursor: pointer;
+    color: var(--muted); background: transparent; border: 1px solid transparent; border-radius: 5px; }
+  .iconbtn:hover { color: var(--accent); border-color: var(--line); background: var(--bg); }
+  .apphead .titleinput { font: inherit; font-size: 1.05rem; font-weight: 700; flex: 1; min-width: 0;
+    padding: .1rem .35rem; border: 1px solid var(--accent); border-radius: 5px; background: var(--bg); color: var(--ink); }
+  .apphead + .bar { margin-top: 0; border-top-left-radius: 0; border-top-right-radius: 0; }
+  /* Library picker (a "file selection" menu over the broader catalog of diagrams) */
+  .libwrap { position: fixed; inset: 0; background: rgba(0,0,0,.42); display: flex; align-items: center;
+    justify-content: center; padding: 1rem; z-index: 50; }
+  .libbox { background: var(--bg); border: 1px solid var(--border, #ccc); border-radius: 8px; width: min(560px, 94vw);
+    max-height: 82vh; display: flex; flex-direction: column; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+  .libhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .6rem .8rem; border-bottom: 1px solid var(--line); }
+  .libhead strong { font-size: .98rem; }
+  .libhead button { font: inherit; padding: .15rem .5rem; border: 1px solid var(--line); border-radius: 5px;
+    background: var(--panel); color: var(--ink); cursor: pointer; }
+  .libsearch { margin: .6rem .8rem .3rem; padding: .35rem .55rem; font: inherit; font-size: .9rem;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); }
+  .liblist { overflow: auto; padding: .3rem .55rem .7rem; }
+  .libitem { display: flex; flex-direction: column; gap: .1rem; width: 100%; text-align: left; cursor: pointer;
+    padding: .45rem .55rem; margin: .12rem 0; border: 1px solid transparent; border-radius: 7px;
+    background: transparent; color: inherit; font: inherit; }
+  .libitem:hover { border-color: var(--line); background: var(--accent-soft); }
+  .libitem .libt { font-weight: 600; font-size: .92rem; }
+  .libitem .libm { color: var(--muted); font-size: .8rem; }
+  .libempty { color: var(--muted); font-size: .88rem; padding: .6rem .55rem; }
+
+  .bar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem 1rem; margin: 1rem 0 .6rem;
+    padding: .5rem .7rem; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; }
+  .bar .grp { display: flex; align-items: center; gap: .4rem; }
+  .bar label { font-size: .82rem; color: var(--muted); }
+  .bar select, .bar button { font: inherit; font-size: .85rem; padding: .18rem .5rem; border: 1px solid var(--line);
+    border-radius: 6px; background: var(--bg); color: var(--ink); cursor: pointer; }
+  /* keep a long paper title from colliding with the dropdown arrow: cap width, ellipsize the closed display */
+  #paper { max-width: 15rem; text-overflow: ellipsis; }
+  .bar .status { margin-left: auto; color: var(--muted); font-size: .82rem; }
+
+  .stage { display: flex; gap: .8rem; align-items: stretch; }
+  .dgwrap { position: relative; flex: 1; height: min(74vh, 720px); border: 1px solid var(--line); border-radius: 10px;
+    background: var(--panel); overflow: hidden; }
+  #dg { width: 100%; height: 100%; display: block; touch-action: none; cursor: grab; }
+  #dg.panning { cursor: grabbing; }
+  .helpline { position: absolute; left: 10px; bottom: 8px; font-size: 11px; color: var(--muted); pointer-events: none; opacity: .8; }
+
+  .panel { width: 320px; flex: none; border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
+    padding: .8rem .9rem; overflow: auto; height: min(74vh, 720px); font-size: 13px; line-height: 1.5; }
+  .panel .hint { color: var(--muted); }
+  .panel .pkind { font: 600 11px var(--mono, monospace); text-transform: uppercase; letter-spacing: .05em; }
+  .panel .ptitle { font-weight: 700; margin: .15rem 0 .1rem; font-size: 15px; }
+  .panel .pmeta { color: var(--muted); font-size: 12px; margin-bottom: .5rem; }
+  .panel .pstatement { border-left: 3px solid var(--accent); padding: .1rem 0 .1rem .7rem; margin: .5rem 0 .7rem;
+    font-size: 13px; line-height: 1.4; white-space: pre-wrap; word-break: break-word; }
+  .panel .pstatement.tex { font-family: "SFMono-Regular", Consolas, var(--mono, monospace); font-size: 12px; color: var(--muted); }
+  .panel .prel { margin: .3rem 0; font-size: 12px; }
+  .panel .prel .rl { color: var(--muted); text-transform: uppercase; letter-spacing: .04em; font-size: 10.5px; margin-right: .3rem; }
+  .panel .plink { color: var(--accent); cursor: pointer; text-decoration: none; border-bottom: 1px dotted var(--accent); }
+  .panel .pnone { color: var(--muted); }
+
+  /* nodes / edges */
+  #dg .node { cursor: pointer; }
+  #dg .node rect { fill: var(--bg); }
+  #dg .node.external rect { fill: var(--panel); }
+  #dg .node .lbl { font: 600 12px var(--mono, monospace); fill: var(--ink); pointer-events: none; }
+  #dg .node .nm  { font: 400 9.5px system-ui, sans-serif; fill: var(--muted); pointer-events: none; }
+  #dg .node.sel rect { filter: drop-shadow(0 0 4px var(--accent)); }   /* glow, so the weight-based border thickness stays readable */
+  #dg .edge { fill: none; }
+  #dg .edge.uses { stroke: var(--axis, #9aa); stroke-width: 1.3; opacity: .8; }
+  #dg .edge.generalizes { stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 5 3; opacity: .9; }
+  /* focus highlighting */
+  #dg .nodes.faded .node:not(.on) { opacity: .18; }
+  #dg .edges.faded .edge:not(.on) { opacity: .06; }
+  #dg .edges .edge.on { opacity: 1; stroke-width: 2; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: .4rem 1.1rem; margin: .7rem 0 0; font-size: .82rem; color: var(--muted); }
+  .legend .k { display: inline-flex; align-items: center; gap: .3rem; }
+  .legend .kfilter { cursor: pointer; user-select: none; }
+  .legend .kfilter input { margin: 0 .1rem 0 0; cursor: pointer; }
+  .legend .ab { white-space: nowrap; }
+  .legend .sw { width: 22px; height: 13px; border-radius: 3px; border: 2px solid; background: var(--bg); display: inline-block; }
+  .legendnote { color: var(--muted); font-size: .8rem; margin: .35rem 0 0; }
+  .bar #paper { max-width: 15rem; }
+
+  /* JSON-format documentation */
+  .fmtdoc { margin: 1rem 0 0; border: 1px solid var(--border, #ddd); border-radius: 8px; background: var(--panel, #f7f7f8); }
+  .fmtdoc > summary { cursor: pointer; padding: .55rem .8rem; font-weight: 600; font-size: .9rem; }
+  .fmtdoc > summary code { font-family: var(--mono, monospace); font-size: .85em; }
+  .fmtdoc[open] > summary { border-bottom: 1px solid var(--border, #ddd); }
+  .fmtbody { padding: .6rem .9rem 1rem; font-size: .88rem; line-height: 1.5; }
+  .fmtbody p { margin: .5rem 0; }
+  .fmtbody .fmth { font-weight: 700; text-transform: uppercase; letter-spacing: .04em; font-size: .74rem; color: var(--muted); margin: .9rem 0 .2rem; }
+  .fmtbody ul { margin: .2rem 0 .2rem; padding-left: 1.2rem; }
+  .fmtbody li { margin: .2rem 0; }
+  .fmtbody code { font-family: var(--mono, monospace); font-size: .84em; background: var(--accent-soft, rgba(127,127,127,.12)); padding: .05rem .3rem; border-radius: 4px; }
+  .err { color: var(--danger); font-family: var(--mono, monospace); font-size: 12px; white-space: pre-wrap; }
+  /* weight slider: fill to the RIGHT of the thumb = the shown (>=) weights, so more blue = more shown */
+  .bar #wmin { -webkit-appearance: none; appearance: none; width: 96px; height: 6px; border-radius: 3px;
+    vertical-align: middle; background: var(--border, #cfd3da); cursor: pointer; }
+  .bar #wmin::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 14px; height: 14px;
+    border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); box-shadow: 0 0 0 1px var(--border, #ccc); cursor: pointer; }
+  .bar #wmin::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); cursor: pointer; }
+  .bar #wmin::-moz-range-track { background: transparent; height: 6px; }
+  .bar #wmin::-moz-range-progress { background: transparent; }   /* kill Firefox's default left fill */
+  .bar .wminval { font-variant-numeric: tabular-nums; min-width: 2.4em; display: inline-block; color: var(--muted); }
+  .panel .pacts { margin-top: .7rem; display: flex; gap: .4rem; }
+  .panel .pbtn { font: inherit; font-size: 12px; padding: .2rem .6rem; border: 1px solid var(--border, #ccc); border-radius: 5px;
+    background: var(--panel, #f2f2f2); color: var(--ink); cursor: pointer; }
+  .panel .pbtn:hover { border-color: var(--accent); color: var(--accent); }
+  .panel .pbtn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .panel .pbtn.primary:hover { filter: brightness(1.08); color: #fff; }
+  .panel .pbtn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* edit form */
+  .panel .ehead { display: flex; align-items: center; justify-content: space-between; margin-bottom: .5rem; }
+  .panel .etabs { display: inline-flex; border: 1px solid var(--border, #ccc); border-radius: 6px; overflow: hidden; }
+  .panel .etab { font: inherit; font-size: 12px; padding: .12rem .55rem; border: 0; background: var(--bg); color: var(--muted); cursor: pointer; }
+  .panel .etab.on { background: var(--accent); color: #fff; }
+  .panel .efield { display: flex; flex-direction: column; gap: .15rem; margin: .45rem 0; }
+  .panel .efield > label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+  .panel .efield .hintlbl { text-transform: none; letter-spacing: 0; font-style: italic; }
+  .panel .efield input, .panel .efield select, .panel .efield textarea, .panel .deprow select {
+    font: inherit; font-size: 13px; padding: .25rem .4rem; border: 1px solid var(--border, #ccc); border-radius: 5px;
+    background: var(--bg); color: var(--ink); }
+  .panel .efield textarea { resize: vertical; font-family: "SFMono-Regular", Consolas, var(--mono, monospace); font-size: 12px; }
+  .panel .efield input[type="range"] { padding: 0; }
+  .panel .efield .ecolor { display: flex; align-items: center; gap: .4rem; }
+  .panel .efield .ecolor input[type="color"] { flex: 0 0 auto; width: 44px; height: 26px; padding: 1px; cursor: pointer; }
+  .panel .efield .ecolor .pbtn { flex: 0 0 auto; }
+  .panel .efield .eext { display: flex; align-items: center; gap: .5rem; }
+  .panel .efield .eext .echk { flex: 0 0 auto; display: inline-flex; align-items: center; gap: .3rem; text-transform: none; letter-spacing: 0; color: var(--muted); cursor: pointer; }
+  .panel .efield .eext .echk input { width: auto; }
+  .panel .efield .eext #e_ref { flex: 1 1 auto; }
+  .panel .edeps { margin: .55rem 0; padding: .5rem; border: 1px dashed var(--border, #ddd); border-radius: 6px; }
+  .panel .edeps-h { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; margin-bottom: .35rem; }
+  .panel .deprow { display: flex; flex-wrap: wrap; gap: .3rem; margin-bottom: .5rem; align-items: center; }
+  .panel .deprow .dep-from { flex: 1 1 100%; min-width: 0; }        /* theorem name gets its own full-width row */
+  .panel .deprow .dep-type { flex: 1 1 auto; min-width: 0; }        /* uses/generalizes + delete share the next row */
+  .panel .deprow .dep-del { flex: 0 0 auto; border: 1px solid var(--border, #ccc); background: var(--bg); color: var(--muted); border-radius: 5px; cursor: pointer; padding: .1rem .5rem; }
+  .panel .deprow .dep-del:hover { border-color: var(--danger); color: var(--danger); }
+  .panel .eerr { color: var(--danger); font-size: 12px; white-space: pre-wrap; margin: .3rem 0; }
+  .panel .eacts { display: flex; gap: .4rem; margin-top: .6rem; }
+
+  /* ignored tray */
+  .tray { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin: .6rem 0 0; padding: .5rem .6rem;
+    background: var(--panel, #f6f6f6); border: 1px solid var(--border, #e2e2e2); border-radius: 7px; }
+  .tray .traylbl { color: var(--muted); font-size: 12px; font-weight: 600; margin-right: .2rem; }
+  .tray .traynote { color: var(--muted); font-size: 12px; font-style: italic; }
+  .tray .chip { display: inline-flex; align-items: center; gap: .35rem; font: inherit; font-size: 12px; cursor: pointer;
+    padding: .15rem .5rem; border: 1px solid var(--border, #ccc); border-radius: 999px; background: var(--bg); color: var(--ink); }
+  .tray .chip:hover { border-color: var(--accent); }
+  .tray .chip .cdot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .tray .chip .cx { color: var(--muted); font-size: 11px; }
+  .tray .chip.clearall { color: var(--accent); }
+
+  /* export overlay */
+  [hidden] { display: none !important; }   /* keep [hidden] winning over our explicit display rules (.grp, .exwrap) */
+  .exwrap { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 50; }
+  .exbox { background: var(--bg); border: 1px solid var(--border, #ccc); border-radius: 8px; width: min(760px, 92vw);
+    max-height: 86vh; display: flex; flex-direction: column; box-shadow: 0 8px 40px rgba(0,0,0,.35); }
+  .exhead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: .6rem .8rem; border-bottom: 1px solid var(--border, #ddd); }
+  .exhead .extitle { font-weight: 700; }
+  .exhead .exact { display: inline-flex; align-items: center; gap: .4rem; }
+  .exhead .exlink { color: var(--accent); text-decoration: none; font-size: .9rem; }
+  .exnote { margin: .5rem .8rem 0; color: var(--muted); font-size: 12px; }
+  .exbox .eerr { margin: .35rem .8rem 0; color: var(--danger); font-size: 12px; white-space: pre-wrap; }
+  .exhead .exact button { font: inherit; font-size: 12px; padding: .2rem .55rem; border: 1px solid var(--border, #ccc); border-radius: 5px; background: var(--panel, #f2f2f2); color: var(--ink); cursor: pointer; }
+  .exhead .exact button:hover { border-color: var(--accent); color: var(--accent); }
+  .exhead .exact button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .exhead .exact button.primary:hover { filter: brightness(1.08); color: #fff; }
+  .extext[readonly] { opacity: .96; }
+  .extext { flex: 1; min-height: 240px; margin: .5rem .8rem .8rem; padding: .5rem .6rem; resize: vertical;
+    font-family: "SFMono-Regular", Consolas, var(--mono, monospace); font-size: 12px; line-height: 1.4;
+    background: var(--panel, #f6f6f6); color: var(--ink); border: 1px solid var(--border, #ddd); border-radius: 5px; white-space: pre; overflow: auto; }
+  @media (max-width: 820px) { .stage { flex-direction: column; } .panel { width: auto; height: auto; max-height: 40vh; } .dgwrap { height: 60vh; } }
+</style>
+</head>
+<body>
+
+<div class="page">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header class="intro">
+    <h1>Paper Diagram Viewer</h1>
+    <p class="lede">The logical skeleton of a paper as a <strong>graph of statements</strong> — theorems,
+      propositions, lemmas and definitions — joined by <strong>dependency</strong> edges (an arrow
+      <code>A → B</code> means <em>A is used in the proof of B</em>). Layout is automatic: prerequisites
+      sink to the bottom, results rise to the top, and node size + border thickness track weight (1–5).
+      Click a statement to read it.</p>
+    <p class="disclaimer">The diagrams in the pre-installed library are <strong>LLM-generated editorial
+      readings</strong> of each paper: the statements shown, their weights, and even some dependencies are
+      simplified and subjective. Treat them as a visual aid for orientation, not an authoritative account of the
+      paper. (The app renders any diagram in this format — including carefully hand-built ones; the library just
+      doesn't have any yet.)</p>
+  </header>
+
+  <div class="apphead">
+    <div class="apphead-row">
+      <h2 class="apptitle" id="title">Paper diagram</h2>
+      <button id="titleEdit" class="iconbtn" title="Rename this diagram">✎</button>
+    </div>
+    <p class="appprov" id="prov"></p>
+  </div>
+
+  <div class="bar">
+    <div class="grp"><label>paper</label>
+      <select id="paper" title="Load a paper from the library"></select>
+    </div>
+    <div class="grp"><label>layout</label>
+      <select id="mode"><option value="layered">layered</option><option value="balanced">balanced (force)</option></select>
+    </div>
+    <div class="grp" id="keepWrap" hidden><label><input type="checkbox" id="keep" checked> keep depth</label></div>
+    <div class="grp"><label>direction</label>
+      <select id="dir"><option value="up">results at top</option><option value="down">results at bottom</option></select>
+    </div>
+    <div class="grp"><button id="fit" title="Fit the whole diagram in view">fit</button></div>
+    <div class="grp"><button id="newStmt" title="Add a new statement to the diagram">+ statement</button>
+      <button id="undo" disabled title="Nothing to undo">undo</button></div>
+    <div class="grp"><button id="exJson" title="View, edit or import the whole diagram as JSON (round-trips back into the viewer)">edit JSON</button></div>
+    <div class="grp"><label title="Hide statements below this weight (they re-link transitively)">show weight</label>
+      <input type="range" id="wmin" min="1" max="5" step="1" value="1" title="Hide statements below this weight">
+      <span class="wminval" id="wminVal">all</span>
+    </div>
+    <div class="grp"><label>export</label>
+      <button id="exSvg" title="Standalone SVG image of the current layout">SVG</button>
+      <button id="exTikz" title="Standalone TikZ figure of the dependency graph">TikZ</button>
+      <button id="exQuiver" title="Open this diagram in q.uiver.app">quiver</button>
+      <button id="exDot" title="Graphviz DOT source (Graphviz, Gephi, yEd, …)">DOT</button>
+      <button id="exMermaid" title="Mermaid flowchart (GitHub, wikis, mermaid.live)">Mermaid</button>
+    </div>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="stage">
+    <div class="dgwrap">
+      <svg id="dg" preserveAspectRatio="xMidYMid meet" aria-label="Dependency diagram of the paper's statements"></svg>
+      <div class="helpline">scroll to zoom · drag to pan · click a statement to select</div>
+    </div>
+    <aside class="panel" id="panel"><p class="hint">Click a statement to see its full text and dependencies.</p></aside>
+  </div>
+  <div class="tray" id="tray" hidden></div>
+  <pre class="err" id="err"></pre>
+  <div class="legend" id="legend"></div>
+  <p class="legendnote">Uncheck a kind above to hide those statements (their dependencies re-link transitively). The thickness of a statement's border indicates its weight (1–5).</p>
+
+  <details class="fmtdoc">
+    <summary>The <code>paper-diagram</code> JSON format (for authoring new diagrams)</summary>
+    <div class="fmtbody">
+      <p>Each paper in the library is one JSON object in the <code>paper-diagram</code> format (<code>schemaVersion: 1</code>): a <strong>directed acyclic graph</strong> of a paper's statements. Node <em>positions are not stored</em> — the viewer lays the graph out automatically from the dependency edges and per-node weights. To add a paper, write one such object; the fastest way to get a valid template is to open the currently-loaded paper with the <strong>JSON</strong> export button and mirror its shape.</p>
+      <p class="fmth">Top level</p>
+      <ul>
+        <li><code>format</code>: <code>"paper-diagram"</code>, <code>schemaVersion</code>: <code>1</code>.</li>
+        <li><code>meta</code>: <code>{ title, paper: { arxiv, authors: […], year, companion? }, note?, date? }</code>.</li>
+        <li><code>layout</code>: <code>{ engine: "layered", direction: "up" | "down" }</code> — <code>"up"</code> puts results at the top.</li>
+        <li><code>nodes</code>: <code>[…]</code>, <code>edges</code>: <code>[…]</code>.</li>
+      </ul>
+      <p class="fmth">Node</p>
+      <ul>
+        <li><code>id</code> <em>(required)</em>: stable, unique, human-readable — e.g. <code>"thm:1.2"</code>, <code>"lem:5.7"</code>. Edges reference these.</li>
+        <li><code>kind</code>: <code>theorem | proposition | lemma | corollary | definition | remark</code> — colours the border.</li>
+        <li><code>label</code>: short tag shown on the node (<code>"Thm 1.2"</code>); <code>name</code>: a concise human name.</li>
+        <li><code>weight</code>: <code>1</code>–<code>5</code> editorial importance → node size + border thickness (never position).</li>
+        <li><code>color</code> <em>(optional)</em>: box background fill — a hex colour like <code>"#e7edfb"</code> (or a CSS colour name); defaults to white. Set it with the <strong>Background</strong> picker in the edit panel. Rendered in the viewer and in the SVG, TikZ, DOT and Mermaid exports (quiver has no boxes, so it carries labels only).</li>
+        <li><code>statement</code>: the LaTeX source of the statement — shown in the selection panel (unless <code>plain</code> is given) and carried as a per-node comment in the TikZ export.</li>
+        <li><code>plain</code> <em>(optional)</em>: a plain-text paraphrase shown in the viewer panel instead of the raw LaTeX.</li>
+        <li><code>section</code> <em>(optional)</em>: paper section, e.g. <code>"5.2"</code>. <code>external: true</code> + <code>ref</code>: for cited results not proved in the paper.</li>
+      </ul>
+      <p class="fmth">Edge</p>
+      <ul>
+        <li><code>from</code>, <code>to</code> <em>(required, node ids)</em>: <strong><code>from</code> is a prerequisite used in the proof of <code>to</code></strong> — the arrow points prerequisite → result.</li>
+        <li><code>type</code>: <code>"uses"</code> (solid) or <code>"generalizes"</code> (dashed; <code>from</code> ⇢ <code>to</code> reads "<code>to</code> generalizes <code>from</code>").</li>
+      </ul>
+      <p>The graph must be <strong>acyclic</strong> (no dependency loop) and every edge must reference existing node ids — the viewer rejects a diagram otherwise. Weights are purely editorial: they change size and emphasis, never layout position, which is always derived from the dependencies.</p>
+      <p class="fmth">The exports</p>
+      <p>Six targets. <strong>SVG</strong> is a standalone image of the current layout. <strong>TikZ</strong> is a compilable LaTeX figure. <strong>quiver</strong> is an import link for <a href="https://q.uiver.app" target="_blank" rel="noopener">q.uiver.app</a>. <strong>DOT</strong> (Graphviz) and <strong>Mermaid</strong> are portable text graphs that are re-laid-out by their own tools — Graphviz/Gephi/yEd for DOT, GitHub/wikis/mermaid.live for Mermaid — so they carry the dependency structure, colours and styles but not the on-screen positions. All are self-contained text you can download and edit.</p>
+      <p><strong>Only the JSON export is lossless</strong> — the others each drop something. Positions: SVG reproduces the exact layout, TikZ rounds coordinates, quiver snaps them to an integer grid, and DOT/Mermaid discard them entirely (re-laid-out by their tools). Node colour is kept by SVG, TikZ, DOT and Mermaid but dropped by quiver (it has no boxes). And the prose fields — the full <code>statement</code>, the <code>plain</code> paraphrase, <code>section</code>/<code>ref</code> — are not carried into any of the figure formats. Export JSON (and re-import it) whenever you need a faithful round-trip.</p>
+      <p>Write <code>label</code> and <code>name</code> as ordinary text. For the two LaTeX-bound targets the exporter escapes LaTeX-special characters (<code>_ ^ &amp; % # ~</code>) and maps the common math Unicode (Greek, sub/superscripts, arrows, ≅, ×, …) to LaTeX, so <strong>TikZ compiles as-is</strong>; wrap anything in <code>$…$</code> to pass it through verbatim (e.g. for a real subscript). <strong>quiver</strong> renders labels with a limited LaTeX subset (KaTeX-like) and does not share this toolchain: plain text, basic <code>$…$</code> math and the mapped symbols are fine, but avoid exotic macros in fields destined for quiver. <strong>DOT and Mermaid are not LaTeX</strong> — their labels are emitted as plain Unicode text (so <code>$…$</code> is shown literally there, not typeset).</p>
+    </div>
+  </details>
+
+  <footer class="foot">Coded with the assistance of Claude Code. The pre-installed diagrams are an LLM-assisted
+    editorial reading, not an authoritative account — see the <a href="../applets.html#design-philosophy">design
+    philosophy</a>. Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<div class="exwrap" id="exwrap" hidden>
+  <div class="exbox">
+    <div class="exhead">
+      <span class="extitle" id="extitle"></span>
+      <span class="exact">
+        <a class="exlink" id="exopen" target="_blank" rel="noopener" hidden>open in quiver ↗</a>
+        <button id="exapply" class="primary" hidden title="Replace the current diagram with this JSON">load into viewer</button>
+        <button id="excopy">copy</button>
+        <button id="exdl">download</button>
+        <button id="exclose" title="Close">✕</button>
+      </span>
+    </div>
+    <p class="exnote" id="exnote"></p>
+    <p class="eerr" id="exerr"></p>
+    <textarea class="extext" id="extext" readonly spellcheck="false"></textarea>
+  </div>
+</div>
+
+<div class="libwrap" id="libwrap" hidden>
+  <div class="libbox">
+    <div class="libhead"><strong>Load a paper diagram</strong><button id="libClose" title="Close">✕</button></div>
+    <input class="libsearch" id="libSearch" type="search" placeholder="Search by title, author, or arXiv id…" autocomplete="off" spellcheck="false">
+    <div class="liblist" id="libList"></div>
+  </div>
+</div>
+
+<script src="paper-diagram.js"></script>
+<script src="paper-diagram-data.js"></script>
+<!-- Export module is INLINED here (rather than loaded as a separate file) so it always loads under
+     file:// too, where the CSP can block sibling scripts. Kept in sync with paper-diagram-export.js
+     by pd_export_test.js. -->
+<script id="pdx-inline">
+/* PDX-INLINE-START (mirror of paper-diagram-export.js) */
+(function () {
+  const texComment = (s) => String(s == null ? '' : s).replace(/\r?\n/g, ' ');
+  const texId = (id) => 'n_' + String(id).replace(/[^A-Za-z0-9]/g, '_');
+  const TEX_ESC = {
+    '\\': '\\textbackslash{}', '{': '\\{', '}': '\\}', '$': '\\$', '&': '\\&',
+    '#': '\\#', '%': '\\%', '_': '\\_', '^': '\\textasciicircum{}', '~': '\\textasciitilde{}',
+  };
+  const TEX_UNI = {
+    '§': '\\S{}', '·': '$\\cdot$', '×': '$\\times$', '−': '$-$', '–': '--', '—': '---',
+    '…': '$\\ldots$', '′': "${}'$", '‖': '$\\|$', '□': '$\\square$', '∅': '$\\emptyset$', '∞': '$\\infty$',
+    '¹': '${}^1$', '²': '${}^2$', '³': '${}^3$', '⁴': '${}^4$', '⁶': '${}^6$', '⁻': '${}^{-}$', 'ⁿ': '${}^n$',
+    'ⁱ': '${}^i$', 'ᵐ': '${}^m$', '⁺': '${}^{+}$',
+    '₀': '${}_0$', '₁': '${}_1$', '₂': '${}_2$', '₃': '${}_3$', '₄': '${}_4$', 'ᵢ': '${}_i$',
+    'ₘ': '${}_m$', 'ₙ': '${}_n$', 'ₖ': '${}_k$', '₊': '${}_{+}$', '₋': '${}_{-}$',
+    '→': '$\\to$', '↦': '$\\mapsto$', '↔': '$\\leftrightarrow$', '⇒': '$\\Rightarrow$', '⇐': '$\\Leftarrow$', '⇔': '$\\Leftrightarrow$',
+    '⟹': '$\\Longrightarrow$', '⟺': '$\\Longleftrightarrow$', '↗': '$\\nearrow$', '↘': '$\\searrow$',
+    '⊕': '$\\oplus$', '⊗': '$\\otimes$', '⊎': '$\\uplus$', '⊂': '$\\subset$', '⊆': '$\\subseteq$',
+    '∈': '$\\in$', '∪': '$\\cup$', '∩': '$\\cap$', '∂': '$\\partial$', '∇': '$\\nabla$', '∫': '$\\int$', '√': '$\\surd$',
+    '≅': '$\\cong$', '≃': '$\\simeq$', '≈': '$\\approx$', '∼': '$\\sim$', '≡': '$\\equiv$', '≠': '$\\neq$',
+    '≤': '$\\le$', '≥': '$\\ge$', '≪': '$\\ll$', '≲': '$\\lesssim$',
+    'Γ': '$\\Gamma$', 'Δ': '$\\Delta$', 'Θ': '$\\Theta$', 'Λ': '$\\Lambda$', 'Ξ': '$\\Xi$', 'Π': '$\\Pi$',
+    'Σ': '$\\Sigma$', 'Φ': '$\\Phi$', 'Ψ': '$\\Psi$', 'Ω': '$\\Omega$',
+    'α': '$\\alpha$', 'β': '$\\beta$', 'γ': '$\\gamma$', 'δ': '$\\delta$', 'ε': '$\\varepsilon$', 'ζ': '$\\zeta$',
+    'η': '$\\eta$', 'θ': '$\\theta$', 'κ': '$\\kappa$', 'λ': '$\\lambda$', 'μ': '$\\mu$', 'ν': '$\\nu$', 'ξ': '$\\xi$',
+    'π': '$\\pi$', 'ρ': '$\\rho$', 'ϱ': '$\\varrho$', 'σ': '$\\sigma$', 'τ': '$\\tau$', 'υ': '$\\upsilon$',
+    'φ': '$\\varphi$', 'χ': '$\\chi$', 'ψ': '$\\psi$', 'ω': '$\\omega$',
+    'ℝ': '$\\mathbb{R}$', '𝕋': '$\\mathbb{T}$', '𝒲': '$\\mathcal{W}$', 'ℓ': '$\\ell$',
+    'Ṽ': '$\\tilde{V}$', 'Ẽ': '$\\tilde{E}$',
+    'á': "\\'a", 'é': "\\'e", 'ó': "\\'o", 'ö': '\\"o', 'ő': '\\H{o}', 'Ã': '\\~A',
+  };
+  function texSeg(seg) {
+    let out = '';
+    for (const ch of seg) out += (TEX_ESC[ch] != null ? TEX_ESC[ch] : (TEX_UNI[ch] != null ? TEX_UNI[ch] : ch));
+    return out;
+  }
+  function texText(s) {
+    s = String(s == null ? '' : s);
+    let out = '', last = 0; const re = /\$[^$]*\$/g; let m;
+    while ((m = re.exec(s))) { out += texSeg(s.slice(last, m.index)) + m[0]; last = re.lastIndex; }
+    return out + texSeg(s.slice(last));
+  }
+  const KIND_HEX = {
+    theorem: '3A5BD9', proposition: '1D9A9A', lemma: '2F9E57',
+    corollary: '7C5CFF', definition: 'D98324', remark: '8A8F98',
+  };
+  function safeFill(c) {
+    c = String(c == null ? '' : c).trim();
+    if (/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(c)) return c;
+    if (/^[a-zA-Z]{1,24}$/.test(c)) return c;
+    if (/^(?:rgb|hsl)a?\([0-9.,%/deg\s]+\)$/.test(c)) return c;
+    return '';
+  }
+  function hexOf(c) {
+    c = String(c == null ? '' : c).trim();
+    let m = /^#([0-9a-fA-F]{6})$/.exec(c);
+    if (m) return m[1].toUpperCase();
+    m = /^#([0-9a-fA-F]{3})$/.exec(c);
+    if (m) return (m[1][0] + m[1][0] + m[1][1] + m[1][1] + m[1][2] + m[1][2]).toUpperCase();
+    return '';
+  }
+  function toTikz(diagram, pos, opts) {
+    opts = Object.assign({ standalone: true, scale: 1 / 62 }, opts);
+    const s = opts.scale;
+    const P = (id) => pos.get(id);
+    const kinds = [...new Set(diagram.nodes.map((n) => n.kind))];
+    const colorDefs = kinds.filter((k) => KIND_HEX[k]).map((k) => `\\definecolor{kd${k}}{HTML}{${KIND_HEX[k]}}`).join('\n');
+    const fillName = new Map();
+    const fillDefs = [];
+    for (const n of diagram.nodes) {
+      const hx = hexOf(n.color);
+      if (hx && !fillName.has(hx)) { const nm = 'nf' + fillName.size; fillName.set(hx, nm); fillDefs.push(`\\definecolor{${nm}}{HTML}{${hx}}`); }
+    }
+    const head = [
+      `% Dependency diagram${diagram.meta && diagram.meta.title ? ': ' + diagram.meta.title : ''}`,
+      `% Generated from the tao-web paper-diagram viewer. Node positions are the`,
+      `% viewer's automatic layout; edit freely. Arrows: solid = "uses", dashed = "generalizes".`,
+    ].join('\n');
+    const pic = [
+      `\\begin{tikzpicture}[`,
+      `  stmt/.style={draw, rounded corners=2pt, inner sep=3pt, align=center, font=\\scriptsize, fill=white, text=black},`,
+      `  uses/.style={-{Stealth[length=5pt]}, draw=gray},`,
+      `  gen/.style={-{Stealth[length=5pt]}, draw=gray, dashed}]`,
+    ];
+    for (const n of diagram.nodes) {
+      const p = P(n.id); if (!p) continue;
+      const x = (p.x * s).toFixed(2), y = (-p.y * s).toFixed(2);
+      const col = KIND_HEX[n.kind] ? `kd${n.kind}` : 'black';
+      const lw = (0.6 + (n.weight == null ? 2 : n.weight) * 0.35).toFixed(2);
+      const dash = n.external ? ', dashed' : '';
+      const fill = hexOf(n.color) ? `, fill=${fillName.get(hexOf(n.color))}` : '';
+      const label = `\\textbf{${texText(n.label || n.id)}}` + (n.name ? `\\\\{\\tiny ${texText(n.name)}}` : '');
+      if (n.statement) pic.push(`  % ${texComment(n.label || n.id)}: ${texComment(n.statement)}`);
+      pic.push(`  \\node[stmt, draw=${col}, line width=${lw}pt${dash}${fill}] (${texId(n.id)}) at (${x}, ${y}) {${label}};`);
+    }
+    for (const e of diagram.edges) {
+      const style = e.type === 'generalizes' ? 'gen' : 'uses';
+      pic.push(`  \\draw[${style}] (${texId(e.from)}) -- (${texId(e.to)});`);
+    }
+    pic.push(`\\end{tikzpicture}`);
+    const body = [colorDefs, fillDefs.join('\n')].filter(Boolean).join('\n') + '\n' + pic.join('\n');
+    if (!opts.standalone) return head + '\n' + body + '\n';
+    return [`\\documentclass[tikz,border=8pt]{standalone}`, `\\usepackage{amsmath,amssymb}`, `\\usetikzlibrary{arrows.meta}`, `\\begin{document}`, head, body, `\\end{document}`, ''].join('\n');
+  }
+  function toQuiver(diagram, pos) {
+    const dir = (diagram.layoutConfig && diagram.layoutConfig.direction) || 'up';
+    const idx = new Map(diagram.nodes.map((n, i) => [n.id, i]));
+    const rankOf = (id) => diagram.rank.get(id);
+    const byRow = new Map();
+    for (const n of diagram.nodes) {
+      const r = dir === 'up' ? diagram.maxRank - rankOf(n.id) : rankOf(n.id);
+      (byRow.get(r) || byRow.set(r, []).get(r)).push(n.id);
+    }
+    const col = new Map();
+    for (const ids of byRow.values()) { ids.sort((a, b) => (pos.get(a).x - pos.get(b).x)); ids.forEach((id, i) => col.set(id, i)); }
+    const vertices = diagram.nodes.map((n) => {
+      const r = dir === 'up' ? diagram.maxRank - rankOf(n.id) : rankOf(n.id);
+      return [col.get(n.id), r, `\\text{${texText(n.name || n.label || n.id)}}`];
+    });
+    const edges = diagram.edges.map((e) => [idx.get(e.from), idx.get(e.to), '']);
+    return [0, diagram.nodes.length, ...vertices, ...edges];
+  }
+  function b64(str) {
+    if (typeof btoa !== 'undefined') return btoa(unescape(encodeURIComponent(str)));
+    return Buffer.from(str, 'utf8').toString('base64');
+  }
+  function toQuiverURL(diagram, pos) { return 'https://q.uiver.app/#q=' + b64(JSON.stringify(toQuiver(diagram, pos))); }
+  function svgEsc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  function toSvg(diagram, pos, opts) {
+    opts = Object.assign({ pad: 26 }, opts);
+    const C = { bg: '#ffffff', ink: '#1b1f24', muted: '#8a8f98', uses: '#8a9099', gen: '#3a5bd9' };
+    const P = [...pos.values()];
+    if (!P.length) return '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"></svg>\n';
+    const minX = Math.min(...P.map((p) => p.x - p.w / 2)) - opts.pad;
+    const minY = Math.min(...P.map((p) => p.y - p.h / 2)) - opts.pad;
+    const w = Math.max(...P.map((p) => p.x + p.w / 2)) + opts.pad - minX;
+    const h = Math.max(...P.map((p) => p.y + p.h / 2)) + opts.pad - minY;
+    const clip = (p, tx, ty) => {
+      const dx = tx - p.x, dy = ty - p.y; if (!dx && !dy) return { x: p.x, y: p.y };
+      const t = Math.min(dx ? (p.w / 2) / Math.abs(dx) : Infinity, dy ? (p.h / 2) / Math.abs(dy) : Infinity);
+      return { x: p.x + dx * t, y: p.y + dy * t };
+    };
+    const defs = '<defs>'
+      + `<marker id="au" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${C.uses}"/></marker>`
+      + `<marker id="ag" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${C.gen}"/></marker>`
+      + '</defs>';
+    const edges = diagram.edges.map((e) => {
+      const a = pos.get(e.from), b = pos.get(e.to); if (!a || !b) return '';
+      const s = clip(a, b.x, b.y), t = clip(b, a.x, a.y), gen = e.type === 'generalizes';
+      return `<line x1="${s.x.toFixed(1)}" y1="${s.y.toFixed(1)}" x2="${t.x.toFixed(1)}" y2="${t.y.toFixed(1)}" stroke="${gen ? C.gen : C.uses}" stroke-width="1.3"${gen ? ' stroke-dasharray="5 3"' : ''} marker-end="url(#${gen ? 'ag' : 'au'})"/>`;
+    }).join('');
+    const nodes = diagram.nodes.map((n) => {
+      const p = pos.get(n.id); if (!p) return '';
+      const x = (p.x - p.w / 2).toFixed(1), y = (p.y - p.h / 2).toFixed(1);
+      const hue = KIND_HEX[n.kind] ? '#' + KIND_HEX[n.kind] : C.muted;
+      const fill = safeFill(n.color) || C.bg;
+      const sw = (0.6 + (n.weight == null ? 2 : n.weight) * 0.8).toFixed(2);
+      const dash = n.external ? ' stroke-dasharray="5 3"' : '';
+      const nm = n.name
+        ? `<text x="${p.x.toFixed(1)}" y="${(p.y + 12).toFixed(1)}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="9.5" fill="${C.muted}">${svgEsc(n.name.length > Math.floor(p.w / 5.4) ? n.name.slice(0, Math.floor(p.w / 5.4) - 1) + '…' : n.name)}</text>`
+        : '';
+      return '<g>'
+        + `<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="6" fill="${fill}" stroke="${hue}" stroke-width="${sw}"${dash}/>`
+        + `<text x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="600" font-size="12" fill="${C.ink}">${svgEsc(n.label || n.id)}</text>`
+        + nm + '</g>';
+    }).join('');
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX.toFixed(0)} ${minY.toFixed(0)} ${w.toFixed(0)} ${h.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}">`
+      + `<rect x="${minX.toFixed(0)}" y="${minY.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}" fill="${C.bg}"/>`
+      + defs + `<g>${edges}</g><g>${nodes}</g></svg>\n`;
+  }
+  function dotStr(s) { return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\n'); }
+  function toDot(diagram) {
+    const dir = (diagram.layoutConfig && diagram.layoutConfig.direction) || 'up';
+    const lines = [
+      `// Dependency diagram${diagram.meta && diagram.meta.title ? ': ' + diagram.meta.title : ''}`,
+      `// Generated from the tao-web paper-diagram viewer. Arrows: prerequisite -> result.`,
+      `digraph paper {`,
+      `  rankdir=${dir === 'up' ? 'BT' : 'TB'};`,
+      `  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=10, fillcolor="#ffffff", color="#8a8f98"];`,
+      `  edge [color="#8a9099"];`,
+    ];
+    for (const n of diagram.nodes) {
+      const text = (n.label || n.id) + (n.name ? '\n' + n.name : '');
+      const a = [`label="${dotStr(text)}"`];
+      if (KIND_HEX[n.kind]) a.push(`color="#${KIND_HEX[n.kind]}"`);
+      const fill = safeFill(n.color); if (fill) a.push(`fillcolor="${fill}"`);
+      a.push(`penwidth=${(0.6 + (n.weight == null ? 2 : n.weight) * 0.35).toFixed(2)}`);
+      if (n.external) a.push(`style="rounded,filled,dashed"`);
+      lines.push(`  "${dotStr(n.id)}" [${a.join(', ')}];`);
+    }
+    for (const e of diagram.edges) {
+      lines.push(`  "${dotStr(e.from)}" -> "${dotStr(e.to)}"${e.type === 'generalizes' ? ' [style=dashed]' : ''};`);
+    }
+    lines.push('}', '');
+    return lines.join('\n');
+  }
+  function mermTxt(s) {
+    return String(s == null ? '' : s)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+      .replace(/\r?\n/g, '<br/>');
+  }
+  function toMermaid(diagram) {
+    const dir = (diagram.layoutConfig && diagram.layoutConfig.direction) || 'up';
+    const mid = new Map(), seen = new Set();
+    for (const n of diagram.nodes) {
+      let base = 'n_' + String(n.id).replace(/[^A-Za-z0-9]/g, '_'), id = base, k = 1;
+      while (seen.has(id)) id = base + '_' + (k++);
+      seen.add(id); mid.set(n.id, id);
+    }
+    const lines = [
+      `%% Dependency diagram${diagram.meta && diagram.meta.title ? ': ' + diagram.meta.title : ''}`,
+      `%% Generated from the tao-web paper-diagram viewer. Arrows: prerequisite --> result.`,
+      `flowchart ${dir === 'up' ? 'BT' : 'TB'}`,
+    ];
+    const styles = [];
+    for (const n of diagram.nodes) {
+      const text = (n.label || n.id) + (n.name ? '\n' + n.name : '');
+      lines.push(`  ${mid.get(n.id)}["${mermTxt(text)}"]`);
+      const p = [];
+      const fill = safeFill(n.color); if (fill) p.push(`fill:${fill}`);
+      if (KIND_HEX[n.kind]) p.push(`stroke:#${KIND_HEX[n.kind]}`);
+      p.push(`stroke-width:${(0.6 + (n.weight == null ? 2 : n.weight) * 0.35).toFixed(2)}px`);
+      if (n.external) p.push('stroke-dasharray:4 3');
+      styles.push(`  style ${mid.get(n.id)} ${p.join(',')}`);
+    }
+    for (const e of diagram.edges) {
+      lines.push(`  ${mid.get(e.from)} ${e.type === 'generalizes' ? '-.->' : '-->'} ${mid.get(e.to)}`);
+    }
+    return lines.concat(styles).join('\n') + '\n';
+  }
+  window.PaperDiagramExport = { toTikz, toQuiver, toQuiverURL, toSvg, toDot, toMermaid, texId };
+})();
+/* PDX-INLINE-END */
+</script>
+<script>
+const $ = (id) => document.getElementById(id);
+const PD = window.PaperDiagram;
+const PDX = window.PaperDiagramExport;
+
+const KIND = {
+  theorem:     { hue: '#3a5bd9', label: 'theorem' },
+  proposition: { hue: '#1d9a9a', label: 'proposition' },
+  lemma:       { hue: '#2f9e57', label: 'lemma' },
+  corollary:   { hue: '#7c5cff', label: 'corollary' },
+  definition:  { hue: '#d98324', label: 'definition' },
+  remark:      { hue: '#8a8f98', label: 'remark' },
+};
+const kindOf = (n) => KIND[n.kind] || { hue: 'var(--muted)', label: n.kind };
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+// a node's optional background fill, sanitised for safe use in a style/attribute
+// (hex, CSS colour name, or rgb()/hsl()); anything else -> '' (the default white)
+const safeFill = (c) => {
+  c = String(c == null ? '' : c).trim();
+  if (/^#[0-9a-fA-F]{3}([0-9a-fA-F]{3})?$/.test(c)) return c;
+  if (/^[a-zA-Z]{1,24}$/.test(c)) return c;
+  if (/^(?:rgb|hsl)a?\([0-9.,%/deg\s]+\)$/.test(c)) return c;
+  return '';
+};
+// a stored colour -> "#rrggbb" for the <input type=color> picker (default white)
+const colorHex = (c) => {
+  c = String(c == null ? '' : c).trim();
+  if (/^#[0-9a-fA-F]{6}$/.test(c)) return c.toLowerCase();
+  const m = /^#([0-9a-fA-F]{3})$/.exec(c);
+  if (m) return ('#' + m[1][0] + m[1][0] + m[1][1] + m[1][1] + m[1][2] + m[1][2]).toLowerCase();
+  return '#ffffff';
+};
+
+// SRC = the full working copy (source of truth for edits/pins). `diagram` is the
+// DERIVED VIEW actually shown: SRC minus ignored nodes, edges transitively contracted.
+let SRC = null, diagram = null, POS = null;
+const state = { selected: null, viewBox: { x: 0, y: 0, w: 100, h: 100 }, drag: null, ignored: new Set(), weightMin: 1, hiddenKinds: new Set(), edit: null, editTab: 'edit', undo: [] };
+
+// ---- undo: snapshot the source-of-truth before a destructive/edit commit ----
+// Covers node edits, new statements, deletes and title renames within the current
+// diagram; loading/importing/blanking a diagram starts a fresh history (see applyPaper).
+function pushUndo() {
+  state.undo.push({ src: JSON.parse(JSON.stringify(SRC)), ignored: [...state.ignored], selected: state.selected });
+  if (state.undo.length > 50) state.undo.shift();
+  updateUndoBtn();
+}
+function updateUndoBtn() { const b = $('undo'); if (b) { b.disabled = state.undo.length === 0; b.title = state.undo.length ? 'Undo the last change (' + state.undo.length + ')' : 'Nothing to undo'; } }
+function undo() {
+  const snap = state.undo.pop(); if (!snap) return;
+  SRC = snap.src;
+  state.ignored = new Set(snap.ignored);
+  state.edit = null;
+  state.selected = snap.selected && SRC.nodes.some((n) => n.id === snap.selected) ? snap.selected : null;
+  renderLegend(); rebuild(false);
+  if (state.selected) selectNode(state.selected); else clearSelect();
+  updateUndoBtn();
+}
+const srcNode = (id) => SRC.nodes.find((n) => n.id === id);
+// union of manually-ignored nodes, those below the weight threshold, and hidden kinds
+function effectiveIgnored() {
+  const s = new Set(state.ignored);
+  for (const n of SRC.nodes) {
+    if (state.weightMin > 1 && (n.weight == null ? 2 : n.weight) < state.weightMin) s.add(n.id);
+    else if (state.hiddenKinds.has(n.kind)) s.add(n.id);
+  }
+  return s;
+}
+
+// clip the centre-to-centre segment to a node's box, so arrows touch the edge
+function clip(cx, cy, w, h, fromX, fromY) {
+  const dx = fromX - cx, dy = fromY - cy;
+  if (dx === 0 && dy === 0) return { x: cx, y: cy };
+  const t = Math.min(dx === 0 ? Infinity : (w / 2) / Math.abs(dx), dy === 0 ? Infinity : (h / 2) / Math.abs(dy));
+  return { x: cx + dx * t, y: cy + dy * t };
+}
+const truncate = (s, chars) => { s = String(s || ''); return s.length > chars ? s.slice(0, Math.max(0, chars - 1)) + '…' : s; };
+
+function edgeSvg(e, pos) {
+  const a = pos.get(e.from), b = pos.get(e.to);
+  const s = clip(a.x, a.y, a.w, a.h, b.x, b.y), t = clip(b.x, b.y, b.w, b.h, a.x, a.y);
+  const cls = e.type === 'generalizes' ? 'generalizes' : 'uses';
+  const marker = cls === 'generalizes' ? 'arrowGen' : 'arrowUses';
+  return `<path class="edge ${cls}" data-from="${esc(e.from)}" data-to="${esc(e.to)}" d="M${s.x.toFixed(1)},${s.y.toFixed(1)} L${t.x.toFixed(1)},${t.y.toFixed(1)}" marker-end="url(#${marker})"></path>`;
+}
+function nodeSvg(n, p) {
+  const k = kindOf(n);
+  const x = (p.x - p.w / 2).toFixed(1), y = (p.y - p.h / 2).toFixed(1);
+  const sw = (0.6 + (n.weight || 2) * 0.8).toFixed(2);   // weight 1..5 -> ~1.4..4.6px border
+  const dash = n.external ? ' stroke-dasharray="5 3"' : '';
+  const nm = truncate(n.name || '', Math.floor(p.w / 5.4));
+  // an explicit fill overrides the stylesheet (inline style wins) and forces dark
+  // ink on the text so a light fill stays legible in either theme
+  const fill = safeFill(n.color);
+  const rectSty = fill ? ` style="fill:${fill}"` : '';
+  const lblSty = fill ? ' style="fill:#1b1f24"' : '';
+  const nmSty = fill ? ' style="fill:#4a5160"' : '';
+  return `<g class="node ${n.external ? 'external' : ''}${fill ? ' filled' : ''}" data-id="${esc(n.id)}">`
+    + `<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="6" stroke="${k.hue}" stroke-width="${sw}"${dash}${rectSty}></rect>`
+    + `<text class="lbl" x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle"${lblSty}>${esc(n.label || n.id)}</text>`
+    + (nm ? `<text class="nm" x="${p.x.toFixed(1)}" y="${(p.y + 12).toFixed(1)}" text-anchor="middle"${nmSty}>${esc(nm)}</text>` : '')
+    + `</g>`;
+}
+
+function computePositions() {
+  let pos = PD.layout(diagram, { direction: $('dir').value === 'down' ? 'down' : 'up' });
+  if ($('mode').value === 'balanced') pos = PD.relax(diagram, pos, { keepLayers: $('keep').checked });
+  return pos;
+}
+function fit() {
+  const P = [...POS.values()], pad = 30;
+  if (!P.length) { state.viewBox = { x: 0, y: 0, w: 100, h: 100 }; return; }   // everything hidden
+  const minX = Math.min(...P.map((p) => p.x - p.w / 2)) - pad, minY = Math.min(...P.map((p) => p.y - p.h / 2)) - pad;
+  const maxX = Math.max(...P.map((p) => p.x + p.w / 2)) + pad, maxY = Math.max(...P.map((p) => p.y + p.h / 2)) + pad;
+  state.viewBox = { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+}
+function applyViewBox() {
+  const v = state.viewBox;
+  $('dg').setAttribute('viewBox', `${v.x.toFixed(0)} ${v.y.toFixed(0)} ${v.w.toFixed(0)} ${v.h.toFixed(0)}`);
+}
+function render() {
+  try {
+    const defs = `<defs>
+      <marker id="arrowUses" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--axis, #9aa)"></path></marker>
+      <marker id="arrowGen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"></path></marker>
+    </defs>`;
+    const edges = diagram.edges.map((e) => edgeSvg(e, POS)).join('');
+    const nodes = diagram.nodes.map((n) => nodeSvg(n, POS.get(n.id))).join('');
+    $('dg').innerHTML = defs + `<g class="edges">${edges}</g><g class="nodes">${nodes}</g>`;
+    applyViewBox();
+    $('status').textContent = `${diagram.nodes.length} statements · ${diagram.edges.length} dependencies · ${diagram.maxRank + 1} layers`;
+    $('err').textContent = '';
+    highlight(state.selected, true);
+  } catch (e) { $('err').textContent = e.message; }
+}
+function relayout(refit) { POS = computePositions(); if (refit) fit(); render(); }
+
+// Rebuild the derived view from SRC + the current ignore set, then lay out and
+// render. Called whenever the graph's STRUCTURE changes (ignore/restore/edit);
+// relayout() is the cheaper path when only positions change.
+function rebuild(refit) {
+  try {
+    const full = PD.load(SRC);
+    diagram = PD.load(PD.deriveView(full, effectiveIgnored()));
+  } catch (e) { $('err').textContent = e.message; return; }
+  POS = computePositions();
+  if (refit) fit();
+  render();
+  renderIgnored();
+  if (state.selected && !diagram.byId.has(state.selected)) clearSelect();
+  else if (state.selected) selectNode(state.selected);
+}
+function ignoreNode(id) { state.ignored.add(id); if (state.selected === id) clearSelect(); rebuild(false); }
+function restoreNode(id) { state.ignored.delete(id); rebuild(false); }
+function restoreAll() { state.ignored.clear(); rebuild(false); }
+
+// the "Ignored" tray: manually-ignored nodes as restorable chips, plus a note
+// for any hidden purely by the weight threshold (restore those via the slider).
+function renderIgnored() {
+  const tray = $('tray');
+  const manual = [...state.ignored].map((id) => srcNode(id)).filter(Boolean);
+  const weightHidden = state.weightMin > 1
+    ? SRC.nodes.filter((n) => !state.ignored.has(n.id) && (n.weight == null ? 2 : n.weight) < state.weightMin) : [];
+  if (!manual.length && !weightHidden.length) { tray.hidden = true; tray.innerHTML = ''; return; }
+  tray.hidden = false;
+  const chips = manual.map((n) => {
+    const c = kindOf(n);
+    return `<button class="chip" data-id="${esc(n.id)}" title="Restore ${esc(n.label || n.id)} to the graph">`
+      + `<span class="cdot" style="background:${c.hue}"></span>${esc(n.label || n.id)}<span class="cx">↩</span></button>`;
+  }).join('');
+  const note = weightHidden.length ? `<span class="traynote">+${weightHidden.length} hidden by weight &lt; ${state.weightMin}</span>` : '';
+  const clearBtn = manual.length ? `<button class="chip clearall" id="trayClear">restore all</button>` : '';
+  tray.innerHTML = `<span class="traylbl">Ignored (${manual.length}):</span>${chips}${note}${clearBtn}`;
+}
+
+// focus highlighting (class toggles; browser-only, guarded for the headless shim)
+function highlight(id, keepSel) {
+  const svg = $('dg'); if (!svg.querySelectorAll) return;
+  const nodes = svg.querySelector('.nodes'), edges = svg.querySelector('.edges'); if (!nodes) return;
+  svg.querySelectorAll('.on').forEach((el) => el.classList.remove('on'));
+  svg.querySelectorAll('.sel').forEach((el) => el.classList.remove('sel'));
+  if (!id) { nodes.classList.remove('faded'); edges.classList.remove('faded'); return; }
+  const nbr = new Set([id, ...diagram.outAdj.get(id), ...diagram.inAdj.get(id)]);
+  nodes.classList.add('faded'); edges.classList.add('faded');
+  svg.querySelectorAll('.node').forEach((g) => { const gid = g.getAttribute('data-id'); if (nbr.has(gid)) g.classList.add('on'); if (keepSel && gid === state.selected) g.classList.add('sel'); });
+  svg.querySelectorAll('.edge').forEach((p) => { if (p.getAttribute('data-from') === id || p.getAttribute('data-to') === id) p.classList.add('on'); });
+}
+
+const escA = (s) => esc(s).replace(/"/g, '&quot;');
+const KINDS = Object.keys(KIND);
+// resolve a node's display label from SRC first (may be an ignored node), then the view
+const nlabel = (id) => { const n = (SRC && srcNode(id)) || (diagram && diagram.byId.get(id)); return (n && (n.label || n.id)) || id; };
+function panelLinks(arr) {
+  return arr && arr.length ? arr.map((x) => `<a class="plink" data-id="${escA(x)}">${esc(nlabel(x))}</a>`).join(', ') : '<span class="pnone">—</span>';
+}
+// the read-only statement view (shared by selectNode and the edit preview)
+function statementViewHTML(n, inIds, outIds) {
+  const k = kindOf(n);
+  return `<div class="pkind" style="color:${k.hue}">${esc(n.kind)}${n.external ? ' · external' : ''}</div>`
+    + `<div class="ptitle">${esc(n.label || n.id)}${n.name ? ' · ' + esc(n.name) : ''}</div>`
+    + `<div class="pmeta">${n.section ? '§' + esc(n.section) + ' · ' : ''}weight ${esc(n.weight)}${n.external && n.ref ? ' · ' + esc(n.ref) : ''}</div>`
+    + (n.plain ? `<div class="pstatement">${esc(n.plain)}</div>`
+      : n.statement ? `<div class="pstatement tex" title="LaTeX source">${esc(n.statement)}</div>` : '');
+}
+function selectNode(id) {
+  state.selected = id; state.edit = null;
+  const n = diagram.byId.get(id);
+  $('panel').innerHTML = statementViewHTML(n, diagram.inAdj.get(id), diagram.outAdj.get(id))
+    + `<div class="prel"><span class="rl">depends on</span> ${panelLinks(diagram.inAdj.get(id))}</div>`
+    + `<div class="prel"><span class="rl">used by</span> ${panelLinks(diagram.outAdj.get(id))}</div>`
+    + `<div class="pacts"><button class="pbtn" id="pEdit" title="Edit this statement">edit</button>`
+    + `<button class="pbtn" id="pIgnore" title="Temporarily remove this statement; its dependencies re-link transitively">ignore</button></div>`;
+  highlight(id, true);
+}
+function clearSelect() {
+  state.selected = null; state.edit = null;
+  $('panel').innerHTML = '<p class="hint">Click a statement to see its full text and dependencies. Use <strong>edit</strong> (or <strong>+ statement</strong>) to change the diagram.</p>';
+  highlight(null);
+}
+
+// ---- node editor: mutates SRC (the source of truth); rebuild() re-derives the view ----
+function srcInDeps(id) { return SRC.edges.filter((e) => e.to === id).map((e) => ({ from: e.from, type: e.type === 'generalizes' ? 'generalizes' : 'uses' })); }
+function srcOutIds(id) { return SRC.edges.filter((e) => e.from === id).map((e) => e.to); }
+function editNode(id) {
+  const n = srcNode(id); if (!n) return;
+  state.edit = {
+    id, orig: id, isNew: false,
+    label: n.label || '', name: n.name || '', kind: n.kind || 'theorem',
+    weight: n.weight == null ? 2 : n.weight, statement: n.statement || '', plain: n.plain || '',
+    color: n.color || '', section: n.section || '', external: !!n.external, ref: n.ref || '', deps: srcInDeps(id),
+  };
+  state.editTab = 'edit'; renderEdit();
+}
+function newNode() {
+  let i = 1, id; do { id = 'new-' + i++; } while (srcNode(id));
+  state.selected = null;
+  state.edit = { id, orig: null, isNew: true, label: id, name: '', kind: 'theorem', weight: 2, statement: '', plain: '', color: '', section: '', external: false, ref: '', deps: [] };
+  state.editTab = 'edit'; renderEdit();
+}
+function renderEdit() { if (state.editTab === 'preview') renderEditPreview(); else renderEditForm(); }
+function editTabsHTML(active) {
+  return `<div class="ehead"><strong>${state.edit.isNew ? 'New statement' : 'Edit statement'}</strong>`
+    + `<span class="etabs"><button class="etab${active === 'edit' ? ' on' : ''}" data-tab="edit">edit</button>`
+    + `<button class="etab${active === 'preview' ? ' on' : ''}" data-tab="preview">preview</button></span></div>`;
+}
+function renderEditForm() {
+  const e = state.edit;
+  const kindOpts = KINDS.map((k) => `<option value="${escA(k)}"${k === e.kind ? ' selected' : ''}>${esc(k)}</option>`).join('');
+  const nodeOpts = (sel) => `<option value="">— choose —</option>`
+    + SRC.nodes.filter((n) => n.id !== e.id).map((n) => `<option value="${escA(n.id)}"${n.id === sel ? ' selected' : ''}>${esc(n.label || n.id)}</option>`).join('');
+  const depRows = e.deps.map((d, i) => `<div class="deprow">`
+    + `<select class="dep-from" id="dep-from-${i}">${nodeOpts(d.from)}</select>`
+    + `<select class="dep-type" id="dep-type-${i}"><option value="uses"${d.type === 'uses' ? ' selected' : ''}>uses</option><option value="generalizes"${d.type === 'generalizes' ? ' selected' : ''}>generalizes</option></select>`
+    + `<button class="dep-del" data-i="${i}" title="Remove this dependency">✕</button></div>`).join('');
+  $('panel').innerHTML = editTabsHTML('edit')
+    + `<div class="efield"><label>ID</label><input id="e_id" value="${escA(e.id)}"${e.isNew ? '' : ' readonly'}></div>`
+    + `<div class="efield"><label>Label</label><input id="e_label" value="${escA(e.label)}" placeholder="e.g. Thm 1.2"></div>`
+    + `<div class="efield"><label>Name</label><input id="e_name" value="${escA(e.name)}" placeholder="short name (LaTeX ok)"></div>`
+    + `<div class="efield"><label>Kind</label><select id="e_kind">${kindOpts}</select></div>`
+    + `<div class="efield"><label>Background <span class="hintlbl">(white = default)</span></label>`
+    + `<span class="ecolor"><input type="color" id="e_color" value="${escA(colorHex(e.color))}" title="Box background colour"><button type="button" id="e_colorClear" class="pbtn" title="Reset to the default (white)">clear</button></span></div>`
+    + `<div class="efield"><label>Weight <span id="e_wv">${esc(e.weight)}</span></label><input type="range" id="e_weight" min="1" max="5" step="1" value="${escA(e.weight)}"></div>`
+    + `<div class="efield"><label>Section <span class="hintlbl">(optional)</span></label><input id="e_section" value="${escA(e.section)}" placeholder="e.g. 5.2"></div>`
+    + `<div class="efield"><label>Cited result <span class="hintlbl">(external — not proved here)</span></label>`
+    + `<span class="eext"><label class="echk"><input type="checkbox" id="e_external"${e.external ? ' checked' : ''}> external</label>`
+    + `<input id="e_ref" value="${escA(e.ref)}" placeholder="citation, e.g. [MSS22]"></span></div>`
+    + `<div class="efield"><label>LaTeX statement</label><textarea id="e_statement" rows="3" placeholder="$...$ LaTeX source (shown in the panel; a comment in the TikZ export)">${esc(e.statement)}</textarea></div>`
+    + `<div class="efield"><label>Plain text <span class="hintlbl">(shown in the viewer; optional)</span></label><textarea id="e_plain" rows="2">${esc(e.plain)}</textarea></div>`
+    + `<div class="edeps"><div class="edeps-h">Dependencies (this statement uses…)</div>${depRows}<button id="e_addDep" class="pbtn">+ add dependency</button></div>`
+    + `<div class="eerr" id="e_err"></div>`
+    + `<div class="eacts"><button id="e_save" class="pbtn primary">save</button><button id="e_cancel" class="pbtn">cancel</button>`
+    + (e.isNew ? '' : `<button id="e_delete" class="pbtn danger" title="Permanently remove this statement from the diagram">delete</button>`) + `</div>`;
+}
+function renderEditPreview() {
+  const e = state.edit;
+  const nodeLike = { id: e.id, label: e.label, name: e.name, kind: e.kind, weight: e.weight, statement: e.statement, plain: e.plain, color: e.color, section: e.section, external: e.external, ref: e.ref };
+  const inIds = e.deps.map((d) => d.from).filter(Boolean);
+  $('panel').innerHTML = editTabsHTML('preview')
+    + statementViewHTML(nodeLike, inIds, e.isNew ? [] : srcOutIds(e.orig))
+    + `<div class="prel"><span class="rl">depends on</span> ${panelLinks(inIds)}</div>`
+    + `<div class="prel"><span class="rl">used by</span> ${panelLinks(e.isNew ? [] : srcOutIds(e.orig))}</div>`;
+  highlight(null);
+}
+// read the form's DOM back into state.edit (only meaningful while the form is shown)
+function readForm() {
+  const e = state.edit; if (!e || state.editTab !== 'edit' || !$('e_label')) return;
+  if (e.isNew && $('e_id')) e.id = ($('e_id').value || e.id).trim();
+  e.label = $('e_label').value; e.name = $('e_name').value; e.kind = $('e_kind').value;
+  e.weight = +$('e_weight').value || 1; e.statement = $('e_statement').value; e.plain = $('e_plain').value;
+  if ($('e_section')) e.section = $('e_section').value;
+  if ($('e_external')) e.external = !!$('e_external').checked;
+  if ($('e_ref')) e.ref = $('e_ref').value;
+  // only adopt the picker's value if it actually moved — otherwise keep any
+  // authored non-hex colour (e.g. a CSS name) the picker can't represent
+  if ($('e_color')) { const v = $('e_color').value; if (v !== colorHex(e.color)) e.color = v; }
+  for (let i = 0; i < e.deps.length; i++) { const f = $('dep-from-' + i); if (f) e.deps[i] = { from: f.value, type: ($('dep-type-' + i) || {}).value === 'generalizes' ? 'generalizes' : 'uses' }; }
+}
+function saveEdit() {
+  readForm();
+  const e = state.edit;
+  const fail = (m) => { state.editTab = 'edit'; renderEdit(); const el = $('e_err'); if (el) el.textContent = m; };
+  const id = (e.id || '').trim();
+  if (!id) return fail('ID cannot be empty.');
+  const next = JSON.parse(JSON.stringify(SRC));
+  if (e.isNew) { if (next.nodes.some((n) => n.id === id)) return fail('ID "' + id + '" already exists.'); next.nodes.push({ id }); }
+  const node = next.nodes.find((n) => n.id === (e.isNew ? id : e.orig));
+  if (!node) return fail('Could not find the statement to update.');
+  if (e.isNew) node.id = id;
+  if (e.label) node.label = e.label; else delete node.label;
+  if (e.name) node.name = e.name; else delete node.name;
+  node.kind = e.kind; node.weight = e.weight;
+  if (e.statement) node.statement = e.statement; else delete node.statement;
+  if (e.plain) node.plain = e.plain; else delete node.plain;
+  if (e.section) node.section = String(e.section).trim(); else delete node.section;
+  if (e.external) node.external = true; else delete node.external;
+  if (e.external && e.ref) node.ref = String(e.ref).trim(); else delete node.ref;
+  // white (or unrepresentable) = the default, so store nothing; keeps JSON clean
+  const col = safeFill(e.color);
+  if (col && colorHex(col) !== '#ffffff') node.color = col; else delete node.color;
+  // (node.layout, if any, is authored via JSON and left untouched — the UI no longer creates pins)
+  next.edges = next.edges.filter((edge) => edge.to !== node.id);
+  const seen = new Set();
+  for (const d of e.deps) {
+    const from = (d.from || '').trim();
+    if (!from || from === node.id || seen.has(from) || !next.nodes.some((n) => n.id === from)) continue;
+    seen.add(from); next.edges.push({ from, to: node.id, type: d.type === 'generalizes' ? 'generalizes' : 'uses' });
+  }
+  try { PD.load(next); } catch (ex) { return fail(ex.message); }   // rejects cycles / dangling
+  pushUndo(); SRC = next; state.edit = null; state.selected = node.id;
+  renderLegend();                 // kinds may have changed
+  rebuild(false);                 // re-derive the view (re-selects the node if visible)
+}
+function cancelEdit() {
+  const id = state.edit && state.edit.orig; state.edit = null;
+  if (id && srcNode(id)) { state.selected = id; selectNode(id); } else clearSelect();
+}
+function deleteNode(id) {
+  const next = JSON.parse(JSON.stringify(SRC));
+  next.nodes = next.nodes.filter((n) => n.id !== id);
+  next.edges = next.edges.filter((e) => e.from !== id && e.to !== id);
+  try { PD.load(next); } catch (ex) { const el = $('e_err'); if (el) el.textContent = ex.message; return; }
+  pushUndo(); SRC = next; state.edit = null; state.selected = null; state.ignored.delete(id);
+  renderLegend(); rebuild(false); clearSelect();
+}
+
+// ---- pointer interaction: hover, click-select, pan, zoom, drag-to-pin ----
+function svgPoint(e) {
+  const svg = $('dg'), pt = svg.createSVGPoint(); pt.x = e.clientX; pt.y = e.clientY;
+  const ctm = svg.getScreenCTM(); return ctm ? pt.matrixTransform(ctm.inverse()) : { x: 0, y: 0 };
+}
+function wireInteraction() {
+  const svg = $('dg');
+  svg.addEventListener('pointerover', (e) => { const g = e.target.closest && e.target.closest('.node'); if (g && !state.drag) highlight(g.getAttribute('data-id'), true); });
+  svg.addEventListener('pointerout', (e) => { const g = e.target.closest && e.target.closest('.node'); if (g && !state.drag) highlight(state.selected, true); });
+  svg.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const p = svgPoint(e), f = e.deltaY < 0 ? 0.85 : 1.18, v = state.viewBox;
+    state.viewBox = { x: p.x - (p.x - v.x) * f, y: p.y - (p.y - v.y) * f, w: v.w * f, h: v.h * f };
+    applyViewBox();
+  }, { passive: false });
+  svg.addEventListener('pointerdown', (e) => {
+    const g = e.target.closest && e.target.closest('.node');
+    state.drag = { startVB: Object.assign({}, state.viewBox), sx: e.clientX, sy: e.clientY, moved: 0, nodeId: g ? g.getAttribute('data-id') : null };
+    svg.classList.add('panning');
+    svg.setPointerCapture && svg.setPointerCapture(e.pointerId);
+  });
+  svg.addEventListener('pointermove', (e) => {                  // drag anywhere pans the canvas
+    const d = state.drag; if (!d) return;
+    const rect = svg.getBoundingClientRect(); const s = state.viewBox.w / rect.width;
+    state.viewBox = { x: d.startVB.x - (e.clientX - d.sx) * s, y: d.startVB.y - (e.clientY - d.sy) * s, w: d.startVB.w, h: d.startVB.h };
+    d.moved++; applyViewBox();
+  });
+  svg.addEventListener('pointerup', () => {
+    const d = state.drag; state.drag = null; svg.classList.remove('panning');
+    if (!d) return;
+    if (d.moved < 3) { if (d.nodeId) selectNode(d.nodeId); else clearSelect(); }   // a click (not a drag): select a node / deselect on empty space
+  });
+  // panel dependency links
+  $('panel').addEventListener('click', (e) => {
+    const hit = (sel) => e.target.closest && e.target.closest(sel);
+    if (hit('#pEdit')) { if (state.selected) editNode(state.selected); return; }
+    if (hit('#pIgnore')) { if (state.selected) ignoreNode(state.selected); return; }
+    if (hit('.etab')) { readForm(); state.editTab = hit('.etab').getAttribute('data-tab'); renderEdit(); return; }
+    if (hit('#e_colorClear')) { readForm(); state.edit.color = ''; const ci = $('e_color'); if (ci) ci.value = '#ffffff'; return; }
+    if (hit('#e_addDep')) { readForm(); state.edit.deps.push({ from: '', type: 'uses' }); renderEdit(); return; }
+    if (hit('.dep-del')) { readForm(); state.edit.deps.splice(+hit('.dep-del').getAttribute('data-i'), 1); renderEdit(); return; }
+    if (hit('#e_save')) { saveEdit(); return; }
+    if (hit('#e_cancel')) { cancelEdit(); return; }
+    if (hit('#e_delete')) { deleteNode(state.edit.id); return; }
+    if (state.edit) return;                                   // while editing, panel links don't navigate away
+    const a = hit('.plink'); if (a) selectNode(a.getAttribute('data-id'));
+  });
+  $('panel').addEventListener('input', (e) => { if (e.target.id === 'e_weight') { const wv = $('e_wv'); if (wv) wv.textContent = e.target.value; } });
+}
+
+// a small A →/⇢ B arrow for the legend (solid = uses, dashed = generalizes)
+function miniArrow(gen) {
+  const col = gen ? 'var(--accent)' : 'var(--axis, #9aa)';
+  const da = gen ? ' stroke-dasharray="3.5 2.5"' : '';
+  const mid = gen ? 'lmg' : 'lmu';
+  return `<svg width="34" height="12" style="vertical-align:middle;margin:0 3px">`
+    + `<defs><marker id="${mid}" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${col}"></path></marker></defs>`
+    + `<line x1="2" y1="6" x2="27" y2="6" stroke="${col}" stroke-width="1.5"${da} marker-end="url(#${mid})"></line></svg>`;
+}
+function renderLegend() {
+  const src = (SRC && SRC.nodes) || diagram.nodes;                 // stable across ignore/restore
+  const kinds = [...new Set(src.map((n) => n.kind))];
+  // kind entries double as show/hide checkboxes
+  const kh = kinds.map((k) => {
+    const c = KIND[k] || { hue: 'var(--muted)', label: k };
+    const on = !state.hiddenKinds.has(k);
+    return `<label class="k kfilter" title="Show/hide ${esc(c.label)}s"><input type="checkbox" class="kchk" data-kind="${escA(k)}"${on ? ' checked' : ''}>`
+      + `<span class="sw" style="border-color:${c.hue}"></span>${esc(c.label)}</label>`;
+  }).join('');
+  const eh = `<span class="k"><span class="ab">A${miniArrow(false)}B</span>= B <strong>uses</strong> A</span>`
+    + `<span class="k"><span class="ab">A${miniArrow(true)}B</span>= B <strong>generalizes</strong> A</span>`;
+  const ext = src.some((n) => n.external) ? `<span class="k"><span class="sw" style="border-color:var(--muted);border-style:dashed"></span>external / cited</span>` : '';
+  $('legend').innerHTML = kh + eh + ext;
+}
+
+// provenance line from meta.paper (authors, arXiv, optional companion applet)
+function renderProv() {
+  const p = (SRC.meta && SRC.meta.paper) || {};
+  if (!p.arxiv && !(p.authors && p.authors.length)) { $('prov').innerHTML = ''; return; }
+  const authors = esc((p.authors || []).join(', '));
+  const arx = p.arxiv ? ` &mdash; <a href="https://arxiv.org/abs/${escA(p.arxiv)}" target="_blank" rel="noopener">arXiv:${esc(p.arxiv)}</a>` : '';
+  const comp = p.companion ? `. A companion to the <a href="${escA(p.companion.href)}">${esc(p.companion.label)}</a>` : '';
+  $('prov').innerHTML = `${authors}${arx}${comp}.`;
+}
+// the in-app title bar (title + provenance) — lives INSIDE the app, not the page header
+// (the page <title> is left untouched: the app must not reach outside its own box)
+function renderAppTitle() {
+  $('title').textContent = (SRC.meta && SRC.meta.title) || 'Untitled diagram';
+  renderProv();
+}
+// inline-rename the title from the app bar (a convenience alternative to editing the JSON)
+function editTitle() {
+  const el = $('title'); if (!el || el._editing) return;
+  el._editing = true;
+  const cur = (SRC.meta && SRC.meta.title) || '';
+  el.innerHTML = `<input class="titleinput" id="titleInput" value="${escA(cur)}" aria-label="Diagram title">`;
+  const inp = $('titleInput'); if (!inp) { el._editing = false; return; }
+  if (inp.focus) inp.focus(); if (inp.select) inp.select();
+  const done = (commit) => {
+    if (el._closed) return; el._closed = true; el._editing = false;
+    if (commit) { const nv = (inp.value || '').trim() || 'Untitled diagram'; if (nv !== cur) { pushUndo(); if (!SRC.meta) SRC.meta = {}; SRC.meta.title = nv; } }
+    renderAppTitle(); refreshPaperSelect();
+  };
+  el._closed = false;
+  inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') done(true); else if (e.key === 'Escape') done(false); });
+  inp.addEventListener('blur', () => done(true));
+}
+// install a diagram object as SRC and reset all view state
+function applyPaper(src, id) {
+  SRC = JSON.parse(JSON.stringify(src));                    // mutable working copy
+  state.ignored = new Set(); state.hiddenKinds = new Set(); state.weightMin = 1;
+  state.selected = null; state.edit = null;
+  state.undo = []; updateUndoBtn();                         // a freshly loaded/imported diagram starts a clean history
+  state.loadedId = id || '__current__';                     // '__current__' = imported/blank, no catalog id
+  if ($('wmin')) $('wmin').value = 1;
+  if ($('wminVal')) $('wminVal').textContent = 'all';
+  setWminFill();
+  renderAppTitle();
+  renderLegend();
+  rebuild(true);
+  clearSelect();
+  refreshPaperSelect();
+  updateUrl(id);
+}
+// rebuild the paper dropdown: curated papers, the current one (if not curated), then actions.
+function refreshPaperSelect() {
+  const sel = $('paper'); if (!sel) return;
+  const data = window.PaperDiagramData || {};
+  const lib = data._library || [];
+  const curated = new Set(lib.map((p) => p.id));
+  const cur = state.loadedId;
+  let html = lib.map((p) => `<option value="${escA(p.id)}">${esc(p.title)}</option>`).join('');
+  if (cur && !curated.has(cur)) {
+    const title = (SRC && SRC.meta && SRC.meta.title) || 'Current diagram';
+    html += `<option value="${escA(cur)}">${esc(title)}</option>`;
+  }
+  html += '<option value="" disabled>──────────</option>'
+    + '<option value="__more__">Load from library…</option>'
+    + '<option value="__new__">New (blank diagram)…</option>';
+  sel.innerHTML = html;
+  sel.value = cur || (lib[0] && lib[0].id) || '';
+}
+// reflect the current paper in the URL so it can be bookmarked / deep-linked (?paper=<id>)
+function updateUrl(id) {
+  if (!id || typeof history === 'undefined' || !history.replaceState || typeof URL === 'undefined' || typeof location === 'undefined') return;
+  try { const u = new URL(location.href); u.searchParams.set('paper', id); history.replaceState(null, '', u); } catch (e) {}
+}
+// load a paper by id; if it isn't already loaded, lazy-load diagrams/<id>.js once
+// (a same-origin <script> injection — allowed under the strict CSP, unlike fetch).
+// Every diagram, including the default boot paper, comes in this way.
+function loadPaper(id) {
+  const data = window.PaperDiagramData;
+  if (data && data[id]) { applyPaper(data[id], id); return; }
+  state.tried = state.tried || {};
+  if (state.tried[id] || typeof document === 'undefined' || !document.createElement) { $('err').textContent = `Could not find paper "${id}".`; return; }
+  state.tried[id] = true;
+  $('err').textContent = `Loading paper "${id}"…`;
+  const s = document.createElement('script');
+  s.src = 'diagrams/' + encodeURIComponent(id) + '.js';
+  s.onload = () => { $('err').textContent = ''; loadPaper(id); };
+  s.onerror = () => { $('err').textContent = `Could not load paper "${id}".`; };
+  document.head.appendChild(s);
+}
+// reset to an empty diagram the user can build up with "+ statement"
+function newBlank() {
+  applyPaper({ format: 'paper-diagram', schemaVersion: 1, meta: { title: 'Untitled diagram' },
+    layout: { engine: 'layered', direction: 'up' }, nodes: [], edges: [] }, null);
+}
+// library picker (a "file-selection" menu over the broader _catalog of available diagrams)
+function openLibrary() {
+  state.libFilter = '';
+  if ($('libSearch')) $('libSearch').value = '';
+  renderLibList();
+  $('libwrap').hidden = false;
+  if ($('libSearch') && $('libSearch').focus) $('libSearch').focus();
+}
+function renderLibList() {
+  const data = window.PaperDiagramData || {};
+  const cat = data._catalog || data._library || [];
+  const q = (state.libFilter || '').toLowerCase();
+  const items = cat.filter((p) => !q || (`${p.title} ${(p.authors || []).join(' ')} ${p.id} ${p.arxiv || ''}`).toLowerCase().indexOf(q) >= 0);
+  $('libList').innerHTML = items.length
+    ? items.map((p) => {
+        const meta = [(p.authors || []).join(', '), p.year, p.arxiv ? 'arXiv:' + p.arxiv : ''].filter(Boolean).join(' · ');
+        return `<button class="libitem" data-id="${escA(p.id)}"><span class="libt">${esc(p.title)}</span><span class="libm">${esc(meta)}</span></button>`;
+      }).join('')
+    : '<p class="libempty">No matching diagrams.</p>';
+}
+function boot() {
+  const data = window.PaperDiagramData;
+  const lib = (data && data._library) || [{ id: 'gilbreath', title: 'Paper' }];
+  let want;
+  try { want = (typeof location !== 'undefined') && new URLSearchParams(location.search).get('paper'); } catch (e) {}
+  refreshPaperSelect();
+  wireInteraction();
+  try { loadPaper(want || lib[0].id); }
+  catch (e) { $('err').textContent = e.message; loadPaper(lib[0].id); }
+}
+
+$('paper').addEventListener('change', () => {
+  const v = $('paper').value;
+  if (v === '__more__') { refreshPaperSelect(); openLibrary(); return; }   // reset select, open picker
+  if (v === '__new__') { newBlank(); return; }
+  if (v) loadPaper(v);
+});
+$('titleEdit').addEventListener('click', editTitle);
+$('libClose').addEventListener('click', () => { $('libwrap').hidden = true; });
+$('libwrap').addEventListener('click', (e) => { if (e.target === $('libwrap')) $('libwrap').hidden = true; });
+$('libSearch').addEventListener('input', () => { state.libFilter = $('libSearch').value; renderLibList(); });
+$('libList').addEventListener('click', (e) => {
+  const it = e.target.closest && e.target.closest('.libitem[data-id]');
+  if (it) { $('libwrap').hidden = true; loadPaper(it.getAttribute('data-id')); }
+});
+$('mode').addEventListener('change', () => { $('keepWrap').hidden = $('mode').value !== 'balanced'; relayout(true); });
+$('keep').addEventListener('change', () => relayout(true));
+$('dir').addEventListener('change', () => relayout(true));
+$('fit').addEventListener('click', () => { fit(); applyViewBox(); });
+$('newStmt').addEventListener('click', () => newNode());
+$('undo').addEventListener('click', () => undo());
+// paint the track so the area to the RIGHT of the thumb (the >= weights that stay visible) is accent-filled
+function setWminFill() {
+  const el = $('wmin'); if (!el || !el.style) return;
+  const pct = ((+el.value - +el.min) / ((+el.max) - (+el.min))) * 100;
+  el.style.background = `linear-gradient(to right, var(--border, #cfd3da) 0 ${pct}%, var(--accent) ${pct}% 100%)`;
+}
+$('wmin').addEventListener('input', () => {
+  state.weightMin = +$('wmin').value; $('wminVal').textContent = state.weightMin > 1 ? '≥ ' + state.weightMin : 'all';
+  setWminFill(); rebuild(true);
+});
+// legend kind checkboxes: show/hide a whole kind
+$('legend').addEventListener('change', (e) => {
+  const box = e.target; if (!box.classList || !box.classList.contains('kchk')) return;
+  const k = box.getAttribute('data-kind');
+  if (box.checked) state.hiddenKinds.delete(k); else state.hiddenKinds.add(k);
+  rebuild(true);
+});
+// tray: restore an individual ignored node, or restore all
+$('tray').addEventListener('click', (e) => {
+  if (e.target.closest && e.target.closest('#trayClear')) return restoreAll();
+  const chip = e.target.closest && e.target.closest('.chip[data-id]');
+  if (chip) restoreNode(chip.getAttribute('data-id'));
+});
+
+// ---- export / import (uses POS = the live on-screen layout, so dragged/pinned nodes are honoured) ----
+function showExport(o) {
+  $('extitle').textContent = o.title;
+  $('exnote').textContent = o.note || '';
+  $('exerr').textContent = '';
+  $('extext').value = o.text;
+  $('extext').readOnly = !o.editable;                       // JSON is editable (import); the rest are read-only
+  $('exapply').hidden = !o.editable;
+  state.export = { text: o.text, file: o.file, mime: o.mime || 'text/plain' };
+  // spell out the file type on the download button so it's clear you get a real
+  // .svg / .tex / .json file, not an untyped text blob
+  const ext = (String(o.file).match(/\.[a-z0-9]+$/i) || [''])[0];
+  $('exdl').textContent = 'download' + (ext ? ' ' + ext : '');
+  $('exdl').title = 'Save as ' + o.file;
+  const open = $('exopen');
+  if (o.url) { open.href = o.url; open.hidden = false; } else { open.hidden = true; }
+  $('exwrap').hidden = false;
+}
+function openExport(kind) {
+  const base = (diagram.meta.id || 'paper-diagram');
+  try {
+    if (kind !== 'json' && !PDX) throw new Error('the export module (paper-diagram-export.js) did not load — try a hard refresh, and serve the page over http rather than file://');
+    if (kind === 'tikz') {
+      showExport({ title: 'TikZ — standalone figure', file: base + '.tex', mime: 'application/x-tex',
+        note: 'This is the LaTeX source below. Download it as ' + base + '.tex (or copy it into a .tex file); it compiles as-is. Node positions are the current on-screen layout, including any nodes you dragged.',
+        text: PDX.toTikz(diagram, POS, { standalone: true }) });
+    } else if (kind === 'svg') {
+      showExport({ title: 'SVG — standalone image', file: base + '.svg', mime: 'image/svg+xml',
+        note: 'The text below IS the image file. Use the download button to save it as ' + base + '.svg — once saved with the .svg extension it opens in any browser or vector editor. (Pasting the raw text into a browser address bar will not work.)',
+        text: PDX.toSvg(diagram, POS) });
+    } else if (kind === 'quiver') {
+      const url = PDX.toQuiverURL(diagram, POS);
+      showExport({ title: 'quiver — import link', file: base + '-quiver-url.txt', url,
+        note: 'Open the link (or paste it into your browser) to load this diagram in q.uiver.app. quiver snaps to an integer grid, so left-to-right order and dependency depth are kept, but not exact pixel offsets.',
+        text: url });
+    } else if (kind === 'dot') {
+      showExport({ title: 'Graphviz DOT — source', file: base + '.dot', mime: 'text/vnd.graphviz',
+        note: 'The DOT source below. Download it as ' + base + '.dot and render with Graphviz (dot -Tpng ' + base + '.dot -o out.png), or open it in Gephi / yEd. Graphviz computes its own layout from the dependency structure — the on-screen positions are not carried over.',
+        text: PDX.toDot(diagram) });
+    } else if (kind === 'mermaid') {
+      showExport({ title: 'Mermaid — flowchart', file: base + '.mmd', mime: 'text/vnd.mermaid',
+        note: 'The Mermaid source below. Paste it into a Markdown ```mermaid code block (GitHub and many wikis render it), or into mermaid.live — or download it as ' + base + '.mmd. Mermaid lays it out automatically from the dependency structure.',
+        text: PDX.toMermaid(diagram) });
+    } else {
+      showExport({ title: 'Diagram JSON — edit / import', file: base + '.json', editable: true, mime: 'application/json',
+        note: 'The full source (all statements, ignored ones included). Edit it here or paste in a new diagram, then "load into viewer" — or download it as ' + base + '.json and edit externally; it round-trips straight back in.',
+        text: JSON.stringify(SRC, null, 2) });
+    }
+  } catch (e) {
+    showExport({ title: 'Export failed', file: base + '-export-error.txt',
+      note: 'The export could not be generated. Details below.',
+      text: String((e && e.stack) || e) });
+  }
+}
+$('exSvg').addEventListener('click', () => openExport('svg'));
+$('exTikz').addEventListener('click', () => openExport('tikz'));
+$('exQuiver').addEventListener('click', () => openExport('quiver'));
+$('exDot').addEventListener('click', () => openExport('dot'));
+$('exMermaid').addEventListener('click', () => openExport('mermaid'));
+$('exJson').addEventListener('click', () => openExport('json'));
+// import: replace the whole diagram with the (edited/pasted) JSON in the box
+function importJson() {
+  let obj;
+  try { obj = JSON.parse($('extext').value); } catch (e) { $('exerr').textContent = 'Not valid JSON: ' + e.message; return; }
+  try { PD.load(obj); } catch (e) { $('exerr').textContent = e.message; return; }   // validates ids/edges/DAG
+  $('exwrap').hidden = true;
+  applyPaper(obj, obj.meta && obj.meta.id);
+}
+$('exapply').addEventListener('click', importJson);
+$('exclose').addEventListener('click', () => { $('exwrap').hidden = true; });
+$('exwrap').addEventListener('click', (e) => { if (e.target === $('exwrap')) $('exwrap').hidden = true; });
+$('excopy').addEventListener('click', () => {
+  const t = $('extext'); t.select();
+  if (navigator.clipboard) navigator.clipboard.writeText(t.value).catch(() => {}); else try { document.execCommand('copy'); } catch (e) {}
+  $('excopy').textContent = 'copied'; setTimeout(() => ($('excopy').textContent = 'copy'), 1200);
+});
+$('exdl').addEventListener('click', () => {
+  const e = state.export; if (!e) return;
+  const blob = new Blob([e.text], { type: e.mime || 'text/plain' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = e.file;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+boot();
+;window.__t = { $, render, relayout, rebuild, loadPaper, newBlank, openLibrary, renderLibList, editTitle, refreshPaperSelect, importJson, openExport, selectNode, clearSelect, ignoreNode, restoreNode, restoreAll, editNode, newNode, saveEdit, cancelEdit, deleteNode, undo, readForm, renderEdit, get diagram() { return diagram; }, get SRC() { return SRC; }, state };
+</script>
+</body>
+</html>

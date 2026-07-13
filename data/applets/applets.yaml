@@ -10,6 +10,45 @@ description: >-
 category_notes:
   Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
   Complex analysis: All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000.
+philosophy:
+  - heading: "AI involvement is disclosed."
+    body: >-
+      These tools, and their supporting text — including this section — are produced with substantial
+      AI assistance, and every page on this site that contains AI-generated content notes this (a footnote
+      on each app suffices). This matches the site's "maintained (with AI assistance)" footer and the
+      disclosure practice followed in the associated research papers.
+  - heading: "They are visual aids, not authorities."
+    body: >-
+      Each app is meant as a secondary, visual supplement for building intuition about a mathematical
+      topic — not as a load-bearing component of a mathematical task. They are not formally verified to
+      be free of bugs. Many display only deterministic mathematical concepts; a few (such as the
+      paper-diagramming applet) instead contain subjective, LLM-generated content that is not intended
+      to be authoritative. For anything that needs to be correct, consult authoritative sources such as
+      textbooks, or fully-featured software such as MATLAB or numpy/SymPy. The emphasis here is on ease
+      of presentation over full expressiveness.
+  - heading: "They are private and self-contained by design."
+    body: >-
+      No app requires a login or account, and none makes external network calls — everything runs in your
+      browser, and the only files an app loads are other files on this site (for instance, the
+      paper-diagram viewer fetches additional diagram files on demand). The apps deliberately avoid heavy
+      libraries and content-delivery networks, both for speed and to keep the security surface small; there
+      is no tracking or analytics. Most apps store nothing between visits and start each session fresh,
+      though a few may use a cookie solely to remember your own settings.
+  - heading: "The code is transparent, but not a template."
+    body: >-
+      The source lives in the public [GitHub repository](https://github.com/teorth/tao-web) for
+      transparency, and the mathematical cores are covered by automated tests — but the code is
+      AI-generated, has not been reviewed line-by-line by a human, and is not optimized for readability or
+      reuse. I therefore don't recommend using it as a base for your own applets. You are very welcome to
+      be *inspired* by the concepts here to build your own tools; I would only ask that you not publish
+      near-identical copies of these specific apps.
+  - heading: "Feedback is welcome — please open an issue."
+    body: >-
+      Corrections and suggestions are appreciated. For fixes to content (a wrong dependency in a diagram, a
+      typo, a bad example), a pull request is fine. For changes to the code, an issue is strongly preferred
+      over a pull request: because the codebase is maintained primarily by AI rather than by hand,
+      unreviewed code contributions — even good ones — can make it harder to keep maintaining, so I would
+      rather address the underlying issue than merge a code change.
 applets:
 # --- Relativity (original app, first published here) ---
 - name: Spacetime diagram (special relativity)
@@ -60,6 +99,26 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/random-variables-making-of.html
+# --- Mathematical exposition (original app) ---
+- name: Paper diagram viewer
+  category: Mathematical exposition
+  status: original
+  date: "2026-07-13"
+  description: >-
+    Renders a mathematical paper as an automatically laid-out dependency diagram: its theorems, lemmas,
+    propositions and definitions are boxes (sized by editorial weight, coloured by kind or section), and
+    an arrow runs from each prerequisite to the result whose proof uses it. Reads the paper's logical
+    structure at a glance; lets you hide side results, filter by kind or weight, and edit the diagram in
+    place; and exports to SVG, TikZ, quiver, Graphviz DOT, Mermaid or its own JSON format. Ships with a
+    library of worked examples (Szemerédi's theorem, Fermat's Last Theorem, the Ricci-flow entropy
+    formula, the Guth–Maynard and periodic-tiling papers, and more). The pre-installed diagrams are
+    LLM-generated editorial readings — a visual aid for orientation, not an authoritative account.
+  note: >-
+    The example diagrams are LLM-generated and simplified; treat them as orientation, not ground truth.
+  url: apps/paper-diagram.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/paper-diagram-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
