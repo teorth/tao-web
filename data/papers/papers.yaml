@@ -144,6 +144,8 @@ works:
     url: "https://terrytao.wordpress.com/2026/07/11/gilbreaths-conjecture-a-cramer-random-model-and-a-deterministic-analysis/"
   - type: applet
     url: "apps/gilbreath.html"
+  - type: diagram
+    url: "apps/paper-diagram.html?paper=gilbreath"
   abstract: >-
     Gilbreath's conjecture asserts that starting from the sequence of primes and taking successive
     absolute differences to form a triangular array, the left diagonal consists entirely of ones after
@@ -207,6 +209,8 @@ works:
     url: "https://arxiv.org/abs/2605.00301"
   - type: discussion
     url: "https://terrytao.wordpress.com/2026/05/03/primitive-sets-and-von-mangoldt-chains-erdos-problem-1196-and-beyond/"
+  - type: diagram
+    url: "apps/paper-diagram.html?paper=2605.00301"
 - id: local-bernstein-theory-and-lower-bounds-for-lebesgue-constan
   kind: paper
   title: Local Bernstein theory, and lower bounds for Lebesgue constants
@@ -866,6 +870,8 @@ works:
     url: "https://terrytao.wordpress.com/2022/11/29/a-counterexample-to-the-periodic-tiling-conjecture-2/"
   - type: arxiv
     url: "https://arxiv.org/abs/2209.08451"
+  - type: diagram
+    url: "apps/paper-diagram.html?paper=2211.15847"
 - id: perfectly-packing-a-square-by-squares-of-nearly-harmonic-sid
   kind: paper
   title: Perfectly packing a square by squares of nearly harmonic sidelength
