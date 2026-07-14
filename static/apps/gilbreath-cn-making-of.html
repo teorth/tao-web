@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Gilbreath decay-constants applet &mdash; Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Gilbreath decay-constants applet</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="gilbreath-cn.html">Gilbreath decay constants</a> visualizer.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the
+  <a href="https://teorth.github.io/tao-web/apps/gilbreath-cn.html">Gilbreath decay-constants</a> applet for
+  <a href="https://github.com/teorth/tao-web">tao-web</a> &mdash; a companion to the
+  <a href="gilbreath.html">Gilbreath array explorer</a> that animates the Monte-Carlo convergence of the
+  constants <code>c_n</code>. It was built in a single sitting alongside several unrelated site tasks; those are left out.</em></p>
+<p><strong>How to read this.</strong> As with the other transcripts, <strong>Terence&#x27;s messages</strong> are shown
+  mostly verbatim, and <strong>Claude&#x27;s replies</strong> &mdash; the actual edits to two files, <code>gilbreath-cn.js</code>
+  (the DOM-free math core) and <code>gilbreath-cn.html</code> (the app) &mdash; are replaced by short <em>italic summaries</em>.
+  The math core was checked throughout with headless Node unit tests, and the UI wiring with a DOM-shim smoke test.</p>
+<hr>
+<h2>1. The idea</h2>
+<p><strong>Terence</strong> (with the paper enclosed):</p>
+<blockquote><p>A quick new app request, which is a companion to the existing Gilbreath app. In our paper we made a
+  figure (Figure 1) plotting theoretical and empirical versions of a certain sequence <code>c_n</code>, constructed using
+  Monte Carlo simulation. I&#x27;m thinking of turning this figure into an interactive, animated applet, where one can specify
+  the range of <code>n</code> and the number of simulations, and see the graph converge over time as in the probability
+  visualizer (or show the individual instances of these random variables, e.g., the lower-<code>n</code> diagonal of a
+  Gilbreath array with <code>n</code> exponential variables as initial data). In the paper we only computed the first 3 values
+  of <code>c_n</code> exactly, but in the companion repository three further values were computed. This should be a quick
+  project; could you execute as much of it as possible? I envisage only one phase of review will be needed before the final
+  stages (review, making of, push).</p></blockquote>
+<p><em>Claude fetched the companion repository (<code>michaelmross/Gilbreath</code>): the exact-values file (<code>c_0</code>&hellip;<code>c_6</code>
+  as reduced rationals) and the figure-generating code, to pin down precisely what <code>c_n</code> is &mdash; the expected entry
+  <code>E&thinsp;a(n,j)</code> at depth <code>n</code> of the absolute-difference array of an iid standard-exponential top row,
+  estimated by Monte Carlo. It sketched the plan: a DOM-free core (the array, the estimator, the exact table, the digit-sum law)
+  with unit tests, then a canvas UI that animates the estimate converging.</em></p>
+<hr>
+<h2>2. Nailing the estimator &mdash; the left diagonal</h2>
+<p><em>Claude first coded the estimator to average <em>all</em> entries at each depth (the repo&#x27;s deep-study script does that
+  for lower variance). Terence then supplied the actual figure code:</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Perhaps you no longer need it, but here is <code>cn.py</code> in plain text &hellip; [the script draws
+  <code>max_n+1</code> exponentials, then repeatedly takes <code>np.abs(np.diff(&hellip;))</code> and accumulates
+  <code>current_row[0]</code> at each depth].</p></blockquote>
+<p><em>That settled a modelling choice. <code>cn.py</code> averages <code>current_row[0]</code> &mdash; the <strong>first entry of
+  each row</strong>, i.e. the array&#x27;s <strong>left diagonal</strong> <code>a(n,0)</code> &mdash; not the whole-row average.
+  Both are unbiased for <code>c_n</code> by translation invariance, but the diagonal is what the paper&#x27;s figure uses, and it is
+  exactly the &ldquo;individual instance&rdquo; Terence had described. Claude rewrote the core around <code>pyramidDiagonal</code>, so the
+  estimator, the sample-pyramid view, and the paper all agree. A seeded PRNG keeps runs reproducible; a headless test confirmed the
+  Monte-Carlo estimates converge to the exact <code>c_2=7/9</code>, <code>c_3=227/288</code>, and <code>c_4</code>&ndash;<code>c_6</code>
+  (worst deviation <code>0.0016</code> at half a million pyramids).</em></p>
+<hr>
+<h2>3. Scale, and the right attribution</h2>
+<p><strong>Terence</strong> flagged a subtlety that shaped the whole visual design:</p>
+<blockquote><p>There may be some confusion between Figure 1 of my paper and Figure 1 of the Ross paper. Both are plotting
+  <code>c_n</code>, but at different scales; the Ross paper plots over a far larger range of <code>n</code> in a log-log plot,
+  while my paper plots <code>c_n</code> only up to <code>n=20</code>. For the purpose of an app it may not be possible to reach the
+  scales of the Ross paper with the limited compute available, in which case a log-log plot may not be worthwhile.</p></blockquote>
+<p><em>So the app defaults to a <strong>linear <code>c_n</code>-vs-<code>n</code> plot to about <code>n=20</code></strong> &mdash; matching the
+  CHT figure and <code>cn.py</code> &mdash; where the convergence and the non-monotone sawtooth are clear at browser-reachable depths;
+  log-log is left as an optional toggle, with a note that its strands only separate over the far larger range (to 8192) that needs
+  dedicated compute.</em></p>
+<p><strong>Terence</strong> on credit:</p>
+<blockquote><p>The empirical law associated to the binary expansion can be attributed to Michael Ross &mdash; see this document,
+  hosted at Zenodo.</p></blockquote>
+<p><em>Claude split the attribution carefully. The stationary model, the bound <code>&Sigma; c_i &ge; log(n+e)</code>, and the exact
+  <code>c_0</code>&ndash;<code>c_3</code> are Chase&ndash;Hunter&ndash;Tao (arXiv:2607.08712); the exact <code>c_4</code>&ndash;<code>c_6</code>
+  <em>and</em> the digit-sum law <code>c_n &approx; C&thinsp;&lambda;^{s&#8322;(n)}/n</code> are Michael M. Ross&#x27;s (Zenodo
+  10.5281/zenodo.21326026). Both credits appear in the app&#x27;s provenance line and its notes, and the green law curve carries
+  Ross&#x27;s deep-window estimate <code>&lambda;=1.17</code>, adjustable by a slider.</em></p>
+<p><strong>Terence</strong> also looked ahead to linking the apps from the paper:</p>
+<blockquote><p>Once this app is live one can link to it from the Gilbreath paper YAML, so one needs the capability to have
+  multiple apps linked from a single paper entry.</p></blockquote>
+<p><em>Noted for the go-live step: the paper&#x27;s link list already allows several entries, so the small remaining piece is a per-link
+  label so two <code>applet</code> links (the array explorer and this one) read distinctly.</em></p>
+<hr>
+<h2>4. The build</h2>
+<p><em>With the model fixed, Claude built the app. The core (<code>gilbreath-cn.js</code>) exposes the binary digit sum, the Gilbreath
+  array and its diagonal, a seeded Monte-Carlo estimator (running mean of <code>a(n,0)</code> with a standard error), the exact table,
+  and Ross&#x27;s law. The page (<code>gilbreath-cn.html</code>) is a canvas plot with Play / Step / Reset, sliders for depth, speed and
+  <code>&lambda;</code>, a readout table (Monte-Carlo <code>c_n</code> &plusmn; s.e. vs exact), and &mdash; alongside &mdash; one random
+  sample pyramid with its left diagonal outlined, so the thing being averaged is visible. The exact <code>c_0</code>&ndash;<code>c_6</code>
+  are drawn as open circles, the law as a curve fitted through those anchors. Seventeen core checks and a twenty-one-check DOM-shim smoke
+  test passed before any manual look.</em></p>
+<hr>
+<h2>5. Review and publish</h2>
+<p><strong>Terence</strong>, after a look:</p>
+<blockquote><p>Looks good to me. Let&#x27;s run any remaining audits, write a making-of, and push.</p></blockquote>
+<p><em>An independent audit pass went over the core math and the rendering edge cases (empty estimator, min/max depth, the log-log toggle
+  when a value is non-positive, the law fit); the app was then catalogued under Number theory, this transcript written, and everything
+  validated, built, committed, pushed, and confirmed live.</em></p>
+<hr>
+<p><em>From &ldquo;turn Figure 1 into an applet&rdquo; to a published tool: a linear <code>c_n</code> plot that animates the Monte-Carlo estimate
+  converging onto the exactly-known constants and Ross&#x27;s digit-sum law, with a live sample pyramid making the estimator concrete &mdash; a
+  companion to the Gilbreath array explorer, and to two papers at once.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>

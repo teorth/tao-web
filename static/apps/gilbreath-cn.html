@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gilbreath decay constants c_n — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .toolbar { display: flex; flex-wrap: wrap; gap: 1rem 1.4rem; align-items: flex-end; }
+  .toolbar .field { display: flex; flex-direction: column; gap: .25rem; }
+  .toolbar label { font-size: .78rem; color: var(--muted); font-weight: 600;
+    text-transform: uppercase; letter-spacing: .03em; }
+  .var { text-transform: none; letter-spacing: 0; font-style: italic;
+    font-family: "Cambria Math", Cambria, Georgia, "Times New Roman", serif; }
+  .toolbar input[type="number"] { width: 5.5em; }
+  .toolbar input[type="range"] { width: 11em; }
+  .toolbar button { padding: .42rem .9rem; }
+  .toolbar button[disabled] { opacity: .5; cursor: not-allowed; }
+  .toolbar button.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .chkrow { display: flex; flex-wrap: wrap; gap: .4rem 1.3rem; align-items: center;
+    margin-top: .9rem; font-size: .88rem; color: var(--ink); }
+  .chkrow label { display: inline-flex; align-items: center; gap: .4rem;
+    text-transform: none; letter-spacing: 0; font-weight: 400; color: var(--ink); }
+  .chkrow .rng { display: inline-flex; align-items: center; gap: .5rem; color: var(--muted); }
+
+  #plotWrap { margin-top: 1rem; overflow-x: auto; }
+  #plot { display: block; max-width: 100%; height: auto;
+    border: 1px solid var(--line); background: var(--panel); border-radius: 6px; }
+  #status { color: var(--muted); font-size: .85rem; margin: .6rem 0 0; min-height: 1.2em; }
+  #status b { color: var(--ink); }
+
+  #board { display: flex; flex-wrap: wrap; gap: 1.6rem; margin-top: 1.2rem; align-items: flex-start; }
+  #tblwrap { flex: 1 1 20rem; }
+  table.cn { border-collapse: collapse; font-size: .86rem; width: 100%; }
+  table.cn th, table.cn td { padding: .18rem .55rem; text-align: right; white-space: nowrap; }
+  table.cn th { color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--line);
+    text-transform: uppercase; letter-spacing: .03em; font-size: .74rem; }
+  table.cn td { font-family: var(--mono); color: var(--ink); }
+  table.cn td.n { color: var(--muted); }
+  table.cn tr.exact td { color: var(--accent); font-weight: 600; }
+  table.cn td.diff { color: var(--muted); }
+
+  #instWrap { flex: 1 1 18rem; min-width: 16rem; }
+  #inst { display: block; max-width: 100%; height: auto; border: 1px solid var(--line);
+    background: var(--panel); border-radius: 6px; }
+  .cap { color: var(--muted); font-size: .82rem; margin: .5rem 0 0; }
+  .cap b { color: var(--ink); }
+  details.notes { margin-top: 1.6rem; }
+  details.notes > summary { cursor: pointer; font-weight: 600; color: var(--ink); }
+  details.notes p, details.notes li { color: var(--ink); font-size: .92rem; line-height: 1.5; }
+  details.notes .muted { color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Gilbreath decay constants</h1>
+    <p class="lede">Take a top row of independent <strong>standard-exponential</strong> numbers and form
+      the Gilbreath array of <em>absolute differences</em>, <span class="var">a</span>(<span class="var">i</span>+1,<span class="var">j</span>) =
+      |<span class="var">a</span>(<span class="var">i</span>,<span class="var">j</span>) &minus; <span class="var">a</span>(<span class="var">i</span>,<span class="var">j</span>+1)|.
+      The <strong>decay constant</strong> <span class="var">c<sub>n</sub></span> = <strong>E</strong>&thinsp;<span class="var">a</span>(<span class="var">n</span>,<span class="var">j</span>)
+      is the expected entry at depth <span class="var">n</span>. This applet estimates <span class="var">c<sub>n</sub></span> by Monte&nbsp;Carlo &mdash;
+      averaging the <strong>left diagonal</strong> <span class="var">a</span>(<span class="var">n</span>,0) over many random pyramids &mdash; and animates it converging,
+      against the exactly-known values and Ross&rsquo;s digit-sum law. A companion to the
+      <a href="gilbreath.html">Gilbreath array explorer</a>.</p>
+    <p class="prov">Constants and model from &ldquo;Gilbreath&rsquo;s conjecture: a Cram&eacute;r random model and a
+      deterministic analysis&rdquo; (Chase, Hunter, Tao) &mdash; <a href="https://arxiv.org/abs/2607.08712">arXiv:2607.08712</a>;
+      exact <span class="var">c</span><sub>4</sub>&ndash;<span class="var">c</span><sub>6</sub> and the digit-sum law
+      <span class="var">c<sub>n</sub></span> &approx; <span class="var">C&thinsp;&lambda;</span><sup><span class="var">s</span><sub>2</sub>(<span class="var">n</span>)</sup>/<span class="var">n</span>
+      from M. M. Ross, &ldquo;Empirical Structure of the Gilbreath Decay Constants&rdquo;
+      (<a href="https://zenodo.org/records/21326026">Zenodo</a>). Runs entirely in your browser.</p>
+  </header>
+
+  <div class="card">
+    <div class="toolbar">
+      <div class="field">
+        <label for="maxN">Max depth <span class="var">n</span></label>
+        <input id="maxN" type="number" min="3" max="60" step="1" value="20">
+      </div>
+      <div class="field">
+        <label for="speed">Sims / frame</label>
+        <input id="speed" type="range" min="1" max="4" step="1" value="2">
+      </div>
+      <div class="field">
+        <label for="seed">Seed</label>
+        <input id="seed" type="number" min="0" max="999999" step="1" value="1">
+      </div>
+      <div class="field">
+        <button id="play" class="primary" type="button">&#9654;&nbsp;Play</button>
+      </div>
+      <div class="field">
+        <button id="step" type="button">Step</button>
+      </div>
+      <div class="field">
+        <button id="reset" type="button">Reset</button>
+      </div>
+    </div>
+    <div class="chkrow">
+      <label><input id="showLaw" type="checkbox" checked> Ross&rsquo;s law
+        <span class="var">C&thinsp;&lambda;</span><sup><span class="var">s</span><sub>2</sub></sup>/<span class="var">n</span></label>
+      <span class="rng">&lambda; <input id="lambda" type="range" min="1.00" max="1.40" step="0.01" value="1.17">
+        <span id="lambdaOut" class="var">1.17</span></span>
+      <label><input id="showEnv" type="checkbox"> pure 1/<span class="var">n</span> envelope</label>
+      <label><input id="logAxes" type="checkbox"> log&ndash;log axes</label>
+      <label><input id="showInst" type="checkbox" checked> show a sample pyramid</label>
+    </div>
+
+    <div id="plotWrap"><canvas id="plot" width="920" height="520"></canvas></div>
+    <p id="status">&nbsp;</p>
+
+    <div id="board">
+      <div id="tblwrap">
+        <table class="cn">
+          <thead><tr><th><span class="var">n</span></th><th><span class="var">s</span><sub>2</sub></th>
+            <th>Monte&nbsp;Carlo <span class="var">c<sub>n</sub></span></th><th>&plusmn;&nbsp;s.e.</th>
+            <th>exact</th><th>&Delta;</th></tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div id="instWrap">
+        <canvas id="inst" width="360" height="360"></canvas>
+        <p class="cap">One random pyramid (depth <b id="instN">20</b>). The outlined <b>left diagonal</b>
+          <span class="var">a</span>(<span class="var">n</span>,0) is exactly what the Monte-Carlo average estimates.
+          <button id="newInst" type="button" style="padding:.15rem .6rem; margin-left:.3rem;">New draw</button></p>
+      </div>
+    </div>
+  </div>
+
+  <details class="notes">
+    <summary>About the constants, the method, and the attribution</summary>
+    <p><b>The model (Chase&ndash;Hunter&ndash;Tao).</b> With iid standard-exponential top row, the array is
+      translation-invariant in <span class="var">j</span>, so <strong>E</strong>&thinsp;<span class="var">a</span>(<span class="var">n</span>,<span class="var">j</span>) depends only on the depth
+      &mdash; call it <span class="var">c<sub>n</sub></span>. CHT prove &Sigma;<sub><span class="var">i</span>&le;<span class="var">n</span></sub> <span class="var">c<sub>i</sub></span> &ge; log(<span class="var">n</span>+<span class="var">e</span>)
+      (so the constants cannot decay exponentially), compute <span class="var">c</span><sub>0</sub>&hellip;<span class="var">c</span><sub>3</sub> exactly, and note
+      they cannot even prove (<span class="var">c<sub>n</sub></span>) is bounded.</p>
+    <p><b>The digit-sum law (Michael M. Ross).</b> A later Monte-Carlo study to depth 8192, anchored by
+      <em>new exact rationals</em> for <span class="var">c</span><sub>4</sub>, <span class="var">c</span><sub>5</sub>, <span class="var">c</span><sub>6</sub> (computed by a sign-cone
+      decomposition), found that the binary digit sum <span class="var">s</span><sub>2</sub>(<span class="var">n</span>) modulates the leading order:
+      <span class="var">c<sub>n</sub></span> &approx; <span class="var">C&thinsp;&lambda;</span><sup><span class="var">s</span><sub>2</sub>(<span class="var">n</span>)</sup>/<span class="var">n</span>, with <span class="var">&lambda;</span> drifting through &asymp;1.14&ndash;1.20.
+      This explains the non-monotone &ldquo;sawtooth&rdquo; (already <span class="var">c</span><sub>2</sub> &lt; <span class="var">c</span><sub>3</sub>; the exact weave
+      continues <span class="var">c</span><sub>3</sub> &gt; <span class="var">c</span><sub>4</sub> &lt; <span class="var">c</span><sub>5</sub> &gt; <span class="var">c</span><sub>6</sub>). See M. M. Ross, &ldquo;Empirical Structure of the
+      Gilbreath Decay Constants&rdquo; (<a href="https://zenodo.org/records/21326026">Zenodo 10.5281/zenodo.21326026</a>;
+      <a href="https://github.com/michaelmross/Gilbreath">code &amp; exact certificates</a>).</p>
+    <p class="muted"><b>Method &amp; scope.</b> Each &ldquo;simulation&rdquo; draws a fresh width-(<span class="var">n</span>+1) exponential top row and
+      records the diagonal <span class="var">a</span>(<span class="var">i</span>,0); <span class="var">c<sub>n</sub></span> is the running mean, with the standard error shown. This is
+      exactly the estimator in the paper&rsquo;s <span class="var">cn.py</span>. The browser reaches modest depths (tens), where a linear
+      <span class="var">c<sub>n</sub></span>-vs-<span class="var">n</span> plot shows the convergence and sawtooth clearly; the log&ndash;log strands of Ross&rsquo;s Figure&nbsp;1
+      only separate over the far larger range (to 8192) reachable with dedicated compute. All computation is deterministic
+      given the seed, runs in your browser, and makes no network calls.</p>
+  </details>
+  <footer>Coded with the assistance of Claude Code &middot; <a href="../applets.html#design-philosophy">Design philosophy</a> &middot; Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="gilbreath-cn.js"></script>
+<script>
+(function () {
+  var G = window.GilbreathCn;
+  var $ = function (id) { return document.getElementById(id); };
+  var plot = $('plot'), inst = $('inst');
+  var pctx = plot.getContext('2d'), ictx = inst.getContext('2d');
+
+  var el = {
+    maxN: $('maxN'), speed: $('speed'), seed: $('seed'),
+    play: $('play'), step: $('step'), reset: $('reset'), newInst: $('newInst'),
+    showLaw: $('showLaw'), lambda: $('lambda'), lambdaOut: $('lambdaOut'),
+    showEnv: $('showEnv'), logAxes: $('logAxes'), showInst: $('showInst'),
+    tbody: $('tbody'), status: $('status'), instN: $('instN'), instWrap: $('instWrap'),
+  };
+
+  var st = { est: null, N: 20, playing: false, raf: 0, seed: 1, instRows: null, instSeed: 1 };
+
+  function clampInt(v, lo, hi, dflt) { v = parseInt(v, 10); if (!isFinite(v)) v = dflt; return Math.max(lo, Math.min(hi, v)); }
+  function cssvar(name, fallback) {
+    try { var v = getComputedStyle(document.documentElement).getPropertyValue(name); return (v && v.trim()) || fallback; }
+    catch (e) { return fallback; }
+  }
+  // fit the law constant C to the exact anchors c_2..c_6 for the current lambda
+  function fitC(lambda) {
+    var logs = 0, k = 0;
+    for (var n = 2; n <= G.EXACT_MAX; n++) {
+      var ex = G.EXACT[n]; if (!ex) continue;
+      logs += Math.log(ex.dec * n / Math.pow(lambda, G.s2(n))); k++;
+    }
+    return k ? Math.exp(logs / k) : 1.9;
+  }
+
+  function reset() {
+    st.N = clampInt(el.maxN.value, 3, 60, 20);
+    st.seed = clampInt(el.seed.value, 0, 999999, 1);
+    st.est = G.makeEstimator(st.N + 1, G.mulberry32(st.seed || 1));
+    st.instSeed = st.seed || 1;
+    newInstance();
+    render();
+  }
+  function newInstance() {
+    var rng = G.mulberry32((st.instSeed = (st.instSeed * 1103515245 + 12345) >>> 0) || 7);
+    var top = new Array(st.N + 1);
+    for (var j = 0; j <= st.N; j++) top[j] = -Math.log(1 - rng());
+    st.instRows = G.pyramidRows(top);
+  }
+
+  function tick(frames) {
+    var perFrame = [0, 100, 500, 2000, 8000][clampInt(el.speed.value, 1, 4, 2)] || 500;
+    st.est.run(perFrame * (frames || 1));
+  }
+
+  // ---- drawing ----------------------------------------------------------
+  // Size the backing store for the device pixel ratio so the line plot and axis
+  // text stay crisp on HiDPI screens; draw in logical W×H coordinates.
+  function prep(canvas, ctx, W, H) {
+    var dpr = Math.min(3, window.devicePixelRatio || 1);
+    if (canvas.width !== Math.round(W * dpr)) { canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); canvas.style.width = W + 'px'; }
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { W: W, H: H };
+  }
+
+  function render() { drawPlot(); drawTable(); drawInst(); status(); }
+
+  function drawPlot() {
+    var d = prep(plot, pctx, 920, 520), W = d.W, H = d.H, ctx = pctx;
+    var ink = cssvar('--ink', '#1a1a1a'), muted = cssvar('--muted', '#777'),
+        line = cssvar('--line', '#ccc'), accent = cssvar('--accent', '#2b6cb0'),
+        panel = cssvar('--panel', '#fff'), danger = cssvar('--danger', '#c0392b');
+    ctx.clearRect(0, 0, W, H); ctx.fillStyle = panel; ctx.fillRect(0, 0, W, H);
+    var m = { l: 62, r: 16, t: 20, b: 46 };
+    var pw = W - m.l - m.r, ph = H - m.t - m.b;
+    var log = !!el.logAxes.checked, N = st.N;
+
+    // data ranges
+    var yMax = 1.05, yMin = 0;
+    if (log) {
+      var lo = 1e9, hi = 0;
+      for (var n = 1; n <= N; n++) { var c = st.est.ci(n); if (c > 0) { lo = Math.min(lo, c); hi = Math.max(hi, c); } var ex = G.EXACT[n]; if (ex) { lo = Math.min(lo, ex.dec); hi = Math.max(hi, ex.dec); } }
+      if (!(lo < hi)) { lo = 0.01; hi = 1; }
+      yMin = Math.pow(10, Math.floor(Math.log10(lo)) - 0.05); yMax = Math.pow(10, Math.ceil(Math.log10(hi)) + 0.02);
+    }
+    function xAt(n) {
+      if (log) { var x0 = Math.log10(1), x1 = Math.log10(N); return m.l + (Math.log10(Math.max(1, n)) - x0) / (x1 - x0) * pw; }
+      return m.l + (n / N) * pw;
+    }
+    function yAt(c) {
+      if (log) { var l0 = Math.log10(yMin), l1 = Math.log10(yMax); return m.t + (1 - (Math.log10(Math.max(yMin, c)) - l0) / (l1 - l0)) * ph; }
+      return m.t + (1 - (c - yMin) / (yMax - yMin)) * ph;
+    }
+
+    // grid + axes
+    ctx.strokeStyle = line; ctx.fillStyle = muted; ctx.lineWidth = 1;
+    ctx.font = '12px system-ui, sans-serif'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    var yticks = log ? logTicks(yMin, yMax) : [0, 0.2, 0.4, 0.6, 0.8, 1.0];
+    for (var yi = 0; yi < yticks.length; yi++) {
+      var yy = yAt(yticks[yi]);
+      ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(m.l, yy); ctx.lineTo(W - m.r, yy); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillText(fmtTick(yticks[yi]), m.l - 8, yy);
+    }
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    var xticks = log ? logIntTicks(N) : niceXTicks(N);
+    for (var xi = 0; xi < xticks.length; xi++) { var xx = xAt(xticks[xi]); ctx.fillText(String(xticks[xi]), xx, H - m.b + 8); }
+    ctx.strokeStyle = muted; ctx.beginPath(); ctx.moveTo(m.l, m.t); ctx.lineTo(m.l, H - m.b); ctx.lineTo(W - m.r, H - m.b); ctx.stroke();
+    ctx.fillStyle = muted; ctx.textAlign = 'center';
+    ctx.fillText('depth n', m.l + pw / 2, H - 16);
+    ctx.save(); ctx.translate(16, m.t + ph / 2); ctx.rotate(-Math.PI / 2); ctx.fillText('c_n', 0, 0); ctx.restore();
+
+    // data series, clipped to the plot rectangle so nothing spills past the axes
+    var lambda = parseFloat(el.lambda.value) || 1.17, C = fitC(lambda);
+    ctx.save(); ctx.beginPath(); ctx.rect(m.l, m.t, pw, ph); ctx.clip();
+
+    // pure 1/n envelope (from n=2; c_1 is the trivial 1 and n=1 is off-scale).
+    // Its constant is fitted at λ=1 so it is genuinely 1/n — independent of the λ slider.
+    if (el.showEnv.checked) {
+      var envC = fitC(1);
+      ctx.strokeStyle = muted; ctx.setLineDash([2, 3]); ctx.lineWidth = 1.3; ctx.beginPath();
+      for (var n2 = 2; n2 <= N; n2++) { (n2 === 2 ? ctx.moveTo : ctx.lineTo).call(ctx, xAt(n2), yAt(G.ciEnvelope(n2, envC))); }
+      ctx.stroke(); ctx.setLineDash([]);
+    }
+    // Ross's digit-sum law
+    if (el.showLaw.checked) {
+      ctx.strokeStyle = '#2f9e57'; ctx.lineWidth = 1.8; ctx.beginPath();
+      for (var n3 = 2; n3 <= N; n3++) { (n3 === 2 ? ctx.moveTo : ctx.lineTo).call(ctx, xAt(n3), yAt(G.ciLaw(n3, C, lambda))); }
+      ctx.stroke();
+    }
+    // MC points + 95% error bars
+    ctx.strokeStyle = accent; ctx.fillStyle = accent; ctx.lineWidth = 1.4;
+    for (var n4 = 1; n4 <= N; n4++) {
+      var c4 = st.est.ci(n4); if (!isFinite(c4) || (log && c4 <= 0)) continue;
+      var x = xAt(n4), y = yAt(c4), se = st.est.se(n4);
+      if (isFinite(se) && se > 0) {
+        var hiE = yAt(c4 + 1.96 * se), loE = yAt(Math.max(log ? yMin : 0, c4 - 1.96 * se));
+        ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.moveTo(x, hiE); ctx.lineTo(x, loE); ctx.stroke(); ctx.globalAlpha = 1;
+      }
+      ctx.beginPath(); ctx.arc(x, y, 2.6, 0, 2 * Math.PI); ctx.fill();
+    }
+    // exact anchors (open circles)
+    ctx.strokeStyle = danger; ctx.lineWidth = 2;
+    for (var n5 = (log ? 1 : 0); n5 <= G.EXACT_MAX && n5 <= N; n5++) {
+      var ex5 = G.EXACT[n5]; if (!ex5) continue;
+      ctx.beginPath(); ctx.arc(xAt(n5), yAt(ex5.dec), 4.5, 0, 2 * Math.PI); ctx.stroke();
+    }
+    ctx.restore();
+
+    // legend
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.font = '12px system-ui, sans-serif';
+    var lx = W - m.r - 168, ly = m.t + 8;
+    legendDot(ctx, lx, ly, accent, 'Monte Carlo c_n', ink);
+    if (el.showLaw.checked) legendLine(ctx, lx, ly + 18, '#2f9e57', 'C λ^{s₂}/n  (Ross)', ink);
+    legendRing(ctx, lx, ly + 36, danger, 'exact  c₀–c₆', ink);
+  }
+  function legendDot(ctx, x, y, col, label, ink) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x + 5, y, 3.2, 0, 2 * Math.PI); ctx.fill(); ctx.fillStyle = ink; ctx.fillText(label, x + 16, y); }
+  function legendRing(ctx, x, y, col, label, ink) { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x + 5, y, 4, 0, 2 * Math.PI); ctx.stroke(); ctx.fillStyle = ink; ctx.fillText(label, x + 16, y); }
+  function legendLine(ctx, x, y, col, label, ink) { ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 12, y); ctx.stroke(); ctx.fillStyle = ink; ctx.fillText(label, x + 16, y); }
+
+  function niceXTicks(N) { var out = [0]; var step = N <= 20 ? 2 : N <= 40 ? 5 : 10; for (var v = step; v <= N; v += step) out.push(v); return out; }
+  function logIntTicks(N) { var out = []; [1, 2, 3, 5, 10, 20, 30, 50].forEach(function (v) { if (v <= N) out.push(v); }); if (out[out.length - 1] !== N) out.push(N); return out; }
+  function logTicks(lo, hi) { var out = []; for (var e = Math.floor(Math.log10(lo)); e <= Math.ceil(Math.log10(hi)); e++) { var b = Math.pow(10, e); [1, 2, 5].forEach(function (m) { var v = m * b; if (v >= lo && v <= hi) out.push(v); }); } return out; }
+  function fmtTick(v) { if (v === 0) return '0'; if (v >= 0.1) return v.toFixed(v < 1 ? 1 : 0); return v.toExponential(0); }
+
+  function drawTable() {
+    var rows = '';
+    for (var n = 1; n <= st.N; n++) {
+      var c = st.est.ci(n), se = st.est.se(n), ex = G.EXACT[n];
+      var exStr = ex ? ex.dec.toFixed(6) : '—';
+      var diff = ex && isFinite(c) ? (c - ex.dec) : NaN;
+      rows += '<tr class="' + (ex ? 'exact' : '') + '">' +
+        '<td class="n">' + n + '</td><td class="n">' + G.s2(n) + '</td>' +
+        '<td>' + (isFinite(c) ? c.toFixed(5) : '—') + '</td>' +
+        '<td>' + (isFinite(se) ? se.toFixed(5) : '—') + '</td>' +
+        '<td>' + exStr + '</td>' +
+        '<td class="diff">' + (isFinite(diff) ? (diff >= 0 ? '+' : '') + diff.toFixed(4) : '') + '</td></tr>';
+    }
+    el.tbody.innerHTML = rows;
+  }
+
+  function drawInst() {
+    el.instWrap.style.display = el.showInst.checked ? '' : 'none';
+    if (!el.showInst.checked || !st.instRows) return;
+    var rows = st.instRows, R = rows.length, ctx = ictx, di = prep(inst, ictx, 360, 360), W = di.W, H = di.H;
+    var ink = cssvar('--ink', '#1a1a1a'), line = cssvar('--line', '#ccc'),
+        panel = cssvar('--panel', '#fff'), accent = cssvar('--accent', '#2b6cb0');
+    ctx.clearRect(0, 0, W, H); ctx.fillStyle = panel; ctx.fillRect(0, 0, W, H);
+    var pad = 8, cell = Math.max(3, Math.min(16, (W - 2 * pad) / R));
+    // magnitude colour scale (0..~max of top row)
+    var mx = 0; for (var j = 0; j < rows[0].length; j++) mx = Math.max(mx, rows[0][j]); mx = mx || 1;
+    for (var i = 0; i < R; i++) {
+      var row = rows[i], y = pad + i * cell;
+      for (var k = 0; k < row.length; k++) {
+        var x = pad + k * cell, t = Math.min(1, row[k] / mx);
+        // pale->accent ramp
+        ctx.fillStyle = 'rgba(43,108,176,' + (0.08 + 0.72 * t).toFixed(3) + ')';
+        ctx.fillRect(x + 0.5, y + 0.5, cell - 1, cell - 1);
+      }
+    }
+    // outline the left diagonal a(i,0)
+    ctx.strokeStyle = accent; ctx.lineWidth = 1.6;
+    for (var d = 0; d < R; d++) { ctx.strokeRect(pad + 0.5, pad + d * cell + 0.5, cell - 1, cell - 1); }
+    el.instN.textContent = String(R - 1);
+  }
+
+  function status() {
+    el.status.innerHTML = 'Pyramids simulated: <b>' + st.est.pyramids.toLocaleString() + '</b> &middot; depths 0–' + st.N +
+      ' &middot; seed <b>' + st.seed + '</b>' + (st.playing ? ' &middot; running…' : '');
+  }
+
+  // ---- animation loop ---------------------------------------------------
+  function frame() { if (!st.playing) return; tick(1); render(); st.raf = window.requestAnimationFrame(frame); }
+  function setPlaying(on) {
+    st.playing = on; el.play.innerHTML = on ? '&#10073;&#10073;&nbsp;Pause' : '&#9654;&nbsp;Play';
+    if (on) { st.raf = window.requestAnimationFrame(frame); } else if (st.raf) { window.cancelAnimationFrame(st.raf); }
+    status();
+  }
+
+  // ---- wiring -----------------------------------------------------------
+  el.play.addEventListener('click', function () { setPlaying(!st.playing); });
+  el.step.addEventListener('click', function () { if (st.playing) setPlaying(false); tick(1); render(); });
+  el.reset.addEventListener('click', function () { setPlaying(false); reset(); });
+  el.newInst.addEventListener('click', function () { newInstance(); drawInst(); });
+  el.maxN.addEventListener('change', function () { setPlaying(false); reset(); });
+  el.seed.addEventListener('change', function () { setPlaying(false); reset(); });
+  el.lambda.addEventListener('input', function () { el.lambdaOut.textContent = (parseFloat(el.lambda.value) || 1.17).toFixed(2); drawPlot(); });
+  ['showLaw', 'showEnv', 'logAxes', 'showInst'].forEach(function (id) {
+    el[id].addEventListener('change', function () { render(); });
+  });
+
+  reset();
+})();
+</script>
+</body>
+</html>

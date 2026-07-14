@@ -84,6 +84,21 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/gilbreath-making-of.html
+- name: Gilbreath decay constants
+  category: Number theory
+  status: original
+  date: "2026-07-14"
+  description: >-
+    A companion to the Gilbreath array explorer. For an exponential-random top row, the decay constant
+    c_n = E a(n,j) is the expected entry at depth n. Set the depth, then watch a Monte-Carlo estimate —
+    the running average of the left diagonal a(n,0) over many random pyramids — converge, plotted against
+    the exactly known c_0…c_6 and Michael Ross's empirical digit-sum law c_n ≈ C·λ^{s₂(n)}/n, with a live
+    sample pyramid alongside. Built on the paper by Zachary Chase, Zach Hunter and Terence Tao; the exact
+    c_4–c_6 and the digit-sum law are due to M. M. Ross.
+  url: apps/gilbreath-cn.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/gilbreath-cn-making-of.html
 # --- Probability (original app) ---
 - name: Random variable visualizer
   category: Probability
