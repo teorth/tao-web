@@ -8,8 +8,8 @@ description: >-
   which have been ported to modern JavaScript, which still run elsewhere, and which are yet to be
   ported.
 category_notes:
-  Linear algebra: All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0.
-  Complex analysis: All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000.
+  Linear algebra: "All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0. [The porting of these legacy applets — a conversation transcript](apps/porting-legacy-applets.html)."
+  Complex analysis: "All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000. [The porting of these legacy applets — a conversation transcript](apps/porting-legacy-applets.html)."
 philosophy:
   - heading: "AI involvement is disclosed."
     body: >-

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Porting the legacy applets — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }  /* the h2 top-borders already separate sections */
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>Porting the legacy applets</h1>
+    <p class="prov">A lightly edited transcript of the conversation that ported Tao's old Java
+      teaching applets to vanilla JavaScript. See the <a href="../applets.html">interactive tools</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that ported Terence Tao&#x27;s old Java-1.0 teaching applets — dead in modern browsers — to vanilla JavaScript on <a href="https://github.com/teorth/tao-web">tao-web</a>: the six <a href="https://teorth.github.io/tao-web/applets.html">linear-algebra</a> applets (Kim Chi Tran, 2002), the ten complex-analysis applets (Tao, 1998–2000), and several harder one-offs (Besicovitch/Kakeya sets, conformal compactification, honeycombs, an exponent calculator). This is the counterpart to the &quot;making of&quot; transcripts for the original apps — here the work is </em>reconstruction<em>, not invention.</em></p>
+<p><strong>How to read this.</strong> As with the making-of transcripts:</p>
+<ul><li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim (trivial &quot;next one&quot; replies folded into narration).</li><li><strong>Claude&#x27;s replies</strong> — reading the original <code>.java</code>, writing a reimplementation spec, then coding the vanilla-JS port — are replaced by short <em>italic summaries</em>.</li><li>Interleaved unrelated site work (CV, papers, student pages) is left out.</li></ul>
+<p>Unlike the original apps, most ports were driven by a <strong>spec-first, per-app recipe</strong> run partly through background sub-agents; the shared method matters more than any single exchange.</p>
+<hr>
+<h2>1. The problem, and choosing a target</h2>
+<blockquote><p>Now for a more challenging task. In <a href="https://terrytao.wordpress.com/applets/">my applets page</a> I have a list of old applets and similar projects. I am not asking to migrate them at this time — because most of them no longer work! For instance, most of the Java applets use Java 1.0 which are not supported any more by modern browsers. So I would like to port (if possible) the old applets to a modern language (Javascript perhaps?). Is this something that is hostable on the github pages?</p><p>As a concrete example, one can start with the vector calculator […] <code>Apple1.html</code> whose code is at <code>Apple1.java</code>. What would be a suitable language to refactor to that could run on the github?</p></blockquote>
+<p><em>Recommended plain <strong>vanilla JavaScript + HTML5 Canvas</strong> — no build step, no framework, no dependencies — which is exactly what GitHub Pages serves and what the rest of the site already follows. Ported the vector calculator first as a proof of concept: fetch <code>Apple1.java</code>, rebuild its geometry and interaction in JS, drop it in <code>static/apps/</code> against the shared <code>applet.css</code>.</em></p>
+<h2>2. The recipe</h2>
+<p>The first port set a template that every later one reused:</p>
+<ul><li><strong>Fetch the original source</strong> from <code>math.ucla.edu/~tao/...</code> — the graphical applets are split into a controller class plus a <code>*Grid</code>/canvas class, so both are needed.</li><li><strong>Write a precise reimplementation spec from the Java</strong> before coding — field-by-field state, exact control labels, the rendering and interaction contract — so the port reproduces behaviour rather than guessing it. Where a source file was missing, its contract was reconstructed from every call site and flagged as inferred.</li><li><strong>Rewrite in vanilla JS</strong>, <code>&lt;link&gt;</code>ing the shared CSS, and flip the catalogue entry from <code>to-port</code> to <code>ported</code> with a <code>url</code>. Use each source&#x27;s <code>Last-Modified</code> year for the catalogue date.</li></ul>
+<h2>3. Linear algebra first</h2>
+<blockquote><p>We can update the descriptions when the time comes to port. Maybe we can port the linear algebra ones first, since you already did the first one.</p></blockquote>
+<p><em>Ported the remaining five 2002 linear-algebra applets — Gaussian elimination, a matrix calculator, linear transformations in ℝ², eigenvalues/eigenvectors, and Gram–Schmidt — on the same pattern, all sharing <code>applet.css</code>.</em></p>
+<h2>4. Complex analysis, and two shared libraries</h2>
+<blockquote><p>Apps seem to work fine. Let&#x27;s start on the complex analysis ones.</p></blockquote>
+<p><em>The complex-analysis set (1998–2000) shares far more machinery, so two reusable libraries were factored out first and every later port built on them:</em></p>
+<ul><li><em><code>complex.js</code> — a faithful rewrite of the original <code>Complex.java</code>: complex arithmetic with principal branches and a genuine <strong>point at infinity</strong> on the Riemann sphere, plus <code>Complex.mobius</code>.</em></li><li><em><code>plane.js</code> — a <code>ComplexStage</code>: device-pixel-ratio sizing, one-to-N square panels with optional per-panel views, math↔pixel coordinate maps, grid/axes, and segment/curve/dot/circle/arrow primitives.</em></li></ul>
+<p><em>The first two ports (<code>The complex plane</code>, <code>The complex integral</code>) exercised the libraries;</em></p>
+<blockquote><p>Looks good! I think you can handle the next eight.</p></blockquote>
+<p><em>…and the rest of the family followed — elementary complex maps, Möbius transforms, multi-valued functions, the complex derivative, Taylor/Laurent series, the fundamental theorem, the residue theorem, and the argument principle.</em> The <strong>complex integral</strong> port kept the original&#x27;s pedagogical core: the user draws a contour in the z-plane while the running Riemann sum <code>Σ f(zₖ)·Δzₖ</code> traces a trajectory in the w-plane, and the local action of <code>f(z)</code> on the tangent directions <code>dz=1</code> and <code>dz=i</code> is shown live.</p>
+<h2>5. The harder one-offs</h2>
+<blockquote><p>Looks great! Let&#x27;s try besicovitch next.</p></blockquote>
+<p><em>Ported the 1998 Besicovitch/Kakeya applet — the Perron-tree triangle-sprouting figure whose overlapping sub-triangles point in all directions while the painted area shrinks toward a small bound.</em></p>
+<blockquote><p>Let&#x27;s do the exponent calculator one, that one is simpler, and you can make a more descriptive title once you read through it (previously you gave a vague description).</p></blockquote>
+<p><em>This one was a symbolic engine, not a canvas app: three layers — <code>Monomial</code> → <code>Polynomial</code> → <code>Rational</code> — all with integer coefficients. <code>Monomial.java</code> was absent from the sources, so its contract was reconstructed from every use in <code>Rational.java</code> and <code>Polynomial.java</code> and marked inferred.</em></p>
+<blockquote><p>Yes. It&#x27;s one of the most mathematically sophisticated ones, could be tricky but hopefully doable.</p></blockquote>
+<p><em>The honeycomb applet (Knutson–Tao honeycombs). The port preserved the original&#x27;s key design decision: the honeycomb is never stored directly — the only state is the dual <strong>hive</strong> (a triangular integer array), and every vertex, edge and hexagon is derived on the fly from hive differences.</em></p>
+<h2>6. Fixing what the ports got wrong</h2>
+<p>Faithful reconstruction still left a few behavioural gaps, caught by testing against the originals:</p>
+<blockquote><p>Port looks good except the shrink max and enlarge max buttons do not seem to be functional. They&#x27;re supposed to shrink or grow a hexagon as far as is legally possible, I think.</p></blockquote>
+<blockquote><p>In the &quot;elementary complex maps&quot; app, there is a weird bug when I select the <code>f(z) = z^3</code> function — once the mouse is dragged off screen, the app stops rendering the range window curve, even if I change the function subsequently. Only a refresh of the entire web page fixes the problem. Can you try to diagnose?</p></blockquote>
+<p><em>Fixed both: the honeycomb&#x27;s &quot;shrink/enlarge to the legal maximum&quot; actions, and a stale-state bug where a pointer leaving the canvas left the range-plane render suppressed until reload.</em></p>
+<hr>
+<p><em>The ported applets are catalogued alongside the site&#x27;s original apps, each marked <strong>ported</strong> and linked to its rebuilt page. They aim to reproduce the originals&#x27; behaviour on a modern, dependency-free stack — the 1998–2002 mathematics, running again in the browser without Java.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>
