@@ -265,7 +265,7 @@
   <div class="legend" id="legend"></div>
   <p class="legendnote">Uncheck a kind above to hide those statements (their dependencies re-link transitively). The thickness of a statement's border indicates its weight (1–5).</p>
 
-  <details class="fmtdoc">
+  <details class="fmtdoc" id="format">
     <summary>The <code>paper-diagram</code> JSON format (for authoring new diagrams)</summary>
     <div class="fmtbody">
       <p>Each paper in the library is one JSON object in the <code>paper-diagram</code> format (<code>schemaVersion: 1</code>): a <strong>directed acyclic graph</strong> of a paper's statements. Node <em>positions are not stored</em> — the viewer lays the graph out automatically from the dependency edges and per-node weights. To add a paper, write one such object; the fastest way to get a valid template is to open the currently-loaded paper with the <strong>JSON</strong> export button and mirror its shape.</p>
@@ -1242,6 +1242,18 @@ $('exdl').addEventListener('click', () => {
 });
 
 boot();
+// deep-link to the JSON-format spec: #format opens (and scrolls to) that <details>
+(function () {
+  try {
+    const openFmt = () => {
+      if (typeof location === 'undefined' || location.hash !== '#format') return;
+      const d = $('format'); if (!d) return;
+      d.open = true; if (d.scrollIntoView) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    };
+    if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', openFmt);
+    openFmt();
+  } catch (e) {}
+})();
 ;window.__t = { $, render, relayout, rebuild, loadPaper, newBlank, openLibrary, renderLibList, editTitle, refreshPaperSelect, importJson, openExport, selectNode, clearSelect, ignoreNode, restoreNode, restoreAll, editNode, newNode, saveEdit, cancelEdit, deleteNode, undo, readForm, renderEdit, get diagram() { return diagram; }, get SRC() { return SRC; }, state };
 </script>
 </body>
