@@ -500,7 +500,7 @@
         : '';
       return '<g>'
         + `<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="6" fill="${fill}" stroke="${hue}" stroke-width="${sw}"${dash}/>`
-        + `<text x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="600" font-size="12" fill="${C.ink}">${svgEsc(n.label || n.id)}</text>`
+        + `<text x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="600" font-size="12" fill="${C.ink}">${svgEsc(((L) => L.length > Math.floor(p.w / 7.5) ? L.slice(0, Math.floor(p.w / 7.5) - 1) + '…' : L)(String(n.label || n.id)))}</text>`
         + nm + '</g>';
     }).join('');
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX.toFixed(0)} ${minY.toFixed(0)} ${w.toFixed(0)} ${h.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}">`
@@ -660,7 +660,12 @@ function nodeSvg(n, p) {
   const x = (p.x - p.w / 2).toFixed(1), y = (p.y - p.h / 2).toFixed(1);
   const sw = (0.6 + (n.weight || 2) * 0.8).toFixed(2);   // weight 1..5 -> ~1.4..4.6px border
   const dash = n.external ? ' stroke-dasharray="5 3"' : '';
+  // box size encodes weight, not text length, so clip the in-box text to the box
+  // width (label is bold monospace ~12px ≈ 7.5px/char; name is ~9.5px sans ≈ 5.4)
+  // and expose the full text via a hover <title> (and the click panel).
+  const lbl = truncate(n.label || n.id, Math.floor(p.w / 7.5));
   const nm = truncate(n.name || '', Math.floor(p.w / 5.4));
+  const tip = (n.label || n.id) + (n.name ? ' — ' + n.name : '');
   // an explicit fill overrides the stylesheet (inline style wins) and forces dark
   // ink on the text so a light fill stays legible in either theme
   const fill = safeFill(n.color);
@@ -668,8 +673,9 @@ function nodeSvg(n, p) {
   const lblSty = fill ? ' style="fill:#1b1f24"' : '';
   const nmSty = fill ? ' style="fill:#4a5160"' : '';
   return `<g class="node ${n.external ? 'external' : ''}${fill ? ' filled' : ''}" data-id="${esc(n.id)}">`
+    + `<title>${esc(tip)}</title>`
     + `<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="6" stroke="${k.hue}" stroke-width="${sw}"${dash}${rectSty}></rect>`
-    + `<text class="lbl" x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle"${lblSty}>${esc(n.label || n.id)}</text>`
+    + `<text class="lbl" x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle"${lblSty}>${esc(lbl)}</text>`
     + (nm ? `<text class="nm" x="${p.x.toFixed(1)}" y="${(p.y + 12).toFixed(1)}" text-anchor="middle"${nmSty}>${esc(nm)}</text>` : '')
     + `</g>`;
 }

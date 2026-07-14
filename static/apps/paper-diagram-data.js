@@ -10,7 +10,8 @@
       { "id": "wiles-flt", "title": "Fermat's Last Theorem (Wiles)" },
       { "id": "perelman-ricci", "title": "Ricci flow & geometrization (Perelman)" },
       { "id": "2405.20552", "title": "Large values of Dirichlet polynomials (Guth–Maynard)" },
-      { "id": "szemeredi", "title": "Szemerédi's theorem on arithmetic progressions (Szemerédi 1975)" }
+      { "id": "szemeredi", "title": "Szemerédi's theorem on arithmetic progressions (Szemerédi 1975)" },
+      { "id": "sphere-packing-lean", "title": "Sphere packing in dimension 8 — Lean formalization (blueprint)" }
     ],
     "_catalog": [
       { "id": "kakeya", "title": "Kakeya set conjecture in R³", "authors": ["Wang", "Zahl"], "year": 2025, "arxiv": "2502.17655" },
@@ -20,7 +21,8 @@
       { "id": "2605.00301", "title": "Primitive sets and von Mangoldt chains (Erdős #1196 and beyond)", "authors": ["Alexeev", "Barreto", "Li", "Lichtman", "Price", "Shah", "Tang", "Tao"], "year": 2026, "arxiv": "2605.00301" },
       { "id": "2211.15847", "title": "A counterexample to the periodic tiling conjecture", "authors": ["Greenfeld", "Tao"], "year": 2022, "arxiv": "2211.15847" },
       { "id": "gilbreath", "title": "Gilbreath's conjecture", "authors": ["Chase", "Hunter", "Tao"], "year": 2025 },
-      { "id": "szemeredi", "title": "On sets of integers containing no k elements in arithmetic progression", "authors": ["Szemerédi"], "year": 1975 }
+      { "id": "szemeredi", "title": "On sets of integers containing no k elements in arithmetic progression", "authors": ["Szemerédi"], "year": 1975 },
+      { "id": "sphere-packing-lean", "title": "Sphere packing in dimension 8 — a Lean formalization (after Viazovska)", "authors": ["Sphere-Packing-Lean project"], "year": 2025 }
     ]
   };
   if (typeof window !== "undefined") window.PaperDiagramData = DIAGRAMS;

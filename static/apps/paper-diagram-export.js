@@ -241,7 +241,7 @@ function toSvg(diagram, pos, opts) {
       : '';
     return '<g>'
       + `<rect x="${x}" y="${y}" width="${p.w}" height="${p.h}" rx="6" fill="${fill}" stroke="${hue}" stroke-width="${sw}"${dash}/>`
-      + `<text x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="600" font-size="12" fill="${C.ink}">${svgEsc(n.label || n.id)}</text>`
+      + `<text x="${p.x.toFixed(1)}" y="${(p.y - 2).toFixed(1)}" text-anchor="middle" font-family="ui-monospace, monospace" font-weight="600" font-size="12" fill="${C.ink}">${svgEsc(((L) => L.length > Math.floor(p.w / 7.5) ? L.slice(0, Math.floor(p.w / 7.5) - 1) + '…' : L)(String(n.label || n.id)))}</text>`
       + nm + '</g>';
   }).join('');
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX.toFixed(0)} ${minY.toFixed(0)} ${w.toFixed(0)} ${h.toFixed(0)}" width="${w.toFixed(0)}" height="${h.toFixed(0)}">`
