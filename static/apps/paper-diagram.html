@@ -307,9 +307,11 @@
       <p>The script <strong>makes no network calls of its own</strong> — it reads a local file or stdin, so you fetch the graph with a tool you trust (here <code>curl</code>):</p>
       <p><code style="display:block; white-space:pre-wrap; word-break:break-word; padding:8px 10px; background:var(--accent-soft); border-radius:6px;">curl -sL https://&lt;project&gt;.github.io/&lt;repo&gt;/blueprint/dep_graph_document.html | python3 leanblueprint_to_paperdiagram.py --title "My paper" &gt; diagram.json</code></p>
       <p>Then paste <code>diagram.json</code> into the <strong>edit JSON</strong> box above and press <em>load into viewer</em>. (Or point the script at a local <code>dep_graph_document.html</code> / <code>dep_graph.dot</code> from a local blueprint build — no web at all.)</p>
+      <p>Add <code>--source blueprint/src</code> to also pull each statement's <strong>text, section and <code>\lean</code> declaration</strong> from the LaTeX source — still deterministic, still dependency-free:</p>
+      <p><code style="display:block; white-space:pre-wrap; word-break:break-word; padding:8px 10px; background:var(--accent-soft); border-radius:6px;">python3 leanblueprint_to_paperdiagram.py dep_graph.dot --source blueprint/src &gt; diagram.json</code></p>
       <p class="fmth">Notes</p>
       <ul>
-        <li>This version carries the <strong>structure, kinds and formalization-status colours</strong> with the blueprint's labels; it does not pull across the full statement text (a later version that parses the blueprint source with <code>plasTeX</code> will add statements and sections).</li>
+        <li>Without <code>--source</code> the diagram carries the <strong>structure, kinds and formalization-status colours</strong> with the blueprint's labels; with it, the full statement text and sections too (that's how the <em>“Sphere packing…”</em> example above is built). Both are deterministic and dependency-free (pure Python standard library — no <code>plasTeX</code>, no network).</li>
         <li>The converter is <strong>LLM-generated</strong> — read it before running it. It reads only a local file or stdin and writes JSON to stdout.</li>
       </ul>
     </div>

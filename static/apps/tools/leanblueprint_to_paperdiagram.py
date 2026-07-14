@@ -18,6 +18,10 @@ Usage (this script never touches the network — you fetch the graph yourself):
     # or run it on a local blueprint build (dep_graph_document.html or dep_graph.dot):
     python3 leanblueprint_to_paperdiagram.py blueprint/web/dep_graph_document.html > diagram.json
 
+    # richer: also pull each statement's TEXT, section and \\lean from the source
+    # (--source points at the blueprint's LaTeX source dir; still no plasTeX, no web):
+    python3 leanblueprint_to_paperdiagram.py dep_graph.dot --source blueprint/src > diagram.json
+
 Then paste diagram.json into the viewer's "edit JSON" box and press "load".
 
 --- WARNING -------------------------------------------------------------------
@@ -96,14 +100,175 @@ def convert(dot, title):
             'nodes': nodes, 'edges': edges}
 
 
+# --------------------------------------------------------------------------
+# Optional: enrich the diagram with statement text / section / \lean parsed from
+# the blueprint SOURCE (`--source blueprint/src`). The DOT gives structure +
+# status + labels; the source adds the statements. Still deterministic, no deps.
+# --------------------------------------------------------------------------
+import os
+
+STMT_ENVS = {'theorem', 'lemma', 'definition', 'proposition', 'corollary', 'remark',
+             'conjecture', 'example', 'notation', 'claim', 'fact', 'problem', 'question',
+             'thm', 'lem', 'def', 'defn', 'prop', 'cor'}
+META = {'label', 'uses', 'lean', 'leanok', 'notready', 'mathlibok', 'discussion', 'alsoin', 'proves'}
+
+
+def _match_brace(s, i):          # s[i] == '{' -> (inner, index-after-'}')
+    depth = 0
+    for j in range(i, len(s)):
+        if s[j] == '{':
+            depth += 1
+        elif s[j] == '}':
+            depth -= 1
+            if depth == 0:
+                return s[i + 1:j], j + 1
+    return s[i + 1:], len(s)
+
+
+def _match_bracket(s, i):        # s[i] == '[' -> (inner, index-after-']'), skipping {..}
+    depth, j = 0, i
+    while j < len(s):
+        c = s[j]
+        if c == '{':
+            _, j = _match_brace(s, j); continue
+        if c == '[':
+            depth += 1
+        elif c == ']':
+            depth -= 1
+            if depth == 0:
+                return s[i + 1:j], j + 1
+        j += 1
+    return s[i + 1:], len(s)
+
+
+def _clean_name(t):              # a human title: drop \cite/\ref, braces, tidy dashes
+    t = re.sub(r'\\(cite|ref|eqref|label)\s*\{[^}]*\}', '', t)
+    t = re.sub(r'\\(emph|text[a-z]*|mathrm|mathbb|mathcal)\s*\{([^}]*)\}', r'\2', t)
+    t = t.replace('{', '').replace('}', '').replace('--', '–').replace('~', ' ')
+    return re.sub(r'\s+', ' ', t).strip()
+
+
+def _clean_stmt(t):              # keep LaTeX, collapse whitespace, drop stray labels
+    t = re.sub(r'\\label\s*\{[^}]*\}', '', t)
+    return re.sub(r'\s+', ' ', t).strip()
+
+
+def parse_tex(text):
+    """Yield {label, kind, title, statement, section, uses, lean} per statement env."""
+    out, section, i, n = [], None, 0, len(text)
+    tok = re.compile(r'\\(?:sub)*section\*?\s*\{|\\chapter\*?\s*\{|\\begin\{([A-Za-z]+)\*?\}')
+    while i < n:
+        m = tok.search(text, i)
+        if not m:
+            break
+        if m.group(1) is None:                      # a \section{...}/\chapter{...}
+            title, j = _match_brace(text, text.index('{', m.start()))
+            section = _clean_name(title); i = j
+            continue
+        env = m.group(1)
+        if env not in STMT_ENVS:
+            i = m.end(); continue
+        p = m.end()
+        title = None
+        while p < n and text[p] in ' \t\r\n':
+            p += 1
+        if p < n and text[p] == '[':
+            title, p = _match_bracket(text, p)
+        label, uses, lean = None, [], []
+        while True:
+            mm = re.match(r'[ \t\r\n]*\\([A-Za-z]+)', text[p:])
+            if not mm or mm.group(1) not in META:
+                break
+            name = mm.group(1); p += mm.end()
+            if p < n and text[p] == '{':
+                arg, p = _match_brace(text, p)
+                if name == 'label':
+                    label = arg.strip()
+                elif name == 'uses':
+                    uses += [x.strip() for x in arg.split(',') if x.strip()]
+                elif name == 'lean':
+                    lean += [x.strip() for x in arg.split(',') if x.strip()]
+        end = text.find('\\end{' + env + '}', p)
+        if end < 0:
+            i = p; continue
+        body = text[p:end]
+        after = end + len('\\end{' + env + '}')
+        pm = re.match(r'[ \t\r\n%]*\\begin\{proof\}', text[after:])   # proof-level \uses
+        if pm:
+            q = after + pm.end()
+            while True:
+                mm = re.match(r'[ \t\r\n]*\\([A-Za-z]+)', text[q:])
+                if not mm or mm.group(1) not in META:
+                    break
+                name = mm.group(1); q += mm.end()
+                if q < n and text[q] == '{':
+                    a, q = _match_brace(text, q)
+                    if name == 'uses':
+                        uses += [x.strip() for x in a.split(',') if x.strip()]
+            after = q
+        if label:
+            out.append({'label': label, 'kind': env, 'title': _clean_name(title) if title else None,
+                        'statement': _clean_stmt(body), 'section': section, 'uses': uses, 'lean': lean})
+        i = after
+    return out
+
+
+def parse_source(path):
+    """Parse every .tex under `path` (a dir or a file) -> {label: statement-info}."""
+    if os.path.isdir(path):
+        files = [os.path.join(r, f) for r, _, fs in os.walk(path) for f in fs if f.endswith('.tex')]
+    else:
+        files = [path]
+    by_label = {}
+    for f in sorted(files):
+        try:
+            text = open(f, encoding='utf-8', errors='replace').read()
+        except OSError:
+            continue
+        text = re.sub(r'(?<!\\)%.*', '', text)          # strip line comments
+        for st in parse_tex(text):
+            by_label.setdefault(st['label'], st)
+    return by_label
+
+
+def enrich(diagram, src):
+    hit = 0
+    for node in diagram['nodes']:
+        st = src.get(node['id'])
+        if not st:
+            continue
+        hit += 1
+        if st['statement']:
+            node['statement'] = st['statement']
+        if st['title']:
+            node['name'] = st['title']
+        if st['section']:
+            node['section'] = st['section']
+        if st['lean']:
+            node['lean'] = ', '.join(st['lean'])
+    return hit
+
+
 if __name__ == '__main__':
+    try:
+        sys.stdout.reconfigure(encoding='utf-8')        # blueprint statements carry Unicode (ℝ, ₈, …)
+    except Exception:
+        pass
     argv = sys.argv[1:]
-    title = argv[argv.index('--title') + 1] if '--title' in argv else None
-    files = [a for a in argv if not a.startswith('--') and a != title]
+
+    def opt(name):
+        return argv[argv.index(name) + 1] if name in argv and argv.index(name) + 1 < len(argv) else None
+    title, source = opt('--title'), opt('--source')
+    skip = {title, source}
+    files = [a for a in argv if not a.startswith('--') and a not in skip]
     text = open(files[0], encoding='utf-8').read() if files else sys.stdin.read()
     if not text.strip():
         raise SystemExit(__doc__)
     diagram = convert(extract_digraph(text), title)
+    msg = f'# {len(diagram["nodes"])} nodes, {len(diagram["edges"])} edges'
+    if source:
+        hit = enrich(diagram, parse_source(source))
+        msg += f'; enriched {hit} with statements from {source}'
     json.dump(diagram, sys.stdout, indent=2, ensure_ascii=False)
     sys.stdout.write('\n')
-    print(f'# {len(diagram["nodes"])} nodes, {len(diagram["edges"])} edges', file=sys.stderr)
+    print(msg, file=sys.stderr)
