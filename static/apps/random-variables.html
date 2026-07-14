@@ -165,6 +165,7 @@
   .pysub { color: var(--muted); font-weight: 400; font-size: .85rem; }
   .pyacts { display: flex; gap: 6px; }
   .pynote { color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+  .pywarn { color: var(--warn); font-size: 12.5px; margin: 0 0 6px; }
   .pyerr { color: var(--danger); font-size: 12px; margin: 6px 0 0; white-space: pre-wrap; }
   #pytext { flex: 1; min-height: 320px; width: 100%; resize: none; font-family: var(--mono);
     font-size: 12px; line-height: 1.45; background: var(--bg); color: var(--ink);
@@ -496,6 +497,7 @@
         <button id="pyclose" title="Close">✕</button>
       </span>
     </div>
+    <p class="pywarn">⚠ Python is a fully functional programming language — we strongly recommend <strong>reviewing this script before running it</strong> on your own system.</p>
     <p class="pynote" id="pynote"></p>
     <textarea id="pytext" readonly spellcheck="false" aria-label="Exported Python script"></textarea>
     <p class="pyerr" id="pyerr"></p>

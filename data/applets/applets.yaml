@@ -16,7 +16,11 @@ philosophy:
       These tools, and their supporting text — including this section — are produced with substantial
       AI assistance, and every page on this site that contains AI-generated content notes this (a footnote
       on each app suffices). This matches the site's "maintained (with AI assistance)" footer and the
-      disclosure practice followed in the associated research papers.
+      disclosure practice followed in the associated research papers. The AI's role is limited to *building*
+      the apps and populating them with example data — not to running them: each app then executes
+      deterministically in your browser and makes no LLM (or other network) calls at runtime. The only
+      nondeterminism is deliberate random-number generation, such as the sampling in the random-variable
+      visualizer.
   - heading: "They are visual aids, not authorities."
     body: >-
       Each app is meant as a secondary, visual supplement for building intuition about a mathematical
