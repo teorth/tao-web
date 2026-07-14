@@ -483,7 +483,8 @@ def render_work(w: dict) -> str:
     chips = "".join(f'<button class="tg" data-t="{html.escape(t)}">#{html.escape(t)}</button>' for t in tags)
     parts.append(f'<span class="wtags">{chips}</span>')
     if links:
-        lk = "".join(f'<a class="lk" href="{html.escape(l["url"])}">{_LINK_LABEL.get(l["type"], l["type"])}</a>'
+        lk = "".join(f'<a class="lk" href="{html.escape(l["url"])}">'
+                     f'{html.escape(l.get("label") or _LINK_LABEL.get(l["type"], l["type"]))}</a>'
                      for l in ordered)
         parts.append(f'<span class="wl">{lk}</span>')
     hay = " ".join([w["title"], *co, w.get("venue", ""), w.get("journal", ""),

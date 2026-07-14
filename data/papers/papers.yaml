@@ -144,6 +144,10 @@ works:
     url: "https://terrytao.wordpress.com/2026/07/11/gilbreaths-conjecture-a-cramer-random-model-and-a-deterministic-analysis/"
   - type: applet
     url: "apps/gilbreath.html"
+    label: "array explorer"
+  - type: applet
+    url: "apps/gilbreath-cn.html"
+    label: "decay-constants visualizer"
   - type: diagram
     url: "apps/paper-diagram.html?paper=gilbreath"
   abstract: >-
