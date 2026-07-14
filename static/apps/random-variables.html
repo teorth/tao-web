@@ -153,6 +153,22 @@
   @media (max-width: 900px) {
     main { grid-template-columns: 1fr; height: auto; grid-auto-rows: minmax(260px, auto); }
   }
+  /* Python-export modal */
+  .pywrap { position: fixed; inset: 0; z-index: 80; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center; padding: 24px; }
+  .pywrap[hidden] { display: none; }
+  .pybox { background: var(--panel); border: 1px solid var(--line); border-radius: 10px;
+    width: min(860px, 100%); max-height: 88vh; display: flex; flex-direction: column;
+    box-shadow: 0 12px 40px rgba(0,0,0,.3); padding: 12px; }
+  .pyhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 6px; }
+  .pytitle { font-weight: 600; }
+  .pysub { color: var(--muted); font-weight: 400; font-size: .85rem; }
+  .pyacts { display: flex; gap: 6px; }
+  .pynote { color: var(--muted); font-size: 12px; margin: 0 0 6px; }
+  .pyerr { color: var(--danger); font-size: 12px; margin: 6px 0 0; white-space: pre-wrap; }
+  #pytext { flex: 1; min-height: 320px; width: 100%; resize: none; font-family: var(--mono);
+    font-size: 12px; line-height: 1.45; background: var(--bg); color: var(--ink);
+    border: 1px solid var(--line); border-radius: 6px; padding: 8px; white-space: pre; overflow: auto; }
 </style>
 </head>
 <body>
@@ -211,6 +227,7 @@
       <div class="editor-row">
         <button id="run2" class="primary" title="Compile and run the program (Ctrl/Cmd+Enter)">▶ Run program</button>
         <button id="copyprog" title="Copy the program to the clipboard">⧉ Copy</button>
+        <button id="pyexport" title="Export this program as a single runnable Python script (a crude re-sampling with the same statistics)">⇩ Python</button>
         <span id="parsemsg" style="color:var(--muted);font-size:12px"></span>
       </div>
       <pre id="err" class="err"></pre>
@@ -469,7 +486,24 @@
 </footer>
 </div><!-- /.page -->
 
+<div class="pywrap" id="pywrap" hidden>
+  <div class="pybox">
+    <div class="pyhead">
+      <span class="pytitle">Python export <span class="pysub">— one self-contained file</span></span>
+      <span class="pyacts">
+        <button id="pycopy" title="Copy the script to the clipboard">⧉ copy</button>
+        <button id="pydl" title="Download as a .py file">⇩ download .py</button>
+        <button id="pyclose" title="Close">✕</button>
+      </span>
+    </div>
+    <p class="pynote" id="pynote"></p>
+    <textarea id="pytext" readonly spellcheck="false" aria-label="Exported Python script"></textarea>
+    <p class="pyerr" id="pyerr"></p>
+  </div>
+</div>
+
 <script src="random-variables.js"></script>
+<script src="random-variables-export.js"></script>
 <script>
 /* ===================================================================== *
  *  APP: presets, controls, panels, canvas                               *
@@ -1442,6 +1476,46 @@ function renderDocs() {
   fill('doc-fn-logic', 'logic'); fill('doc-stat', 'stat'); fill('doc-bool', 'bool');
 }
 renderDocs();
+
+// ---- Python export (one self-contained script; a re-sampling, not a replay) ----
+(function () {
+  const wrap = $('pywrap'), txt = $('pytext'), note = $('pynote'), err = $('pyerr');
+  let currentName = 'rv-program.py';
+  function openPy() {
+    err.textContent = ''; note.textContent = '';
+    const pn = $('preset') && $('preset').value;
+    currentName = (pn ? pn.replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() : 'rv-program') + '.py';
+    if (typeof toPython !== 'function') {
+      txt.value = '';
+      err.textContent = 'The Python export module (random-variables-export.js) did not load — hard-refresh, and serve the page over http:// (e.g. Live Server) rather than file://.';
+      wrap.hidden = false; return;
+    }
+    try {
+      txt.value = toPython(compile($('src').value).exportModel(), { n: 100000 });
+      note.textContent = 'One runnable file — “python ' + currentName + '” (matplotlib needed only if the program plots). Same distributions and statistics, fresh randomness.';
+    } catch (e) {
+      txt.value = ''; err.textContent = String((e && e.message) || e);
+    }
+    wrap.hidden = false;
+  }
+  const close = () => { wrap.hidden = true; };
+  $('pyexport').addEventListener('click', openPy);
+  $('pyclose').addEventListener('click', close);
+  wrap.addEventListener('click', (e) => { if (e.target === wrap) close(); });
+  if (document.addEventListener) document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !wrap.hidden) close(); });
+  $('pycopy').addEventListener('click', () => {
+    if (!txt.value) return;
+    txt.select();
+    if (navigator.clipboard) navigator.clipboard.writeText(txt.value).catch(() => {}); else { try { document.execCommand('copy'); } catch (e) {} }
+    const b = $('pycopy'), t0 = b.textContent; b.textContent = '✓ copied'; setTimeout(() => (b.textContent = t0), 1200);
+  });
+  $('pydl').addEventListener('click', () => {
+    if (!txt.value) return;
+    const blob = new Blob([txt.value], { type: 'text/x-python' });
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = currentName;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+  });
+})();
 
 // ---- boot ----
 if (!loadFromHash()) applyPreset('Dice — independent vs coupled');

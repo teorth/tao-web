@@ -930,6 +930,18 @@ function compile(src) {
     }
   }
   const astOf = (n) => { const e = variables.get(n); return e ? e.ast : null; };
+  // A structured, self-contained snapshot for code exporters (e.g. the Python
+  // export): the finalised ASTs, universes with their flattened conditions, and
+  // the trackers' sub-statistics. Everything here is plain data (JSON-cloneable).
+  const exportModel = () => ({
+    constants: [...constants.entries()],
+    variables: varOrder.map((n) => { const e = variables.get(n); return { name: n, ast: e.ast, isEvent: e.isEvent, universe: uKeyOf(e.universe || []) }; }),
+    universes: [...uRuntime.values()].map((U) => ({ key: U.key, path: U.path, label: uLabel(U.path), conditions: U.conditions })),
+    trackers: trackers.map((t) => ({ label: t.label, uKey: t.uKey, combinator: t.combinator,
+      subs: t.subs.map((s) => ({ stat: s.stat, kind: s.kind, exprs: s.exprs, pct: s.pct, uKey: s.uKey })) })),
+    plots: plots.map((p) => ({ ...p })),
+    globalConditions: conditions,
+  });
   const eventNames = varOrder.filter((n) => variables.get(n).isEvent);
   const isEventVar = (n) => { const e = variables.get(n); return !!(e && e.isEvent); };
   const readEvents = () => eventNames.map((n) => ({ name: n, canon: variables.get(n).canon }));
@@ -956,6 +968,7 @@ function compile(src) {
     probe,
     scalarVars,
     astOf,
+    exportModel,
   };
 }
 
