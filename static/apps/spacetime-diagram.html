@@ -1630,7 +1630,13 @@
   cv.addEventListener("wheel", function (e) {
     var l = st.locate(e); if (!l) return; e.preventDefault();
     setFocus(l.i);
-    zoomBy(l.i, e.deltaY < 0 ? 1.1 : 1 / 1.1);
+    // step tied to scroll DISTANCE (normalised across deltaMode + capped per event)
+    // so a gesture zooms consistently — a fixed per-event factor runs away on
+    // trackpads/hi-res mice that fire many wheel events per flick. (setZoom already
+    // clamps the scale to [0.25, 6], so the range is bounded.)
+    var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+    var dy = Math.max(-40, Math.min(40, e.deltaY * unit));
+    zoomBy(l.i, Math.exp(-dy * 0.0025));   // scroll up (deltaY<0) zooms in
   }, { passive: false });
   setTool("select"); syncFocus(); loadPreset("twin");
 })();
