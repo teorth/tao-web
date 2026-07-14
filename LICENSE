@@ -1,22 +1,57 @@
-Copyright © 2026 Terence Tao. All rights reserved.
+Copyright © 2026 Terence Tao.
 
-This repository contains the data, source, and generated pages for Terence Tao's
-personal website (https://teorth.github.io/tao-web/).
+This repository holds the data, source, and generated pages of Terence Tao's
+personal website (https://teorth.github.io/tao-web/). Different parts carry
+different terms, set out below.
 
-You are welcome to read the published pages, and to use the errata and other
-factual corrections contained here to amend your own copies of the relevant
-works.
+── Application source code — MIT License ──
 
-No other permission is granted. Except as stated above, no part of this
-repository — its data, text, or code — may be copied, redistributed, published,
-mirrored, or used to create derivative works without the prior written
-permission of the copyright holder.
+The source code of the interactive applets under `static/apps/` — their HTML,
+CSS, and JavaScript, together with the accompanying Python tools (e.g. the
+blueprint converter) — is licensed under the MIT License. This grant does NOT
+extend to the diagram data files under `static/apps/diagrams/`, which are
+content (see below).
 
-The interactive applets under `static/apps/` are shared for transparency, not as
-a template. You are warmly welcome to be *inspired* by their concepts and design
-to build your own tools; please do not publish near-identical copies of these
-specific apps, or reuse their source as a base for your own. The applet code is
-AI-generated, has not been reviewed line-by-line, and is not maintained for reuse.
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+
+You are therefore welcome to copy, modify, and self-host these apps — for
+example, to run your own library of paper diagrams with the paper-diagram
+viewer — provided the copyright notice above is retained. The applet code is
+AI-generated and has not been reviewed line-by-line; it is provided as-is,
+without warranty.
+
+── Website content — all rights reserved ──
+
+Everything else is © Terence Tao and is not licensed for reuse. This includes
+the errata, the works/papers database, the CV and biography, other prose and
+data under `data/`, the pre-installed diagram data files under
+`static/apps/diagrams/`, and the pages generated from all of these. You are
+welcome to read the published pages and to use the errata and other factual
+corrections to amend your own copies of the relevant works. Except as stated,
+this content may not be copied, redistributed, mirrored, or used to create
+derivative works without the prior written permission of the copyright holder.
+
+── Third-party contributions ──
+
+Some contributed material remains its authors' — for example, a
+reader-contributed diagram under `static/apps/diagrams/` credited to its author.
+Such material is used with permission and is covered by neither grant above.
 
 Corrections and feedback are welcome as GitHub issues or pull requests; see
 CONTRIBUTING.md for the preferred channel.

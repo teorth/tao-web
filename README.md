@@ -58,6 +58,13 @@ looking for co-maintainers, but corrections are welcome — please open an
 
 ## License
 
-Copyright © Terence Tao. All rights reserved — see [LICENSE](LICENSE). This
-content is not intended for reuse or forking; you are welcome to read the site
-and to use the errata to correct your own copies of the relevant works.
+See [LICENSE](LICENSE) for the full terms. In short: the **source code of the
+interactive applets** under `static/apps/` (their HTML/CSS/JavaScript and the
+accompanying Python tools) is licensed under the **MIT License**, so you may
+copy, modify, and self-host the apps — for example, to run your own library of
+paper diagrams — provided the copyright notice is retained. Everything else —
+the errata, the works/papers database, the CV and biography, other content under
+`data/`, and the pre-installed diagram data under `static/apps/diagrams/` — is
+© Terence Tao, all rights reserved; you are welcome to read the site and to use
+the errata to correct your own copies of the relevant works. Reader-contributed
+material remains its authors'.

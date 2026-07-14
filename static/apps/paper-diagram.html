@@ -317,6 +317,28 @@
     </div>
   </details>
 
+  <details class="fmtdoc" id="reuse">
+    <summary>Reusing this app — host your own diagram library</summary>
+    <div class="fmtbody">
+      <p>The <strong>source code of this app is open source under the MIT License</strong>. You are welcome to copy it,
+        modify it, and <strong>self-host your own copy</strong> — for instance to run a private or public library of your
+        <em>own</em> paper diagrams — as long as the copyright and licence notice is retained (that is all the licence asks
+        by way of attribution). See the repository's <a href="https://github.com/teorth/tao-web/blob/main/LICENSE" target="_blank" rel="noopener">LICENSE</a> for the exact terms.</p>
+      <p>To build a library: author each diagram as <code>paper-diagram</code> JSON (the <a href="#format">format is
+        documented above</a>, and a <a href="#blueprint">Lean-blueprint converter</a> can generate them), save it as a
+        <code>diagrams/&lt;id&gt;.js</code> file, and list it in <code>paper-diagram-data.js</code> — exactly how the built-in
+        library works. The whole app runs from static files, with no server and no network calls.</p>
+      <p class="fmth">Two caveats</p>
+      <ul>
+        <li>The MIT grant covers the <strong>app code</strong>, not the <strong>pre-installed diagrams</strong> shipped with
+          it: those are editorial readings of specific papers (plus one reader-contributed diagram) and remain their authors' —
+          supply your own diagram data rather than redistributing these.</li>
+        <li>The applet code is <strong>AI-generated</strong> and has not been reviewed line-by-line; it is provided as-is,
+          without warranty. Read it before running or publishing it.</li>
+      </ul>
+    </div>
+  </details>
+
   <footer class="foot">Coded with the assistance of Claude Code. The pre-installed diagrams are an LLM-assisted
     editorial reading, not an authoritative account — see the <a href="../applets.html#design-philosophy">design
     philosophy</a>. Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
