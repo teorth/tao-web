@@ -23,12 +23,14 @@
 
   #board { display: flex; align-items: flex-start; gap: 1.2rem; margin-top: 1rem; }
   #arrayScroll { overflow-x: auto; flex: 1 1 auto; padding-bottom: .4rem; }
-  #triangle { width: max-content; margin-inline: auto; font-family: var(--mono); }
+  /* one --fs drives every horizontal ch-metric (cells, stagger, inputs); heights stay
+     in rem so the stats rail stays row-aligned. fitGrid() shrinks --fs to fit the panel. */
+  #triangle { width: max-content; margin-inline: auto; font-family: var(--mono); font-size: var(--fs, .95rem); }
 
   .arow { display: flex; gap: var(--gap); height: var(--rowh); align-items: center; }
   .cell, .arow input {
     width: var(--cell); height: 1.7rem; box-sizing: border-box;
-    font-family: var(--mono); font-size: .95rem; text-align: center;
+    font-family: var(--mono); font-size: inherit; text-align: center;
     border-radius: 5px; padding: 0 .1rem;
   }
   .cell { display: flex; align-items: center; justify-content: center;
@@ -210,7 +212,7 @@
         color = $("color"), diag = $("diag"), legend = $("legend"), gilb = $("gilb"),
         view = $("view"), example = $("example"), board = $("board"), canvasWrap = $("canvasWrap"),
         cv = $("cv"), canvcap = $("canvcap"),
-        triangle = $("triangle"), railBody = $("railBody"), msg = $("msg");
+        triangle = $("triangle"), railBody = $("railBody"), msg = $("msg"), arrayScroll = $("arrayScroll");
 
     var GRID_MAX_N = 40, CANVAS_MAX_N = 512, maxN = GRID_MAX_N;  // N cap depends on view
     var CANVAS_W = 720, CANVAS_H = 640;                          // canvas fit box (px)
@@ -508,6 +510,22 @@
       }
 
       renderGilb(rows);
+      fitGrid();
+    }
+
+    // Zoom the grid to fit the panel: shrink #triangle's font-size (which scales every
+    // horizontal ch-metric) until the array no longer overflows. Heights are in rem, so
+    // the stats rail stays aligned. Iterates because the cell gap is a fixed rem, not ch.
+    function fitGrid() {
+      if (view.value !== "grid") return;
+      triangle.style.removeProperty("--fs");          // back to base, then shrink if needed
+      var avail = arrayScroll.clientWidth;
+      if (!avail || triangle.scrollWidth <= avail) return;
+      var fs = parseFloat(getComputedStyle(triangle).fontSize);
+      for (var it = 0; it < 5 && triangle.scrollWidth > avail && fs > 7; it++) {
+        fs = Math.max(7, fs * (avail / triangle.scrollWidth) * 0.99);
+        triangle.style.setProperty("--fs", fs + "px");
+      }
     }
 
     // Show only the parameter box(es) the current generator needs; the
@@ -555,6 +573,7 @@
       if (canvas && color.value === "none") color.value = "parity";
     }
     view.addEventListener("change", function () { setView(view.value); renderActive(); });
+    if (typeof window !== "undefined" && window.addEventListener) window.addEventListener("resize", fitGrid);
 
     // One-click configurations drawn from the paper.
     function applyExample(key) {
