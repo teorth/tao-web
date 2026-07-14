@@ -73,6 +73,11 @@
 <p><em>Claude added the <strong>single spike</strong> generator — value <code>d</code> at position <code>n</code>, zero elsewhere. With <code>d = 1</code> the array is Pascal&#x27;s triangle, so parity colouring draws a Sierpinski gasket (exactly the paper&#x27;s single-non-zero-entry example). It also added a small <strong>Examples</strong> dropdown of one-click configurations drawn from the paper: normalized gaps collapsing to all-1s, the Sierpinski spike, the parity obstruction, and the Cramér (geometric) model.</em></p>
 <p><em>The app was then published — validated, built, committed, pushed, and confirmed live — alongside the new paper entry.</em></p>
 <hr>
+<h2>7. Addendum — zooming the grid to fit</h2>
+<p><strong>Terence</strong>, returning to the explorer later:</p>
+<blockquote><p>In the Gilbreath array explorer visualization I wonder if it is possible to zoom out on the grid when it begins to overflow the panel (this tends to happen around n=10 for integer entries, or n=6 for real entries). This may require some modification to the text font size.</p></blockquote>
+<p><em>The editable grid had been spilling into a horizontal scroll once the array grew. Claude made the triangle&#x27;s font-size a single <code>--fs</code> variable that drives every horizontal <code>ch</code>-metric — cell widths, the row stagger, the input widths — and added a <code>fitGrid()</code> pass that shrinks <code>--fs</code> until the array fits the panel, re-fitting on window resize. The row heights stay in <code>rem</code>, so the statistics rail stays row-aligned; below a small floor it falls back to scrolling, with the canvas view still handling very large arrays.</em></p>
+<hr>
 <p><em>From &quot;illustrate the Gilbreath conjecture&quot; to a published tool: an editable difference-triangle with prime, gap, spike, and random-model generators, parity/magnitude colouring, a live check of the conjecture on the left diagonal, and a large-N canvas that surfaces the fractal block structure — a companion to the paper, and cross-linked with it.</em></p>
   </article>
   <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>

@@ -23,7 +23,8 @@
       { "id": "gilbreath", "title": "Gilbreath's conjecture", "authors": ["Chase", "Hunter", "Tao"], "year": 2025 },
       { "id": "szemeredi", "title": "On sets of integers containing no k elements in arithmetic progression", "authors": ["Szemerédi"], "year": 1975 },
       { "id": "sphere-packing-lean", "title": "Sphere packing in dimension 8 — a Lean formalization (after Viazovska)", "authors": ["Sphere-Packing-Lean project"], "year": 2025 },
-      { "id": "pfr-lean", "title": "Polynomial Freiman–Ruzsa conjecture — a Lean formalization", "authors": ["PFR formalization project"], "year": 2023 }
+      { "id": "pfr-lean", "title": "Polynomial Freiman–Ruzsa conjecture — a Lean formalization", "authors": ["PFR formalization project"], "year": 2023 },
+      { "id": "cpg-ktitarev", "title": "Continuous Petrov–Galerkin methods for nonlinear problems (reader-contributed)", "authors": ["Tim Ktitarev"], "year": 2025 }
     ]
   };
   if (typeof window !== "undefined") window.PaperDiagramData = DIAGRAMS;
