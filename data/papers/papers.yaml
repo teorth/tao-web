@@ -142,6 +142,9 @@ works:
     url: "https://arxiv.org/abs/2607.08712"
   - type: discussion
     url: "https://terrytao.wordpress.com/2026/07/11/gilbreaths-conjecture-a-cramer-random-model-and-a-deterministic-analysis/"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/07/14/visualizing-the-gilbreath-expectation-sequence/"
+    label: "visualization post"
   - type: applet
     url: "apps/gilbreath.html"
     label: "array explorer"
