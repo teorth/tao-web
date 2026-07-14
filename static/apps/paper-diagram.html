@@ -696,6 +696,13 @@ function applyViewBox() {
   const v = state.viewBox;
   $('dg').setAttribute('viewBox', `${v.x.toFixed(0)} ${v.y.toFixed(0)} ${v.w.toFixed(0)} ${v.h.toFixed(0)}`);
 }
+// the graph's own extent (matches fit's padded bounding box), used to clamp zoom
+function worldSize() {
+  const P = [...POS.values()]; if (!P.length) return { w: 100, h: 100 };
+  const pad = 30;
+  return { w: Math.max(...P.map((p) => p.x + p.w / 2)) - Math.min(...P.map((p) => p.x - p.w / 2)) + 2 * pad,
+    h: Math.max(...P.map((p) => p.y + p.h / 2)) - Math.min(...P.map((p) => p.y - p.h / 2)) + 2 * pad };
+}
 function render() {
   try {
     const defs = `<defs>
@@ -932,7 +939,18 @@ function wireInteraction() {
   svg.addEventListener('pointerout', (e) => { const g = e.target.closest && e.target.closest('.node'); if (g && !state.drag) highlight(state.selected, true); });
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const p = svgPoint(e), f = e.deltaY < 0 ? 0.85 : 1.18, v = state.viewBox;
+    const v = state.viewBox, p = svgPoint(e);
+    // step tied to scroll DISTANCE (normalised across deltaMode + capped per event)
+    // so a gesture zooms the same whether it fires 1 big event or 30 tiny ones
+    const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
+    const dy = Math.max(-40, Math.min(40, e.deltaY * unit));
+    let f = Math.exp(dy * 0.0025);   // f>1 zooms out, f<1 zooms in
+    // clamp the zoom RANGE: out stops at ~the whole-graph fit (can't shrink to
+    // invisibility), in caps at a sane magnification — using whichever dimension binds
+    const ws = worldSize();
+    const outLimit = Math.min((ws.w * 1.1) / v.w, (ws.h * 1.1) / v.h);
+    const inLimit = Math.max((ws.w / 40) / v.w, (ws.h / 40) / v.h);
+    f = Math.max(inLimit, Math.min(outLimit, f));
     state.viewBox = { x: p.x - (p.x - v.x) * f, y: p.y - (p.y - v.y) * f, w: v.w * f, h: v.h * f };
     applyViewBox();
   }, { passive: false });
