@@ -256,7 +256,7 @@
   <div class="stage">
     <div class="dgwrap">
       <svg id="dg" preserveAspectRatio="xMidYMid meet" aria-label="Dependency diagram of the paper's statements"></svg>
-      <div class="helpline">scroll to zoom · drag to pan · click a statement to select</div>
+      <div class="helpline">scroll or +/− to zoom · drag or arrow keys to pan · click a statement to select</div>
     </div>
     <aside class="panel" id="panel"><p class="hint">Click a statement to see its full text and dependencies.</p></aside>
   </div>
@@ -297,6 +297,21 @@
       <p>Six targets. <strong>SVG</strong> is a standalone image of the current layout. <strong>TikZ</strong> is a compilable LaTeX figure. <strong>quiver</strong> is an import link for <a href="https://q.uiver.app" target="_blank" rel="noopener">q.uiver.app</a>. <strong>DOT</strong> (Graphviz) and <strong>Mermaid</strong> are portable text graphs that are re-laid-out by their own tools — Graphviz/Gephi/yEd for DOT, GitHub/wikis/mermaid.live for Mermaid — so they carry the dependency structure, colours and styles but not the on-screen positions. All are self-contained text you can download and edit.</p>
       <p><strong>Only the JSON export is lossless</strong> — the others each drop something. Positions: SVG reproduces the exact layout, TikZ rounds coordinates, quiver snaps them to an integer grid, and DOT/Mermaid discard them entirely (re-laid-out by their tools). Node colour is kept by SVG, TikZ, DOT and Mermaid but dropped by quiver (it has no boxes). And the prose fields — the full <code>statement</code>, the <code>plain</code> paraphrase, <code>section</code>/<code>ref</code> — are not carried into any of the figure formats. Export JSON (and re-import it) whenever you need a faithful round-trip.</p>
       <p>Write <code>label</code> and <code>name</code> as ordinary text. For the two LaTeX-bound targets the exporter escapes LaTeX-special characters (<code>_ ^ &amp; % # ~</code>) and maps the common math Unicode (Greek, sub/superscripts, arrows, ≅, ×, …) to LaTeX, so <strong>TikZ compiles as-is</strong>; wrap anything in <code>$…$</code> to pass it through verbatim (e.g. for a real subscript). <strong>quiver</strong> renders labels with a limited LaTeX subset (KaTeX-like) and does not share this toolchain: plain text, basic <code>$…$</code> math and the mapped symbols are fine, but avoid exotic macros in fields destined for quiver. <strong>DOT and Mermaid are not LaTeX</strong> — their labels are emitted as plain Unicode text (so <code>$…$</code> is shown literally there, not typeset).</p>
+    </div>
+  </details>
+
+  <details class="fmtdoc" id="blueprint">
+    <summary>Converting a Lean blueprint into this format</summary>
+    <div class="fmtbody">
+      <p>A <a href="https://leanprover-community.github.io/blueprint/" target="_blank" rel="noopener">Lean blueprint</a> already <em>is</em> a dependency DAG of a formalization's theorems, lemmas and definitions, so it maps directly onto this format. A small <a href="tools/leanblueprint_to_paperdiagram.py" download><strong>converter script</strong></a> turns a blueprint's dependency graph into <code>paper-diagram</code> JSON <strong>deterministically</strong> (no LLM): kinds come from the <code>def:</code>/<code>thm:</code>/<code>lem:</code> label prefixes, edges from <code>\uses</code>, and each node's Lean <em>formalization status</em> is carried into the <code>color</code> field. (The <em>“Sphere packing in dimension 8 — Lean formalization”</em> entry in the dropdown was built this way.)</p>
+      <p>The script <strong>makes no network calls of its own</strong> — it reads a local file or stdin, so you fetch the graph with a tool you trust (here <code>curl</code>):</p>
+      <p><code style="display:block; white-space:pre-wrap; word-break:break-word; padding:8px 10px; background:var(--accent-soft); border-radius:6px;">curl -sL https://&lt;project&gt;.github.io/&lt;repo&gt;/blueprint/dep_graph_document.html | python3 leanblueprint_to_paperdiagram.py --title "My paper" &gt; diagram.json</code></p>
+      <p>Then paste <code>diagram.json</code> into the <strong>edit JSON</strong> box above and press <em>load into viewer</em>. (Or point the script at a local <code>dep_graph_document.html</code> / <code>dep_graph.dot</code> from a local blueprint build — no web at all.)</p>
+      <p class="fmth">Notes</p>
+      <ul>
+        <li>This version carries the <strong>structure, kinds and formalization-status colours</strong> with the blueprint's labels; it does not pull across the full statement text (a later version that parses the blueprint source with <code>plasTeX</code> will add statements and sections).</li>
+        <li>The converter is <strong>LLM-generated</strong> — read it before running it. It reads only a local file or stdin and writes JSON to stdout.</li>
+      </ul>
     </div>
   </details>
 
@@ -703,6 +718,17 @@ function worldSize() {
   return { w: Math.max(...P.map((p) => p.x + p.w / 2)) - Math.min(...P.map((p) => p.x - p.w / 2)) + 2 * pad,
     h: Math.max(...P.map((p) => p.y + p.h / 2)) - Math.min(...P.map((p) => p.y - p.h / 2)) + 2 * pad };
 }
+// zoom by factor f (>1 out, <1 in) about world point (cx,cy), clamped so the view
+// can't shrink past ~the whole-graph fit or over-magnify. Shared by wheel + keyboard.
+function zoomAt(f, cx, cy) {
+  const v = state.viewBox, ws = worldSize();
+  const outLimit = Math.min((ws.w * 1.1) / v.w, (ws.h * 1.1) / v.h);
+  const inLimit = Math.max((ws.w / 40) / v.w, (ws.h / 40) / v.h);
+  f = Math.max(inLimit, Math.min(outLimit, f));
+  state.viewBox = { x: cx - (cx - v.x) * f, y: cy - (cy - v.y) * f, w: v.w * f, h: v.h * f };
+  applyViewBox();
+}
+function panBy(dx, dy) { const v = state.viewBox; state.viewBox = { x: v.x + dx * v.w, y: v.y + dy * v.h, w: v.w, h: v.h }; applyViewBox(); }
 function render() {
   try {
     const defs = `<defs>
@@ -939,21 +965,33 @@ function wireInteraction() {
   svg.addEventListener('pointerout', (e) => { const g = e.target.closest && e.target.closest('.node'); if (g && !state.drag) highlight(state.selected, true); });
   svg.addEventListener('wheel', (e) => {
     e.preventDefault();
-    const v = state.viewBox, p = svgPoint(e);
+    const p = svgPoint(e);
     // step tied to scroll DISTANCE (normalised across deltaMode + capped per event)
     // so a gesture zooms the same whether it fires 1 big event or 30 tiny ones
     const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1;
     const dy = Math.max(-40, Math.min(40, e.deltaY * unit));
-    let f = Math.exp(dy * 0.0025);   // f>1 zooms out, f<1 zooms in
-    // clamp the zoom RANGE: out stops at ~the whole-graph fit (can't shrink to
-    // invisibility), in caps at a sane magnification — using whichever dimension binds
-    const ws = worldSize();
-    const outLimit = Math.min((ws.w * 1.1) / v.w, (ws.h * 1.1) / v.h);
-    const inLimit = Math.max((ws.w / 40) / v.w, (ws.h / 40) / v.h);
-    f = Math.max(inLimit, Math.min(outLimit, f));
-    state.viewBox = { x: p.x - (p.x - v.x) * f, y: p.y - (p.y - v.y) * f, w: v.w * f, h: v.h * f };
-    applyViewBox();
+    zoomAt(Math.exp(dy * 0.0025), p.x, p.y);   // f>1 zooms out, f<1 zooms in (clamped in zoomAt)
   }, { passive: false });
+  // keyboard backup for the scroll GUI: +/- zoom (about the centre), arrows pan.
+  // Ignored while typing in a field or with a modal open.
+  if (document.addEventListener) document.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    const ex = $('exwrap'), lib = $('libwrap');
+    if ((ex && !ex.hidden) || (lib && !lib.hidden)) return;
+    const v = state.viewBox, cx = v.x + v.w / 2, cy = v.y + v.h / 2, PAN = 0.12;
+    let ok = true;
+    switch (e.key) {
+      case '+': case '=': zoomAt(0.83, cx, cy); break;
+      case '-': case '_': zoomAt(1.2, cx, cy); break;
+      case 'ArrowLeft': panBy(-PAN, 0); break;
+      case 'ArrowRight': panBy(PAN, 0); break;
+      case 'ArrowUp': panBy(0, -PAN); break;
+      case 'ArrowDown': panBy(0, PAN); break;
+      default: ok = false;
+    }
+    if (ok) e.preventDefault();
+  });
   svg.addEventListener('pointerdown', (e) => {
     const g = e.target.closest && e.target.closest('.node');
     state.drag = { startVB: Object.assign({}, state.viewBox), sx: e.clientX, sy: e.clientY, moved: 0, nodeId: g ? g.getAttribute('data-id') : null };
@@ -1266,16 +1304,17 @@ $('exdl').addEventListener('click', () => {
 });
 
 boot();
-// deep-link to the JSON-format spec: #format opens (and scrolls to) that <details>
+// deep-link to a <details> at the foot (e.g. #format, #blueprint): open + scroll to it
 (function () {
   try {
-    const openFmt = () => {
-      if (typeof location === 'undefined' || location.hash !== '#format') return;
-      const d = $('format'); if (!d) return;
+    const openHash = () => {
+      if (typeof location === 'undefined' || !location.hash) return;
+      const d = $(location.hash.slice(1));
+      if (!d || d.tagName !== 'DETAILS') return;
       d.open = true; if (d.scrollIntoView) d.scrollIntoView({ behavior: 'smooth', block: 'start' });
     };
-    if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', openFmt);
-    openFmt();
+    if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('hashchange', openHash);
+    openHash();
   } catch (e) {}
 })();
 ;window.__t = { $, render, relayout, rebuild, loadPaper, newBlank, openLibrary, renderLibList, editTitle, refreshPaperSelect, importJson, openExport, selectNode, clearSelect, ignoreNode, restoreNode, restoreAll, editNode, newNode, saveEdit, cancelEdit, deleteNode, undo, readForm, renderEdit, get diagram() { return diagram; }, get SRC() { return SRC; }, state };
