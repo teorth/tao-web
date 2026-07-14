@@ -22,7 +22,7 @@ philosophy:
       Each app is meant as a secondary, visual supplement for building intuition about a mathematical
       topic — not as a load-bearing component of a mathematical task. They are not formally verified to
       be free of bugs. Many display only deterministic mathematical concepts; a few (such as the
-      paper-diagramming applet) instead contain subjective, LLM-generated content that is not intended
+      [paper-diagramming applet](apps/paper-diagram.html)) instead contain subjective, LLM-generated content that is not intended
       to be authoritative. For anything that needs to be correct, consult authoritative sources such as
       textbooks, or fully-featured software such as MATLAB or numpy/SymPy. The emphasis here is on ease
       of presentation over full expressiveness.
@@ -30,7 +30,7 @@ philosophy:
     body: >-
       No app requires a login or account, and none makes external network calls — everything runs in your
       browser, and the only files an app loads are other files on this site (for instance, the
-      paper-diagram viewer fetches additional diagram files on demand). The apps deliberately avoid heavy
+      [paper-diagram viewer](apps/paper-diagram.html) fetches additional diagram files on demand). The apps deliberately avoid heavy
       libraries and content-delivery networks, both for speed and to keep the security surface small; there
       is no tracking or analytics. Most apps store nothing between visits and start each session fresh,
       though a few may use a cookie solely to remember your own settings.
