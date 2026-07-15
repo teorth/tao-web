@@ -975,8 +975,9 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         rows.append(f'<li>{yr} <a href="{b["slug"]}.html">{html.escape(b["title"])}</a>{auth}'
                     f'<span class="count"> &mdash; {tag}</span></li>')
     body = ('<h1>Terence Tao</h1>'
-            '<p class="sub">Book pages (bibliographic details and errata) and other collected pages, '
-            'generated from a database maintained by the author.</p>')
+            '<p class="sub">A structured home for Terence Tao&rsquo;s papers, books and errata, CV, '
+            'teaching, travel, and interactive tools &mdash; generated from a database maintained '
+            '(with AI assistance).</p>')
     if cv and cv.get("positions"):
         pitems = []
         for pos in cv["positions"]:
@@ -1101,7 +1102,7 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
              "var d=el.tagName==='DETAILS'?el:el.closest('details');"
              'if(d){d.open=true;d.scrollIntoView();}}'
              "window.addEventListener('hashchange',openHash);openHash();</script>")
-    return page("Terence Tao — books and errata", body)
+    return page("Terence Tao — papers, books, and interactive tools", body)
 
 
 def main() -> None:
