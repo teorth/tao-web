@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A 21st-century orrery — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  #view { position: relative; margin-top: 1rem; }
+  #gl { display: block; width: 100%; height: min(64vh, 600px); border: 1px solid var(--line); border-radius: 6px; background: #0a0e17; touch-action: none; cursor: grab; }
+  #readout { position: absolute; left: 10px; top: 10px; font-family: var(--mono); font-size: .82rem; color: #eaf0ff; background: rgba(10,16,28,.55); padding: .5rem .7rem; border-radius: 6px; line-height: 1.5; pointer-events: none; }
+  #readout b { color: #fff; } #readout .k { color: #9fb3d8; }
+  #tip { position: absolute; display: none; pointer-events: none; z-index: 4; font-size: .8rem; background: rgba(12,18,30,.92); color: #eef3ff; border: 1px solid #3a4a66; border-radius: 6px; padding: .4rem .55rem; line-height: 1.45; white-space: nowrap; }
+  #tip b { color: #fff; } #tip .k { color: #9fb3d8; }
+  #eyeline { position: absolute; left: 0; right: 0; height: 0; display: none; pointer-events: none; z-index: 2; border-top: 1px dashed rgba(255,235,150,.85); }
+  #eyeline span { position: absolute; right: 6px; top: -1.15em; font-size: .72rem; color: rgba(255,235,150,.95); background: rgba(10,16,28,.5); padding: 0 .3rem; border-radius: 3px; }
+  #scope { position: absolute; display: none; pointer-events: none; z-index: 3; border-radius: 50%; background: radial-gradient(circle at center, rgba(0,0,0,0) 0 68%, #0a0e17 69%); box-shadow: 0 0 0 3px #0a0e17, 0 0 0 4px var(--accent), 0 2px 10px rgba(0,0,0,.5); }
+  #scope::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 1px; background: rgba(255,255,255,.18); }
+  #scope::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 1px; background: rgba(255,255,255,.18); }
+  #scopelabel { position: absolute; display: none; z-index: 4; font-size: .74rem; color: #eef3ff; background: rgba(10,16,28,.8); border: 1px solid #3a4a66; border-radius: 4px; padding: .1rem .4rem; pointer-events: none; white-space: nowrap; }
+  #locring { position: absolute; display: none; pointer-events: none; z-index: 4; border: 2px solid #ffd36b; border-radius: 50%; box-shadow: 0 0 6px rgba(255,211,107,.6); transform: translate(-50%,-50%); }
+  #locarrow { position: absolute; display: none; pointer-events: none; z-index: 4; width: 0; height: 0; border-left: 9px solid transparent; border-right: 9px solid transparent; border-bottom: 17px solid #ffd36b; filter: drop-shadow(0 0 3px rgba(0,0,0,.7)); }
+  .cardlbl { position: absolute; display: none; z-index: 2; pointer-events: none; font-family: var(--mono); font-weight: 700; font-size: .82rem; color: #bfe8ff; text-shadow: 0 0 3px #000, 0 0 3px #000; transform: translate(-50%,-50%); }
+  #glfail { display: none; padding: 1rem; color: var(--danger); font-size: .9rem; }
+  #godpane { display: none; margin-top: .5rem; }
+  #godpane.on { display: block; }
+  #godcanvas { display: block; width: 100%; height: min(34vh, 320px); border: 1px solid var(--line); border-radius: 6px; background: #05070d; touch-action: none; cursor: grab; }
+  #godbar { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: .35rem; font-size: .8rem; }
+  #godbar strong { font-size: .85rem; }
+  #godbar button { padding: .2rem .6rem; font-size: .78rem; }
+  #godbar #godcap { flex: 1 1 auto; min-width: 12rem; }
+  .muted { color: var(--muted); }
+
+  #presets { display: inline-flex; gap: 4px; margin-right: .5rem; }
+  .mark { font-size: 1.12rem; line-height: 1; padding: 2px 5px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; cursor: pointer; }
+  .mark:hover { border-color: var(--accent); } .mark.on { background: var(--accent); border-color: var(--accent); }
+  #heading { position: absolute; right: 10px; top: 10px; font-family: var(--mono); font-size: .8rem; color: #eaf0ff; background: rgba(10,16,28,.55); padding: .38rem .55rem; border-radius: 6px; text-align: right; line-height: 1.4; pointer-events: none; }
+
+  .toolbar { display: flex; flex-wrap: wrap; gap: .8rem 1.3rem; align-items: center; margin-top: 1rem; }
+  .toolbar label { font-size: .85rem; color: var(--ink); display: inline-flex; align-items: center; gap: .4rem; }
+  .toolbar button { padding: .35rem .8rem; } .toolbar input[type="range"] { width: 11rem; }
+  #clock { font-family: var(--mono); color: var(--ink); font-size: .9rem; display: inline-block; min-width: 7.4em; } #speedlbl { color: var(--muted); font-size: .78rem; }
+  .cap { color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
+  .hint { color: var(--muted); font-size: .8rem; margin: .3rem 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>A 21st-century orrery <span style="font-size:1rem;color:var(--muted);font-weight:400">— work in progress</span></h1>
+    <p class="lede">Stand at the coast and <strong>raise your eye height</strong> (scroll the view, or click an emoji preset,
+      from a person up to low orbit) to watch the sea-horizon <strong>drop and curve</strong> below the dashed eye-level line —
+      the app&rsquo;s one honestly to-scale effect. <strong>Look around</strong> by dragging or with the arrow keys: there are
+      things at every bearing, and overhead a live sky of <strong>Sun, Moon, planets, stars, and satellites</strong> on an
+      idealised model. <strong>Hover</strong> anything for a telescope (with the planets&rsquo; phases, Saturn&rsquo;s rings and
+      Jupiter&rsquo;s moons). Then switch to a free-flying <strong>cosmic view</strong>, or open the top-down
+      <strong>God&rsquo;s-eye orrery</strong> below. Still a work in progress — expect rough edges.</p>
+  </header>
+
+  <div class="card">
+    <div id="view">
+      <canvas id="gl" width="960" height="560" tabindex="0" title="drag to look around · arrow keys to pan · scroll wheel to change eye height · hover an object for the telescope"></canvas>
+      <div id="readout">&nbsp;</div>
+      <div id="heading">N 0°</div>
+      <div id="eyeline"><span>eye level (0°)</span></div>
+      <div id="scope"></div><div id="scopelabel"></div><div id="tip"></div><div id="locring"></div><div id="locarrow"></div>
+      <div id="glfail">Your browser could not start WebGL, so the 3-D scene can&rsquo;t render — but the horizon figures below are still exact.</div>
+    </div>
+    <div id="godpane">
+      <canvas id="godcanvas" width="960" height="300" title="top-down orrery · drag to pan · scroll to zoom"></canvas>
+      <div id="godbar">
+        <strong>God&rsquo;s-eye orrery</strong>
+        <button id="godscale" type="button" title="switch radial scale">true distance</button>
+        <button id="godfit" type="button" title="frame the inner planets">fit inner</button>
+        <button id="godfitall" type="button" title="frame out to the farthest planet">fit all</button>
+        <span id="godcap" class="muted">drag to pan · scroll to zoom · top-down, sizes &amp; the Moon exaggerated</span>
+      </div>
+    </div>
+    <div class="toolbar">
+      <span id="presets" title="jump to a preset eye height (person, tower, airliner, orbit, …)"></span>
+      <button id="play" type="button" title="play / pause time (spacebar)">▶ Play</button>
+      <label title="how fast time runs; discrete round steps, faster in cosmic view">speed <input id="speed" type="range" min="0" max="4" step="1" value="1"></label>
+      <span id="speedlbl" title="current time rate">&nbsp;</span>
+      <span id="clock" title="local clock (or day count in cosmic view)">12:00</span>
+      <label title="centre a marker on an object and show a locator ring/arrow">Find <select id="locate"><option value="">— none —</option></select></label>
+      <label title="show the dashed horizontal line at true eye level, above the dipped horizon"><input id="eyetoggle" type="checkbox" checked> eye-level line</label>
+      <label title="show your own first-person body at your feet"><input id="bodytoggle" type="checkbox" checked> my body</label>
+      <label title="cast Sun shadows from the objects on the ground"><input id="shadowtoggle" type="checkbox" checked> shadows</label>
+      <label title="show N/E/S/W compass bearings around the horizon"><input id="orienttoggle" type="checkbox"> compass</label>
+      <label title="label the terrestrial objects (person, tree, ship, …) by name in the view"><input id="labeltoggle" type="checkbox"> object labels</label>
+      <label title="show the bright stars and constellation lines at night"><input id="startoggle" type="checkbox" checked> stars</label>
+      <label title="show the Moon, lit to its current phase"><input id="moontoggle" type="checkbox" checked> moon</label>
+      <label title="show the naked-eye and telescopic planets"><input id="planetstoggle" type="checkbox" checked> planets</label>
+      <label title="draw the ecliptic — the Sun, Moon and planets' path across the sky"><input id="ecliptoggle" type="checkbox"> ecliptic</label>
+      <label title="make the Earth translucent so objects below the horizon show through"><input id="xraytoggle" type="checkbox"> see-through Earth</label>
+      <label title="hold the view fixed on the stars, so the ground appears to move instead"><input id="skylocktoggle" type="checkbox"> lock to stars</label>
+      <label title="remove the sky glow (black sky, stars visible by day) — as from airless altitude"><input id="noatmotoggle" type="checkbox"> no atmosphere</label>
+      <label title="float free of Earth's spin: a fast top-of-the-sky orrery locked to the stars"><input id="cosmictoggle" type="checkbox"> cosmic view</label>
+      <label title="open the top-down God's-eye orrery pane below the view"><input id="godtoggle" type="checkbox"> God&rsquo;s-eye orrery</label>
+      <label title="settle the debate: include Pluto among the planets"><input id="plutotoggle" type="checkbox"> Pluto is a planet</label>
+      <label title="widen or narrow the field of view; the tick marks the ~62° natural view (wider = fisheye-like stretch)">field of view <input id="fov" type="range" min="40" max="150" step="1" value="62" list="fovticks"><datalist id="fovticks"><option value="62" label="natural"></option></datalist></label>
+    </div>
+    <p class="hint">Drag to look · arrow keys look around · scroll wheel changes height · hover an object for the telescope.</p>
+    <p class="cap" id="figs">&nbsp;</p>
+  </div>
+
+  <details class="notes" style="margin-top:1.4rem">
+    <summary style="cursor:pointer;font-weight:600">What is (and isn&rsquo;t) to scale here</summary>
+    <p style="font-size:.92rem;line-height:1.5">The <strong>horizon dip</strong> below eye level, the <strong>distance to the
+      horizon</strong>, and <strong>how much of a distant object the curve hides</strong> come from exact geometry (a 6371&nbsp;km
+      sphere and your eye height) and are rendered to scale — the surface occludes the far side via the depth buffer. Everything
+      in the <strong>sky</strong> — Sun, Moon (and its phase), planets, stars, the satellites — moves on an <em>idealised</em>
+      model from <code>orrery.js</code> (circular orbits, constant rates, 23.44° tilt; observer at 40°N): the angles, phases and
+      elongations are right, but it is not an ephemeris. In the telescope, <strong>body and Moon sizes are exaggerated</strong>
+      for visibility (as are the God&rsquo;s-eye planet sizes and the Moon&rsquo;s orbit); a giant&rsquo;s shadow is dropped onto
+      the globe rather than projected exactly. Object placement on one coast is stylised. Runs entirely in your browser — no
+      network, no data leaves the page.</p>
+  </details>
+</div>
+
+<script src="orrery.js"></script>
+<script>
+(function () {
+  var O = window.Orrery, R = O.CONST.EARTH_RADIUS_M, LAT = 40, LON = 0;
+  var canvas = document.getElementById('gl');
+  var el = {};
+  ['readout', 'figs', 'glfail', 'view', 'tip', 'eyeline', 'scope', 'scopelabel', 'heading', 'presets',
+    'eyetoggle', 'bodytoggle', 'shadowtoggle', 'orienttoggle', 'labeltoggle', 'startoggle', 'moontoggle', 'planetstoggle', 'ecliptoggle', 'xraytoggle', 'skylocktoggle', 'noatmotoggle', 'cosmictoggle', 'plutotoggle', 'fov', 'locate', 'locring', 'locarrow', 'play', 'speed', 'speedlbl', 'clock',
+    'godpane', 'godcanvas', 'godtoggle', 'godscale', 'godfit', 'godfitall', 'godcap'].forEach(function (id) { el[id] = document.getElementById(id); });
+  var H_MIN = 1.7, H_MAX = 12000000, FOV = 62;
+  var st = { sv: 0, h: H_MIN, pitch: 0, yaw: 0, t: 10.2, playing: false, speed: 0, lastTS: 0, drag: false, look: false, hover: null, eyeline: true, body: true, shadows: true, orient: false, stars: true, moon: true, planets: true, pluto: false, eclip: false, xray: false, skylock: false, noatmo: false, fov: 62, lockLST: 0, locate: null,
+    cosmic: false, cosmicT: 0, cosmicLST: 0, cfwd: [1, 0, 0], cup: [0, 1, 0], saveYaw: 0, savePitch: 0, speedIdx: 1, fadeTarget: 0, fadeLast: 0, objlabels: false,
+    VP: null, camPos: [0, 1, 0], sun: [0, 1, 0], sunAlt: 90, ha: 0 };
+  var PRESETS = [{ h: 1.7, label: 'eye level', sub: '1.7 m', e: '🧍' }, { h: 100, label: 'hilltop', sub: '100 m', e: '⛰️' }, { h: 9000, label: 'airliner', sub: '9 km', e: '✈️' }, { h: 38000, label: 'stratosphere', sub: '38 km', e: '🎈' }, { h: 400000, label: 'ISS', sub: '400 km', e: '🛰️' }, { h: 6371000, label: '1 Earth-radius', sub: '6371 km', e: '🌍' }];
+
+  function m4mul(a, b) { var o = new Array(16); for (var c = 0; c < 4; c++) for (var r = 0; r < 4; r++) o[c * 4 + r] = a[r] * b[c * 4] + a[4 + r] * b[c * 4 + 1] + a[8 + r] * b[c * 4 + 2] + a[12 + r] * b[c * 4 + 3]; return o; }
+  function m4perspective(fovy, aspect, near, far) { var f = 1 / Math.tan(fovy / 2), nf = 1 / (near - far); return [f / aspect, 0, 0, 0, 0, f, 0, 0, 0, 0, (far + near) * nf, -1, 0, 0, 2 * far * near * nf, 0]; }
+  function m4lookAt(eye, center, up) { var z = norm(sub(eye, center)), x = norm(cross(up, z)), y = cross(z, x); return [x[0], y[0], z[0], 0, x[1], y[1], z[1], 0, x[2], y[2], z[2], 0, -dot(x, eye), -dot(y, eye), -dot(z, eye), 1]; }
+  function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+  function dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+  function cross(a, b) { return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]; }
+  function norm(a) { var l = Math.hypot(a[0], a[1], a[2]) || 1; return [a[0] / l, a[1] / l, a[2] / l]; }
+  function clamp(x, lo, hi) { return x < lo ? lo : x > hi ? hi : x; }
+  function mulVec(m, v) { return [0, 1, 2, 3].map(function (r) { return m[r] * v[0] + m[4 + r] * v[1] + m[8 + r] * v[2] + m[12 + r] * v[3]; }); }
+  function smooth(x, a, b) { var t = (x - a) / (b - a); return t < 0 ? 0 : t > 1 ? 1 : t * t * (3 - 2 * t); }
+  function mix1(a, b, t) { return a + (b - a) * t; }
+  // atmosphere fades out with altitude (or the toggle): black sky + stars always visible
+  function spaceF() { return Math.max(st.noatmo ? 1 : smooth(st.h / R, 0.005, 0.02), st.cosmicT); }   // cosmic view fades the daytime sky to black
+  function airless() { return spaceF() > 0.5; }
+
+  function makeSphere(nRings, lonB) {
+    var unit = [0, 1, 0], idx = [], ringAt = [], thMin = 3e-5, i, j;
+    for (i = 0; i < nRings; i++) { var th = thMin * Math.pow(Math.PI / thMin, i / (nRings - 1)), s = Math.sin(th), c = Math.cos(th); ringAt[i] = unit.length / 3; for (j = 0; j <= lonB; j++) { var ph = j / lonB * 2 * Math.PI; unit.push(s * Math.cos(ph), c, s * Math.sin(ph)); } }
+    for (j = 0; j < lonB; j++) idx.push(0, ringAt[0] + j, ringAt[0] + j + 1);
+    for (i = 0; i < nRings - 1; i++) for (j = 0; j < lonB; j++) { var a = ringAt[i] + j, b = ringAt[i + 1] + j; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    return { unit: unit, idx: idx };
+  }
+  function makeBox() {
+    var C = { '1,0,0': [[.5, -.5, -.5], [.5, .5, -.5], [.5, .5, .5], [.5, -.5, .5]], '-1,0,0': [[-.5, -.5, .5], [-.5, .5, .5], [-.5, .5, -.5], [-.5, -.5, -.5]], '0,1,0': [[-.5, .5, -.5], [-.5, .5, .5], [.5, .5, .5], [.5, .5, -.5]], '0,-1,0': [[-.5, -.5, .5], [-.5, -.5, -.5], [.5, -.5, -.5], [.5, -.5, .5]], '0,0,1': [[.5, -.5, .5], [.5, .5, .5], [-.5, .5, .5], [-.5, -.5, .5]], '0,0,-1': [[-.5, -.5, -.5], [-.5, .5, -.5], [.5, .5, -.5], [.5, -.5, -.5]] };
+    var pos = [], nrm = [], idx = [];
+    [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]].forEach(function (n) { var b = pos.length / 3; C[n.join(',')].forEach(function (p) { pos.push(p[0], p[1], p[2]); nrm.push(n[0], n[1], n[2]); }); idx.push(b, b + 1, b + 2, b, b + 2, b + 3); });
+    return { pos: pos, nrm: nrm, idx: idx };
+  }
+  function makeCone(seg, phase) {
+    var pos = [], nrm = [], idx = [], apex = [0, 1, 0]; phase = phase || 0;
+    for (var i = 0; i < seg; i++) { var a = phase + i / seg * 2 * Math.PI, b = phase + (i + 1) / seg * 2 * Math.PI, p0 = [Math.cos(a), 0, Math.sin(a)], p1 = [Math.cos(b), 0, Math.sin(b)]; var n = norm(cross(sub(p0, apex), sub(p1, apex))), base = pos.length / 3; pos.push(apex[0], apex[1], apex[2], p0[0], p0[1], p0[2], p1[0], p1[1], p1[2]); nrm.push(n[0], n[1], n[2], n[0], n[1], n[2], n[0], n[1], n[2]); idx.push(base, base + 1, base + 2); }
+    return { pos: pos, nrm: nrm, idx: idx };
+  }
+  function makeDome(latSeg, lonSeg) {   // hemisphere y∈[0,1], flat open bottom (cloud puffs)
+    var pos = [], nrm = [], idx = [], i, j;
+    for (i = 0; i <= latSeg; i++) { var th = i / latSeg * Math.PI / 2, s = Math.sin(th), c = Math.cos(th); for (j = 0; j <= lonSeg; j++) { var ph = j / lonSeg * 2 * Math.PI, x = s * Math.cos(ph), z = s * Math.sin(ph); pos.push(x, c, z); nrm.push(x, c, z); } }
+    for (i = 0; i < latSeg; i++) for (j = 0; j < lonSeg; j++) { var a = i * (lonSeg + 1) + j, b = a + lonSeg + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    return { pos: pos, nrm: nrm, idx: idx };
+  }
+  function makeUVSphere(latB, lonB) {   // small solid sphere for the Moon (lit → phase)
+    var pos = [], nrm = [], idx = [], i, j;
+    for (i = 0; i <= latB; i++) { var th = i / latB * Math.PI, s = Math.sin(th), c = Math.cos(th); for (j = 0; j <= lonB; j++) { var ph = j / lonB * 2 * Math.PI, x = s * Math.cos(ph), z = s * Math.sin(ph); pos.push(x, c, z); nrm.push(x, c, z); } }
+    for (i = 0; i < latB; i++) for (j = 0; j < lonB; j++) { var a = i * (lonB + 1) + j, b = a + lonB + 1; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    return { pos: pos, nrm: nrm, idx: idx };
+  }
+  var BOX = makeBox(), CONE = makeCone(22, 0), PYR = makeCone(4, Math.PI / 4), DOME = makeDome(6, 14), MOON_MESH = makeUVSphere(14, 20);
+  function meshOf(m) { return m === 'cone' ? CONE : m === 'pyr' ? PYR : m === 'dome' ? DOME : BOX; }
+  function radial(m) { return m === 'cone' || m === 'pyr' || m === 'dome'; }
+
+  // A skyline of boxes at the road's far end (ox = along the road / depth, oz = across it).
+  // Heights vary so, seen from 24 km, each building is cut off at a different point by the
+  // horizon — the taller ones stand well clear, the shorter ones are mostly swallowed.
+  function cityParts() {
+    var B = [   // [ox, oz, width(dx), depth(dz), height, colour]
+      [0, 0, 44, 44, 180, [.60, .66, .74]], [-160, 120, 40, 40, 150, [.55, .60, .70]], [120, -140, 46, 46, 132, [.64, .68, .72]],
+      [-260, -220, 38, 38, 116, [.52, .58, .66]], [300, 180, 42, 42, 104, [.60, .64, .70]], [40, 320, 36, 36, 92, [.57, .62, .69]],
+      [-380, 260, 34, 34, 80, [.50, .56, .64]], [230, -360, 40, 40, 74, [.62, .66, .71]], [-120, -400, 32, 32, 62, [.54, .59, .67]],
+      [420, -80, 30, 30, 56, [.58, .63, .70]], [-460, -40, 28, 28, 48, [.52, .57, .65]], [180, 420, 26, 26, 44, [.60, .65, .72]],
+    ];
+    var parts = B.map(function (b) { return { m: 'box', dx: b[2], dy: b[4], dz: b[3], ox: b[0], oz: b[1], oy: b[4] / 2, col: b[5] }; });
+    parts.push({ m: 'box', dx: 3, dy: 26, dz: 3, ox: 0, oz: 0, oy: 193, col: [.72, .30, .28] });   // antenna on the tallest tower
+    return parts;
+  }
+  // objects around the coast (dims/offsets in metres; z runs across the view). Some are
+  // multi-part (stick figure, dog, house, plane); `elev` lifts an object off the ground.
+  var SKIN = [.82, .62, .5], LIMB = [.20, .22, .30];
+  var OBJECTS = [
+    { name: 'a person', dist: 8, bearing: 6, height: 1.9, parts: [
+      { m: 'box', dx: .22, dy: .24, dz: .22, oy: 1.66, col: SKIN }, { m: 'box', dx: .16, dy: .62, dz: .34, oy: 1.24, col: [.25, .35, .6] },
+      { m: 'box', dx: .1, dy: .58, dz: .1, oy: 1.2, oz: .28, col: SKIN }, { m: 'box', dx: .1, dy: .58, dz: .1, oy: 1.2, oz: -.28, col: SKIN },
+      { m: 'box', dx: .12, dy: .92, dz: .12, oy: .46, oz: .11, col: LIMB }, { m: 'box', dx: .12, dy: .92, dz: .12, oy: .46, oz: -.11, col: LIMB } ] },
+    { name: 'a dog', dist: 6, bearing: -16, height: .62, parts: [
+      { m: 'box', dx: .8, dy: .3, dz: .26, oy: .42, col: [.52, .4, .26] }, { m: 'box', dx: .28, dy: .28, dz: .24, ox: .5, oy: .52, col: [.52, .4, .26] },
+      { m: 'box', dx: .22, dy: .1, dz: .1, ox: .68, oy: .46, col: [.42, .32, .2] }, { m: 'box', dx: .28, dy: .06, dz: .06, ox: -.5, oy: .5, col: [.42, .32, .2] },
+      { m: 'box', dx: .07, dy: .32, dz: .07, ox: .3, oy: .16, oz: .14, col: [.42, .32, .2] }, { m: 'box', dx: .07, dy: .32, dz: .07, ox: .3, oy: .16, oz: -.14, col: [.42, .32, .2] },
+      { m: 'box', dx: .07, dy: .32, dz: .07, ox: -.3, oy: .16, oz: .14, col: [.42, .32, .2] }, { m: 'box', dx: .07, dy: .32, dz: .07, ox: -.3, oy: .16, oz: -.14, col: [.42, .32, .2] } ] },
+    { name: 'a house', dist: 55, bearing: 205, height: 9, parts: [
+      { m: 'box', dx: 10, dy: 5, dz: 8, oy: 2.5, col: [.83, .77, .63] }, { m: 'pyr', r: 6.4, dy: 4, oy: 5, col: [.5, .24, .2] },
+      { m: 'box', dx: 1.2, dy: 3, dz: 1.2, ox: 2.6, oy: 7, oz: 2, col: [.45, .3, .26] } ] },
+    { name: 'the Eiffel Tower', dist: 2200, bearing: 135, height: 330, parts: [{ m: 'cone', r: 42, dy: 330, oy: 0, col: [.52, .40, .28] }] },
+    { name: 'an airplane', dist: 3200, bearing: -75, height: 5, elev: 700, parts: [
+      { m: 'box', dz: 34, dx: 4, dy: 4.2, oy: 0, col: [.90, .92, .95] }, { m: 'box', dz: 5.5, dx: 34, dy: 1.1, oy: 0, col: [.85, .87, .9] },
+      { m: 'box', dz: 5, dx: 13, dy: 1, oy: 2.2, oz: -14, col: [.85, .87, .9] }, { m: 'box', dz: 5, dx: 1.1, dy: 6, oy: 3, oz: -14, col: [.75, .2, .2] } ] },
+    { name: 'a container ship', dist: 20000, bearing: -6, height: 52, parts: [
+      { m: 'box', dz: 300, dx: 46, dy: 20, oy: 10, col: [.66, .68, .72] }, { m: 'box', dz: 150, dx: 40, dy: 15, oy: 27.5, oz: 55, col: [.44, .52, .60] },
+      { m: 'box', dz: 66, dx: 42, dy: 26, oy: 33, oz: -95, col: [.90, .91, .93] }, { m: 'box', dz: 14, dx: 15, dy: 16, oy: 52, oz: -95, col: [.55, .20, .18] } ] },
+    { name: 'a mountain (island)', dist: 44000, bearing: 15, height: 2100, parts: [{ m: 'cone', r: 1550, dy: 2100, oy: 0, col: [.32, .35, .29] }, { m: 'cone', r: 470, dy: 340, oy: 1760, col: [.92, .94, .97] }] },
+    { name: 'a hill', dist: 900, bearing: 300, height: 130, parts: [{ m: 'cone', r: 620, dy: 130, oy: 0, col: [.30, .42, .24] }] },
+    { name: 'a hot-air balloon', dist: 1500, bearing: 35, height: 30, elev: 280, parts: [
+      { m: 'dome', r: 11, dy: 15, oy: 9, col: [.86, .22, .22] }, { m: 'cone', r: 11, dy: -8, oy: 9, col: [.93, .72, .20] }, { m: 'box', dx: 2.6, dy: 2.2, dz: 2.6, oy: -1.3, col: [.42, .30, .18] } ] },
+    // a straight road running due south toward a distant city; drawn as short curvature-hugging
+    // tiles (drawRoad) out to the current horizon, so it dips out of sight over the bulge and — from
+    // higher up, where the horizon reaches further — visibly runs all the way to the city.
+    { name: 'a road', dist: 2500, bearing: 195, length: 5000, height: 0.6, road: { to: 24000, width: 9 }, parts: [] },
+    { name: 'a city', dist: 24000, bearing: 195, height: 180, parts: cityParts() },
+    { name: 'a car', dist: 320, bearing: 195, height: 1.6, parts: [
+      { m: 'box', dx: 4.4, dy: 1.1, dz: 1.9, oy: 0.7, col: [.62, .16, .16] }, { m: 'box', dx: 2.4, dy: 0.8, dz: 1.75, ox: -.3, oy: 1.45, col: [.50, .13, .13] },
+      { m: 'box', dx: .7, dy: .7, dz: .34, ox: 1.4, oy: .35, oz: .9, col: [.08, .08, .08] }, { m: 'box', dx: .7, dy: .7, dz: .34, ox: 1.4, oy: .35, oz: -.9, col: [.08, .08, .08] },
+      { m: 'box', dx: .7, dy: .7, dz: .34, ox: -1.4, oy: .35, oz: .9, col: [.08, .08, .08] }, { m: 'box', dx: .7, dy: .7, dz: .34, ox: -1.4, oy: .35, oz: -.9, col: [.08, .08, .08] } ] },
+    { name: 'a cumulus cloud', dist: 2600, bearing: 52, height: 160, elev: 1500, parts: [
+      { m: 'box', dx: 360, dy: 60, dz: 240, oy: 30, col: [.93, .95, .98] },                         // flat-bottomed slab (cumulus)
+      { m: 'dome', r: 150, dy: 150, ox: 20, oz: 20, oy: 60, col: [.96, .97, 1.0] }, { m: 'dome', r: 120, dy: 110, ox: -80, oz: -25, oy: 60, col: [.94, .96, .99] },
+      { m: 'dome', r: 100, dy: 92, ox: 115, oz: -30, oy: 60, col: [.97, .98, 1.0] }, { m: 'dome', r: 82, dy: 78, ox: 55, oz: -75, oy: 60, col: [.93, .95, .98] } ] },
+    // wispy high cirrus (thin ice streaks) off to the SE, and a towering cumulonimbus storm to the NW
+    { name: 'cirrus clouds', dist: 8000, bearing: 165, height: 140, elev: 7000, parts: [
+      { m: 'box', dx: 950, dy: 18, dz: 90, oz: 0, col: [.93, .95, .99] }, { m: 'box', dx: 720, dy: 16, dz: 70, ox: 260, oz: 190, col: [.90, .93, .98] },
+      { m: 'box', dx: 620, dy: 15, dz: 60, ox: -210, oz: -170, col: [.92, .94, .99] }, { m: 'box', dx: 520, dy: 14, dz: 52, ox: 130, oz: -280, col: [.89, .92, .97] } ] },
+    { name: 'a storm cloud (cumulonimbus)', dist: 5500, bearing: 335, height: 1500, elev: 700, parts: [
+      { m: 'box', dx: 300, dy: 55, dz: 300, oy: 18, col: [.42, .44, .50] },                           // dark, flat rain base
+      { m: 'dome', r: 185, dy: 250, oy: 55, col: [.52, .54, .60] }, { m: 'dome', r: 165, dy: 230, ox: 60, oz: -45, oy: 320, col: [.55, .57, .63] },
+      { m: 'dome', r: 155, dy: 230, ox: -65, oz: 45, oy: 560, col: [.57, .59, .65] }, { m: 'dome', r: 165, dy: 250, oy: 780, col: [.61, .63, .69] },
+      { m: 'dome', r: 140, dy: 200, ox: 45, oz: 40, oy: 1000, col: [.65, .67, .73] },                 // billowing tower
+      { m: 'dome', r: 290, dy: 170, oy: 1140, col: [.71, .73, .79] }, { m: 'dome', r: 370, dy: 95, oy: 1250, col: [.75, .77, .83] } ] },   // the spreading anvil top
+    // a bird (spread into an otherwise empty sector so the sky is lively in every direction)
+    { name: 'a bird', dist: 180, bearing: 120, height: 3, elev: 100, parts: [
+      { m: 'box', dx: 1.7, dy: 0.5, dz: 0.6, oy: 0, col: [.24, .21, .19] }, { m: 'box', dx: 0.5, dy: 0.24, dz: 3.6, oy: 0.12, col: [.22, .19, .17] } ] },
+    { name: 'Godzilla', dist: 6000, bearing: -3, height: 78, elev: -16, parts: [                     // wading — the sea hides his legs (easter egg)
+      { m: 'box', dx: 7, dy: 36, dz: 8, oy: 18, oz: 8, col: [.17, .27, .20] }, { m: 'box', dx: 7, dy: 36, dz: 8, oy: 18, oz: -8, col: [.17, .27, .20] },
+      { m: 'box', dx: 13, dy: 34, dz: 15, oy: 50, col: [.19, .29, .22] }, { m: 'box', dx: 5, dy: 26, dz: 5, oy: 52, oz: 12, col: [.17, .27, .20] }, { m: 'box', dx: 5, dy: 26, dz: 5, oy: 52, oz: -12, col: [.17, .27, .20] },
+      { m: 'box', dx: 11, dy: 13, dz: 11, ox: 4, oy: 72, col: [.20, .30, .23] }, { m: 'box', dx: 40, dy: 9, dz: 9, ox: -24, oy: 22, col: [.17, .27, .20] },
+      { m: 'cone', r: 5, dy: 12, ox: 0, oy: 64, col: [.72, .80, .76] }, { m: 'cone', r: 5, dy: 13, ox: -8, oy: 58, col: [.72, .80, .76] }, { m: 'cone', r: 4, dy: 11, ox: -16, oy: 48, col: [.72, .80, .76] } ] },
+    // a small tree fills the bare sector between the cloud and the Eiffel Tower (human-ish scale)
+    { name: 'a tree', dist: 45, bearing: 92, height: 13, parts: [
+      { m: 'box', dx: 1.0, dy: 6, dz: 1.0, oy: 3, col: [.42, .30, .18] },
+      { m: 'dome', r: 4.2, dy: 6, oy: 5.5, col: [.20, .48, .22] }, { m: 'dome', r: 3.2, dy: 5, oy: 8.5, col: [.27, .56, .27] } ] },
+    // a coastal lighthouse near the shore, between the balloon and the Eiffel Tower
+    { name: 'a lighthouse', dist: 340, bearing: 72, height: 40, parts: [
+      { m: 'cone', r: 6, dy: 30, oy: 0, col: [.93, .93, .96] }, { m: 'box', dx: 4, dy: 4, dz: 4, oy: 32, col: [.30, .32, .38] },
+      { m: 'dome', r: 2.2, dy: 3, oy: 34, col: [.99, .88, .42] }, { m: 'cone', r: 3, dy: 4, oy: 37, col: [.60, .17, .16] } ] },
+    // a small sailboat out on the water (must be past the ~4 km shoreline to sit on the ocean)
+    { name: 'a sailboat', dist: 6000, bearing: 14, height: 12, parts: [
+      { m: 'box', dx: 6, dy: 1.5, dz: 2.2, oy: 0.6, col: [.86, .87, .92] }, { m: 'box', dx: 0.3, dy: 9, dz: 0.3, oy: 5, col: [.55, .45, .32] },
+      { m: 'box', dx: 0.15, dy: 6.6, dz: 3.4, ox: 0.1, oz: 1.0, oy: 5, col: [.97, .97, .99] } ] },
+    // a kite flown by the person (OBJECTS[0]); `drawKiteString` draws the tether line (not a real object, no shadow)
+    { name: 'a kite', dist: 13, bearing: 6, height: 4, elev: 55, kite: true, parts: [
+      { m: 'box', dx: 0.15, dy: 3.4, dz: 3.4, oy: 0, col: [.90, .24, .28] }, { m: 'box', dx: 0.17, dy: 0.5, dz: 3.2, oy: 0, col: [.98, .82, .30] },
+      { m: 'box', dx: 0.16, dy: 0.5, dz: 0.5, oy: -2.2, oz: 0.2, col: [.30, .55, .85] }, { m: 'box', dx: 0.16, dy: 0.5, dz: 0.5, oy: -3.6, oz: -0.3, col: [.30, .72, .45] },
+      { m: 'box', dx: 0.16, dy: 0.5, dz: 0.5, oy: -5.0, oz: 0.25, col: [.95, .55, .25] } ] },
+  ];
+  var BODY_PARTS = OBJECTS[0].parts;   // your first-person body reuses the stick figure
+  var SUN = { name: 'the Sun', isSun: true, dist: 1.496e11, diameter: 1.392e9 };   // catchable in the telescope
+  var MOON = { name: 'the Moon', isMoon: true, dist: 3.844e8 };
+  // bright stars [RA°, Dec°] across a dozen recognizable constellations (the renderer
+  // handles far more — these are just data; hundreds of POINTS cost nothing).
+  var STARS = {
+    dubhe: [165.93, 61.75], merak: [165.46, 56.38], phecda: [178.46, 53.69], megrez: [183.86, 57.03], alioth: [193.51, 55.96], mizar: [200.98, 54.93], alkaid: [206.89, 49.31],
+    polaris: [37.95, 89.26], yildun: [263.05, 86.59], epsUMi: [251.49, 82.04], zetUMi: [236.01, 77.79], kochab: [222.68, 74.16], pherkad: [230.18, 71.83],
+    betelgeuse: [88.79, 7.41], bellatrix: [81.28, 6.35], rigel: [78.63, -8.20], saiph: [86.94, -9.67], alnitak: [85.19, -1.94], alnilam: [84.05, -1.20], mintaka: [83.00, -0.30],
+    caph: [2.29, 59.15], schedar: [10.13, 56.54], gamCas: [14.18, 60.72], ruchbah: [21.45, 60.24], segin: [28.60, 63.67],
+    deneb: [310.36, 45.28], sadr: [305.56, 40.26], gienah: [311.55, 33.97], delCyg: [296.24, 45.13], albireo: [292.68, 27.96],
+    vega: [279.23, 38.78], sheliak: [282.52, 33.36], sulafat: [284.74, 32.69], zetLyr: [281.19, 37.61], delLyr: [283.63, 36.90],
+    regulus: [152.09, 11.97], denebola: [177.26, 14.57], algieba: [154.99, 19.84], zosma: [168.53, 20.52], chort: [168.56, 15.43], etaLeo: [151.83, 16.76],
+    sirius: [101.29, -16.72], mirzam: [95.67, -17.96], wezen: [107.10, -26.39], adhara: [104.66, -28.97], aludra: [111.02, -29.30],
+    arcturus: [213.92, 19.18], izar: [221.25, 27.07], muphrid: [208.67, 18.40], seginus: [218.02, 38.31], nekkar: [225.49, 40.39],
+    capella: [79.17, 46.00], menkalinan: [89.88, 44.95], mahasim: [89.93, 37.21], hassaleh: [74.25, 33.17],
+    castor: [113.65, 31.89], pollux: [116.33, 28.03], alhena: [99.43, 16.40], wasat: [110.03, 21.98], mebsuta: [100.98, 25.13], tejat: [95.74, 22.51],
+    aldebaran: [68.98, 16.51], elnath: [81.57, 28.61], alcyone: [56.87, 24.11], gamTau: [64.95, 15.63],
+  };
+  var STAR_KEYS = Object.keys(STARS);
+  var STAR_SEG = [
+    ['dubhe', 'merak'], ['merak', 'phecda'], ['phecda', 'megrez'], ['megrez', 'dubhe'], ['megrez', 'alioth'], ['alioth', 'mizar'], ['mizar', 'alkaid'],
+    ['polaris', 'yildun'], ['yildun', 'epsUMi'], ['epsUMi', 'zetUMi'], ['zetUMi', 'kochab'], ['kochab', 'pherkad'], ['pherkad', 'zetUMi'],
+    ['bellatrix', 'betelgeuse'], ['betelgeuse', 'alnitak'], ['bellatrix', 'mintaka'], ['alnitak', 'alnilam'], ['alnilam', 'mintaka'], ['alnitak', 'saiph'], ['mintaka', 'rigel'],
+    ['caph', 'schedar'], ['schedar', 'gamCas'], ['gamCas', 'ruchbah'], ['ruchbah', 'segin'],
+    ['deneb', 'sadr'], ['sadr', 'albireo'], ['gienah', 'sadr'], ['sadr', 'delCyg'],
+    ['vega', 'sheliak'], ['sheliak', 'sulafat'], ['sulafat', 'delLyr'], ['delLyr', 'zetLyr'], ['zetLyr', 'vega'],
+    ['regulus', 'etaLeo'], ['etaLeo', 'algieba'], ['algieba', 'zosma'], ['zosma', 'chort'], ['chort', 'regulus'], ['zosma', 'denebola'], ['chort', 'denebola'],
+    ['sirius', 'mirzam'], ['sirius', 'wezen'], ['wezen', 'adhara'], ['wezen', 'aludra'], ['sirius', 'adhara'],
+    ['arcturus', 'izar'], ['izar', 'seginus'], ['seginus', 'nekkar'], ['arcturus', 'muphrid'],
+    ['capella', 'menkalinan'], ['menkalinan', 'mahasim'], ['mahasim', 'elnath'], ['elnath', 'hassaleh'], ['hassaleh', 'capella'],
+    ['castor', 'pollux'], ['castor', 'mebsuta'], ['mebsuta', 'tejat'], ['pollux', 'wasat'], ['wasat', 'alhena'],
+    ['aldebaran', 'elnath'], ['aldebaran', 'gamTau'],
+  ];
+  var STAR_LY = { sirius: 8.6, arcturus: 36.7, vega: 25, capella: 42.9, rigel: 863, betelgeuse: 548, aldebaran: 65, pollux: 33.8, deneb: 2615, regulus: 79, alnilam: 2000, dubhe: 123, alkaid: 104, alioth: 81, polaris: 433, castor: 51, bellatrix: 250, mizar: 83 };
+  var STAR_BIG = {}; Object.keys(STAR_LY).forEach(function (k) { STAR_BIG[k] = 1; });
+  var STAR_LABELS = [['Big Dipper', 'alioth'], ['Little Dipper', 'kochab'], ['Orion', 'alnilam'], ['Cassiopeia', 'schedar'], ['Cygnus', 'sadr'], ['Lyra', 'vega'], ['Leo', 'regulus'], ['Canis Major', 'sirius'], ['Boötes', 'arcturus'], ['Auriga', 'capella'], ['Gemini', 'pollux'], ['Taurus', 'aldebaran'], ['Polaris', 'polaris']];
+  // locatable/telescopable sky targets: the Sun, Moon, and the brightest named stars
+  var PLANET_COL = { mercury: [.75, .72, .6], venus: [.98, .95, .82], mars: [.92, .42, .30], jupiter: [.93, .74, .48], saturn: [.93, .85, .55], uranus: [.66, .90, .92], neptune: [.42, .55, .95], pluto: [.80, .74, .68] };
+  var PLANET_SZ = { mercury: 4, venus: 6.5, mars: 5, jupiter: 6.5, saturn: 5.5, uranus: 4.5, neptune: 4.5, pluto: 3 };
+  var ALL_PLANETS = O.PLANET_NAMES.concat('pluto');
+  function planets() { return st.pluto ? ALL_PLANETS : O.PLANET_NAMES; }
+  // Artificial satellites. `terrestrial:true` → they co-rotate with the Earth and are HIDDEN in cosmic
+  // view (otherwise they'd whip around insanely at fast time). Geostationary hangs fixed due south;
+  // the ISS actually orbits (watch it at low speed). Elements: a in Earth radii, angles in degrees.
+  var SAT_EL = {
+    geo: { a: (6371 + 35786) / 6371, i: 0, raan: 0, phase: 0, per: O.CONST.SIDEREAL_DAY, name: 'a geostationary satellite', lbl: 'GEO', col: [.96, .90, .55], sz: 4.5 },
+    iss: { a: (6371 + 420) / 6371, i: 51.6, raan: 40, phase: 0, per: 92.9 / 1440, name: 'the ISS', lbl: 'ISS', col: [.96, .96, 1.0], sz: 5.5 },
+  };
+  // Deep-sky: the Magellanic Clouds (satellite galaxies). Fixed like stars; from 40°N they sit below
+  // the horizon (visible only in see-through / cosmic view). Drawn as a fuzzy scatter of faint points.
+  var NEBULAE = [
+    { key: 'lmc', name: 'Large Magellanic Cloud', lbl: 'LMC', ra: 80.9, dec: -69.76, rx: 5.4, ry: 4.6, ly: 163000, n: 26 },
+    { key: 'smc', name: 'Small Magellanic Cloud', lbl: 'SMC', ra: 13.2, dec: -72.8, rx: 3.3, ry: 2.5, ly: 200000, n: 18 },
+  ];
+  NEBULAE.forEach(function (nb) { nb.pts = []; for (var i = 0; i < nb.n; i++) { var a = i * 2.399963, rr = Math.sqrt((i + 0.5) / nb.n); nb.pts.push([Math.cos(a) * rr * nb.rx, Math.sin(a) * rr * nb.ry]); } });   // golden-angle scatter fills an ellipse
+
+  var SKY = [SUN, MOON];
+  ALL_PLANETS.forEach(function (k) { SKY.push({ name: k.charAt(0).toUpperCase() + k.slice(1), isPlanet: true, planet: k }); });
+  Object.keys(SAT_EL).forEach(function (k) { SKY.push({ name: SAT_EL[k].name, isSat: true, sat: k, terrestrial: true }); });
+  NEBULAE.forEach(function (nb) { SKY.push({ name: nb.name, isNebula: true, neb: nb.key, ra: nb.ra, dec: nb.dec, ly: nb.ly }); });
+  Object.keys(STAR_LY).forEach(function (k) { SKY.push({ name: k.charAt(0).toUpperCase() + k.slice(1), isSky: true, starKey: k, ly: STAR_LY[k] }); });
+
+  var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl'), GL = null;
+  var SPH_VS = 'attribute vec3 aRel,aUnit; uniform mat4 uVP; varying vec3 vN; void main(){ vN=aUnit; gl_Position=uVP*vec4(aRel,1.0); }';
+  // highp where available (needed for the fine land-mask thresholds near the pole), else mediump so it still compiles
+  var HIGHP = '#ifdef GL_FRAGMENT_PRECISION_HIGH\nprecision highp float;\n#else\nprecision mediump float;\n#endif\n';
+  var SPH_FS = HIGHP + 'varying vec3 vN; uniform vec3 uSun,uDay,uNight,uLand,uMtnDir; uniform float uShoreX,uMtnR,uAlpha,uPlain;'
+    + 'void main(){ vec3 N=normalize(vN); float landMask=1.0-smoothstep(uShoreX-0.00006,uShoreX+0.00006,N.x); float island=1.0-smoothstep(uMtnR*0.85,uMtnR*1.08,distance(N,uMtnDir));'
+    + ' vec3 dayc=mix(uDay,uLand,max(landMask,island)); float l=dot(N,normalize(uSun)); vec3 base=mix(uNight,dayc,smoothstep(-0.10,0.15,l)); vec3 col=base*(0.15+0.9*max(0.0,l));'
+    + ' float latd=degrees(asin(clamp(N.y,-1.0,1.0))); float lond=degrees(atan(N.z,N.x)); float d=min(abs(mod(lond+7.5,15.0)-7.5),abs(mod(latd+7.5,15.0)-7.5)); float line=1.0-smoothstep(0.2,0.5,d);'
+    + ' col=mix(col,mix(col,vec3(0.75,0.85,1.0),0.14),line);'
+    + ' vec3 plain=vec3(0.42,0.42,0.45)*(0.2+0.9*max(0.0,l)); col=mix(col,plain,uPlain);'
+    + ' gl_FragColor=vec4(col,uAlpha); }';
+  var OBJ_VS = 'attribute vec3 aRel,aNrm; uniform mat4 uVP; varying vec3 vN; void main(){ vN=aNrm; gl_Position=uVP*vec4(aRel,1.0); }';
+  var OBJ_FS = 'precision mediump float; varying vec3 vN; uniform vec3 uColor,uSun; uniform float uAmb,uOA; void main(){ float l=uAmb+(1.0-uAmb)*max(0.0,dot(normalize(vN),normalize(uSun))); gl_FragColor=vec4(uColor*l,uOA); }';
+  // full-screen sky: per-pixel view ray → day/night gradient, a glow toward the Sun
+  // (visible even at night so you can find it), a low-Sun twilight band, and the Sun disc.
+  var SKY_VS = 'attribute vec2 aPos; varying vec2 vNdc; void main(){ vNdc=aPos; gl_Position=vec4(aPos,1.0,1.0); }';
+  var SKY_FS = HIGHP + 'varying vec2 vNdc; uniform vec3 uSun,uRight,uUp,uFwd; uniform float uDay,uSpace,uTan,uAspect;'
+    + 'void main(){ vec3 ray=normalize(uFwd+vNdc.x*uAspect*uTan*uRight+vNdc.y*uTan*uUp); vec3 sun=normalize(uSun); float mu=dot(ray,sun); float el=clamp(ray.y,-1.0,1.0);'
+    + ' float hf=smoothstep(-0.05,0.45,el); vec3 dayZ=vec3(0.24,0.44,0.82),dayH=vec3(0.62,0.74,0.92),nZ=vec3(0.015,0.02,0.05),nH=vec3(0.04,0.05,0.10);'
+    + ' vec3 sky=mix(mix(nH,nZ,hf),mix(dayH,dayZ,hf),uDay);'
+    + ' float g=pow(max(mu,0.0),6.0)*0.5+pow(max(mu,0.0),350.0)*2.0; sky+=vec3(1.0,0.86,0.6)*g*(0.35+0.65*uDay)*(1.0-uSpace);'
+    + ' float low=smoothstep(0.35,-0.25,sun.y)*(1.0-smoothstep(-0.35,-0.08,sun.y)); sky+=vec3(1.0,0.45,0.2)*pow(max(mu,0.0),3.0)*low*(1.0-smoothstep(0.0,0.25,abs(el)))*0.7*(1.0-uSpace);'
+    + ' sky=mix(sky,vec3(0.005,0.005,0.02),uSpace);'
+    + ' float disc=smoothstep(0.9999875,0.9999905,mu); sky=mix(sky,vec3(1.0,0.98,0.92),disc);'   // ~0.53° disc, matching the true Sun/Moon angular size
+    + ' gl_FragColor=vec4(max(sky,0.0),1.0); }';
+  var LINE_VS = 'attribute vec3 aRel; uniform mat4 uVP; void main(){ gl_Position=uVP*vec4(aRel,1.0); }';
+  var LINE_FS = 'precision mediump float; uniform vec3 uColor; void main(){ gl_FragColor=vec4(uColor,1.0); }';
+  var STAR_VS = 'attribute vec3 aRel; attribute float aSize; uniform mat4 uVP; void main(){ gl_Position=uVP*vec4(aRel,1.0); gl_PointSize=aSize; }';
+  var STAR_FS = 'precision mediump float; uniform vec3 uColor; void main(){ vec2 d=gl_PointCoord-0.5; if(dot(d,d)>0.25) discard; gl_FragColor=vec4(uColor,1.0); }';
+  function prog(vs, fs) {   // returns null on any compile/link failure so initGL can fall back to #glfail instead of a silent blank canvas
+    function sh(t, s) { var x = gl.createShader(t); gl.shaderSource(x, s); gl.compileShader(x); return gl.getShaderParameter(x, gl.COMPILE_STATUS) ? x : null; }
+    var v = sh(gl.VERTEX_SHADER, vs), f = sh(gl.FRAGMENT_SHADER, fs); if (!v || !f) return null;
+    var p = gl.createProgram(); gl.attachShader(p, v); gl.attachShader(p, f); gl.linkProgram(p);
+    return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null;
+  }
+  function initGL() {
+    if (!gl) return false;
+    var mesh = makeSphere(180, 192), sp = prog(SPH_VS, SPH_FS), op = prog(OBJ_VS, OBJ_FS), sky = prog(SKY_VS, SKY_FS), line = prog(LINE_VS, LINE_FS), star = prog(STAR_VS, STAR_FS);
+    if (!sp || !op || !sky || !line || !star) return false;   // a shader failed to build → show the fallback message, don't render a blank scene
+    GL = { sp: sp, op: op, sky: sky, line: line, star: star, unit: mesh.unit, idxLen: mesh.idx.length, relBufHn: null, unitB: gl.createBuffer(), relB: gl.createBuffer(), idxB: gl.createBuffer(), oRelB: gl.createBuffer(), oNrmB: gl.createBuffer(), quadB: gl.createBuffer(), lineB: gl.createBuffer(), starB: gl.createBuffer(), starSzB: gl.createBuffer(), boxIdxB: gl.createBuffer(), coneIdxB: gl.createBuffer(), pyrIdxB: gl.createBuffer(), domeIdxB: gl.createBuffer(), moonIdxB: gl.createBuffer(),
+      loc: { sRel: gl.getAttribLocation(sp, 'aRel'), sUnit: gl.getAttribLocation(sp, 'aUnit'), sVP: gl.getUniformLocation(sp, 'uVP'), sSun: gl.getUniformLocation(sp, 'uSun'), sDay: gl.getUniformLocation(sp, 'uDay'), sNight: gl.getUniformLocation(sp, 'uNight'), sLand: gl.getUniformLocation(sp, 'uLand'), sShoreX: gl.getUniformLocation(sp, 'uShoreX'), sMtnDir: gl.getUniformLocation(sp, 'uMtnDir'), sMtnR: gl.getUniformLocation(sp, 'uMtnR'), sAlpha: gl.getUniformLocation(sp, 'uAlpha'), sPlain: gl.getUniformLocation(sp, 'uPlain'),
+        oRel: gl.getAttribLocation(op, 'aRel'), oNrm: gl.getAttribLocation(op, 'aNrm'), oVP: gl.getUniformLocation(op, 'uVP'), oCol: gl.getUniformLocation(op, 'uColor'), oSun: gl.getUniformLocation(op, 'uSun'), oAmb: gl.getUniformLocation(op, 'uAmb'), oOA: gl.getUniformLocation(op, 'uOA'),
+        kPos: gl.getAttribLocation(sky, 'aPos'), kSun: gl.getUniformLocation(sky, 'uSun'), kRight: gl.getUniformLocation(sky, 'uRight'), kUp: gl.getUniformLocation(sky, 'uUp'), kFwd: gl.getUniformLocation(sky, 'uFwd'), kDay: gl.getUniformLocation(sky, 'uDay'), kSpace: gl.getUniformLocation(sky, 'uSpace'), kTan: gl.getUniformLocation(sky, 'uTan'), kAspect: gl.getUniformLocation(sky, 'uAspect'),
+        lRel: gl.getAttribLocation(line, 'aRel'), lVP: gl.getUniformLocation(line, 'uVP'), lColor: gl.getUniformLocation(line, 'uColor'),
+        tRel: gl.getAttribLocation(star, 'aRel'), tSize: gl.getAttribLocation(star, 'aSize'), tVP: gl.getUniformLocation(star, 'uVP'), tColor: gl.getUniformLocation(star, 'uColor') } };
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.unitB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(mesh.unit), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.idxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(mesh.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.boxIdxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(BOX.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.coneIdxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(CONE.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.pyrIdxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(PYR.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.domeIdxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(DOME.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.moonIdxB); gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(MOON_MESH.idx), gl.STATIC_DRAW);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.quadB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);   // full-screen triangle
+    gl.enable(gl.DEPTH_TEST);
+    return true;
+  }
+  function altAzToWorld(altDeg, azDeg) { var a = altDeg * O.DEG, z = azDeg * O.DEG; return [Math.cos(a) * Math.sin(z), Math.sin(a), -Math.cos(a) * Math.cos(z)]; }
+  // sidereal time is frozen in cosmic view (drop Earth's daily spin); bodies still move.
+  function curLST() { return st.cosmic ? st.cosmicLST : O.siderealTimeDeg(st.t, LON); }
+  function bodyDir(ra, dec) { var h = O.horizontalFromHA(dec, ((curLST() - ra) % 360 + 360) % 360, LAT); return { dir: altAzToWorld(h.altDeg, h.azDeg), alt: h.altDeg }; }
+  function updateSun() { var sp = O.sunPosition(st.t, LAT, LON); var b = bodyDir(sp.raDeg, sp.decDeg); st.sun = b.dir; st.sunAlt = b.alt; st.ha = sp.haDeg; }
+  function poleDir() { return altAzToWorld(LAT, 0); }   // celestial pole (toward Polaris) in the local frame
+  function rotAxis(v, k, a) {   // Rodrigues: rotate v about unit axis k by angle a
+    var c = Math.cos(a), s = Math.sin(a), kd = k[0] * v[0] + k[1] * v[1] + k[2] * v[2];
+    return [v[0] * c + (k[1] * v[2] - k[2] * v[1]) * s + k[0] * kd * (1 - c), v[1] * c + (k[2] * v[0] - k[0] * v[2]) * s + k[1] * kd * (1 - c), v[2] * c + (k[0] * v[1] - k[1] * v[0]) * s + k[2] * kd * (1 - c)];
+  }
+  function skyState(tg) {   // world direction + altitude of a Sun/Moon/planet/star target
+    var ra, dec;
+    if (tg.isSun) { var sp = O.sunPosition(st.t, LAT, LON); ra = sp.raDeg; dec = sp.decDeg; }
+    else if (tg.isMoon) { var m = O.moonPosition(st.t, LAT, LON); ra = m.raDeg; dec = m.decDeg; }
+    else if (tg.isPlanet) { var p = O.planetPosition(tg.planet, st.t, LAT, LON); ra = p.raDeg; dec = p.decDeg; }
+    else if (tg.isSat) { var s = O.satellitePosition(SAT_EL[tg.sat], st.t, LAT, LON); return { dir: altAzToWorld(s.altDeg, s.azDeg), alt: s.altDeg }; }
+    else if (tg.isNebula) { ra = tg.ra; dec = tg.dec; }
+    else { ra = STARS[tg.starKey][0]; dec = STARS[tg.starKey][1]; }
+    return bodyDir(ra, dec);
+  }
+  function basePoint(distM, bearingDeg, elevM) { var al = distM / R, b = bearingDeg * O.DEG, s = Math.sin(al), c = Math.cos(al), lift = 1 + (elevM || 0) / R; return [s * Math.cos(b) * lift, c * lift, s * Math.sin(b) * lift]; }
+  // far plane floor must comfortably clear the farthest terrestrial landmark (the ~44 km mountain,
+  // top ~44 km away = 0.0069 R) or it clips the whole mountain at low eye heights (all-or-nothing,
+  // no dip). 0.009 R ≈ 57 km keeps distant objects in, so curvature (sphere occlusion) governs the dip.
+  function nearFar() { var Hn = st.h / R, los = Math.sqrt(Hn * (2 + Hn)); return { near: Math.max(Hn * 0.04, 1e-7), far: Hn < 0.1 ? Math.max(los * 4, 0.009) : (2 + Hn) * 1.15, los: los, Hn: Hn }; }
+  // yaw increases clockwise = turn RIGHT (+z is screen-right at yaw 0); object bearings share this sense.
+  function camDirs() { var dip = O.horizonDip(st.h).dipDeg, pitch = (-dip + st.pitch) * O.DEG, yaw = st.yaw * O.DEG, ch = Math.cos(pitch), sh = Math.sin(pitch), cy = Math.cos(yaw), sy = Math.sin(yaw); return { fwd: [ch * cy, sh, ch * sy], up: [-sh * cy, ch, -sh * sy], hfwd: [cy, 0, sy], pitch: pitch, yaw: yaw, dip: dip }; }
+  function makeVP(fwd, up, fov, aspect) { var nf = nearFar(); return m4mul(m4perspective(fov * O.DEG, aspect, nf.near, nf.far), m4lookAt([0, 0, 0], fwd, up)); }
+
+  function sizeCanvas() { var dpr = Math.min(2, window.devicePixelRatio || 1), w = Math.round(canvas.clientWidth * dpr), h = Math.round(canvas.clientHeight * dpr); if (w && h && (canvas.width !== w || canvas.height !== h)) { canvas.width = w; canvas.height = h; } }
+  function drawSky(fwd, up, fov, aspect) {
+    var right = norm(cross(fwd, up)), cup = cross(right, fwd), th = Math.tan(fov * O.DEG / 2);
+    gl.disable(gl.DEPTH_TEST); gl.useProgram(GL.sky);
+    gl.uniform3f(GL.loc.kSun, st.sun[0], st.sun[1], st.sun[2]); gl.uniform1f(GL.loc.kDay, smooth(st.sunAlt, -6, 8)); gl.uniform1f(GL.loc.kSpace, spaceF());
+    gl.uniform3f(GL.loc.kRight, right[0], right[1], right[2]); gl.uniform3f(GL.loc.kUp, cup[0], cup[1], cup[2]); gl.uniform3f(GL.loc.kFwd, fwd[0], fwd[1], fwd[2]); gl.uniform1f(GL.loc.kTan, th); gl.uniform1f(GL.loc.kAspect, aspect);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.quadB); gl.enableVertexAttribArray(GL.loc.kPos); gl.vertexAttribPointer(GL.loc.kPos, 2, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, 3); gl.enable(gl.DEPTH_TEST);
+  }
+  function drawSphere(VPf, alpha, plain) {
+    var camPos = st.camPos, s = st.sun, Hn = st.h / R;
+    gl.useProgram(GL.sp); gl.uniformMatrix4fv(GL.loc.sVP, false, VPf); gl.uniform3f(GL.loc.sSun, s[0], s[1], s[2]); gl.uniform1f(GL.loc.sAlpha, alpha); gl.uniform1f(GL.loc.sPlain, plain || 0);
+    gl.uniform3f(GL.loc.sDay, 0.10, 0.28, 0.42); gl.uniform3f(GL.loc.sNight, 0.02, 0.03, 0.07); gl.uniform3f(GL.loc.sLand, 0.24, 0.34, 0.20);
+    gl.uniform1f(GL.loc.sShoreX, 0.00063); var md = basePoint(44000, 15, 0); gl.uniform3f(GL.loc.sMtnDir, md[0], md[1], md[2]); gl.uniform1f(GL.loc.sMtnR, 1550 * 2.2 / R);
+    if (alpha < 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.relB);
+    if (GL.relBufHn !== Hn) { var rel = new Float32Array(GL.unit.length); for (var i = 0; i < GL.unit.length; i += 3) { rel[i] = GL.unit[i] - camPos[0]; rel[i + 1] = GL.unit[i + 1] - camPos[1]; rel[i + 2] = GL.unit[i + 2] - camPos[2]; } gl.bufferData(gl.ARRAY_BUFFER, rel, gl.DYNAMIC_DRAW); GL.relBufHn = Hn; }
+    gl.enableVertexAttribArray(GL.loc.sRel); gl.vertexAttribPointer(GL.loc.sRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.unitB); gl.enableVertexAttribArray(GL.loc.sUnit); gl.vertexAttribPointer(GL.loc.sUnit, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.idxB); gl.drawElements(gl.TRIANGLES, GL.idxLen, gl.UNSIGNED_SHORT, 0);
+    if (alpha < 1) { gl.disable(gl.BLEND); gl.depthMask(true); }
+  }
+  function objUniforms(VPf) { gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, st.sun[0], st.sun[1], st.sun[2]); gl.uniform1f(GL.loc.oAmb, clamp(0.12 + smooth(st.sunAlt, -8, 6) * 0.22, 0.12, 0.34)); gl.uniform1f(GL.loc.oOA, 1); }
+  function fadeBlend(on) { if (on) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); } else { gl.disable(gl.BLEND); gl.depthMask(true); } }
+  // draw a list of parts at `base`, uniformly scaled by k (k>1 = your giant body)
+  function drawParts(base, parts, k) {
+    var camPos = st.camPos, Hn = st.h / R;
+    parts.forEach(function (p) {
+      var mesh = meshOf(p.m), sx = (radial(p.m) ? p.r : p.dx) * k, sy = p.dy * k, sz = (radial(p.m) ? p.r : p.dz) * k;
+      if (sy / R / Hn < 0.00018) return;
+      var pr = new Float32Array(mesh.pos.length), nr = new Float32Array(mesh.nrm.length);
+      for (var i = 0; i < mesh.pos.length; i += 3) {
+        var lx = (p.ox || 0) * k + mesh.pos[i] * sx, ly = (p.oy || 0) * k + mesh.pos[i + 1] * sy, lz = (p.oz || 0) * k + mesh.pos[i + 2] * sz;
+        pr[i] = base[0] + lx / R - camPos[0]; pr[i + 1] = base[1] + ly / R - camPos[1]; pr[i + 2] = base[2] + lz / R - camPos[2];
+        var nx = mesh.nrm[i] / sx, ny = mesh.nrm[i + 1] / sy, nz = mesh.nrm[i + 2] / sz, nl = Math.hypot(nx, ny, nz) || 1; nr[i] = nx / nl; nr[i + 1] = ny / nl; nr[i + 2] = nz / nl;
+      }
+      gl.uniform3f(GL.loc.oCol, p.col[0], p.col[1], p.col[2]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.m === 'cone' ? GL.coneIdxB : p.m === 'pyr' ? GL.pyrIdxB : p.m === 'dome' ? GL.domeIdxB : GL.boxIdxB); gl.drawElements(gl.TRIANGLES, mesh.idx.length, gl.UNSIGNED_SHORT, 0);
+    });
+  }
+  // flat projected shadow: squash each part onto the ground along the Sun ray (daytime, ground objects).
+  // Each shadow vertex is then dropped onto the globe (renormalised to radius 1+lift) so a giant's shadow
+  // wraps onto the visible cap and anything past the horizon is clipped by the Earth via the depth buffer,
+  // instead of a flat tangent-plane shadow flying off the limb into the sky. (Crude, not the exact curved
+  // projection — good enough for a 6000 km giant.) The lift grows with eye height to avoid z-fighting.
+  function drawShadow(base, parts, k) {
+    var camPos = st.camPos, sxn = st.sun[0], syn = Math.max(st.sun[1], 0.08), szn = st.sun[2], Hn = st.h / R, liftN = (0.3 + st.h * 0.0008) / R;
+    gl.uniform3f(GL.loc.oCol, 0.05, 0.07, 0.09);
+    parts.forEach(function (p) {
+      var mesh = meshOf(p.m), sX = (radial(p.m) ? p.r : p.dx) * k, sY = p.dy * k, sZ = (radial(p.m) ? p.r : p.dz) * k;
+      if (Math.abs(sY) / R / Hn < 0.00018) return;
+      var pr = new Float32Array(mesh.pos.length), nr = new Float32Array(mesh.nrm.length);
+      for (var i = 0; i < mesh.pos.length; i += 3) {
+        var lx = (p.ox || 0) * k + mesh.pos[i] * sX, ly = (p.oy || 0) * k + mesh.pos[i + 1] * sY, lz = (p.oz || 0) * k + mesh.pos[i + 2] * sZ, t = ly / syn;
+        var Wx = base[0] + (lx - sxn * t) / R, Wy = base[1] + liftN, Wz = base[2] + (lz - szn * t) / R, sc = (1 + liftN) / (Math.hypot(Wx, Wy, Wz) || 1);
+        pr[i] = Wx * sc - camPos[0]; pr[i + 1] = Wy * sc - camPos[1]; pr[i + 2] = Wz * sc - camPos[2];
+        nr[i] = st.sun[0]; nr[i + 1] = st.sun[1]; nr[i + 2] = st.sun[2];
+      }
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.m === 'cone' ? GL.coneIdxB : p.m === 'pyr' ? GL.pyrIdxB : p.m === 'dome' ? GL.domeIdxB : GL.boxIdxB); gl.drawElements(gl.TRIANGLES, mesh.idx.length, gl.UNSIGNED_SHORT, 0);
+    });
+  }
+  // A continuous road ribbon laid ALONG the bearing (so it stays a single connected line at any
+  // heading), following the Earth's curve. We only build out to (a little past) the current horizon —
+  // beyond it the road is occluded by the globe — so from a higher eye height it automatically reaches
+  // further, all the way to the city at its far end.
+  function drawRoad(ob) {
+    var w = ob.road.width, end = Math.min(ob.road.to, O.horizonDip(st.h).surfaceM * 1.25 + 400);
+    var n = Math.min(160, Math.max(10, Math.round(end / 150))), cp = st.camPos, lift = 1 + 0.3 / R, hw = (w / 2) / R, i, o;
+    var P = [], side = [];   // centreline points + perpendicular (sideways) unit vectors along the road
+    for (i = 0; i <= n; i++) { var d = i / n * end, p = basePoint(Math.max(d, 0.3), ob.bearing, 0), t = norm(sub(basePoint(d + 8, ob.bearing, 0), p)); P.push(p); side.push(norm(cross(p, t))); }
+    // pavement: one triangle strip (left/right edge pairs) → a single unbroken surface
+    var strip = new Float32Array((n + 1) * 6), nrm = new Float32Array((n + 1) * 6);
+    for (i = 0; i <= n; i++) { var p = P[i], s = side[i]; o = i * 6;
+      strip[o] = (p[0] + s[0] * hw) * lift - cp[0]; strip[o + 1] = (p[1] + s[1] * hw) * lift - cp[1]; strip[o + 2] = (p[2] + s[2] * hw) * lift - cp[2];
+      strip[o + 3] = (p[0] - s[0] * hw) * lift - cp[0]; strip[o + 4] = (p[1] - s[1] * hw) * lift - cp[1]; strip[o + 5] = (p[2] - s[2] * hw) * lift - cp[2];
+      nrm[o] = p[0]; nrm[o + 1] = p[1]; nrm[o + 2] = p[2]; nrm[o + 3] = p[0]; nrm[o + 4] = p[1]; nrm[o + 5] = p[2]; }
+    gl.uniform3f(GL.loc.oCol, 0.20, 0.21, 0.23);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, strip, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nrm, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, (n + 1) * 2);
+    // dashed centre line: a short quad every other segment, a hair above the pavement
+    var lift2 = 1 + 0.33 / R, cw = 0.35 / R, dv = [], dn = [];
+    for (i = 0; i < n; i += 2) {
+      var a = P[i], sa = side[i], b = P[i + 1], sb = side[i + 1];
+      var q = [[a, sa, 1], [a, sa, -1], [b, sb, 1], [a, sa, -1], [b, sb, -1], [b, sb, 1]];
+      q.forEach(function (v) { var pp = v[0], ss = v[1], sg = v[2]; dv.push((pp[0] + ss[0] * cw * sg) * lift2 - cp[0], (pp[1] + ss[1] * cw * sg) * lift2 - cp[1], (pp[2] + ss[2] * cw * sg) * lift2 - cp[2]); dn.push(pp[0], pp[1], pp[2]); });
+    }
+    gl.uniform3f(GL.loc.oCol, 0.82, 0.78, 0.38);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dv), gl.DYNAMIC_DRAW); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(dn), gl.DYNAMIC_DRAW); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLES, 0, dv.length / 3);
+  }
+  function drawKiteString(VPf) {   // a thin tether from the flyer's (person's) hand up to the kite (a drawn line, not an object)
+    var KITE = OBJECTS.filter(function (o) { return o.kite; })[0], FLYER = OBJECTS[0];
+    if (!KITE || !FLYER) return;
+    var hand = basePoint(FLYER.dist, FLYER.bearing, 0), hm = 1 + 1.6 / R;   // the person's hand ≈ 1.6 m up
+    var kite = basePoint(KITE.dist, KITE.bearing, KITE.elev);
+    var lp = new Float32Array([hand[0] * hm - st.camPos[0], hand[1] * hm - st.camPos[1], hand[2] * hm - st.camPos[2], kite[0] - st.camPos[0], kite[1] - st.camPos[1], kite[2] - st.camPos[2]]);
+    gl.useProgram(GL.line); gl.uniformMatrix4fv(GL.loc.lVP, false, VPf); gl.uniform3f(GL.loc.lColor, 0.85, 0.85, 0.88);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.lineB); gl.bufferData(gl.ARRAY_BUFFER, lp, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.lRel); gl.vertexAttribPointer(GL.loc.lRel, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.LINES, 0, 2);
+  }
+  function drawObjects(VPf) {
+    var oa = 1 - st.cosmicT; if (oa <= 0.02) return;   // terrestrial objects fade out entering cosmic view
+    objUniforms(VPf); gl.uniform1f(GL.loc.oOA, oa); if (oa < 1) fadeBlend(true);
+    var sh = st.shadows && st.sun[1] > 0.06 && st.cosmicT < 0.4;
+    OBJECTS.forEach(function (ob) {
+      if (ob.road) { drawRoad(ob); return; }
+      var base = basePoint(ob.dist, ob.bearing, ob.elev); if (sh && !ob.elev) drawShadow(base, ob.parts, 1); drawParts(base, ob.parts, 1);
+    });
+    if (oa < 1) { fadeBlend(false); gl.uniform1f(GL.loc.oOA, 1); }
+    drawKiteString(VPf);
+  }
+  // sphere opaque first (normal); or objects/sky-bodies first then a translucent globe
+  // last, so things below the horizon show through the Earth (see-through mode).
+  function renderView(fwd, up, fov, aspect, scopeOb) {
+    var VP = makeVP(fwd, up, fov, aspect), VPf = new Float32Array(VP);
+    drawSky(fwd, up, fov, aspect);
+    // in x-ray or (fading into) cosmic view: sky-bodies first, then a translucent
+    // (and, in cosmic, featureless) globe last so everything below the horizon shows.
+    var see = st.xray || st.cosmicT > 0, alpha = st.cosmicT > 0 ? (1 - st.cosmicT * 0.78) : (st.xray ? 0.4 : 1), plain = st.cosmicT;
+    if (see) { drawObjects(VPf); drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); drawSphere(VPf, alpha, plain); }
+    else { drawSphere(VPf, 1, 0); drawObjects(VPf); drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); }
+    if (scopeOb && scopeOb.isPlanet) drawPlanetScope(scopeOb.planet, up, VPf);   // magnified disc + rings/moons in the telescope only
+  }
+  // your own first-person body at your feet, as tall as your eye height (giant when high), plus its shadow
+  function drawBody() {
+    var oa = 1 - st.cosmicT; if (oa <= 0.02) return;
+    objUniforms(new Float32Array(st.VP)); gl.uniform1f(GL.loc.oOA, oa); if (oa < 1) fadeBlend(true);
+    var k = st.h / 1.9; if (st.shadows && st.sun[1] > 0.06 && st.cosmicT < 0.4) drawShadow([0, 1, 0], BODY_PARTS, k); drawParts([0, 1, 0], BODY_PARTS, k);
+    if (oa < 1) { fadeBlend(false); gl.uniform1f(GL.loc.oOA, 1); }
+  }
+  function drawScope(ob) {
+    var dir, fov;
+    if (ob.isSun) { dir = norm(st.sun); fov = 2.6; }
+    else if (ob.isMoon || ob.isSky || ob.isPlanet || ob.isSat || ob.isNebula) { dir = skyState(ob).dir; fov = ob.isMoon ? 3.4 : ob.isPlanet ? 3.5 : ob.isNebula ? 8 : ob.isSat ? 4 : 4.5; }
+    else { var base = basePoint(ob.dist, ob.bearing, ob.elev), hN = ob.height / R; dir = norm(sub([base[0] * (1 + hN * 0.5), base[1] * (1 + hN * 0.5), base[2] * (1 + hN * 0.5)], st.camPos)); fov = clamp((ob.length || ob.height) / ob.dist * O.RAD * 3.2, 1.0, 18); }
+    var wu = Math.abs(dir[1]) > 0.98 ? [1, 0, 0] : [0, 1, 0], right = norm(cross(wu, dir)), up = cross(dir, right);
+    var S = Math.round(Math.min(canvas.width, canvas.height) * 0.34), mg = Math.round(12 * Math.min(2, window.devicePixelRatio || 1));
+    var sx = canvas.width - S - mg, sy = canvas.height - S - mg;
+    gl.enable(gl.SCISSOR_TEST); gl.scissor(sx, sy, S, S); gl.viewport(sx, sy, S, S); gl.clear(gl.DEPTH_BUFFER_BIT);
+    renderView(dir, up, fov, 1, ob); gl.disable(gl.SCISSOR_TEST); gl.viewport(0, 0, canvas.width, canvas.height);
+    var dpr = Math.min(2, window.devicePixelRatio || 1), css = S / dpr, left = sx / dpr, top = (canvas.height - sy - S) / dpr;
+    el.scope.style.display = 'block'; el.scope.style.left = left + 'px'; el.scope.style.top = top + 'px'; el.scope.style.width = css + 'px'; el.scope.style.height = css + 'px';
+    el.scopelabel.style.display = 'block'; el.scopelabel.style.left = left + 'px'; el.scopelabel.style.top = (top + css + 4) + 'px'; el.scopelabel.innerHTML = ob.name + ' · telescope ×' + Math.round(st.fov / fov);
+    st.scopeRect = { x: left, y: top, w: css, h: css + 20 };   // so floating sky labels don't render over the inset
+  }
+  function hideScope() { el.scope.style.display = 'none'; el.scopelabel.style.display = 'none'; st.scopeRect = null; }
+
+  function render() {
+    var Hn = st.h / R; st.camPos = [0, 1 + Hn, 0]; updateSun();
+    var dip = O.horizonDip(st.h); updateReadout(st.h, dip);
+    var aspect = (canvas.width / canvas.height) || 1.7, c;
+    if (st.cosmic) { c = { fwd: st.cfwd, up: st.cup, hfwd: [st.cfwd[0], 0, st.cfwd[2]] }; }   // free incremental basis
+    else { c = camDirs(); if (st.skylock) { var P = poleDir(), ang = -(O.siderealTimeDeg(st.t, LON) - st.lockLST) * O.DEG; c.fwd = rotAxis(c.fwd, P, ang); c.up = rotAxis(c.up, P, ang); c.hfwd = rotAxis(c.hfwd, P, ang); } }
+    st.VP = makeVP(c.fwd, c.up, st.fov, aspect);
+    el.heading.innerHTML = headingStr(st.yaw) + '<br>↕ ' + (st.pitch >= 0 ? '+' : '') + st.pitch.toFixed(0) + '°';
+    el.clock.textContent = clockStr();
+    if (!GL) { updateEyeline(c); updateOrientLabels(); updateStarLabels(); updatePlanetLabels(); updateExtraLabels(); updateObjLabels(); updateLocator(); if (gv.show) gvDraw(); return; }
+    sizeCanvas(); gl.disable(gl.SCISSOR_TEST); gl.viewport(0, 0, canvas.width, canvas.height);
+    gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    renderView(c.fwd, c.up, st.fov, aspect);
+    if (st.body) drawBody();
+    if (st.orient) drawOrient(new Float32Array(st.VP));
+    if (st.hover) drawScope(st.hover); else hideScope();
+    updateEyeline(c); updateOrientLabels(); updateStarLabels(); updatePlanetLabels(); updateExtraLabels(); updateObjLabels(); updateLocator();
+    if (gv.show) gvDraw();
+  }
+
+  // =====================================================================
+  // God's-eye orrery: a top-down 2-D schematic of the ecliptic plane, drawn on its own canvas.
+  // Angular positions and orbit shapes come straight from the model (exact); body disc sizes and
+  // the Moon's orbital radius are exaggerated so everything is visible. Two radial scales: linear
+  // AU ("true distance", zoom/pan for the outer planets) and logarithmic ("compressed", all at once).
+  // =====================================================================
+  var gv = { show: false, mode: 'linear', zoom: 1, panx: 0, pany: 0, drag: false, lx: 0, ly: 0, w: 960, h: 300, dpr: 1 };
+  var gctx = el.godcanvas && el.godcanvas.getContext ? el.godcanvas.getContext('2d') : null;
+  // real equatorial radii (km) → an exaggerated, compressed disc radius in px (ordering preserved)
+  var BODY_KM = { sun: 696000, mercury: 2440, venus: 6052, earth: 6371, moon: 1737, mars: 3390, jupiter: 69911, saturn: 58232, uranus: 25362, neptune: 24622, pluto: 1188 };
+  function gvBodyR(name) { return clamp(Math.cbrt(BODY_KM[name]) * 0.34, name === 'sun' ? 9 : 3, 22); }
+  function gvCol(name) { var c = name === 'sun' ? [1, .86, .32] : name === 'earth' ? [.42, .62, .95] : name === 'moon' ? [.80, .80, .84] : PLANET_COL[name] || [.8, .8, .8]; return 'rgb(' + (c[0] * 255 | 0) + ',' + (c[1] * 255 | 0) + ',' + (c[2] * 255 | 0) + ')'; }
+  var AU_LOG_K = 0.30;
+  function gvRadial(au) { return gv.mode === 'log' ? Math.log(1 + au / AU_LOG_K) : au; }   // AU distance → pre-zoom radial units
+  function gvBaseScale() { return (gv.mode === 'log' ? 44 : 72); }   // px per radial unit at zoom 1
+  function gvCenter() { return [gv.w / 2 + gv.panx, gv.h / 2 + gv.pany]; }
+  // an ecliptic point (AU x,y) → canvas px, warping radius by the chosen scale (angle preserved)
+  function gvProject(p) {
+    var C = gvCenter(), S = gvBaseScale() * gv.zoom, d = Math.hypot(p[0], p[1]);
+    if (d < 1e-9) return [C[0], C[1]];
+    var rr = gvRadial(d) * S / d;   // scale factor applied to the (x,y) direction
+    return [C[0] + p[0] * rr, C[1] - p[1] * rr];   // canvas y is down, so flip (north up)
+  }
+  function gvResize() {
+    if (!gctx) return; var cw = el.godcanvas.clientWidth || 960, ch = el.godcanvas.clientHeight || 300, dpr = Math.min(2, window.devicePixelRatio || 1);
+    gv.dpr = dpr; gv.w = cw; gv.h = ch; el.godcanvas.width = Math.round(cw * dpr); el.godcanvas.height = Math.round(ch * dpr);
+  }
+  function gvFit(which) {   // frame the inner system, or out to the farthest active body
+    gv.panx = 0; gv.pany = 0;
+    var far = which === 'all' ? (st.pluto ? 49.5 : 30.2) : 1.7, half = Math.min(gv.w, gv.h) * 0.42;
+    gv.zoom = half / (gvRadial(far) * gvBaseScale());
+  }
+  function gvOrbitPath(name) {   // sampled, projected orbit ellipse (planets); Earth is the unit circle
+    var pts = [], i, N = 128;
+    if (name === 'earth') { for (i = 0; i <= N; i++) { var a = i / N * 2 * Math.PI; pts.push(gvProject([Math.cos(a), Math.sin(a)])); } return pts; }
+    var el2 = O.PLANET_EL[name]; for (i = 0; i <= N; i++) { var q = O.helioFromM(el2, i / N * 2 * Math.PI); pts.push(gvProject([q[0], q[1]])); }
+    return pts;
+  }
+  function gvBodyXY(name) {   // live ecliptic (x,y) AU
+    if (name === 'sun') return [0, 0];
+    if (name === 'earth') { var e = O.earthHeliocentric(st.t); return [e[0], e[1]]; }
+    var q = O.helioEcliptic(O.PLANET_EL[name], st.t); return [q[0], q[1]];
+  }
+  function gvDisc(cx, cy, r, name, lit) {   // a body: soft glow, disc, and (if lit) a Sun-facing terminator
+    var g = gctx.createRadialGradient(cx, cy, 0, cx, cy, r * 3.4);
+    g.addColorStop(0, gvCol(name)); g.addColorStop(0.16, 'rgba(255,255,255,0)'); gctx.fillStyle = g;
+    gctx.globalAlpha = name === 'sun' ? 0.9 : 0.5; gctx.beginPath(); gctx.arc(cx, cy, r * 3.4, 0, 2 * Math.PI); gctx.fill(); gctx.globalAlpha = 1;
+    gctx.beginPath(); gctx.arc(cx, cy, r, 0, 2 * Math.PI); gctx.fillStyle = gvCol(name); gctx.fill();
+    if (lit) {   // darken the disc, then re-light the hemisphere facing the Sun (screen centre)
+      var C = gvCenter(), toSun = Math.atan2(C[1] - cy, C[0] - cx);
+      gctx.save(); gctx.beginPath(); gctx.arc(cx, cy, r, 0, 2 * Math.PI); gctx.clip();
+      gctx.fillStyle = 'rgba(6,8,14,0.72)'; gctx.fillRect(cx - r - 1, cy - r - 1, 2 * r + 2, 2 * r + 2);
+      gctx.beginPath(); gctx.fillStyle = gvCol(name); gctx.arc(cx, cy, r, toSun - Math.PI / 2, toSun + Math.PI / 2); gctx.fill();
+      gctx.restore();
+    }
+    gctx.lineWidth = 1; gctx.strokeStyle = 'rgba(255,255,255,0.28)'; gctx.beginPath(); gctx.arc(cx, cy, r, 0, 2 * Math.PI); gctx.stroke();
+  }
+  function gvLabel(cx, cy, r, text, col) { gctx.fillStyle = col || 'rgba(224,230,255,0.85)'; gctx.font = '11px system-ui,sans-serif'; gctx.textAlign = 'left'; gctx.textBaseline = 'middle'; gctx.fillText(text, cx + r + 3, cy); }
+  function gvDraw() {
+    if (!gctx) return;
+    gctx.setTransform(gv.dpr, 0, 0, gv.dpr, 0, 0);
+    gctx.clearRect(0, 0, gv.w, gv.h); gctx.fillStyle = '#05070d'; gctx.fillRect(0, 0, gv.w, gv.h);
+    var C = gvCenter();
+    // AU reference rings + labels
+    var rings = gv.mode === 'log' ? [0.4, 1, 2, 5, 10, 20, 40] : [1, 2, 5, 10, 20, 40];
+    gctx.textAlign = 'left'; gctx.textBaseline = 'bottom'; gctx.font = (10) + 'px system-ui,sans-serif';
+    rings.forEach(function (au) {
+      var rp = gvRadial(au) * gvBaseScale() * gv.zoom; if (rp < 6 || rp > Math.hypot(gv.w, gv.h)) return;
+      gctx.beginPath(); gctx.arc(C[0], C[1], rp, 0, 2 * Math.PI); gctx.strokeStyle = 'rgba(120,140,190,0.16)'; gctx.lineWidth = 1; gctx.stroke();
+      gctx.fillStyle = 'rgba(150,168,210,0.5)'; gctx.fillText(au + ' AU', C[0] + 3, C[1] - rp - 1);
+    });
+    // which bodies: Sun + Earth always; planets follow the sky-pane toggles
+    var list = (st.planets ? planets() : []);
+    // orbits (drawn faint, under the bodies)
+    gctx.lineWidth = 1.2;
+    ['earth'].concat(list).forEach(function (name) {
+      var path = gvOrbitPath(name); gctx.beginPath();
+      for (var i = 0; i < path.length; i++) { i ? gctx.lineTo(path[i][0], path[i][1]) : gctx.moveTo(path[i][0], path[i][1]); }
+      gctx.strokeStyle = gvCol(name).replace('rgb', 'rgba').replace(')', ',0.38)'); gctx.stroke();
+    });
+    // Sun
+    var s = gvProject([0, 0]); gvDisc(s[0], s[1], gvBodyR('sun'), 'sun', false);
+    // Earth (day/night) + its exaggerated Moon (Sun-lit hemisphere), if the Moon is enabled
+    var e = gvBodyXY('earth'), ep = gvProject(e); gvDisc(ep[0], ep[1], gvBodyR('earth'), 'earth', true); gvLabel(ep[0], ep[1], gvBodyR('earth'), 'Earth');
+    if (st.moon) {
+      var ml = O.moonEclipticLon(st.t) * O.DEG, moonR = Math.max(gvBodyR('earth') + gvBodyR('moon') + 9, 18);
+      var mx = ep[0] + Math.cos(ml) * moonR, my = ep[1] - Math.sin(ml) * moonR;
+      gctx.strokeStyle = 'rgba(180,190,210,0.35)'; gctx.lineWidth = 1; gctx.beginPath(); gctx.arc(ep[0], ep[1], moonR, 0, 2 * Math.PI); gctx.stroke();
+      gvDisc(mx, my, Math.max(gvBodyR('moon'), 5), 'moon', true);
+      gctx.fillStyle = 'rgba(200,206,220,0.8)'; gctx.font = '10px system-ui,sans-serif'; gctx.textAlign = 'center'; gctx.textBaseline = 'top'; gctx.fillText(O.moonPhase(st.t).name, mx, my + 8);
+    }
+    // the planets
+    list.forEach(function (name) { var p = gvProject(gvBodyXY(name)), rr = gvBodyR(name); gvDisc(p[0], p[1], rr, name, false); gvLabel(p[0], p[1], rr, name.charAt(0).toUpperCase() + name.slice(1)); });
+    // highlight whatever the main view is locating
+    var loc = st.locate;
+    if (loc && (loc.isPlanet || loc.isMoon || loc.isSun)) {
+      var nm = loc.isSun ? 'sun' : loc.isMoon ? 'earth' : loc.planet, hp = gvProject(gvBodyXY(nm));
+      gctx.strokeStyle = '#ffd36b'; gctx.lineWidth = 1.5; gctx.beginPath(); gctx.arc(hp[0], hp[1], gvBodyR(nm) + 5, 0, 2 * Math.PI); gctx.stroke();
+    }
+    // caption
+    gctx.fillStyle = 'rgba(150,168,210,0.65)'; gctx.font = '10px system-ui,sans-serif'; gctx.textAlign = 'right'; gctx.textBaseline = 'bottom';
+    gctx.fillText((gv.mode === 'log' ? 'compressed radial scale' : 'true distance') + ' · day ' + (st.t >= 0 ? '+' : '') + st.t.toFixed(1), gv.w - 6, gv.h - 5);
+  }
+  function setGod(on) {
+    gv.show = on; if (el.godpane) el.godpane.classList.toggle('on', on);
+    if (el.godtoggle) el.godtoggle.checked = on;
+    if (on) { gvResize(); if (gv.zoom === 1 && gv.panx === 0 && gv.pany === 0) gvFit('inner'); gvDraw(); }
+  }
+  function fmtLen(m) { if (m < 1000) return m.toFixed(m < 10 ? 2 : 0) + ' m'; if (m < 1e7) return (m / 1000).toFixed(m < 1e5 ? 1 : 0) + ' km'; return (m / 1e6).toFixed(2) + ' thousand km'; }
+  function headingStr(yaw) { var y = ((yaw % 360) + 360) % 360, names = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW']; return names[Math.round(y / 45) % 8] + ' ' + y.toFixed(0) + '°'; }
+  function clockStr() { if (st.cosmic) return 'day ' + (st.t >= 0 ? '+' : '') + st.t.toFixed(1); var lt = ((12 + st.ha / 15) % 24 + 24) % 24, hh = Math.floor(lt), mm = Math.floor((lt - hh) * 60); return (hh < 10 ? '0' : '') + hh + ':' + (mm < 10 ? '0' : '') + mm + (st.sunAlt < 0 ? ' ·night' : ''); }
+  function updateReadout(h, dip) {
+    el.readout.innerHTML = '<span class="k">eye height</span> <b>' + fmtLen(h) + '</b><br><span class="k">horizon</span> <b>' + fmtLen(dip.lineOfSightM) + '</b> away<br><span class="k">horizon dip</span> <b>' + dip.dipDeg.toFixed(dip.dipDeg < 1 ? 3 : 1) + '°</b>';
+    el.figs.innerHTML = 'To scale: at ' + fmtLen(h) + ' the horizon is ' + fmtLen(dip.lineOfSightM) + ' away, dipping ' + dip.dipDeg.toFixed(dip.dipDeg < 1 ? 3 : 2) + '° below eye level' + (dip.dipDeg < 0.3 ? ' — essentially flat.' : dip.dipDeg < 5 ? ' — the curve is now visible.' : ' — the Earth reads as a ball.');
+  }
+  function updateEyeline(c) {
+    if (!st.eyeline || st.skylock || st.cosmic) { el.eyeline.style.display = 'none'; return; }
+    var d = nearFar().far * 0.4, w = [st.camPos[0] + c.hfwd[0] * d, st.camPos[1] + c.hfwd[1] * d, st.camPos[2] + c.hfwd[2] * d], s = projectPt(w);
+    if (s && s.y >= -2 && s.y <= canvas.clientHeight + 2) { el.eyeline.style.display = 'block'; el.eyeline.style.top = s.y + 'px'; } else el.eyeline.style.display = 'none';
+  }
+  function projectPt(world) { var c = mulVec(st.VP, [world[0] - st.camPos[0], world[1] - st.camPos[1], world[2] - st.camPos[2], 1]); if (c[3] <= 0) return null; return { x: (c[0] / c[3] * 0.5 + 0.5) * canvas.clientWidth, y: (1 - (c[1] / c[3] * 0.5 + 0.5)) * canvas.clientHeight }; }
+  function pickAt(px, py) {
+    if (!st.VP) return null; var best = null, bestD = 1e9;
+    function consider(ob, p1, p2, pad) {
+      var a = projectPt(p1), b = projectPt(p2); if (!a && !b) return; if (!a) a = b; if (!b) b = a;
+      var cx = (a.x + b.x) / 2, cy = (a.y + b.y) / 2, rad = Math.max(pad || 10, Math.hypot(b.x - a.x, b.y - a.y) / 2 + 6), d = Math.hypot(px - cx, py - cy);
+      if (d < rad && d < bestD) { bestD = d; best = ob; }
+    }
+    if (!st.cosmic) OBJECTS.forEach(function (ob) {   // terrestrial objects are gone in cosmic view — don't pick/telescope them
+      if (ob.length) { consider(ob, basePoint(Math.max(ob.dist - ob.length / 2, 3), ob.bearing, 0), basePoint(ob.dist + ob.length / 2, ob.bearing, 0)); return; }   // roads span along their bearing
+      var base = basePoint(ob.dist, ob.bearing, ob.elev), hN = ob.height / R; consider(ob, base, [base[0] * (1 + hN), base[1] * (1 + hN), base[2] * (1 + hN)]);
+    });
+    SKY.forEach(function (tg) { if (tg.planet === 'pluto' && !st.pluto) return; if (tg.isSat && st.cosmic) return; var s = skyState(tg); if (s.alt > 0 || st.cosmic || st.xray) { var D = nearFar().far * 0.5, p = [st.camPos[0] + s.dir[0] * D, st.camPos[1] + s.dir[1] * D, st.camPos[2] + s.dir[2] * D]; consider(tg, p, p, tg.isSky || tg.isNebula ? 11 : 13); } });
+    return best;
+  }
+  function hover(px, py) {
+    var ob = pickAt(px, py); if (ob !== st.hover) { st.hover = ob; render(); }
+    if (!ob) { el.tip.style.display = 'none'; return; }
+    var info = ob.isSun ? '<span class="k">distance</span> ' + fmtLen(ob.dist) + '<br><span class="k">diameter</span> ' + fmtLen(ob.diameter)
+      : ob.isMoon ? '<span class="k">distance</span> ' + fmtLen(ob.dist) + '<br><span class="k">phase</span> ' + O.moonPhase(st.t).name
+      : ob.isSky ? '<span class="k">distance</span> ' + ob.ly + ' light-years<br><span class="k">a fixed star</span>'
+      : ob.isPlanet ? '<span class="k">distance</span> ' + O.planetPosition(ob.planet, st.t, LAT, LON).distAU.toFixed(2) + ' AU<br><span class="k">diameter</span> ' + O.PLANET_DIAM_KM[ob.planet].toLocaleString() + ' km<br><span class="k">a ' + (ob.planet === 'pluto' ? 'dwarf planet?' : 'planet') + '</span>'
+      : ob.isNebula ? '<span class="k">distance</span> ' + ob.ly.toLocaleString() + ' light-years<br><span class="k">a satellite galaxy</span>'
+      : ob.isSat ? '<span class="k">range</span> ' + fmtLen(O.satellitePosition(SAT_EL[ob.sat], st.t, LAT, LON).distER * R) + '<br><span class="k">' + (ob.sat === 'geo' ? 'co-rotating (fixed)' : 'in low orbit') + '</span>'
+      : '<span class="k">distance</span> ' + fmtLen(ob.dist) + (ob.elev ? '<br><span class="k">altitude</span> ' + fmtLen(ob.elev) : '') + '<br><span class="k">' + (ob.length ? 'length' : 'height') + '</span> ' + fmtLen(ob.length || ob.height);
+    el.tip.innerHTML = '<b>' + ob.name + '</b><br>' + info;
+    el.tip.style.display = 'block'; el.tip.style.left = Math.min(px + 14, canvas.clientWidth - 130) + 'px'; el.tip.style.top = (py + 14) + 'px';
+  }
+
+  // --- compass lines + object locator ----------------------------------------
+  var cardEls = {}, CARD_DIRS = { N: [1, 0, 0], E: [0, 0, 1], S: [-1, 0, 0], W: [0, 0, -1] };
+  function makeCards() { ['N', 'E', 'S', 'W'].forEach(function (n) { var d = document.createElement('div'); d.className = 'cardlbl'; d.textContent = n; el.view.appendChild(d); cardEls[n] = d; }); }
+  function populateLocate() {
+    var g1 = document.createElement('optgroup'); g1.label = 'Scene'; OBJECTS.forEach(function (ob, i) { var o = document.createElement('option'); o.value = String(i); o.textContent = ob.name; g1.appendChild(o); }); el.locate.appendChild(g1);
+    var g2 = document.createElement('optgroup'); g2.label = 'Sky'; SKY.forEach(function (tg, i) { var o = document.createElement('option'); o.value = 'sky:' + i; o.textContent = tg.name; g2.appendChild(o); }); el.locate.appendChild(g2);
+  }
+  function drawOrient(VPf) {   // 4 arcs from your feet to the horizon along N/E/S/W
+    var camPos = st.camPos, Hn = st.h / R, beta = Math.acos(clamp(1 / (1 + Hn), -1, 1)), lift = 0.5 / R, N = 30;
+    gl.useProgram(GL.line); gl.uniformMatrix4fv(GL.loc.lVP, false, VPf); gl.uniform3f(GL.loc.lColor, 0.42, 0.82, 1.0);
+    ['N', 'E', 'S', 'W'].forEach(function (nm) {
+      var D = CARD_DIRS[nm], arr = new Float32Array(N * 3);
+      for (var i = 0; i < N; i++) { var th = beta * i / (N - 1), s = Math.sin(th), c = Math.cos(th); arr[i * 3] = D[0] * s - camPos[0]; arr[i * 3 + 1] = (c + lift) - camPos[1]; arr[i * 3 + 2] = D[2] * s - camPos[2]; }
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.lineB); gl.bufferData(gl.ARRAY_BUFFER, arr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.lRel); gl.vertexAttribPointer(GL.loc.lRel, 3, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.LINE_STRIP, 0, N);
+    });
+  }
+  function updateOrientLabels() {
+    var Hn = st.h / R, beta = Math.acos(clamp(1 / (1 + Hn), -1, 1)), s = Math.sin(beta), c = Math.cos(beta);
+    ['N', 'E', 'S', 'W'].forEach(function (nm) {
+      var D = CARD_DIRS[nm], e = cardEls[nm], p = st.orient ? projectPt([D[0] * s, c, D[2] * s]) : null;
+      if (p && p.x >= 0 && p.x <= canvas.clientWidth && p.y >= 0 && p.y <= canvas.clientHeight) { e.style.display = 'block'; e.style.left = p.x + 'px'; e.style.top = (p.y - 10) + 'px'; } else e.style.display = 'none';
+    });
+  }
+  function updateLocator() {
+    var ob = st.locate;
+    if (!ob) { el.locring.style.display = 'none'; el.locarrow.style.display = 'none'; return; }
+    var center;
+    if (ob.isSun) center = [st.camPos[0] + st.sun[0], st.camPos[1] + st.sun[1], st.camPos[2] + st.sun[2]];
+    else if (ob.isMoon || ob.isSky || ob.isPlanet || ob.isSat || ob.isNebula) { var sd = skyState(ob).dir; center = [st.camPos[0] + sd[0], st.camPos[1] + sd[1], st.camPos[2] + sd[2]]; }
+    else { var base = basePoint(ob.dist, ob.bearing, ob.elev), hN = (ob.height || 1) / R; center = [base[0] * (1 + hN * 0.5), base[1] * (1 + hN * 0.5), base[2] * (1 + hN * 0.5)]; }
+    var c = st.cosmic ? { fwd: st.cfwd, up: st.cup } : camDirs(), right = norm(cross(c.fwd, c.up)), d = norm(sub(center, st.camPos));
+    var fz = dot(d, c.fwd), rx = dot(d, right), uy = dot(d, c.up);
+    var W = canvas.clientWidth, H = canvas.clientHeight, aspect = (canvas.width / canvas.height) || 1.7, th = Math.tan(st.fov * O.DEG / 2);
+    if (fz > 0.0001) {
+      var nx = (rx / fz) / (th * aspect), ny = (uy / fz) / th;
+      if (Math.abs(nx) <= 1 && Math.abs(ny) <= 1) {
+        var sx = (nx * 0.5 + 0.5) * W, sy = (1 - (ny * 0.5 + 0.5)) * H, sz = clamp((ob.length || ob.height || 2) / ob.dist / (2 * th) * H + 22, 26, 320);
+        el.locring.style.display = 'block'; el.locring.style.left = sx + 'px'; el.locring.style.top = sy + 'px'; el.locring.style.width = sz + 'px'; el.locring.style.height = sz + 'px'; el.locarrow.style.display = 'none'; return;
+      }
+    }
+    var ang = Math.atan2(uy, rx), cx = W / 2, cy = H / 2, dx = Math.cos(ang), dy = -Math.sin(ang), mrg = 24;
+    var m = Math.min(Math.abs(dx) < 1e-4 ? 1e9 : (W / 2 - mrg) / Math.abs(dx), Math.abs(dy) < 1e-4 ? 1e9 : (H / 2 - mrg) / Math.abs(dy));
+    el.locarrow.style.display = 'block'; el.locarrow.style.left = (cx + dx * m) + 'px'; el.locarrow.style.top = (cy + dy * m) + 'px'; el.locarrow.style.transform = 'translate(-50%,-50%) rotate(' + (90 - ang * 180 / Math.PI) + 'deg)'; el.locring.style.display = 'none';
+  }
+
+  // --- night stars + ecliptic (drawn at the far plane; the sea occludes those below the horizon) ---
+  var starLabelEls = {};
+  function makeStarLabels() { STAR_LABELS.forEach(function (L) { var d = document.createElement('div'); d.className = 'cardlbl'; d.style.color = '#dfe6ff'; d.textContent = L[0]; el.view.appendChild(d); starLabelEls[L[0]] = d; }); }
+  function starDir(k) { return bodyDir(STARS[k][0], STARS[k][1]).dir; }
+  function drawStars(VPf) {
+    var air = airless() || st.cosmic;
+    if (!st.stars || (st.sunAlt > -1 && !air)) return;
+    var bri = air ? 1 : clamp(smooth(-st.sunAlt, 1, 10), 0.15, 1), D = nearFar().far * 0.985, dir = {};
+    var pos = new Float32Array(STAR_KEYS.length * 3), sz = new Float32Array(STAR_KEYS.length);
+    STAR_KEYS.forEach(function (k, i) { var v = starDir(k); dir[k] = v; pos[i * 3] = v[0] * D; pos[i * 3 + 1] = v[1] * D; pos[i * 3 + 2] = v[2] * D; sz[i] = STAR_BIG[k] ? 4.5 : 2.7; });
+    gl.useProgram(GL.star); gl.uniformMatrix4fv(GL.loc.tVP, false, VPf); gl.uniform3f(GL.loc.tColor, bri, bri, bri);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.starB); gl.bufferData(gl.ARRAY_BUFFER, pos, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tRel); gl.vertexAttribPointer(GL.loc.tRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.starSzB); gl.bufferData(gl.ARRAY_BUFFER, sz, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tSize); gl.vertexAttribPointer(GL.loc.tSize, 1, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.POINTS, 0, STAR_KEYS.length);
+    var lp = new Float32Array(STAR_SEG.length * 6);
+    STAR_SEG.forEach(function (s, i) { var a = dir[s[0]], b = dir[s[1]]; lp[i * 6] = a[0] * D; lp[i * 6 + 1] = a[1] * D; lp[i * 6 + 2] = a[2] * D; lp[i * 6 + 3] = b[0] * D; lp[i * 6 + 4] = b[1] * D; lp[i * 6 + 5] = b[2] * D; });
+    gl.useProgram(GL.line); gl.uniformMatrix4fv(GL.loc.lVP, false, VPf); gl.uniform3f(GL.loc.lColor, 0.35 * bri, 0.5 * bri, 0.78 * bri);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.lineB); gl.bufferData(gl.ARRAY_BUFFER, lp, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.lRel); gl.vertexAttribPointer(GL.loc.lRel, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.LINES, 0, STAR_SEG.length * 2);
+    drawNebulae(VPf, bri);
+  }
+  function drawNebulae(VPf, bri) {   // the Magellanic Clouds as a fuzzy scatter of faint points
+    var D = nearFar().far * 0.98;
+    gl.useProgram(GL.star); gl.uniformMatrix4fv(GL.loc.tVP, false, VPf); gl.uniform3f(GL.loc.tColor, bri * 0.82, bri * 0.82, bri * 0.9);
+    NEBULAE.forEach(function (nb) {
+      var c = bodyDir(nb.ra, nb.dec); if (c.alt < -3 && !st.xray && !st.cosmic) return;
+      var cd = c.dir, e1 = norm(cross(cd, [0, 1, 0])); if (!isFinite(e1[0]) || !(e1[0] || e1[1] || e1[2])) e1 = norm(cross(cd, [1, 0, 0]));
+      var e2 = cross(cd, e1), pos = new Float32Array(nb.pts.length * 3), sz = new Float32Array(nb.pts.length);
+      nb.pts.forEach(function (o, i) {
+        var dx = o[0] * O.DEG, dy = o[1] * O.DEG, v = norm([cd[0] + e1[0] * dx + e2[0] * dy, cd[1] + e1[1] * dx + e2[1] * dy, cd[2] + e1[2] * dx + e2[2] * dy]);
+        pos[i * 3] = v[0] * D; pos[i * 3 + 1] = v[1] * D; pos[i * 3 + 2] = v[2] * D; sz[i] = 2.5;
+      });
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starB); gl.bufferData(gl.ARRAY_BUFFER, pos, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tRel); gl.vertexAttribPointer(GL.loc.tRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starSzB); gl.bufferData(gl.ARRAY_BUFFER, sz, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tSize); gl.vertexAttribPointer(GL.loc.tSize, 1, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.POINTS, 0, nb.pts.length);
+    });
+  }
+  function drawSatellites(VPf) {   // artificial satellites (co-rotating → hidden in cosmic view)
+    if (st.cosmic) return;
+    var D = nearFar().far * 0.983;
+    gl.useProgram(GL.star); gl.uniformMatrix4fv(GL.loc.tVP, false, VPf);
+    Object.keys(SAT_EL).forEach(function (k) {
+      var e = SAT_EL[k], s = O.satellitePosition(e, st.t, LAT, LON); if (s.altDeg < 0) return;
+      var v = altAzToWorld(s.altDeg, s.azDeg);
+      gl.uniform3f(GL.loc.tColor, e.col[0], e.col[1], e.col[2]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([v[0] * D, v[1] * D, v[2] * D]), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tRel); gl.vertexAttribPointer(GL.loc.tRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starSzB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([e.sz]), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tSize); gl.vertexAttribPointer(GL.loc.tSize, 1, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.POINTS, 0, 1);
+    });
+  }
+  function drawMoon(VPf) {   // a small Sun-lit sphere → phase falls out of the geometry
+    if (!st.moon) return;
+    var s = O.moonPosition(st.t, LAT, LON), b = bodyDir(s.raDeg, s.decDeg); if (!st.xray && !st.cosmic && b.alt < -3) return;
+    // a thin/new Moon is essentially invisible in a bright daytime sky — fade it out rather than
+    // drawing its unlit face as a black disc (the cause of the "always black" look at the t=0 new moon).
+    var frac = O.moonPhase(st.t).illuminatedFraction, day = smooth(st.sunAlt, -6, 6);
+    var alpha = 1 - day * (1 - smooth(frac, 0.04, 0.28)); if (alpha < 0.02) return;
+    var dir = b.dir, D = nearFar().far * 0.9, r = Math.tan(0.26 * O.DEG) * D, m = MOON_MESH;
+    var pr = new Float32Array(m.pos.length), nr = new Float32Array(m.nrm.length);
+    for (var i = 0; i < m.pos.length; i += 3) { pr[i] = dir[0] * D + m.pos[i] * r; pr[i + 1] = dir[1] * D + m.pos[i + 1] * r; pr[i + 2] = dir[2] * D + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
+    gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, st.sun[0], st.sun[1], st.sun[2]); gl.uniform1f(GL.loc.oAmb, 0.11); gl.uniform1f(GL.loc.oOA, alpha); gl.uniform3f(GL.loc.oCol, 0.78, 0.78, 0.75);
+    if (alpha < 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.moonIdxB); gl.drawElements(gl.TRIANGLES, m.idx.length, gl.UNSIGNED_SHORT, 0);
+    if (alpha < 1) { gl.disable(gl.BLEND); gl.depthMask(true); }
+  }
+  // ---- telescope-only planet detail: a magnified, Sun-lit disc (so inner planets show phases),
+  // Saturn's rings, and Jupiter's four Galilean moons orbiting at their true relative periods. ----
+  function planetAngRadDeg(name, distAU) { return clamp(2400 * O.PLANET_DIAM_KM[name] / (distAU * 1.496e8), 0.06, 0.85); }   // exaggerated so it's visible
+  // The phase we SEE: the illuminated hemisphere faces the Sun, and from Earth the lit fraction is set
+  // by the phase angle α (Sun–planet–Earth). A directional light making angle α with the view axis and
+  // tilted toward the Sun's sky position reproduces it — full for the outer planets, crescents for Venus.
+  function planetPhaseAngle(name) {
+    var P = O.helioEcliptic(O.PLANET_EL[name], st.t), E = O.earthHeliocentric(st.t);
+    var toSun = [-P[0], -P[1], -P[2]], toE = [E[0] - P[0], E[1] - P[1], E[2] - P[2]];
+    var ca = dot(toSun, toE) / ((Math.hypot(P[0], P[1], P[2]) || 1) * (Math.hypot(toE[0], toE[1], toE[2]) || 1));
+    return Math.acos(clamp(ca, -1, 1));
+  }
+  function planetLightDir(name, dir) {
+    var a = planetPhaseAngle(name), sHat = norm(st.sun), d = dot(sHat, dir);
+    var t = norm([sHat[0] - d * dir[0], sHat[1] - d * dir[1], sHat[2] - d * dir[2]]);   // in-sky direction toward the Sun
+    if (!isFinite(t[0])) t = norm(cross(dir, [0, 1, 0]));
+    return norm([-dir[0] * Math.cos(a) + t[0] * Math.sin(a), -dir[1] * Math.cos(a) + t[1] * Math.sin(a), -dir[2] * Math.cos(a) + t[2] * Math.sin(a)]);
+  }
+  function drawLitSphere(C, r, col, amb, VPf, light) {
+    var L = light || st.sun, m = MOON_MESH, pr = new Float32Array(m.pos.length), nr = new Float32Array(m.nrm.length);
+    for (var i = 0; i < m.pos.length; i += 3) { pr[i] = C[0] + m.pos[i] * r; pr[i + 1] = C[1] + m.pos[i + 1] * r; pr[i + 2] = C[2] + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
+    gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, L[0], L[1], L[2]); gl.uniform1f(GL.loc.oAmb, amb); gl.uniform1f(GL.loc.oOA, 1); gl.uniform3f(GL.loc.oCol, col[0], col[1], col[2]);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.moonIdxB); gl.drawElements(gl.TRIANGLES, m.idx.length, gl.UNSIGNED_SHORT, 0);
+  }
+  // world direction of the ecliptic north pole (rotates with the sky), and an in-ecliptic-plane basis
+  // at a body: `along` runs down the ecliptic line, `deep` is the foreshortened axis into the plane.
+  function eclipticPoleDir() { return bodyDir(270, 90 - O.CONST.OBLIQUITY_DEG).dir; }
+  function eclBasis(dir) { var n = eclipticPoleDir(), along = norm(cross(n, dir)); if (!isFinite(along[0])) along = norm(cross(n, [1, 0, 0])); return { n: n, along: along, deep: norm(cross(n, along)) }; }
+  function drawSaturnRings(C, dir, r, VPf, L) {   // rings lie in the ecliptic plane → a shallow tilted ellipse, not a face-on annulus
+    var E = eclBasis(dir), u = E.along, v = E.deep, n = E.n, ri = r * 1.28, ro = r * 2.3, N = 80, strip = new Float32Array((N + 1) * 6), nrm = new Float32Array((N + 1) * 6);
+    for (var i = 0; i <= N; i++) { var a = i / N * 2 * Math.PI, ca = Math.cos(a), sa = Math.sin(a), dx = u[0] * ca + v[0] * sa, dy = u[1] * ca + v[1] * sa, dz = u[2] * ca + v[2] * sa, o = i * 6;
+      strip[o] = C[0] + dx * ri; strip[o + 1] = C[1] + dy * ri; strip[o + 2] = C[2] + dz * ri; strip[o + 3] = C[0] + dx * ro; strip[o + 4] = C[1] + dy * ro; strip[o + 5] = C[2] + dz * ro;
+      nrm[o] = n[0]; nrm[o + 1] = n[1]; nrm[o + 2] = n[2]; nrm[o + 3] = n[0]; nrm[o + 4] = n[1]; nrm[o + 5] = n[2]; }
+    gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, L[0], L[1], L[2]); gl.uniform1f(GL.loc.oAmb, 0.55); gl.uniform1f(GL.loc.oOA, 1); gl.uniform3f(GL.loc.oCol, 0.88, 0.82, 0.60);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, strip, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nrm, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, (N + 1) * 2);
+  }
+  // [sidereal period (days), orbit radius ×(planet disc r), start phase] for Io, Europa, Ganymede, Callisto
+  var JMOONS = [[1.7691, 2.1, 0.0], [3.5512, 3.0, 1.4], [7.1546, 4.3, 2.7], [16.689, 6.6, 4.1]];
+  function drawJupiterMoons(C, dir, r, VPf) {   // moons orbit in ~the ecliptic plane (string out along the ecliptic line)
+    var E = eclBasis(dir), u = E.along, v = E.deep;
+    gl.useProgram(GL.star); gl.uniformMatrix4fv(GL.loc.tVP, false, VPf); gl.uniform3f(GL.loc.tColor, 0.96, 0.94, 0.86);
+    JMOONS.forEach(function (mn) {
+      var a = 2 * Math.PI * st.t / mn[0] + mn[2], rad = r * mn[1], ca = Math.cos(a), sa = Math.sin(a);
+      var p = new Float32Array([C[0] + (u[0] * ca + v[0] * sa) * rad, C[1] + (u[1] * ca + v[1] * sa) * rad, C[2] + (u[2] * ca + v[2] * sa) * rad]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starB); gl.bufferData(gl.ARRAY_BUFFER, p, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tRel); gl.vertexAttribPointer(GL.loc.tRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starSzB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([3.4]), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tSize); gl.vertexAttribPointer(GL.loc.tSize, 1, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.POINTS, 0, 1);
+    });
+  }
+  function drawJupiterSpot(C, dir, r, VPf, L) {   // the Great Red Spot, carried around by Jupiter's ~9.9 h rotation
+    var E = eclBasis(dir), th = 2 * Math.PI * st.t / 0.41354 + 0.7, lat = -17 * O.DEG, cl = Math.cos(lat), sl = Math.sin(lat), ct = Math.cos(th), stt = Math.sin(th);
+    var n = [cl * (ct * E.along[0] + stt * E.deep[0]) + sl * E.n[0], cl * (ct * E.along[1] + stt * E.deep[1]) + sl * E.n[1], cl * (ct * E.along[2] + stt * E.deep[2]) + sl * E.n[2]];
+    if (n[0] * dir[0] + n[1] * dir[1] + n[2] * dir[2] > -0.06) return;   // on the far side → hidden behind the disc
+    drawLitSphere([C[0] + n[0] * r * 0.93, C[1] + n[1] * r * 0.93, C[2] + n[2] * r * 0.93], r * 0.3, [0.82, 0.40, 0.30], 0.12, VPf, L);
+  }
+  function drawPlanetScope(name, up, VPf) {
+    var pp = O.planetPosition(name, st.t, LAT, LON), b = bodyDir(pp.raDeg, pp.decDeg);
+    if (b.alt < -3 && !st.xray && !st.cosmic) return;
+    var D = nearFar().far * 0.9, dir = b.dir, r = Math.tan(planetAngRadDeg(name, pp.distAU) * O.DEG) * D, L = planetLightDir(name, dir);
+    var C = [dir[0] * D, dir[1] * D, dir[2] * D];
+    if (name === 'saturn') drawSaturnRings(C, dir, r, VPf, L);
+    drawLitSphere(C, r, PLANET_COL[name], 0.08, VPf, L);
+    if (name === 'jupiter') { drawJupiterSpot(C, dir, r, VPf, L); drawJupiterMoons(C, dir, r, VPf); }
+  }
+  function drawEcliptic(VPf) {
+    if (!st.eclip) return;
+    var D = nearFar().far * 0.98, N = 73, lp = new Float32Array(N * 3);
+    for (var i = 0; i < N; i++) { var eq = O.eclipticToEquatorial(i / (N - 1) * 360), v = bodyDir(eq.raDeg, eq.decDeg).dir; lp[i * 3] = v[0] * D; lp[i * 3 + 1] = v[1] * D; lp[i * 3 + 2] = v[2] * D; }
+    gl.useProgram(GL.line); gl.uniformMatrix4fv(GL.loc.lVP, false, VPf); gl.uniform3f(GL.loc.lColor, 0.92, 0.76, 0.28);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.lineB); gl.bufferData(gl.ARRAY_BUFFER, lp, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.lRel); gl.vertexAttribPointer(GL.loc.lRel, 3, gl.FLOAT, false, 0, 0);
+    gl.drawArrays(gl.LINE_STRIP, 0, N);
+  }
+  function inScope(p) { var r = st.scopeRect; return !!(r && p.x >= r.x - 4 && p.x <= r.x + r.w + 4 && p.y >= r.y - 4 && p.y <= r.y + r.h + 4); }
+  function skyLabelPos(v, alt, up) {   // shared: place a DOM sky label if it's on-screen (and not under the telescope inset)
+    if (!(alt > 3 || st.cosmic || st.xray)) return null;   // see-through Earth also labels below-horizon bodies
+    var p = projectPt([st.camPos[0] + v[0], st.camPos[1] + v[1], st.camPos[2] + v[2]]);
+    return (p && p.x >= 0 && p.x <= canvas.clientWidth && p.y >= 0 && p.y <= canvas.clientHeight && !inScope(p)) ? p : null;
+  }
+  function updateStarLabels() {
+    var show = st.stars && (st.sunAlt < -1 || airless() || st.cosmic);
+    STAR_LABELS.forEach(function (L) {
+      var e = starLabelEls[L[0]], b = show ? bodyDir(STARS[L[1]][0], STARS[L[1]][1]) : null, p = b ? skyLabelPos(b.dir, b.alt) : null;
+      if (p) { e.style.display = 'block'; e.style.left = p.x + 'px'; e.style.top = (p.y - 14) + 'px'; } else e.style.display = 'none';
+    });
+  }
+  var planetLabelEls = {};
+  function makePlanetLabels() { ALL_PLANETS.forEach(function (k) { var d = document.createElement('div'); d.className = 'cardlbl'; d.style.color = '#ffe0c0'; d.textContent = k.charAt(0).toUpperCase() + k.slice(1); el.view.appendChild(d); planetLabelEls[k] = d; }); }
+  function planetVisible() { return st.planets && (st.sunAlt < -1 || airless() || st.cosmic); }
+  function drawPlanets(VPf) {
+    if (!planetVisible()) return;
+    var D = nearFar().far * 0.984;
+    gl.useProgram(GL.star); gl.uniformMatrix4fv(GL.loc.tVP, false, VPf);
+    planets().forEach(function (name) {
+      var p = O.planetPosition(name, st.t, LAT, LON), v = bodyDir(p.raDeg, p.decDeg).dir, col = PLANET_COL[name];
+      gl.uniform3f(GL.loc.tColor, col[0], col[1], col[2]);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([v[0] * D, v[1] * D, v[2] * D]), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tRel); gl.vertexAttribPointer(GL.loc.tRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.starSzB); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([PLANET_SZ[name] || 5]), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.tSize); gl.vertexAttribPointer(GL.loc.tSize, 1, gl.FLOAT, false, 0, 0);
+      gl.drawArrays(gl.POINTS, 0, 1);
+    });
+  }
+  function updatePlanetLabels() {
+    var list = planetVisible() ? planets() : [];
+    ALL_PLANETS.forEach(function (k) {
+      var e = planetLabelEls[k], on = list.indexOf(k) >= 0, pp = on ? O.planetPosition(k, st.t, LAT, LON) : null, b = pp ? bodyDir(pp.raDeg, pp.decDeg) : null, p = b ? skyLabelPos(b.dir, b.alt) : null;
+      if (p) { e.style.display = 'block'; e.style.left = p.x + 'px'; e.style.top = (p.y - 13) + 'px'; } else e.style.display = 'none';
+    });
+  }
+  // labels for the satellites + Magellanic Clouds
+  var extraLabelEls = {};
+  function makeExtraLabels() {
+    SKY.forEach(function (tg) {
+      if (!(tg.isSat || tg.isNebula)) return;
+      var d = document.createElement('div'); d.className = 'cardlbl'; d.style.color = tg.isSat ? '#cfe0ff' : '#e7d2ff';
+      d.textContent = tg.isSat ? SAT_EL[tg.sat].lbl : (tg.neb === 'lmc' ? 'LMC' : 'SMC');
+      el.view.appendChild(d); extraLabelEls[tg.name] = d;
+    });
+  }
+  function updateExtraLabels() {
+    SKY.forEach(function (tg) {
+      if (!(tg.isSat || tg.isNebula)) return; var e = extraLabelEls[tg.name]; if (!e) return;
+      var vis = tg.isSat ? !st.cosmic : (st.stars && (st.sunAlt < -1 || airless() || st.cosmic));
+      var s = vis ? skyState(tg) : null, p = s ? skyLabelPos(s.dir, s.alt) : null;
+      if (p) { e.style.display = 'block'; e.style.left = p.x + 'px'; e.style.top = (p.y - 13) + 'px'; } else e.style.display = 'none';
+    });
+  }
+  // optional name labels on the terrestrial objects (main view) — plus the Sun and Moon
+  var objLabelEls = [], sunMoonLabelEls = {};
+  function makeObjLabels() {
+    OBJECTS.forEach(function (ob) { var d = document.createElement('div'); d.className = 'cardlbl'; d.style.color = '#e2ead9'; d.textContent = ob.name; el.view.appendChild(d); objLabelEls.push(d); });
+    [['sun', 'Sun', '#ffe6a8'], ['moon', 'Moon', '#e8ecf6']].forEach(function (L) { var d = document.createElement('div'); d.className = 'cardlbl'; d.style.color = L[2]; d.textContent = L[1]; el.view.appendChild(d); sunMoonLabelEls[L[0]] = d; });
+  }
+  function updateObjLabels() {
+    OBJECTS.forEach(function (ob, i) {
+      var e = objLabelEls[i]; if (!e) return;
+      if (!st.objlabels || st.cosmic) { e.style.display = 'none'; return; }
+      var base = basePoint(ob.dist, ob.bearing, ob.elev), hN = (ob.height || 1) / R, pp = projectPt([base[0] * (1 + hN), base[1] * (1 + hN), base[2] * (1 + hN)]);
+      if (pp && pp.x >= 0 && pp.x <= canvas.clientWidth && pp.y >= 0 && pp.y <= canvas.clientHeight && !inScope(pp)) { e.style.display = 'block'; e.style.left = pp.x + 'px'; e.style.top = (pp.y - 14) + 'px'; } else e.style.display = 'none';
+    });
+    [[SUN, 'sun', true], [MOON, 'moon', st.moon]].forEach(function (L) {
+      var e = sunMoonLabelEls[L[1]]; if (!e) return;
+      var s = (st.objlabels && L[2]) ? skyState(L[0]) : null, p = s ? skyLabelPos(s.dir, s.alt) : null;
+      if (p) { e.style.display = 'block'; e.style.left = p.x + 'px'; e.style.top = (p.y - 14) + 'px'; } else e.style.display = 'none';
+    });
+  }
+
+  function hFromSlider(v) { return H_MIN * Math.pow(H_MAX / H_MIN, v / 1000); }
+  function sliderFromH(h) { return 1000 * Math.log(h / H_MIN) / Math.log(H_MAX / H_MIN); }
+  function setSV(v) { st.sv = clamp(v, 0, 1000); st.h = hFromSlider(st.sv); [].forEach.call(el.presets.querySelectorAll('.mark'), function (m) { m.classList.toggle('on', Math.abs(parseFloat(m.getAttribute('data-h')) - st.h) / st.h < 0.02); }); render(); }
+  // slider value is −pitch so the thumb goes UP when you look up (native vertical range is max-at-bottom here)
+  function setView(yaw, pitch) { st.yaw = ((yaw % 360) + 360) % 360; st.pitch = clamp(pitch, -88, 88); if (el.pitch) el.pitch.value = clamp(-st.pitch, -60, 60); render(); }
+  function setPitch(v) { setView(st.yaw, v); }
+  function setYaw(v) { setView(v, st.pitch); }
+  // smoothly glide the eye height to a preset (instead of snapping) — easeInOutQuad over ~0.7 s
+  var svAnim = null;
+  function animateSV(target) {
+    if (svAnim) svAnim.cancel = true;   // supersede any in-flight glide
+    target = clamp(target, 0, 1000); var from = st.sv, dur = 700, anim = { cancel: false, start: null }; svAnim = anim;
+    function step(ts) {
+      if (anim.cancel) return; if (anim.start === null) anim.start = ts;
+      var u = Math.min(1, (ts - anim.start) / dur), e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+      setSV(from + (target - from) * e);
+      if (u < 1) raf(step); else svAnim = null;
+    }
+    raf(step);
+  }
+  function buildMarks() { PRESETS.forEach(function (p) { var b = document.createElement('button'); b.className = 'mark'; b.type = 'button'; b.setAttribute('data-h', String(p.h)); b.innerHTML = p.e; b.title = p.label + ' · ' + p.sub; b.setAttribute('aria-label', 'eye height: ' + p.label); b.addEventListener('click', function () { animateSV(sliderFromH(p.h)); }); el.presets.appendChild(b); }); }
+  function svFromClientY(clientY) { var r = el.track.getBoundingClientRect(); return clamp(1 - (clientY - r.top) / r.height, 0, 1) * 1000; }
+  function onWheel(e) { e.preventDefault(); if (svAnim) svAnim.cancel = true; var unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1, dy = Math.max(-40, Math.min(40, e.deltaY * unit)); setSV(st.sv - dy * 0.6); }
+  function cosmicRot(axis, ang) { st.cfwd = norm(rotAxis(st.cfwd, axis, ang)); st.cup = norm(rotAxis(st.cup, axis, ang)); }
+  function onKey(e) {
+    var t = (e.target && e.target.tagName) || ''; if (/INPUT|TEXTAREA|SELECT/.test(t)) return; var k = e.key;
+    if (k === ' ' || k === 'Spacebar') { st.playing ? pause() : play(); if (e.preventDefault) e.preventDefault(); return; }   // YouTube-style play/pause
+    if (st.cosmic) {   // free-look: incremental rotation about local up (yaw) / right (pitch)
+      var st4 = 3 * O.DEG, right = norm(cross(st.cfwd, st.cup));
+      if (k === 'ArrowUp') cosmicRot(right, st4); else if (k === 'ArrowDown') cosmicRot(right, -st4);
+      else if (k === 'ArrowLeft') cosmicRot(st.cup, -st4); else if (k === 'ArrowRight') cosmicRot(st.cup, st4); else return;
+      render(); if (e.preventDefault) e.preventDefault(); return;
+    }
+    var s = 4; if (k === 'ArrowUp') setPitch(st.pitch + s); else if (k === 'ArrowDown') setPitch(st.pitch - s); else if (k === 'ArrowLeft') setYaw(st.yaw - s); else if (k === 'ArrowRight') setYaw(st.yaw + s); else return; if (e.preventDefault) e.preventDefault();
+  }
+
+  // discrete, round time-unit speed steps (capped at 1 day/s normally; up to 1 year/s in cosmic view)
+  var SPEED_STEPS = [{ d: 1 / 1440, l: '1 min/s' }, { d: 1 / 144, l: '10 min/s' }, { d: 1 / 24, l: '1 hr/s' }, { d: 1 / 4, l: '6 hr/s' }, { d: 1, l: '1 day/s' }, { d: 7, l: '1 week/s' }, { d: 30, l: '1 month/s' }, { d: 365, l: '1 year/s' }];
+  function speedMaxIdx() { return st.cosmic ? SPEED_STEPS.length - 1 : 4; }
+  function setSpeedIdx(i) { st.speedIdx = clamp(Math.round(i), 0, speedMaxIdx()); st.speed = SPEED_STEPS[st.speedIdx].d; if (el.speed) { el.speed.max = speedMaxIdx(); el.speed.value = st.speedIdx; } if (el.speedlbl) el.speedlbl.textContent = SPEED_STEPS[st.speedIdx].l; }
+  function raf(fn) { return (window.requestAnimationFrame || function () { return 0; })(fn); }
+  function tick(ts) { if (!st.playing) return; if (st.lastTS) st.t += (ts - st.lastTS) / 1000 * st.speed; st.lastTS = ts; render(); raf(tick); }
+  function play() { if (st.playing) return; st.playing = true; st.lastTS = 0; el.play.textContent = '⏸ Pause'; raf(tick); }
+  function pause() { st.playing = false; el.play.textContent = '▶ Play'; render(); }
+
+  // cosmic view: terrestrial scene fades out (over ~1.2 s), Earth becomes a plain
+  // translucent sphere, and you float free of Earth's spin (frozen sidereal time).
+  var COSMIC_FADE = 1.2;
+  function fadeStep(ts) {
+    if (st.fadeLast) { var dt = (ts - st.fadeLast) / 1000, dir = st.cosmicT < st.fadeTarget ? 1 : -1; st.cosmicT = clamp(st.cosmicT + dir * dt / COSMIC_FADE, 0, 1); }
+    st.fadeLast = ts; render();
+    if (Math.abs(st.cosmicT - st.fadeTarget) > 1e-3) raf(fadeStep); else { st.cosmicT = st.fadeTarget; st.fadeLast = 0; render(); }
+  }
+  function fadeTo(target) { st.fadeTarget = target; st.fadeLast = 0; raf(fadeStep); }
+  function enterCosmic() {
+    var c = camDirs();
+    if (st.skylock) { var P = poleDir(), a = -(O.siderealTimeDeg(st.t, LON) - st.lockLST) * O.DEG; c.fwd = rotAxis(c.fwd, P, a); c.up = rotAxis(c.up, P, a); }
+    st.cfwd = c.fwd.slice(); st.cup = c.up.slice(); st.saveYaw = st.yaw; st.savePitch = st.pitch;
+    st.cosmicLST = O.siderealTimeDeg(st.t, LON); st.cosmic = true; st.skylock = false;
+    if (el.skylocktoggle) el.skylocktoggle.checked = false;
+    if (!gv.show) { gv.autoOpened = true; setGod(true); }   // the top-down view is most useful here
+    if (st.locate && OBJECTS.indexOf(st.locate) >= 0) { st.locate = null; if (el.locate) el.locate.value = ''; }   // terrestrial objects vanish in cosmic — drop the Find selection
+    setSpeedIdx(st.speedIdx); fadeTo(1);
+  }
+  function exitCosmic() {
+    st.cosmic = false; st.cosmicT = 0; st.fadeTarget = 0; st.fadeLast = 0;
+    if (gv.autoOpened) { gv.autoOpened = false; setGod(false); }   // close it again only if we auto-opened it
+    st.yaw = st.saveYaw; st.pitch = st.savePitch; setSpeedIdx(st.speedIdx); render();
+  }
+  function setCosmic(on) { if (on === st.cosmic) return; if (on) enterCosmic(); else exitCosmic(); }
+
+  canvas.addEventListener('pointerdown', function (e) { st.look = true; st.lx = e.clientX; st.ly = e.clientY; st.lyaw = st.yaw; st.lpitch = st.pitch; if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; if (st.hover) { st.hover = null; } el.tip.style.display = 'none'; });
+  canvas.addEventListener('pointermove', function (e) {
+    var r = canvas.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+    if (st.look) {
+      if (st.cosmic) {   // incremental free-look (parallel transport about local up/right)
+        var sens = st.fov / canvas.clientHeight * O.DEG, dx = e.clientX - st.lx, dy = e.clientY - st.ly; st.lx = e.clientX; st.ly = e.clientY;
+        var right = norm(cross(st.cfwd, st.cup)); cosmicRot(st.cup, dx * sens); cosmicRot(right, dy * sens); render();
+      } else { var sens = st.fov / canvas.clientHeight; setView(st.lyaw - (e.clientX - st.lx) * sens, st.lpitch + (e.clientY - st.ly) * sens); }
+    } else hover(px, py);
+  });
+  canvas.addEventListener('pointerup', function () { st.look = false; canvas.style.cursor = 'grab'; });
+  canvas.addEventListener('pointerleave', function () { if (!st.look && st.hover) { st.hover = null; render(); } el.tip.style.display = 'none'; });
+  canvas.addEventListener('wheel', onWheel, { passive: false });
+  // God's-eye pane: drag to pan, wheel to zoom about the cursor, buttons for scale + framing
+  if (el.godcanvas) {
+    el.godcanvas.addEventListener('pointerdown', function (e) { gv.drag = true; gv.lx = e.clientX; gv.ly = e.clientY; if (el.godcanvas.setPointerCapture) el.godcanvas.setPointerCapture(e.pointerId); el.godcanvas.style.cursor = 'grabbing'; });
+    el.godcanvas.addEventListener('pointermove', function (e) { if (!gv.drag) return; gv.panx += e.clientX - gv.lx; gv.pany += e.clientY - gv.ly; gv.lx = e.clientX; gv.ly = e.clientY; gvDraw(); });
+    el.godcanvas.addEventListener('pointerup', function () { gv.drag = false; el.godcanvas.style.cursor = 'grab'; });
+    el.godcanvas.addEventListener('wheel', function (e) {
+      e.preventDefault(); var r = el.godcanvas.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
+      var C = gvCenter(), wx = (mx - C[0]) / gv.zoom, wy = (my - C[1]) / gv.zoom;   // world (pre-zoom) point under cursor
+      var f = Math.exp(-Math.sign(e.deltaY) * 0.18); gv.zoom = clamp(gv.zoom * f, 0.05, 60);
+      gv.panx += mx - C[0] - wx * gv.zoom; gv.pany += my - C[1] - wy * gv.zoom; gvDraw();   // keep that point under the cursor
+    }, { passive: false });
+  }
+  if (el.godtoggle) el.godtoggle.addEventListener('change', function () { setGod(!!el.godtoggle.checked); });
+  if (el.godscale) el.godscale.addEventListener('click', function () { gv.mode = gv.mode === 'log' ? 'linear' : 'log'; el.godscale.textContent = gv.mode === 'log' ? 'compressed' : 'true distance'; gvFit('inner'); gvDraw(); });
+  if (el.godfit) el.godfit.addEventListener('click', function () { gvFit('inner'); gvDraw(); });
+  if (el.godfitall) el.godfitall.addEventListener('click', function () { gvFit('all'); gvDraw(); });
+  el.eyetoggle.addEventListener('change', function () { st.eyeline = !!el.eyetoggle.checked; render(); });
+  el.bodytoggle.addEventListener('change', function () { st.body = !!el.bodytoggle.checked; render(); });
+  el.shadowtoggle.addEventListener('change', function () { st.shadows = !!el.shadowtoggle.checked; render(); });
+  el.orienttoggle.addEventListener('change', function () { st.orient = !!el.orienttoggle.checked; render(); });
+  el.labeltoggle.addEventListener('change', function () { st.objlabels = !!el.labeltoggle.checked; render(); });
+  el.startoggle.addEventListener('change', function () { st.stars = !!el.startoggle.checked; render(); });
+  el.ecliptoggle.addEventListener('change', function () { st.eclip = !!el.ecliptoggle.checked; render(); });
+  el.locate.addEventListener('change', function () { var v = el.locate.value; st.locate = v === '' ? null : (v.indexOf('sky:') === 0 ? SKY[+v.slice(4)] : OBJECTS[+v]); render(); });
+  el.moontoggle.addEventListener('change', function () { st.moon = !!el.moontoggle.checked; render(); });
+  el.planetstoggle.addEventListener('change', function () { st.planets = !!el.planetstoggle.checked; render(); });
+  el.xraytoggle.addEventListener('change', function () { st.xray = !!el.xraytoggle.checked; render(); });
+  el.noatmotoggle.addEventListener('change', function () { st.noatmo = !!el.noatmotoggle.checked; render(); });
+  el.skylocktoggle.addEventListener('change', function () { st.skylock = !!el.skylocktoggle.checked; if (st.skylock) st.lockLST = O.siderealTimeDeg(st.t, LON); render(); });
+  el.cosmictoggle.addEventListener('change', function () { setCosmic(!!el.cosmictoggle.checked); });
+  el.plutotoggle.addEventListener('change', function () { st.pluto = !!el.plutotoggle.checked; updatePlanetLabels(); render(); });
+  el.fov.addEventListener('input', function () { st.fov = +el.fov.value; render(); });
+  el.play.addEventListener('click', function () { st.playing ? pause() : play(); });
+  el.speed.addEventListener('input', function () { setSpeedIdx(+el.speed.value); if (!st.playing) render(); });
+  if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('keydown', onKey);
+  if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('resize', function () { if (gv.show) gvResize(); render(); });
+
+  if (!initGL()) { el.glfail.style.display = 'block'; canvas.style.display = 'none'; }
+  buildMarks(); makeCards(); makeStarLabels(); makePlanetLabels(); makeExtraLabels(); makeObjLabels(); populateLocate(); setSpeedIdx(1); setSV(0);
+  play();   // start gently animated (10 min/s) — a pleasing, not-too-chaotic first impression
+
+  window.__orrery = { m4mul: m4mul, m4perspective: m4perspective, m4lookAt: m4lookAt, hFromSlider: hFromSlider, sliderFromH: sliderFromH, setSV: setSV, setPitch: setPitch, setYaw: setYaw, setView: setView,
+    onWheel: onWheel, onKey: onKey, svFromClientY: svFromClientY, pickAt: pickAt, projectPt: projectPt, basePoint: basePoint, camDirs: camDirs, updateEyeline: updateEyeline, updateSun: updateSun,
+    play: play, pause: pause, setSpeedIdx: setSpeedIdx, setCosmic: setCosmic, planets: planets, updateLocator: updateLocator, skyState: skyState, airless: airless,
+    setGod: setGod, gvFit: gvFit, gvProject: gvProject, gvBodyXY: gvBodyXY, gvOrbitPath: gvOrbitPath, gvState: gv, inScope: inScope, skyLabelPos: skyLabelPos,
+    SUN: SUN, MOON: MOON, SKY: SKY, objects: OBJECTS, el: el, state: st, render: render };
+})();
+</script>
+</body>
+</html>

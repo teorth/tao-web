@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the 21st-century orrery — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the 21st-century orrery</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="orrery.html">21st-century orrery</a> — still a work in progress.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/orrery.html">21st-century orrery</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — a first-person sandbox for frames of reference and scale, from the first sketch to launch.</em></p>
+
+<p><strong>How to read this.</strong> The aim is to convey the <em>process</em>, not to reproduce the raw log:</p>
+<ul>
+  <li><strong>Terence&#x27;s messages</strong> are shown mostly verbatim. The earliest ones, and a few short clarifications, are <em>condensed</em> from session summaries (the original text had scrolled out of the log) — marked <em>(condensed)</em>.</li>
+  <li><strong>Claude&#x27;s replies</strong> — almost entirely edits to two files, <code>orrery.js</code> (a DOM-free astronomy/geometry core) and <code>orrery.html</code> (the hand-rolled WebGL app) — are replaced by short <em>italic summaries</em> of what changed. The diffs are omitted.</li>
+  <li>Unrelated threads from the same sessions (other website edits, reboots) are left out.</li>
+</ul>
+<p>The whole thing was built incrementally over many sittings and kept uncommitted for local testing throughout. The geometry and astronomy were checked with small headless Node unit tests (the logic core) plus a DOM-shim, stub-WebGL &quot;smoke&quot; test for the UI wiring — by launch, ~93 and ~157 checks respectively.</p>
+
+<hr>
+<h2>1. The idea: one honest number in a sea of exaggeration</h2>
+<p><strong>Terence</strong> <em>(condensed):</em></p>
+<blockquote><p>I&#x27;d like a &quot;21st-century orrery&quot; — not the brass-gears kind, but a sandbox for <strong>frames of reference and scale</strong>. The core conceit: stand somewhere on a to-scale spherical Earth and <strong>raise your eye height</strong>, from a person up to orbit, and watch the horizon <em>dip and curve</em>. That horizon dip is the one thing that should be genuinely to scale; almost everything else (planet sizes, the Moon&#x27;s distance) will have to be exaggerated to be visible at all. Let&#x27;s reconstruct a staged plan and start with a testable math core.</p></blockquote>
+<p><em>Claude reconstructed a staged roadmap (a DOM-free model → a first-person WebGL scene → a moving sky → frames of reference → publication) and argued for hand-rolling WebGL rather than pulling in a 3-D library, to keep the app self-contained (no network, no CDN — the site&#x27;s standing rule). It then built <strong>Stage 0</strong>: <code>orrery.js</code>, an idealized model (circular orbits, constant rates, Sun and Moon on the ecliptic, a fixed 23.44° tilt), with the one to-scale quantity — <code>horizonDip(height)</code> — validated against known values (1.7&nbsp;m → 0.042°, an airliner → 3.2°, the ISS → 19.7°).</em></p>
+
+<hr>
+<h2>2. Standing on a ball: the first-person scene</h2>
+<p><strong>Terence</strong> <em>(condensed):</em> <em>build the first-person view and the altitude scrub.</em></p>
+<p><em>Claude built the WebGL scene, which immediately ran into two problems worth recording. First, a 1.7&nbsp;m person on a 6371&nbsp;km sphere overflows <code>float32</code>, so vertices are computed camera-relative in double precision and only then handed to the GPU. Second, a uniformly tessellated sphere renders the near ground as flat facets — so the mesh uses <strong>log-spaced polar rings</strong>, dense right under the observer, so the horizon curves correctly at every height. The camera auto-pitches by the dip so the horizon stays centred, and a dashed <strong>eye-level line</strong> sits above the dropping sea-horizon.</em></p>
+<p><strong>Terence</strong> <em>(condensed, across several exchanges):</em></p>
+<blockquote><p>Let&#x27;s populate the coast. Put things at every bearing and a range of scales — a person, a dog, a house, the Eiffel Tower, an airplane overhead, a container ship out to sea, a distant mountain island. Hovering an object should give a <strong>telescope</strong> zoom. And the ship should <strong>sink hull-first</strong> below the horizon as you lower your eye — that&#x27;s the money shot.</p></blockquote>
+<p><em>Claude added the object system (boxes and cones placed by bearing/distance, camera-relative), hover tooltips, and the telescope inset (a second render into a scissored circular viewport). The &quot;sinking ship&quot; falls out for free: the sea, drawn as part of the sphere, occludes the hull through the depth buffer.</em></p>
+
+<hr>
+<h2>3. A sky that moves</h2>
+<p><strong>Terence</strong> <em>(condensed):</em> <em>make the Sun move; add day/night, shadows, and the first-person body.</em></p>
+<p><em>Claude wired the Sun to the model, added play/pause with a speed control, a full-screen sky shader (day/night gradient, a glow toward the Sun, twilight, the Sun&#x27;s disc), flat projected shadows, and the observer&#x27;s own stick-figure body at their feet — scaled to eye height, so you become a giant as you climb. More objects joined the coast: a hot-air balloon, a hill, a road and car, a cloud, and — wading so the sea hides his legs — Godzilla.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Orrery is going great! More feature requests: (a) an option for objects below the Earth to be visible. (b) an option to keep perspective locked (stabilized) by default to the fixed stars, so that it is the ground that moves (this makes the arrow keys act in unintuitive ways now that &quot;ground&quot; is at a different angle from &quot;down&quot;, but this disorientation is part of the point).</p></blockquote>
+<p><em>Claude added <strong>see-through Earth</strong> (a translucent globe drawn last, so below-horizon objects show through) and <strong>lock-to-stars</strong> (the camera counter-rotates about the celestial pole, so the stars hold still and the ground wheels beneath you). Along the way came night stars and constellations, the ecliptic, and the Moon — drawn as a small Sun-lit sphere, so its phase falls out of the lighting geometry rather than being painted on.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I think the simplified wide FOV works great.</p></blockquote>
+
+<hr>
+<h2>4. Cosmic view: dropping the Earth&#x27;s spin</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Another feature is a little tricky to explain, so let&#x27;s make sure we&#x27;re on the same page before implementing. I&#x27;d like a &quot;cosmic view&quot; in which all terrestrial objects (including one&#x27;s body) disappear, the Earth becomes a featureless sphere, and one is no longer bound by the rotation of the Earth, being automatically locked to the stars. There&#x27;s no longer a horizon to reference, so one pans with the arrow keys to pitch and yaw. In this view one should accelerate to much greater speeds (1 day/sec, 1 month/sec…). Right now it isn&#x27;t interesting because only the Sun and Moon move — but if we add planets it becomes an orrery seen from the Earth&#x27;s location (ignoring the Earth&#x27;s spin). Leaving the view should snap the orientation back, and cap the speed again.</p></blockquote>
+<p><em>Claude agreed the plan, then asked a few design questions (add planets now? how to render the see-through Earth? discrete or continuous speeds?). Terence chose planets now, a see-through globe, and discrete round-number speed steps. Claude added the naked-eye planets to the model (Kepler elements → heliocentric → geocentric → alt/az — enough that Mercury and Venus stay near the Sun and Mars visibly loops), then built cosmic view: terrestrial objects fade out, the Earth becomes a plain translucent sphere, sidereal time freezes so the stars lock, and time can run up to a year per second.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>A fadeout transition when going from one mode to another would be cool — objects fade out, the Earth loses its colour. (Though when snapping back you can&#x27;t do that, because the orientation will almost certainly have changed.)</p></blockquote>
+<p><em>Added: a smooth fade in, an instant snap on exit.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I&#x27;m not sure how to execute pan-by-drag in cosmic view mathematically — we&#x27;d basically need dragging in spherical coordinates. Presumably there&#x27;s a standard solution?… parallel transport perhaps?</p></blockquote>
+<p><em>Exactly. Claude replaced the yaw/pitch angles with a free camera basis rotated incrementally about its own axes (Rodrigues rotations) — parallel transport, no gimbal lock — so dragging feels natural from any orientation.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>It might be amusing to have a &quot;Pluto is a planet&quot; checkbox, to keep both sides of the debate happy.</p></blockquote>
+<p><em>Added, opt-in.</em></p>
+
+<hr>
+<h2>5. The God&#x27;s-eye orrery</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I&#x27;d like to implement the &quot;God&#x27;s eye&quot; orrery as a separate screen, below the main viewpane so one can see both at once (especially in fast cosmic mode). A perfectly to-scale depiction would make the planets impossible to see, so they&#x27;ll have to be exaggerated. The outer planets won&#x27;t fit by default, but with pan and zoom one could navigate to them. A full 3-D view may be too tricky; I&#x27;m thinking of a planar top-down view of the solar-system plane. Any thoughts on the best design for high visual impact while staying somewhat scientifically accurate?</p></blockquote>
+<p><em>Claude proposed the honesty split that governs the whole pane: angular positions and orbit shapes come straight from the model (so conjunctions and elongations line up with the sky above), while only the body sizes and the Moon&#x27;s orbital radius are exaggerated. Since a top-down view can&#x27;t show a real crescent, the Moon and Earth get Sun-facing terminators instead, illustrating the <em>cause</em> of the phases. For the 100&times; range from Mercury to Pluto, Terence chose a <strong>hybrid</strong> scale — a button toggling &quot;true distance&quot; (linear, zoom/pan) against &quot;compressed&quot; (logarithmic, everything at once). It renders on its own 2-D canvas and auto-opens in cosmic view.</em></p>
+
+<hr>
+<h2>6. The telescope gets serious</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>One can store the diameters of the planets to show up in the telescope. If one can give Saturn some rings and Jupiter four faint moons (even better if they orbit with their correct orbital periods), that would be a nice easter egg (even if the moons aren&#x27;t themselves named as objects). This is for the telescope view.</p></blockquote>
+<p><em>Claude made the telescope draw a magnified, Sun-lit planet disc (so inner planets show phases), Saturn&#x27;s rings, and Jupiter&#x27;s four Galilean moons orbiting at their true relative periods.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>In the telescope, the Moon is labeled as Venus and is dark. (Giving it a red spot would be nice.)</p></blockquote>
+<p><em>Two bugs. The &quot;Venus&quot; label was a floating sky-label overlapping the telescope inset; the &quot;dark&quot; was a near-new Moon near the Sun. Claude taught the labels to avoid the inset and gave the Moon a touch of earthshine — and, as requested, gave Jupiter its Great Red Spot, carried around by the planet&#x27;s ~10-hour rotation.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Jupiter is displayed as a black disk instead of orange.</p></blockquote>
+<p><em>This one was real. Claude had been lighting planets by the Sun&#x27;s direction <em>as seen from Earth</em>, which is fine for inner planets but wrong for the outer ones — Jupiter, never far from opposition, was being lit on its far side. The fix computes the true phase angle (Sun–planet–Earth) so outer planets read full and Venus shows a proper crescent.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>And Saturn looks like an annulus. I think the rings should be more aligned with the ecliptic, and the planet needs to be a yellowish colour.</p></blockquote>
+<p><em>The rings had been tilted a fixed amount off the view axis, so they read face-on. Claude laid them in the ecliptic plane (so they appear as a shallow tilted ellipse) and warmed the planet to gold.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Is the Moon&#x27;s angular width accurate? It seems a lot smaller than the Sun.</p></blockquote>
+<p><em>The Moon was right (~0.52°); the Sun&#x27;s disc was drawn about twice too large. Claude shrank it to the true ~0.53°, so the two now match — which is, of course, why eclipses work.</em></p>
+
+<hr>
+<h2>7. A livelier world</h2>
+<p>A long tail of requests turned the scene from a demo into a place.</p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Right now the initial state is 1&nbsp;day/sec, paused. Can we start at a gentler rate, playing? … The mountain either disappears completely below about 10&nbsp;m of eye height, or is fully visible; I wanted to see an intermediate dip.</p></blockquote>
+<p><em>Claude started the app gently animated, and traced the mountain bug to the far clip plane — at low eye heights it sat closer than the 44&nbsp;km mountain, clipping it whole. Pushing it out let the mountain&#x27;s base dip below the horizon like everything else.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>For additional objects, one can add the Magellanic clouds, a geostationary satellite, and the ISS. (The latter two would be considered &quot;terrestrial&quot; for the purposes of cosmic view, otherwise they would be whizzing around like crazy.) … There is a bare sector between the cloud and the Eiffel tower that looks boring. Can one put a tree there? … I&#x27;m aiming for one representative object of a given type and scale rather than a lot of very similar objects. … Maybe a kite, attached by a string to the human? The string does not need to be an object or cast a shadow. … We have one example of a cloud (cumulus). Maybe make one instance each of the other common types (nimbus, cirrus) and spread them around, so cloud identification is a minor educational benefit.</p></blockquote>
+<p><em>Claude added a tree, a lighthouse, and a small sailboat; the Magellanic Clouds as faint deep-sky smudges (below the horizon from 40°N, so they show only in see-through or cosmic view); a geostationary satellite (fixed due south) and the ISS (properly topocentric, so it actually rises and sets), both hidden in cosmic view; a kite on a drawn tether to the person; and cirrus and cumulonimbus clouds to go with the cumulus.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The storm cloud has the right colour, but the shape looks like a Greek pillar with sharp angles. Is there some way to make it more &quot;cloud&quot; shaped?</p></blockquote>
+<p><em>Rebuilt from rounded dome billows with a spreading anvil, instead of boxes.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>When see-through Earth is activated, the telescope should be able to see celestial objects below the Earth (and label them). Relatedly, an option to label the terrestrial objects by name in the main view. … Object labels can also make the Sun and Moon labeled.</p></blockquote>
+<p><em>Both added.</em></p>
+
+<hr>
+<h2>8. The Moon, the road, and a 6000-km shadow</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The Moon always seems to be rendered as black in the view, even when in the full-moon phase.</p></blockquote>
+<p><em>Claude checked the lighting numerically — a full Moon above the horizon renders at essentially full brightness, so the maths was fine. The culprit was the default start (the model&#x27;s epoch is a new Moon at noon): a new Moon&#x27;s unlit face was showing as a black disc in daylight. Claude made a thin/new Moon fade into the bright sky instead.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Can one set the starting time to have a full moon instead, so one can immediately see a bright moon without waiting half a month?</p></blockquote>
+<p><em>A pleasant impossibility: a full Moon is opposite the Sun, so it&#x27;s only ever up at night — a literal full Moon would darken the whole daytime scene. Claude searched the model for a compromise and set the start to a fat waxing gibbous, high in the afternoon: an unmistakably bright Moon with the coast still in daylight and the Sun low for long shadows.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>The car/road/city lies directly due south, which collides with the S compass line. Maybe rotate them slightly SW instead.</p></blockquote>
+<p><em>Rotated — which then exposed that the road was built from axis-aligned tiles: once turned, they no longer joined up.</em></p>
+<blockquote><p>Each road strip has been rotated, but the road is no longer connected. Can you line up the strips to form a single line, with the city at the end and the car on the road at about its current distance?</p></blockquote>
+<p><em>Claude rebuilt the road as one continuous ribbon laid along its bearing (with a dashed centre line), so it stays a single connected line at any heading, curving with the Earth to the city at its far end.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>When one is extremely large, one&#x27;s shadow actually overflows the Earth&#x27;s surface. Can one truncate shadows to lie within the Earth&#x27;s visible sphere? In principle one could correct for the curvature, but that&#x27;s a tricky nonlinear calculation and I&#x27;m willing to sacrifice a bit of realism (especially since we&#x27;re dealing with a 6000&nbsp;km-tall giant here).</p></blockquote>
+<p><em>Claude dropped each shadow vertex onto the globe (renormalized to the surface), so a giant&#x27;s shadow wraps onto the visible cap and everything past the horizon is clipped by the Earth through the depth buffer — crude, but it keeps the shadow on the planet.</em></p>
+
+<hr>
+<h2>9. Launch</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I think we are about ready to launch the app as an &quot;in progress&quot; state. Can you update the html page, add a link from the applets page, and run audits to see if there&#x27;s anything major left to do?</p></blockquote>
+<p><em>Claude refreshed the intro, added an <strong>Astronomy</strong> entry to the catalogue, and ran the audits: self-contained (no network, strict content-security policy) and well-behaved (it touches nothing outside its own box) — both confirmed. A code review turned up one launch-worthy issue: shader failures were silent, so a GPU lacking high-precision fragment maths would show a blank canvas. Claude added compile/link checks (falling back to a plain &quot;couldn&#x27;t start WebGL&quot; message) and a portable precision fallback, fixed a mislabelled telescope magnification, and left the rest — chiefly a per-frame allocation pass — as known work for a &quot;work in progress&quot;. And so it launched.</em></p>
+
+<p class="prov" style="margin-top:2rem">Built with Claude Code. The app&#x27;s source is MIT-licensed; this transcript and the app&#x27;s content are &copy; Terence Tao.</p>
+  </article>
+</div>
+</body>
+</html>

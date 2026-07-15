@@ -70,6 +70,25 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/spacetime-diagram-making-of.html
+# --- Astronomy (original app, first published here) ---
+- name: A 21st-century orrery
+  category: Astronomy
+  status: original
+  date: "2026-07-15"
+  description: >-
+    Stand on a coast and raise your eye height — from a person up to low orbit — to watch the sea-horizon
+    dip and curve below eye level, the one honestly to-scale effect. Then look around a live, idealised sky:
+    the Sun, the Moon and its phases, the naked-eye and telescopic planets, stars and constellations, the
+    Magellanic Clouds, and artificial satellites. Hover anything for a telescope — with the planets' phases,
+    Saturn's rings and Jupiter's Galilean moons — or switch to a free-flying "cosmic view" locked to the
+    stars, or open a top-down God's-eye orrery of the solar system below the main view. The angles, phases
+    and elongations follow the model exactly; body sizes are exaggerated for visibility and it is not an
+    ephemeris.
+  url: apps/orrery.html
+  note: Work in progress — expect rough edges and more to come.
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/orrery-making-of.html
 # --- Number theory (original app, first published here) ---
 - name: Gilbreath array explorer
   category: Number theory
