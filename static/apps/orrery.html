@@ -447,20 +447,22 @@
   function objUniforms(VPf) { gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, st.sun[0], st.sun[1], st.sun[2]); gl.uniform1f(GL.loc.oAmb, clamp(0.12 + smooth(st.sunAlt, -8, 6) * 0.22, 0.12, 0.34)); gl.uniform1f(GL.loc.oOA, 1); }
   function fadeBlend(on) { if (on) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); } else { gl.disable(gl.BLEND); gl.depthMask(true); } }
   // draw a list of parts at `base`, uniformly scaled by k (k>1 = your giant body)
+  // reusable scratch buffers for per-part geometry uploads — avoids allocating two Float32Arrays per
+  // part per frame (major GC churn on the 60 fps loop, doubled by the telescope's second pass).
+  var SCRP = new Float32Array(4096), SCRN = new Float32Array(4096);
   function drawParts(base, parts, k) {
-    var camPos = st.camPos, Hn = st.h / R;
+    var camPos = st.camPos, Hn = st.h / R, pr = SCRP, nr = SCRN;
     parts.forEach(function (p) {
-      var mesh = meshOf(p.m), sx = (radial(p.m) ? p.r : p.dx) * k, sy = p.dy * k, sz = (radial(p.m) ? p.r : p.dz) * k;
+      var mesh = meshOf(p.m), sx = (radial(p.m) ? p.r : p.dx) * k, sy = p.dy * k, sz = (radial(p.m) ? p.r : p.dz) * k, len = mesh.pos.length;
       if (sy / R / Hn < 0.00018) return;
-      var pr = new Float32Array(mesh.pos.length), nr = new Float32Array(mesh.nrm.length);
-      for (var i = 0; i < mesh.pos.length; i += 3) {
+      for (var i = 0; i < len; i += 3) {
         var lx = (p.ox || 0) * k + mesh.pos[i] * sx, ly = (p.oy || 0) * k + mesh.pos[i + 1] * sy, lz = (p.oz || 0) * k + mesh.pos[i + 2] * sz;
         pr[i] = base[0] + lx / R - camPos[0]; pr[i + 1] = base[1] + ly / R - camPos[1]; pr[i + 2] = base[2] + lz / R - camPos[2];
         var nx = mesh.nrm[i] / sx, ny = mesh.nrm[i + 1] / sy, nz = mesh.nrm[i + 2] / sz, nl = Math.hypot(nx, ny, nz) || 1; nr[i] = nx / nl; nr[i + 1] = ny / nl; nr[i + 2] = nz / nl;
       }
       gl.uniform3f(GL.loc.oCol, p.col[0], p.col[1], p.col[2]);
-      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.m === 'cone' ? GL.coneIdxB : p.m === 'pyr' ? GL.pyrIdxB : p.m === 'dome' ? GL.domeIdxB : GL.boxIdxB); gl.drawElements(gl.TRIANGLES, mesh.idx.length, gl.UNSIGNED_SHORT, 0);
     });
   }
@@ -470,20 +472,19 @@
   // instead of a flat tangent-plane shadow flying off the limb into the sky. (Crude, not the exact curved
   // projection — good enough for a 6000 km giant.) The lift grows with eye height to avoid z-fighting.
   function drawShadow(base, parts, k) {
-    var camPos = st.camPos, sxn = st.sun[0], syn = Math.max(st.sun[1], 0.08), szn = st.sun[2], Hn = st.h / R, liftN = (0.3 + st.h * 0.0008) / R;
+    var camPos = st.camPos, sxn = st.sun[0], syn = Math.max(st.sun[1], 0.08), szn = st.sun[2], Hn = st.h / R, liftN = (0.3 + st.h * 0.0008) / R, pr = SCRP, nr = SCRN;
     gl.uniform3f(GL.loc.oCol, 0.05, 0.07, 0.09);
     parts.forEach(function (p) {
-      var mesh = meshOf(p.m), sX = (radial(p.m) ? p.r : p.dx) * k, sY = p.dy * k, sZ = (radial(p.m) ? p.r : p.dz) * k;
+      var mesh = meshOf(p.m), sX = (radial(p.m) ? p.r : p.dx) * k, sY = p.dy * k, sZ = (radial(p.m) ? p.r : p.dz) * k, len = mesh.pos.length;
       if (Math.abs(sY) / R / Hn < 0.00018) return;
-      var pr = new Float32Array(mesh.pos.length), nr = new Float32Array(mesh.nrm.length);
-      for (var i = 0; i < mesh.pos.length; i += 3) {
+      for (var i = 0; i < len; i += 3) {
         var lx = (p.ox || 0) * k + mesh.pos[i] * sX, ly = (p.oy || 0) * k + mesh.pos[i + 1] * sY, lz = (p.oz || 0) * k + mesh.pos[i + 2] * sZ, t = ly / syn;
         var Wx = base[0] + (lx - sxn * t) / R, Wy = base[1] + liftN, Wz = base[2] + (lz - szn * t) / R, sc = (1 + liftN) / (Math.hypot(Wx, Wy, Wz) || 1);
         pr[i] = Wx * sc - camPos[0]; pr[i + 1] = Wy * sc - camPos[1]; pr[i + 2] = Wz * sc - camPos[2];
         nr[i] = st.sun[0]; nr[i + 1] = st.sun[1]; nr[i + 2] = st.sun[2];
       }
-      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
-      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
       gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, p.m === 'cone' ? GL.coneIdxB : p.m === 'pyr' ? GL.pyrIdxB : p.m === 'dome' ? GL.domeIdxB : GL.boxIdxB); gl.drawElements(gl.TRIANGLES, mesh.idx.length, gl.UNSIGNED_SHORT, 0);
     });
   }
@@ -541,13 +542,16 @@
   }
   // sphere opaque first (normal); or objects/sky-bodies first then a translucent globe
   // last, so things below the horizon show through the Earth (see-through mode).
-  function renderView(fwd, up, fov, aspect, scopeOb) {
+  function renderView(fwd, up, fov, aspect, scopeOb, skyOnly) {
     var VP = makeVP(fwd, up, fov, aspect), VPf = new Float32Array(VP);
     drawSky(fwd, up, fov, aspect);
     // in x-ray or (fading into) cosmic view: sky-bodies first, then a translucent
     // (and, in cosmic, featureless) globe last so everything below the horizon shows.
     var see = st.xray || st.cosmicT > 0, alpha = st.cosmicT > 0 ? (1 - st.cosmicT * 0.78) : (st.xray ? 0.4 : 1), plain = st.cosmicT;
-    if (see) { drawObjects(VPf); drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); drawSphere(VPf, alpha, plain); }
+    // skyOnly: the telescope aimed high at a sky body — the globe and coast objects are out of the
+    // narrow frame, so skip them (a big saving: no 34 k-vertex sphere and no terrestrial parts).
+    if (skyOnly) { drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); }
+    else if (see) { drawObjects(VPf); drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); drawSphere(VPf, alpha, plain); }
     else { drawSphere(VPf, 1, 0); drawObjects(VPf); drawMoon(VPf); drawEcliptic(VPf); drawStars(VPf); drawPlanets(VPf); drawSatellites(VPf); }
     if (scopeOb && scopeOb.isPlanet) drawPlanetScope(scopeOb.planet, up, VPf);   // magnified disc + rings/moons in the telescope only
   }
@@ -559,15 +563,16 @@
     if (oa < 1) { fadeBlend(false); gl.uniform1f(GL.loc.oOA, 1); }
   }
   function drawScope(ob) {
-    var dir, fov;
-    if (ob.isSun) { dir = norm(st.sun); fov = 2.6; }
-    else if (ob.isMoon || ob.isSky || ob.isPlanet || ob.isSat || ob.isNebula) { dir = skyState(ob).dir; fov = ob.isMoon ? 3.4 : ob.isPlanet ? 3.5 : ob.isNebula ? 8 : ob.isSat ? 4 : 4.5; }
+    var dir, fov, alt = null;
+    if (ob.isSun) { dir = norm(st.sun); fov = 2.6; alt = st.sunAlt; }
+    else if (ob.isMoon || ob.isSky || ob.isPlanet || ob.isSat || ob.isNebula) { var s = skyState(ob); dir = s.dir; alt = s.alt; fov = ob.isMoon ? 3.4 : ob.isPlanet ? 3.5 : ob.isNebula ? 8 : ob.isSat ? 4 : 4.5; }
     else { var base = basePoint(ob.dist, ob.bearing, ob.elev), hN = ob.height / R; dir = norm(sub([base[0] * (1 + hN * 0.5), base[1] * (1 + hN * 0.5), base[2] * (1 + hN * 0.5)], st.camPos)); fov = clamp((ob.length || ob.height) / ob.dist * O.RAD * 3.2, 1.0, 18); }
     var wu = Math.abs(dir[1]) > 0.98 ? [1, 0, 0] : [0, 1, 0], right = norm(cross(wu, dir)), up = cross(dir, right);
+    var skyOnly = alt !== null && !st.xray && (alt - fov * 0.5 > 10);   // aimed high enough that the horizon + coast objects are out of the frame
     var S = Math.round(Math.min(canvas.width, canvas.height) * 0.34), mg = Math.round(12 * Math.min(2, window.devicePixelRatio || 1));
     var sx = canvas.width - S - mg, sy = canvas.height - S - mg;
     gl.enable(gl.SCISSOR_TEST); gl.scissor(sx, sy, S, S); gl.viewport(sx, sy, S, S); gl.clear(gl.DEPTH_BUFFER_BIT);
-    renderView(dir, up, fov, 1, ob); gl.disable(gl.SCISSOR_TEST); gl.viewport(0, 0, canvas.width, canvas.height);
+    renderView(dir, up, fov, 1, ob, skyOnly); gl.disable(gl.SCISSOR_TEST); gl.viewport(0, 0, canvas.width, canvas.height);
     var dpr = Math.min(2, window.devicePixelRatio || 1), css = S / dpr, left = sx / dpr, top = (canvas.height - sy - S) / dpr;
     el.scope.style.display = 'block'; el.scope.style.left = left + 'px'; el.scope.style.top = top + 'px'; el.scope.style.width = css + 'px'; el.scope.style.height = css + 'px';
     el.scopelabel.style.display = 'block'; el.scopelabel.style.left = left + 'px'; el.scopelabel.style.top = (top + css + 4) + 'px'; el.scopelabel.innerHTML = ob.name + ' · telescope ×' + Math.round(st.fov / fov);
@@ -847,13 +852,12 @@
     // drawing its unlit face as a black disc (the cause of the "always black" look at the t=0 new moon).
     var frac = O.moonPhase(st.t).illuminatedFraction, day = smooth(st.sunAlt, -6, 6);
     var alpha = 1 - day * (1 - smooth(frac, 0.04, 0.28)); if (alpha < 0.02) return;
-    var dir = b.dir, D = nearFar().far * 0.9, r = Math.tan(0.26 * O.DEG) * D, m = MOON_MESH;
-    var pr = new Float32Array(m.pos.length), nr = new Float32Array(m.nrm.length);
-    for (var i = 0; i < m.pos.length; i += 3) { pr[i] = dir[0] * D + m.pos[i] * r; pr[i + 1] = dir[1] * D + m.pos[i + 1] * r; pr[i + 2] = dir[2] * D + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
+    var dir = b.dir, D = nearFar().far * 0.9, r = Math.tan(0.26 * O.DEG) * D, m = MOON_MESH, len = m.pos.length, pr = SCRP, nr = SCRN;
+    for (var i = 0; i < len; i += 3) { pr[i] = dir[0] * D + m.pos[i] * r; pr[i + 1] = dir[1] * D + m.pos[i + 1] * r; pr[i + 2] = dir[2] * D + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
     gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, st.sun[0], st.sun[1], st.sun[2]); gl.uniform1f(GL.loc.oAmb, 0.11); gl.uniform1f(GL.loc.oOA, alpha); gl.uniform3f(GL.loc.oCol, 0.78, 0.78, 0.75);
     if (alpha < 1) { gl.enable(gl.BLEND); gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA); gl.depthMask(false); }
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.moonIdxB); gl.drawElements(gl.TRIANGLES, m.idx.length, gl.UNSIGNED_SHORT, 0);
     if (alpha < 1) { gl.disable(gl.BLEND); gl.depthMask(true); }
   }
@@ -876,11 +880,11 @@
     return norm([-dir[0] * Math.cos(a) + t[0] * Math.sin(a), -dir[1] * Math.cos(a) + t[1] * Math.sin(a), -dir[2] * Math.cos(a) + t[2] * Math.sin(a)]);
   }
   function drawLitSphere(C, r, col, amb, VPf, light) {
-    var L = light || st.sun, m = MOON_MESH, pr = new Float32Array(m.pos.length), nr = new Float32Array(m.nrm.length);
-    for (var i = 0; i < m.pos.length; i += 3) { pr[i] = C[0] + m.pos[i] * r; pr[i + 1] = C[1] + m.pos[i + 1] * r; pr[i + 2] = C[2] + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
+    var L = light || st.sun, m = MOON_MESH, len = m.pos.length, pr = SCRP, nr = SCRN;
+    for (var i = 0; i < len; i += 3) { pr[i] = C[0] + m.pos[i] * r; pr[i + 1] = C[1] + m.pos[i + 1] * r; pr[i + 2] = C[2] + m.pos[i + 2] * r; nr[i] = m.nrm[i]; nr[i + 1] = m.nrm[i + 1]; nr[i + 2] = m.nrm[i + 2]; }
     gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, L[0], L[1], L[2]); gl.uniform1f(GL.loc.oAmb, amb); gl.uniform1f(GL.loc.oOA, 1); gl.uniform3f(GL.loc.oCol, col[0], col[1], col[2]);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, pr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nr.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, GL.moonIdxB); gl.drawElements(gl.TRIANGLES, m.idx.length, gl.UNSIGNED_SHORT, 0);
   }
   // world direction of the ecliptic north pole (rotates with the sky), and an in-ecliptic-plane basis
@@ -888,13 +892,13 @@
   function eclipticPoleDir() { return bodyDir(270, 90 - O.CONST.OBLIQUITY_DEG).dir; }
   function eclBasis(dir) { var n = eclipticPoleDir(), along = norm(cross(n, dir)); if (!isFinite(along[0])) along = norm(cross(n, [1, 0, 0])); return { n: n, along: along, deep: norm(cross(n, along)) }; }
   function drawSaturnRings(C, dir, r, VPf, L) {   // rings lie in the ecliptic plane → a shallow tilted ellipse, not a face-on annulus
-    var E = eclBasis(dir), u = E.along, v = E.deep, n = E.n, ri = r * 1.28, ro = r * 2.3, N = 80, strip = new Float32Array((N + 1) * 6), nrm = new Float32Array((N + 1) * 6);
+    var E = eclBasis(dir), u = E.along, v = E.deep, n = E.n, ri = r * 1.28, ro = r * 2.3, N = 80, len = (N + 1) * 6, strip = SCRP, nrm = SCRN;
     for (var i = 0; i <= N; i++) { var a = i / N * 2 * Math.PI, ca = Math.cos(a), sa = Math.sin(a), dx = u[0] * ca + v[0] * sa, dy = u[1] * ca + v[1] * sa, dz = u[2] * ca + v[2] * sa, o = i * 6;
       strip[o] = C[0] + dx * ri; strip[o + 1] = C[1] + dy * ri; strip[o + 2] = C[2] + dz * ri; strip[o + 3] = C[0] + dx * ro; strip[o + 4] = C[1] + dy * ro; strip[o + 5] = C[2] + dz * ro;
       nrm[o] = n[0]; nrm[o + 1] = n[1]; nrm[o + 2] = n[2]; nrm[o + 3] = n[0]; nrm[o + 4] = n[1]; nrm[o + 5] = n[2]; }
     gl.useProgram(GL.op); gl.uniformMatrix4fv(GL.loc.oVP, false, VPf); gl.uniform3f(GL.loc.oSun, L[0], L[1], L[2]); gl.uniform1f(GL.loc.oAmb, 0.55); gl.uniform1f(GL.loc.oOA, 1); gl.uniform3f(GL.loc.oCol, 0.88, 0.82, 0.60);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, strip, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nrm, gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oRelB); gl.bufferData(gl.ARRAY_BUFFER, strip.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oRel); gl.vertexAttribPointer(GL.loc.oRel, 3, gl.FLOAT, false, 0, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, GL.oNrmB); gl.bufferData(gl.ARRAY_BUFFER, nrm.subarray(0, len), gl.DYNAMIC_DRAW); gl.enableVertexAttribArray(GL.loc.oNrm); gl.vertexAttribPointer(GL.loc.oNrm, 3, gl.FLOAT, false, 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, (N + 1) * 2);
   }
   // [sidereal period (days), orbit radius ×(planet disc r), start phase] for Io, Europa, Ganymede, Callisto
