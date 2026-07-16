@@ -85,7 +85,6 @@ applets:
     and elongations follow the model exactly; body sizes are exaggerated for visibility and it is not an
     ephemeris.
   url: apps/orrery.html
-  note: Work in progress — expect rough edges and more to come.
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/orrery-making-of.html
