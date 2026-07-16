@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the zeta process — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the zeta process</h1>
+    <p class="prov">A curated transcript of the conversation that built the
+      <a href="zeta-process.html">zeta process</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/zeta-process.html">zeta process</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — an interactive realization of the &quot;zeta process&quot; of §10.2 of <a href="https://arxiv.org/abs/2605.00301">&quot;Primitive sets and von Mangoldt chains: Erdős problem #1196 and beyond&quot;</a> — from confirming the mathematics through the divisibility-chain bubbles, the fading-trail animation, and the two accumulating comparison panels.</em></p>
+
+<p><strong>How to read this.</strong> As with the <a href="spacetime-diagram-making-of.html">spacetime</a>, <a href="gilbreath-making-of.html">Gilbreath</a>, and <a href="random-variables-making-of.html">random-variable</a> transcripts, the aim is to record the <em>process</em>:</p>
+<ul>
+  <li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim (routine &quot;looks good, continue&quot; replies are folded into the narration, and long messages are trimmed with <code>[…]</code>).</li>
+  <li><strong>Claude&#x27;s replies</strong> — the actual edits to two files, <code>zeta.js</code> (a DOM-free logic core) and <code>zeta-process.html</code> (the app) — are replaced by short <em>italic summaries</em> of what changed.</li>
+</ul>
+<p>The core was checked with headless Node unit tests throughout (42 checks: the geometric thresholding, the divisibility chain, <code>ζ(s)</code>, the zeta distribution, and the <code>ν<sub>Λ</sub></code> hitting mass), and the UI wiring with a DOM-shim smoke test (31 checks). Nothing was published until each stage had been tested.</p>
+
+<h2>1. The idea — &quot;do you understand the math first?&quot;</h2>
+<p><strong>Terence</strong> (opening, attaching the paper):</p>
+<blockquote><p>I&#x27;d like to start designing a new applet to visualize the &quot;zeta process&quot; described in Section 10.2 of the attached paper. We can mimic the animation style approach to random variable visualization in the RV app. Here, we have some source variables <code>E_{p,k}</code> for various primes <code>p</code> […] and then we have a &quot;time&quot; variable <code>s&gt;1</code> (which could be displayed as some sort of vertical slider in log scale proportional to <code>log 1/(s-1)</code>). For each <code>s</code>, there is a thresholding applied […] which produces the variables <code>e_{p,s}</code>, which then generate the prime factorization of random natural number <code>Z_s</code>, which also is distributed by a zeta distribution. The <code>Z_s</code> is piecewise constant in <code>s</code> and so each instantiation […] gives rise to some random divisibility chain that could somehow be displayed vertically next to the <code>s</code> timeline […]. This is a tricky and complex task; the first question is whether you understand the math behind the zeta process?</p></blockquote>
+<p><em>Rather than start coding, Claude wrote back a full derivation to be checked: each clock <code>E<sub>p,k</sub></code> is exponential with rate <code>log p</code>, so the exponent <code>e<sub>p,s</sub></code> (the length of the leading run beating <code>s</code>) is geometric and <code>Z<sub>s</sub> = ∏ p<sup>e<sub>p,s</sub></sup></code> has the zeta distribution by the Euler product. The one subtle point it flagged: for a fixed set of clocks, the jumps of the chain happen at running-minimum thresholds and multiply by a <em>whole prime power</em> <code>p<sup>j</sup></code> — so the chain is exactly the von Mangoldt downward chain and can &quot;jump over&quot; numbers (straight from 1 to 4). And the probability that <code>n</code> ever lies on the chain is the invariant von Mangoldt weight <code>ν<sub>Λ</sub>(n) = ∫₁<sup>∞</sup> log n /(ζ(s) n<sup>s</sup>) ds</code>.</em></p>
+<p><strong>Terence</strong> confirmed the reading, and set aside one feature for later:</p>
+<blockquote><p>A later upgrade to the app could also try to visualize the hitting measure <code>nu_Lambda</code> and compare it against empirical hitting measure, but this can be deferred for now.</p></blockquote>
+
+<h2>2. Design — one shared <code>s</code>-axis</h2>
+<p><em>Claude proposed a layout in which everything reads against a single vertical <code>s</code>-axis (log-scaled in <code>1/(s−1)</code>, <code>s→1</code> at the top): the per-prime clock panels on the right, the threshold as a draggable line, and the divisibility chain as bubbles beside the axis — so &quot;each node near its <code>s</code>&quot; falls out for free. It sketched a staged build (tested core → static layout → animation + <code>Z<sub>s</sub></code> histogram → the deferred <code>ν<sub>Λ</sub></code> view) and asked about category and defaults.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Proposed layout looks good. I like the default ranges for <code>p</code>, <code>s</code> (one can later add options to adjust them). Number theory is a good category. Let&#x27;s start Stage 0</p></blockquote>
+
+<h2>3. Stage 0 — the tested core, and a precompute question</h2>
+<p><em>Claude wrote <code>zeta.js</code>: a seedable RNG and exponential sampler, the leading-run statistic, the chain builder (which groups running-minimum plateaus into single prime-power steps), <code>ζ(s)</code> by Euler–Maclaurin, and the <code>ν<sub>Λ</sub></code> integral. Forty-two Node checks confirmed the key facts — including the empirical hitting frequency of <code>n</code> converging to <code>ν<sub>Λ</sub>(n)</code>, which validates the chain builder and the integral together.</em></p>
+<p><strong>Terence</strong> asked a performance question:</p>
+<blockquote><p>Would it be helpful to precompute zeta (and potentially also nu) to reasonable accuracy if that would free up compute at run-time? (Of course one can only precompute a finite number of values, so would have to fall back to direct calculation if one is out of range of the precomputed tables)</p></blockquote>
+<p><em>Claude&#x27;s answer changed the plan slightly: <code>ζ(s)</code> is ~20 float operations and is needed only once per frame, so a table would add interpolation error for no gain — keep it direct. But <code>ν<sub>Λ</sub>(n)</code> is a genuine integral, so it was <em>memoized</em>: each <code>n</code> is integrated once on first use and cached, which is the runtime win without a stale fixed table.</em></p>
+
+<h2>4. Stage 1 — the static layout</h2>
+<p><em>Claude built the first version of the page: the eight clock panels (sampling from many more primes than are shown, so the chain stays essentially exact), the ticked <code>s</code>-axis with a draggable handle, and the chain to its left, with green markers showing which clocks still beat the threshold. A DOM-shim smoke test drove the real inline script headlessly.</em> Terence found it &quot;pretty good.&quot;</p>
+
+<h2>5. Bubbles, and a slow fading animation</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Right now the <code>Z_s</code> values are placed at the midpoint of their <code>s</code>-range, but I&#x27;d like them at the bottom, and enclosed in circles as in the paper, e.g. if the <code>Z_s</code> transition from 1 to 2 to 2·19 to 2²·19 then there should be bubbles around 1, 2, 2·19, and 2²·19 in the left line, with say the 2 bubble positioned at the value of <code>s</code> where it transitions from 1 to 2.</p><p>I&#x27;d like the ability to animate as in RV, though this time on a much slower time scape (e.g., 1/sec), with some faded version of previous instances (maybe by default only tracking the previous 3 or so with increasingly faded colors). Having the interface similar to the RV interface for consistency would be great.</p></blockquote>
+<p><em>Claude moved each chain node to a circled bubble at the exact <code>s</code> where <code>Z<sub>s</sub></code> jumps to it, and added an RV-style toolbar — <code>▶ Run / ⏸ Pause / ⏭ Step</code>, a speed slider defaulting to 1/s, and a trail slider defaulting to 3 — with the last few chains lingering as fading ghosts, so the distribution of chains builds up as it runs.</em></p>
+
+<h2>6. Stage 2 — the histogram, a tooltip, and a strip</h2>
+<p><em>For Stage 2, Claude added the lower panel: the empirical distribution of <code>Z<sub>s</sub></code> (bars) against the exact <code>1/(ζ(s) n<sup>s</sup>)</code> (a red curve that tracks <code>s</code> live as you drag), with a tail bucket for the heavy tail near <code>s=1</code>.</em></p>
+<p><strong>Terence</strong> (two refinements, mid-build):</p>
+<blockquote><p>One can make a tool tip when hovering over a bubble value of <code>Z_s</code> to reveal both the prime factorization and the decimal numeral value […]. If there are multiple <code>E_{p,k}</code>&#x27;s appearing in the <code>p</code> column, perhaps one can thicken the <code>p</code>-column to a strip to show the location of the first and last <code>E_{p,k}</code>&#x27;s displayed (maybe filled in with a shading).</p></blockquote>
+<p><em>Claude added a hover tooltip on the bubbles (factorization, plus the decimal for values that fit), and widened any prime column carrying two or more clocks into a shaded strip spanning its first to last clock.</em></p>
+
+<h2>7. The hitting measure <code>ν<sub>Λ</sub></code></h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>My one suggestion is to put the current value of <code>Z_s</code> (and any faded ones in the trail) in the histogram as well. You can do that concurrently with Stage 3.</p></blockquote>
+<p><em>Claude marked the live <code>Z<sub>s</sub></code> (and its faded trail) as carets over the histogram bins, and — the deferred Stage 3 — added a panel toggle to the <code>ν<sub>Λ</sub></code> hitting measure: empirical &quot;fraction of chains passing through <code>n</code>&quot; against the exact <code>ν<sub>Λ</sub>(n)</code> curve. This is the payoff: the bars converge to the von Mangoldt weight behind the paper.</em></p>
+
+<h2>8. Pacing — starting empty, ticks, one draw per tick</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>With an initial seed of 1,500 draws the histograms already converge so fast that there is no visual benefit to them being animated. Perhaps start them at 0 draws? Similarly to the <code>Z_s</code> distribution panel, for the hitting measure panel one can display all active values of <code>Z_s</code> (other than 1 which is permanently active) […] as ticks, and have older values in the trail as faded ticks (which would be overwritten by more recent ticks in case there is a collision […]).</p></blockquote>
+<p><em>Both panels now start empty, so watching them fill has a point; the <code>ν<sub>Λ</sub></code> panel ticks every value the current chain hits, with the trail as faded ticks that a newer tick overwrites on a collision.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Adding 250 draws per tick also makes convergence way too rapid. Maybe just do one draw per tick?</p></blockquote>
+<p><em>Claude checked that the display range <code>[1.1, 6]</code> reproduces <code>ν<sub>Λ</sub></code> to about 0.003, which allowed the clean version: one draw per tick, in which the instantiation you watch <em>is</em> the sample counted — its bubble caret marks precisely the histogram bin that grows, and its chain ticks the <code>ν<sub>Λ</sub></code> bars that grow.</em></p>
+
+<h2>9. Audits and launch</h2>
+<p><strong>Terence:</strong> <em>&quot;Looks great! Let&#x27;s do the audits and then making of.&quot;</em></p>
+<p><em>The audits confirmed the app is self-contained (no network, no CDN, strict CSP) and touches no page state outside its own box. The fixes: the canvas palette now follows the page&#x27;s light/dark CSS variables each frame; aria labels were added; and the spacebar play/pause was scoped to when the pointer is over the plot, so it never hijacks page scrolling. The applet source is released under the MIT license (the mathematical content remains reserved).</em></p>
+<p class="prov" style="margin-top:2rem">Built with Claude Code (Opus 4.8). The underlying mathematics is from
+  Alexeev, Barreto, Li, Lichtman, Price, Shah, Tang, and Tao,
+  <a href="https://arxiv.org/abs/2605.00301">arXiv:2605.00301</a>.</p>
+  </article>
+</div>
+</body>
+</html>

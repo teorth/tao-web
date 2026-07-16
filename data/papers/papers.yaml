@@ -218,6 +218,9 @@ works:
     url: "https://terrytao.wordpress.com/2026/05/03/primitive-sets-and-von-mangoldt-chains-erdos-problem-1196-and-beyond/"
   - type: diagram
     url: "apps/paper-diagram.html?paper=2605.00301"
+  - type: applet
+    url: "apps/zeta-process.html"
+    label: "the zeta process"
 - id: local-bernstein-theory-and-lower-bounds-for-lebesgue-constan
   kind: paper
   title: Local Bernstein theory, and lower bounds for Lebesgue constants

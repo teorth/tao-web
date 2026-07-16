@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The zeta process — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  #stage, #histbox { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); }
+  #stage { margin-top: 1rem; }
+  #histbox { margin-top: .8rem; }
+  #cv { display: block; width: 100%; height: min(60vh, 520px); touch-action: none; cursor: ns-resize; }
+  #hist { display: block; width: 100%; height: 210px; }
+  .bar { display: flex; align-items: center; gap: 10px 18px; flex-wrap: wrap; margin-top: 1rem; }
+  .bar .grp { display: flex; align-items: center; gap: 6px; }
+  .bar label { color: var(--muted); font-size: .9rem; }
+  .bar button { padding: .35rem .8rem; }
+  .bar button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .bar input[type=range] { width: 110px; accent-color: var(--accent); }
+  .val { color: var(--accent); font-variant-numeric: tabular-nums; min-width: 24px; display: inline-block; font-family: var(--mono); font-size: .9rem; }
+  #zread { font-family: var(--mono); font-size: .95rem; margin-left: auto; }
+  #zread b { color: var(--accent); }
+  #sread { font-family: var(--mono); color: var(--muted); font-size: .9rem; }
+  #tip { position: fixed; z-index: 30; pointer-events: none; background: #233b; color: #fff; font: 12px var(--mono, monospace); padding: 4px 7px; border-radius: 4px; display: none; white-space: nowrap; box-shadow: 0 1px 4px #0004; }
+  .cap { color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The zeta process <span style="font-size:1rem;color:var(--muted);font-weight:400">— work in progress</span></h1>
+    <p class="lede">A random natural number <em>Z<sub>s</sub></em> with the zeta distribution, built prime by prime.
+      For each prime <em>p</em> a stack of independent clocks <em>E<sub>p,1</sub>, E<sub>p,2</sub>, …</em> (rate log&nbsp;p);
+      the exponent of <em>p</em> in <em>Z<sub>s</sub></em> is the length of the leading run that beats the threshold
+      <em>s</em>. Slide <em>s</em> down the vertical axis (log-scaled in <em>1/(s−1)</em>) and <em>Z<sub>s</sub></em>
+      traces a divisibility chain — jumping by <em>whole prime powers</em>, so it can leap over numbers.
+      Press <b>Run</b> to accumulate instantiations and watch the histogram of <em>Z<sub>s</sub></em> fill toward
+      <em>1/(ζ(s) n<sup>s</sup>)</em>. From §10.2 of
+      <a href="https://arxiv.org/abs/2605.00301" target="_blank" rel="noopener">Alexeev–Barreto–Li–Lichtman–Price–Shah–Tang–Tao</a>.</p>
+  </header>
+
+  <div id="stage"><canvas id="cv" width="900" height="500" role="img" aria-label="Zeta process: per-prime clock panels, the s threshold line, and the divisibility chain of bubbles. Drag vertically to change s."></canvas></div>
+  <div class="bar">
+    <div class="grp"><button id="play" class="primary" type="button" title="Animate fresh instantiations (spacebar)">▶ Run</button>
+      <button id="step" type="button" title="Draw one fresh instantiation">⏭ Step</button></div>
+    <div class="grp"><label>speed</label><input type="range" id="rate" min="-2" max="4" step="1" value="0" title="Instantiations drawn per second" aria-label="animation speed, instantiations per second"><span class="val" id="rateV">1</span><label>/s</label></div>
+    <div class="grp"><label>trail</label><input type="range" id="trail" min="0" max="8" step="1" value="3" title="How many recent chains stay visible, fading" aria-label="number of fading trail chains"><span class="val" id="trailV">3</span></div>
+    <div class="grp"><label>panel</label><select id="panel" title="What the lower plot shows" aria-label="lower plot contents"><option value="z">Zₛ distribution</option><option value="nu">ν_Λ hitting measure</option></select></div>
+    <span id="zread">Z<sub>s</sub> = <b>—</b></span>
+    <span id="sread">s = —</span>
+  </div>
+  <div id="histbox"><canvas id="hist" width="900" height="210" role="img" aria-label="Distribution plot: empirical bars versus the exact theoretical curve."></canvas></div>
+  <div id="tip"></div>
+  <p class="cap">Drag anywhere on the top plot to set <em>s</em> (this resets the histogram; the <span style="color:#c0562e">ζ(s) curve</span> tracks <em>s</em> live).
+    Green markers below the line are the clocks still beating it; each chain node is a bubble at the exact <em>s</em> where <em>Z<sub>s</sub></em> jumps to it. Faded bubbles are recent instantiations.</p>
+
+  <details class="notes" style="margin-top:1.4rem">
+    <summary style="cursor:pointer;font-weight:600">What you are looking at</summary>
+    <div style="font-size:.92rem;line-height:1.55">
+      <p>Each clock <em>E<sub>p,k</sub></em> is exponential with rate log&nbsp;p, so <em>P(E<sub>p,k</sub> ≥ s) = p<sup>−s</sup></em>.
+        The exponent of <em>p</em> in <em>Z<sub>s</sub></em> is <em>e<sub>p,s</sub></em> = the length of the initial run
+        <em>E<sub>p,1</sub>, …, E<sub>p,e</sub> ≥ s</em>, a geometric variable, and <em>Z<sub>s</sub> = ∏<sub>p</sub> p<sup>e<sub>p,s</sub></sup></em>
+        has the zeta distribution <em>P(Z<sub>s</sub> = n) = 1/(ζ(s) n<sup>s</sup>)</em> — the bars below converge to it.</p>
+      <p>For one fixed set of clocks, lowering <em>s</em> only lengthens the runs, so <em>Z<sub>s</sub></em> grows through
+        divisibility: <em>Z<sub>s</sub> | Z<sub>t</sub></em> for <em>t &lt; s</em>. The jumps happen at running-minimum
+        thresholds and multiply by a whole prime power <em>p<sup>j</sup></em> — exactly the von Mangoldt downward chain —
+        so the chain can jump over numbers (e.g. straight from 1 to 4). Runs entirely in your browser; no network.</p>
+    </div>
+  </details>
+</div>
+
+<script src="zeta.js"></script>
+<script>
+(function () {
+  var Z = window.Zeta;
+  var cv = document.getElementById('cv'), hist = document.getElementById('hist'), zread = document.getElementById('zread'), sread = document.getElementById('sread'), tip = document.getElementById('tip');
+  var playBtn = document.getElementById('play'), stepBtn = document.getElementById('step');
+  var rateEl = document.getElementById('rate'), rateV = document.getElementById('rateV'), trailEl = document.getElementById('trail'), trailV = document.getElementById('trailV'), panelEl = document.getElementById('panel');
+  var sMin = 1.1, sMax = 6, N_HIST = 20, N_NU = 20;
+  var DISPLAY = [2, 3, 5, 7, 11, 13, 17, 19];             // primes with their own clock panel
+  var SAMPLE = Z.primesUpTo(200);                         // primes actually sampled (chain uses all of these)
+  var st = { s: 2, seed: 12345, sample: null, chain: null, map: null, dragging: false, history: [], trailLen: 3, rate: 0, playing: false, panel: 'z',
+             hist: { counts: {}, total: 0, tail: 0, rng: Z.mulberry32(9871) }, nu: { hits: {}, insts: 0, rng: Z.mulberry32(4242) } };
+  var anim = { on: false, last: 0, raf: 0 };
+  var COL = { ink: '#1b1d21', mut: '#61656e', line: '#e6e6ea', axis: '#8895a6', accent: '#3a5bd9', accentBg: '#eef1fd', run: '#1c9a55', dead: '#c3ccd8', hot: '#c0562e', grid: '#eef1f5', panel: '#ffffff' };
+  function refreshTheme() {   // adopt the page's light/dark CSS variables for the canvas palette
+    if (typeof getComputedStyle !== 'function' || !document.documentElement) return;
+    var cs = getComputedStyle(document.documentElement), v = function (n, d) { var x = cs.getPropertyValue(n); return (x && x.trim()) || d; };
+    COL.ink = v('--ink', COL.ink); COL.mut = v('--muted', COL.mut); COL.line = v('--line', COL.line);
+    COL.axis = COL.mut; COL.grid = COL.line; COL.dead = COL.line;
+    COL.accent = v('--accent', COL.accent); COL.accentBg = v('--accent-soft', COL.accentBg); COL.panel = v('--panel', COL.panel);
+  }
+
+  function u(s) { return -Math.log(s - 1); }
+  var uT = u(sMin), uB = u(sMax);                         // uT (top, s->1) > uB (bottom, s large)
+
+  function newInstance() {                                // advance the visible instantiation (chain + clocks)
+    if (st.chain) { st.history.push(st.chain); while (st.history.length > st.trailLen) st.history.shift(); }
+    st.seed = (Math.imul(st.seed, 1664525) + 1013904223) >>> 0;
+    var rng = Z.mulberry32(st.seed);
+    st.sample = Z.drawSample(SAMPLE, sMin, rng);
+    st.chain = Z.buildChain(st.sample, sMin, sMax);
+    st.map = {}; st.sample.forEach(function (pe) { st.map[pe.p] = pe.Es; });
+  }
+  function resetHist() { st.hist.counts = {}; st.hist.total = 0; st.hist.tail = 0; }
+  function addHistBatch(k) {                              // many fast Z_s draws at the current s (no chains)
+    var h = st.hist;
+    for (var i = 0; i < k; i++) {
+      var z = Z.factorToNumber(Z.zFactorAt(Z.drawSample(SAMPLE, sMin, h.rng), st.s), N_HIST);
+      if (z === null) h.tail++; else h.counts[z] = (h.counts[z] || 0) + 1;
+      h.total++;
+    }
+  }
+  function addNuBatch(k) {                                // hitting measure: which n appear anywhere in the chain
+    var nu = st.nu, cap = BigInt(N_NU);
+    for (var i = 0; i < k; i++) {
+      var chain = Z.buildChain(Z.drawSample(SAMPLE, sMin, nu.rng), sMin, sMax), seen = {};
+      chain.forEach(function (nd) { if (nd.value <= cap) seen[Number(nd.value)] = 1; });
+      for (var n in seen) nu.hits[n] = (nu.hits[n] || 0) + 1;
+      nu.insts++;
+    }
+  }
+  function curBin(chain) { var v = Z.factorToNumber(Z.nodeAt(chain, st.s).factor, N_HIST); return v === null ? N_HIST : v - 1; }
+  // one draw per tick: count the very instantiation you watch into both panels (its caret marks the bin that grows)
+  function countVisible() {
+    var h = st.hist, z = Z.factorToNumber(Z.nodeAt(st.chain, st.s).factor, N_HIST);
+    if (z === null) h.tail++; else h.counts[z] = (h.counts[z] || 0) + 1; h.total++;
+    var nu = st.nu, cap = BigInt(N_NU), seen = {};
+    st.chain.forEach(function (nd) { if (nd.value <= cap) seen[Number(nd.value)] = 1; });
+    for (var n in seen) nu.hits[n] = (nu.hits[n] || 0) + 1; nu.insts++;
+  }
+  function tickOnce() { newInstance(); countVisible(); renderAll(); }
+  function renderAll() { render(); renderBottom(); }
+  function renderBottom() { if (st.panel === 'nu') renderNu(); else renderHist(); }
+
+  function prep(canvas) { var r = canvas.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1); canvas.width = Math.round(r.width * dpr); canvas.height = Math.round(r.height * dpr); var c = canvas.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); return { c: c, w: r.width, h: r.height }; }
+
+  function render() {
+    refreshTheme();
+    var d = prep(cv), c = d.c, W = d.w, H = d.h;
+    c.clearRect(0, 0, W, H); c.fillStyle = COL.panel; c.fillRect(0, 0, W, H);
+    var yTop = 40, yBot = H - 40, axisX = Math.round(W * 0.36), panelX0 = axisX + 22, chainX = axisX - 52;
+    function ys(s) { return yTop + (yBot - yTop) * (uT - u(s)) / (uT - uB); }
+    function sFromY(y) { var uu = uT - (uT - uB) * (Math.max(yTop, Math.min(yBot, y)) - yTop) / (yBot - yTop); return 1 + Math.exp(-uu); }
+    st._sFromY = sFromY;
+    var sy = ys(st.s);
+
+    c.strokeStyle = COL.axis; c.lineWidth = 1.2; c.beginPath(); c.moveTo(axisX, yTop); c.lineTo(axisX, yBot); c.stroke();
+    c.fillStyle = COL.mut; c.font = '11px var(--mono,monospace)'; c.textBaseline = 'middle';
+    [1.15, 1.3, 1.5, 2, 3, 5].forEach(function (sv) { if (sv < sMin || sv > sMax) return; var y = ys(sv); c.strokeStyle = COL.line; c.beginPath(); c.moveTo(axisX - 4, y); c.lineTo(axisX + 4, y); c.stroke(); c.textAlign = 'left'; c.fillText('s=' + sv, axisX + 7, y); });
+    c.textAlign = 'center'; c.fillStyle = COL.mut; c.fillText('s → 1', axisX, yTop - 22); c.fillText('s large', axisX, yBot + 22);
+
+    for (var hi = 0; hi < st.history.length; hi++) {
+      var ch = st.history[hi], age = st.history.length - 1 - hi, gx = chainX - 12 - age * 7;
+      c.globalAlpha = 0.36 * Math.pow(0.6, age); c.strokeStyle = COL.mut; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(gx, ys(ch[ch.length - 1].sLow)); c.lineTo(gx, yBot); c.stroke();
+      c.fillStyle = COL.mut; ch.forEach(function (nd) { c.beginPath(); c.arc(gx, ys(nd.sHigh), 2.3, 0, 7); c.fill(); });
+      c.globalAlpha = 1;
+    }
+
+    var nodes = st.chain, curNode = Z.nodeAt(nodes, st.s);
+    c.strokeStyle = COL.line; c.lineWidth = 2; c.beginPath(); c.moveTo(chainX, ys(nodes[nodes.length - 1].sLow)); c.lineTo(chainX, yBot); c.stroke();
+    nodes.forEach(function (nd, i) {
+      var by = ys(nd.sHigh);
+      if (i > 0) { var prevY = ys(nodes[i - 1].sHigh); if (prevY - by > 13) { c.fillStyle = COL.mut; c.font = 'italic 10px var(--mono,monospace)'; c.textAlign = 'left'; c.textBaseline = 'middle'; c.fillText('×' + nd.prime + (nd.power > 1 ? '^' + nd.power : ''), chainX + 6, (by + prevY) / 2); } }
+    });
+    st.bubbles = [];
+    nodes.forEach(function (nd) {
+      var by = ys(nd.sHigh), isCur = nd === curNode, label = Z.factorToString(nd.factor);
+      c.font = (isCur ? 'bold ' : '') + '11px var(--mono,monospace)'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      var w = c.measureText(label).width, rx = w / 2 + 7;
+      st.bubbles.push({ x: chainX, y: by, rx: rx, ry: 10, nd: nd });
+      c.beginPath(); c.ellipse(chainX, by, rx, 10, 0, 0, 7);
+      c.fillStyle = isCur ? COL.accentBg : COL.panel; c.fill(); c.lineWidth = isCur ? 2 : 1.2; c.strokeStyle = isCur ? COL.accent : COL.mut; c.stroke();
+      c.fillStyle = isCur ? COL.accent : COL.ink; c.fillText(label, chainX, by);
+    });
+
+    c.strokeStyle = COL.hot; c.lineWidth = 1.4; c.setLineDash([5, 3]); c.beginPath(); c.moveTo(chainX, sy); c.lineTo(W - 8, sy); c.stroke(); c.setLineDash([]);
+    c.beginPath(); c.moveTo(axisX - 6, sy - 5); c.lineTo(axisX + 6, sy); c.lineTo(axisX - 6, sy + 5); c.closePath(); c.fillStyle = COL.hot; c.fill();
+
+    var colW = (W - 8 - panelX0) / DISPLAY.length;
+    DISPLAY.forEach(function (p, j) {
+      var cx = panelX0 + (j + 0.5) * colW, Es = (st.map && st.map[p]) || [], e = Z.eAt(Es, st.s);
+      c.strokeStyle = COL.line; c.lineWidth = 1; c.beginPath(); c.moveTo(cx, yTop); c.lineTo(cx, yBot); c.stroke();
+      c.fillStyle = COL.ink; c.font = '11px var(--mono,monospace)'; c.textAlign = 'center'; c.textBaseline = 'alphabetic'; c.fillText('p=' + p, cx, yTop - 8);
+      var step = Math.min(11, colW / (Es.length + 1));
+      var mk = Es.map(function (E, k) { return { x: cx + (k - (Es.length - 1) / 2) * step, y: ys(Math.max(sMin, Math.min(sMax, E))), inrun: k < e }; });
+      if (mk.length >= 2) {   // widen the column into a shaded strip spanning first..last clock
+        var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+        mk.forEach(function (m) { minX = Math.min(minX, m.x); maxX = Math.max(maxX, m.x); minY = Math.min(minY, m.y); maxY = Math.max(maxY, m.y); });
+        c.fillStyle = 'rgba(28,154,85,0.10)'; c.strokeStyle = 'rgba(28,154,85,0.28)'; c.lineWidth = 1;
+        c.fillRect(minX - 6, minY - 5, maxX - minX + 12, maxY - minY + 10); c.strokeRect(minX - 6, minY - 5, maxX - minX + 12, maxY - minY + 10);
+      }
+      mk.forEach(function (m) {
+        c.beginPath(); c.arc(m.x, m.y, 3.4, 0, 7);
+        if (m.inrun) { c.fillStyle = COL.run; c.fill(); } else { c.fillStyle = COL.panel; c.fill(); c.strokeStyle = COL.dead; c.lineWidth = 1.4; c.stroke(); }
+      });
+      c.fillStyle = e > 0 ? COL.run : COL.mut; c.font = '11px var(--mono,monospace)'; c.textBaseline = 'top'; c.textAlign = 'center';
+      c.fillText('e=' + e, cx, yBot + 6); if (e > 0) { c.fillStyle = COL.ink; c.fillText(p + (e > 1 ? '^' + e : ''), cx, yBot + 20); }
+    });
+
+    var f = curNode.factor, val = Z.factorToNumber(f, 1e12);
+    zread.innerHTML = 'Z<sub>s</sub> = <b>' + Z.factorToString(f) + '</b>' + (val !== null && Object.keys(f).length ? ' = ' + val : '');
+    sread.textContent = 's = ' + st.s.toFixed(3);
+  }
+
+  function renderHist() {
+    refreshTheme();
+    var d = prep(hist), c = d.c, W = d.w, H = d.h;
+    c.clearRect(0, 0, W, H); c.fillStyle = COL.panel; c.fillRect(0, 0, W, H);
+    var padL = 34, padR = 10, padT = 34, padB = 26, plotW = W - padL - padR, plotH = H - padT - padB;
+    var slots = N_HIST + 1, slotW = plotW / slots, zs = Z.zeta(st.s), h = st.hist, tot = h.total || 1;
+    // theoretical pmf 1..N + tail; empirical from counts
+    var theo = [], cum = 0, n; for (n = 1; n <= N_HIST; n++) { var p = 1 / (zs * Math.pow(n, st.s)); theo.push(p); cum += p; }
+    var theoTail = Math.max(0, 1 - cum);
+    var ymax = Math.max(1 / zs, theoTail, 0.02); for (n = 1; n <= N_HIST; n++) ymax = Math.max(ymax, (h.counts[n] || 0) / tot); ymax = Math.max(ymax, h.tail / tot) * 1.12;
+    function X(i) { return padL + (i + 0.5) * slotW; }              // i = 0..N_HIST (last = tail)
+    function Y(p) { return padT + plotH - p / ymax * plotH; }
+
+    c.strokeStyle = COL.grid; c.lineWidth = 1; c.fillStyle = COL.mut; c.font = '10px var(--mono,monospace)'; c.textAlign = 'right'; c.textBaseline = 'middle';
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (fr) { var p = fr * ymax, y = Y(p); c.beginPath(); c.moveTo(padL, y); c.lineTo(W - padR, y); c.stroke(); c.fillText(p.toFixed(2), padL - 4, y); });
+
+    // empirical bars
+    for (var idx = 0; idx <= N_HIST; idx++) {
+      var emp = (idx < N_HIST ? (h.counts[idx + 1] || 0) : h.tail) / tot, x = X(idx), bw = slotW * 0.66;
+      if (h.total > 0 && emp > 0) { c.fillStyle = COL.accentBg; c.strokeStyle = COL.accent; c.lineWidth = 1; c.fillRect(x - bw / 2, Y(emp), bw, Y(0) - Y(emp)); c.strokeRect(x - bw / 2, Y(emp), bw, Y(0) - Y(emp)); }
+    }
+    // theoretical overlay (line + dots), tracks s live
+    c.strokeStyle = COL.hot; c.lineWidth = 1.6; c.beginPath();
+    for (n = 1; n <= N_HIST; n++) { var xx = X(n - 1), yy = Y(theo[n - 1]); if (n === 1) c.moveTo(xx, yy); else c.lineTo(xx, yy); }
+    c.stroke();
+    c.fillStyle = COL.hot; for (n = 1; n <= N_HIST; n++) { c.beginPath(); c.arc(X(n - 1), Y(theo[n - 1]), 2.2, 0, 7); c.fill(); }
+    c.beginPath(); c.arc(X(N_HIST), Y(theoTail), 3, 0, 7); c.stroke();   // tail theo (open)
+
+    // markers: the current instantiation's Z_s (accent) and faded trail values, at their bins
+    function caret(idx, color, sz, a) { var x = X(idx); c.globalAlpha = a; c.fillStyle = color; c.beginPath(); c.moveTo(x - sz, padT - 2 - sz * 1.7); c.lineTo(x + sz, padT - 2 - sz * 1.7); c.lineTo(x, padT - 2); c.closePath(); c.fill(); c.globalAlpha = 1; }
+    st.history.forEach(function (ch, hi) { caret(curBin(ch), COL.mut, 4, 0.5 * Math.pow(0.6, st.history.length - 1 - hi)); });
+    caret(curBin(st.chain), COL.accent, 6, 1);
+
+    // x labels
+    c.fillStyle = COL.mut; c.font = '10px var(--mono,monospace)'; c.textAlign = 'center'; c.textBaseline = 'top';
+    for (n = 1; n <= N_HIST; n++) { if (N_HIST <= 20 || n % 2 === 1 || n === N_HIST) c.fillText(n, X(n - 1), H - padB + 5); }
+    c.fillText('>' + N_HIST, X(N_HIST), H - padB + 5);
+    c.textAlign = 'left'; c.fillStyle = COL.ink; c.font = '12px var(--mono,monospace)'; c.textBaseline = 'alphabetic';
+    c.fillText('Zₛ distribution at s = ' + st.s.toFixed(3), padL, 16);
+    c.textAlign = 'right'; c.fillStyle = COL.mut; c.fillText(h.total.toLocaleString() + ' draws', W - padR, 16);
+  }
+
+  function renderNu() {   // empirical hitting frequency P(n in chain) vs theoretical nu_Lambda(n)
+    refreshTheme();
+    var d = prep(hist), c = d.c, W = d.w, H = d.h;
+    c.clearRect(0, 0, W, H); c.fillStyle = COL.panel; c.fillRect(0, 0, W, H);
+    var padL = 34, padR = 10, padT = 30, padB = 26, plotW = W - padL - padR, plotH = H - padT - padB;
+    var nmin = 2, slots = N_NU - nmin + 1, slotW = plotW / slots, nu = st.nu, insts = nu.insts || 1, n;
+    var theo = [], ymax = 0.02; for (n = nmin; n <= N_NU; n++) { var t = Z.nuLambda(n); theo.push(t); ymax = Math.max(ymax, t, (nu.hits[n] || 0) / insts); } ymax *= 1.12;
+    function X(i) { return padL + (i + 0.5) * slotW; }
+    function Y(p) { return padT + plotH - p / ymax * plotH; }
+    c.strokeStyle = COL.grid; c.lineWidth = 1; c.fillStyle = COL.mut; c.font = '10px var(--mono,monospace)'; c.textAlign = 'right'; c.textBaseline = 'middle';
+    [0, 0.25, 0.5, 0.75, 1].forEach(function (fr) { var p = fr * ymax, y = Y(p); c.beginPath(); c.moveTo(padL, y); c.lineTo(W - padR, y); c.stroke(); c.fillText(p.toFixed(2), padL - 4, y); });
+    for (var i = 0; i < slots; i++) {
+      var emp = (nu.hits[nmin + i] || 0) / insts, x = X(i), bw = slotW * 0.66;
+      if (nu.insts > 0 && emp > 0) { c.fillStyle = COL.accentBg; c.strokeStyle = COL.accent; c.lineWidth = 1; c.fillRect(x - bw / 2, Y(emp), bw, Y(0) - Y(emp)); c.strokeRect(x - bw / 2, Y(emp), bw, Y(0) - Y(emp)); }
+    }
+    c.strokeStyle = COL.hot; c.lineWidth = 1.6; c.beginPath();
+    for (i = 0; i < slots; i++) { var xx = X(i), yy = Y(theo[i]); if (i === 0) c.moveTo(xx, yy); else c.lineTo(xx, yy); } c.stroke();
+    c.fillStyle = COL.hot; for (i = 0; i < slots; i++) { c.beginPath(); c.arc(X(i), Y(theo[i]), 2.2, 0, 7); c.fill(); }
+
+    // ticks: every value the current chain hits (accent), and the trail chains (faded, newer overwrites on collision)
+    function nuMark(val, color, sz, a) { if (val < nmin || val > N_NU) return; var x = X(val - nmin); c.globalAlpha = a; c.fillStyle = color; c.beginPath(); c.moveTo(x - sz, padT - 2 - sz * 1.7); c.lineTo(x + sz, padT - 2 - sz * 1.7); c.lineTo(x, padT - 2); c.closePath(); c.fill(); c.globalAlpha = 1; }
+    st.history.forEach(function (ch, hi) { var a = 0.5 * Math.pow(0.6, st.history.length - 1 - hi); ch.forEach(function (nd) { if (nd.value > 1n && nd.value <= BigInt(N_NU)) nuMark(Number(nd.value), COL.mut, 4, a); }); });
+    st.chain.forEach(function (nd) { if (nd.value > 1n && nd.value <= BigInt(N_NU)) nuMark(Number(nd.value), COL.accent, 6, 1); });
+
+    c.fillStyle = COL.mut; c.font = '10px var(--mono,monospace)'; c.textAlign = 'center'; c.textBaseline = 'top';
+    for (i = 0; i < slots; i++) { if (i % 2 === 0 || i === slots - 1) c.fillText(nmin + i, X(i), H - padB + 5); }
+    c.textAlign = 'left'; c.fillStyle = COL.ink; c.font = '12px var(--mono,monospace)'; c.textBaseline = 'alphabetic';
+    c.fillText('hitting measure ν_Λ(n) = P(n on the chain)', padL, 13);
+    c.textAlign = 'right'; c.fillStyle = COL.mut; c.fillText(nu.insts.toLocaleString() + ' chains', W - padR, 13);
+  }
+
+  function tick(ts) { if (!anim.on) return; if (!anim.last) anim.last = ts; if (ts - anim.last >= 1000 / Math.pow(2, st.rate)) { anim.last = ts; tickOnce(); } anim.raf = requestAnimationFrame(tick); }
+  function setPlaying(on) { st.playing = on; anim.on = on; playBtn.textContent = on ? '⏸ Pause' : '▶ Run'; if (on) { anim.last = 0; anim.raf = requestAnimationFrame(tick); } else cancelAnimationFrame(anim.raf); }
+
+  function setSFromEvent(e) { var r = cv.getBoundingClientRect(); st.s = st._sFromY(e.clientY - r.top); resetHist(); renderAll(); }
+  function bubbleAt(e) { var r = cv.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top, bs = st.bubbles || [], i, b, dx, dy; for (i = 0; i < bs.length; i++) { b = bs[i]; dx = (x - b.x) / b.rx; dy = (y - b.y) / b.ry; if (dx * dx + dy * dy <= 1) return b; } return null; }
+  function hover(e) {
+    var b = bubbleAt(e);
+    if (b) { var f = b.nd.factor, keys = Object.keys(f).length, val = Z.factorToNumber(f, 1e12); tip.innerHTML = 'Z<sub>s</sub> = ' + Z.factorToString(f) + (keys && val !== null ? ' = ' + val : ''); tip.style.left = (e.clientX + 12) + 'px'; tip.style.top = (e.clientY + 12) + 'px'; tip.style.display = 'block'; cv.style.cursor = 'help'; }
+    else { tip.style.display = 'none'; cv.style.cursor = 'ns-resize'; }
+  }
+  cv.addEventListener('pointerdown', function (e) { st.dragging = true; tip.style.display = 'none'; if (cv.setPointerCapture) cv.setPointerCapture(e.pointerId); setSFromEvent(e); });
+  cv.addEventListener('pointermove', function (e) { if (st.dragging) setSFromEvent(e); else hover(e); });
+  cv.addEventListener('pointerup', function () { st.dragging = false; renderBottom(); });
+  cv.addEventListener('pointerenter', function () { st.over = true; });
+  cv.addEventListener('pointerleave', function () { st.over = false; tip.style.display = 'none'; });
+  hist.addEventListener('pointerenter', function () { st.over = true; });
+  hist.addEventListener('pointerleave', function () { st.over = false; });
+  panelEl.addEventListener('change', function () { st.panel = panelEl.value; renderBottom(); });
+  playBtn.addEventListener('click', function () { setPlaying(!st.playing); });
+  stepBtn.addEventListener('click', function () { setPlaying(false); tickOnce(); });
+  rateEl.addEventListener('input', function () { st.rate = +rateEl.value; rateV.textContent = st.rate < 0 ? (1 / (1 << -st.rate)) : (1 << st.rate); });
+  trailEl.addEventListener('input', function () { st.trailLen = +trailEl.value; trailV.textContent = st.trailLen; while (st.history.length > st.trailLen) st.history.shift(); render(); });
+  window.addEventListener('keydown', function (e) { if (e.code === 'Space' && st.over && !/INPUT|TEXTAREA|BUTTON/.test((e.target.tagName || ''))) { e.preventDefault(); setPlaying(!st.playing); } });   // only when the pointer is over the plot, so page scroll is unaffected elsewhere
+  window.addEventListener('resize', renderAll);
+
+  st.rate = +rateEl.value; rateV.textContent = 1 << st.rate; st.trailLen = +trailEl.value; trailV.textContent = st.trailLen;
+  newInstance(); renderAll();
+  window.__zeta = { Z: Z, state: st, render: render, renderHist: renderHist, renderNu: renderNu, renderBottom: renderBottom, renderAll: renderAll, tickOnce: tickOnce, newInstance: newInstance, addHistBatch: addHistBatch, addNuBatch: addNuBatch, resetHist: resetHist, curBin: curBin, setPanel: function (v) { st.panel = v; panelEl.value = v; renderBottom(); }, setPlaying: setPlaying, sMin: sMin, sMax: sMax, N_HIST: N_HIST, N_NU: N_NU, DISPLAY: DISPLAY };
+})();
+</script>
+</body>
+</html>

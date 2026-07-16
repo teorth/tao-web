@@ -118,6 +118,23 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/gilbreath-cn-making-of.html
+- name: The zeta process
+  category: Number theory
+  status: original
+  date: "2026-07-16"
+  description: >-
+    Watch a random natural number Z_s with the zeta distribution get built prime by prime: each prime carries
+    a stack of independent exponential "clocks", and the exponent of p in Z_s is how many of its leading clocks
+    beat a threshold s. Slide s down a log-scaled axis and Z_s traces a divisibility chain that jumps by whole
+    prime powers (so it can leap over numbers); run fresh instantiations to watch the distribution of Z_s and
+    the von Mangoldt hitting measure ν_Λ fill toward their exact curves. A visualization of the "zeta process"
+    of Section 10.2 of the paper on primitive sets and von Mangoldt chains (Erdős #1196) by Alexeev, Barreto,
+    Li, Lichtman, Price, Shah, Tang and Tao.
+  url: apps/zeta-process.html
+  note: Work in progress — expect rough edges and more to come.
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/zeta-process-making-of.html
 # --- Probability (original app) ---
 - name: Random variable visualizer
   category: Probability
