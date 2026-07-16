@@ -131,7 +131,6 @@ applets:
     of Section 10.2 of the paper on primitive sets and von Mangoldt chains (Erdős #1196) by Alexeev, Barreto,
     Li, Lichtman, Price, Shah, Tang and Tao.
   url: apps/zeta-process.html
-  note: Work in progress — expect rough edges and more to come.
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/zeta-process-making-of.html
