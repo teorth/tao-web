@@ -325,7 +325,7 @@ applets:
   url: apps/besicovitch-sets.html
   source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 - name: Conformal compactification
-  category: Miscellaneous
+  category: Relativity
   status: ported
   year: 1998
   description: The infinite quadrant of the plane mapped conformally onto a bounded triangle, with infinity stretched onto the hypotenuse — draw curves in either region.
