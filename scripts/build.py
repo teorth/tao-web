@@ -384,6 +384,11 @@ def build_book(doc: dict) -> tuple[str, str]:
     return slug, page(book["title"], "\n".join(parts))
 
 
+def _slugify(s: str) -> str:
+    """A URL-fragment-safe slug from a heading (e.g. 'Selected writing by others' -> 'selected-writing-by-others')."""
+    return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")
+
+
 def build_links_page(doc: dict) -> tuple[str, str]:
     """Render a curated link-collection page: intro + collapsible sections."""
     slug = doc["slug"]
@@ -398,7 +403,7 @@ def build_links_page(doc: dict) -> tuple[str, str]:
             parts.append(f'<h2 class="linkgroup">{html.escape(sec["heading"])}</h2>')
         entries = sec.get("entries", [])
         cnt = f' <span class="count">({len(entries)})</span>' if entries else ""
-        parts.append('<details class="section">')
+        parts.append(f'<details class="section" id="{_slugify(sec["title"])}">')
         parts.append(f'<summary>{html.escape(sec["title"])}{cnt}</summary>')
         if sec.get("description"):
             parts.append(f'<p class="sub">{md_links(sec["description"])}</p>')
@@ -406,6 +411,12 @@ def build_links_page(doc: dict) -> tuple[str, str]:
             lis = "".join(f'<li>{md_links(e)}</li>' for e in entries)
             parts.append(f'<ul class="linklist">{lis}</ul>')
         parts.append('</details>')
+    # Open (and scroll to) the <details> targeted by the URL hash, e.g. mastodon-posts.html#selected-writing-by-others
+    parts.append("<script>function openHash(){var h=location.hash.slice(1);if(!h)return;"
+                 "var el=document.getElementById(h);if(!el)return;"
+                 "var d=el.tagName==='DETAILS'?el:el.closest('details');"
+                 "if(d){d.open=true;d.scrollIntoView();}}"
+                 "window.addEventListener('hashchange',openHash);openHash();</script>")
     return slug, page(doc["title"], "\n".join(parts))
 
 
