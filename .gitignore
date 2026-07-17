@@ -12,3 +12,6 @@ venv/
 *.swp
 .vscode/
 /data/cv/private.yaml
+
+# Claude Code local config / session files
+.claude/
