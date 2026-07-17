@@ -172,6 +172,29 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/paper-diagram-making-of.html
+# --- Geometry (original app + legacy port) ---
+- name: The Kakeya needle
+  category: Geometry
+  status: original
+  date: "2026-07-17"
+  description: >-
+    Kakeya's 1917 problem: turn a unit needle continuously through a full rotation while staying inside a
+    region — which region has the smallest area? Watch the needle turn in the classic solutions, from the disk
+    and the equilateral triangle down through the deltoid and the sliver-thin Bloom–Schoenberg star to the
+    Besicovitch–Perron tree whose area shrinks toward zero, its swept positions painting the Kakeya set out as
+    it goes. Each shape carries its own commentary and an area comparison. Constructions from Pál (1921),
+    Besicovitch (1963) and Cunningham–Schoenberg (1965); a companion to the Besicovitch-sets applet below.
+  url: apps/kakeya.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/kakeya-making-of.html
+- name: Besicovitch sets
+  category: Geometry
+  status: ported
+  year: 1998
+  description: The Perron-tree construction of a small-area set that still contains a unit segment in every direction — vary the iterations and overlap.
+  url: apps/besicovitch-sets.html
+  source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
@@ -315,13 +338,6 @@ applets:
   description: Draw a contour and count how many times its image winds around 0 — the enclosed zeros minus poles.
   source: https://www.math.ucla.edu/~tao/java/Argument.html
 # --- Miscellaneous (Java) ---
-- name: Besicovitch sets
-  category: Miscellaneous
-  status: ported
-  year: 1998
-  description: The Perron-tree construction of a small-area set that still contains a unit segment in every direction — vary the iterations and overlap.
-  url: apps/besicovitch-sets.html
-  source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
 - name: Conformal compactification
   category: Relativity
   status: ported

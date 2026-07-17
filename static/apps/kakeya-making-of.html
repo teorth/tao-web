@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Kakeya needle — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Kakeya needle</h1>
+    <p class="prov">A curated transcript of the conversation that built the
+      <a href="kakeya.html">Kakeya needle</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that produced the <a href="https://teorth.github.io/tao-web/apps/kakeya.html">Kakeya needle</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — an animated gallery of the classic solutions to Kakeya's 1917 problem of turning a unit needle in the smallest area — from a stack of old papers to eight tested constructions.</em></p>
+
+<p><strong>How to read this.</strong> As with the <a href="spacetime-diagram-making-of.html">spacetime</a>, <a href="gilbreath-making-of.html">Gilbreath</a>, <a href="random-variables-making-of.html">random-variable</a>, and <a href="zeta-process-making-of.html">zeta-process</a> transcripts, the aim is to record the <em>process</em>:</p>
+<ul>
+  <li><strong>Terence&#x27;s messages</strong> are shown, mostly verbatim (routine &quot;looks good, continue&quot; replies folded into the narration; long messages trimmed with <code>[…]</code>).</li>
+  <li><strong>Claude&#x27;s replies</strong> — the actual edits to two files, <code>kakeya.js</code> (a DOM-free geometry + motion core) and <code>kakeya.html</code> (the app) — are replaced by short <em>italic summaries</em>.</li>
+</ul>
+<p>Every construction's needle motion was checked with a headless Node test-harness (growing to 84 checks: <em>unit length · stays inside · continuous · monotone full turn · exact area</em>), and the UI with a DOM-shim smoke test (35). That harness earned its keep — it caught two real continuity bugs described below. Nothing was published until the gallery was complete.</p>
+
+<h2>1. The idea, and &quot;which constructions, which references?&quot;</h2>
+<p><strong>Terence</strong> (opening, attaching two papers):</p>
+<blockquote><p>I&#x27;d like an app to visualize various classic solutions to the Kakeya needle problem in its original formulation (continuous rotation of the unit needle). This is related to the existing Besicovitch set applet but a little different, focusing on the animation of the needle. The first step is to collect various standard solutions, such as the disk, the deltoid, and other more complex solutions. […] can you identify some constructions that would be worth placing in such a visualization applet? Are there more references you would need to describe them exactly?</p></blockquote>
+<p><em>Rather than code, Claude read the papers (Cunningham–Schoenberg 1965; Cunningham 1971) and replied with a curated &quot;area ladder&quot; from the disk down to the sliver-thin star, sorting each construction by whether its needle motion was already pinned down or needed a source — flagging that the Besicovitch–Perron tree and the Pál join would need Besicovitch's 1963 <em>Monthly</em> exposition and Pál's 1921 paper to describe exactly.</em></p>
+
+<h2>2. The references arrive, and three decisions</h2>
+<p><strong>Terence</strong> (sending Pál 1921 and Besicovitch 1963):</p>
+<blockquote><p>Here are two of the papers requested. I will keep looking for the other references, but perhaps this is enough for an initial app. Regarding the questions, I think we can support both [180° and 360° conventions], focus on the cleanly specified ones initially, and keep the Besicovitch app separate and crosslinked (for legacy reasons I&#x27;d like to keep that app as close to its original source as possible).</p></blockquote>
+<p><em>Those two papers closed every gap: Pál's §10–11 gives an explicit &quot;turn the needle in any convex oval&quot; recipe, and Besicovitch supplies the exact motions for the disk, triangle, and deltoid, the Pál join, and the Perron–Schoenberg tree. Claude locked an initial four (disk, equilateral triangle, deltoid, Bloom–Schoenberg star) and proposed two reusable motion &quot;engines&quot; — a convex-chord engine and a tangent-envelope engine.</em></p>
+
+<h2>3. Stage 0 — the tested core</h2>
+<p><em>Claude wrote <code>kakeya.js</code>: the shape definitions plus the two engines as <code>at(t)</code> needle samplers, with Node tests pinning the invariants. Two of the four fell out beautifully — the equilateral triangle's pivot-and-slide stays inside purely by convexity (the height being exactly 1 makes each pivot arc just kiss the opposite side), and the deltoid's tangent chord came out <em>exactly</em> unit length analytically. The Bloom–Schoenberg star's tangent-chord clip was flagged as needing a picture to finalise.</em> Terence: <em>&quot;Numbers look reasonable.&quot;</em></p>
+
+<h2>4. Stage 1 — the gallery</h2>
+<p><em>The app: pick a shape, watch the needle turn with its swept positions painting the Kakeya set, RV-style Run/Step/speed, a 180°/360° toggle, a turn readout, and an area-ladder strip. The star's needle was finalised here — the tangent chord clipped to its two neighbouring arcs, contracted so the shortest chord is a true unit needle.</em></p>
+
+<h2>5. A dropdown, per-shape commentary, and a Reuleaux triangle</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>Looks good, except that I&#x27;d like the shape selector to be a dropdown. Are there more shapes you can add with the references you have? Each shape can come with its own commentary […]. One thing that was slightly confusing for me was that for the Bloom-Schoenberg star, the needle can poke outside of the curve; the commentary can be adjusted to clarify this.</p></blockquote>
+<p><em>Claude switched to a dropdown, gave each shape its own adaptive commentary, and fixed the star confusion directly: the tangent arcs became <span style="border-bottom:2px dashed var(--muted)">dashed guides</span> and the star region 𝔄ₙ was pre-painted, so the needle visibly stays inside the region even as it reaches past the guide arcs. It also added a fifth shape — the <strong>Reuleaux triangle</strong> of constant width 1, where the needle is a corner-to-arc radius of length exactly 1 (Pál §16).</em></p>
+
+<h2>6. &quot;Do all three&quot; — the Cunningham refinements</h2>
+<p><strong>Terence:</strong></p>
+<blockquote><p>I&#x27;d like as many shapes as possible, so do all three. What is the precise reference you need for Blank&#x27;s star polygon? And are there any other requests for papers while you are at it?</p></blockquote>
+<p><em>Claude added Cunningham's two 1965 refinements — the <strong>modified hypocycloid</strong> (a too-long segment rolled tangent to the deltoid with a slide at each cusp) and the <strong>modified star polygon</strong> (a conchoid pivot on a star polygon). This is where the test-harness paid off twice: the continuity check caught that the modified hypocycloid's extended-tangent side must <em>alternate</em> per cusp-interval (otherwise the needle teleports by λ at each cusp), and it verified the star-polygon needle always passes through its pivot vertex. It also gave the precise reference for the one still-missing construction — Blank's star polygon, whose page in the sent PDF was cut off.</em></p>
+
+<h2>7. The Besicovitch–Perron finale — area → 0</h2>
+<p><em>For the arbitrarily-small construction, Claude laid out two scopes — a faithful mechanism demonstration versus a full rigorous four-tree build — and Terence chose the demonstration:</em></p>
+<p><strong>Terence:</strong> <em>&quot;Let&#x27;s do A.&quot;</em></p>
+<p><em>Claude built the Perron tree: 2ᵖ elementary triangles translated to overlap, the needle turning a sliver in each (that sweep being the shrinking set), with <strong>Pál joins</strong> between them shown as detours that add negligible area and so are excluded from the set. A depth slider drives the area toward 0. Honestly framed: one tree turns 45°; eight tile a full rotation.</em></p>
+
+<h2>8. A missing construction, audits, and launch</h2>
+<p><strong>Terence</strong> asked that one construction be flagged as omitted for want of the source:</p>
+<blockquote><p>One historical construction is missing due to lack of access to the source material […] H. J. van Alphen, &ldquo;Uitbreiding van een stelling van Besicovitsch,&rdquo; Mathematica […] Afdeeling B, jaargang 10 (1941/42), pp. 144–157 […] if anyone has a digitized copy of this article, I would be happy to obtain it and incorporate it into the app.</p></blockquote>
+<p><em>Claude added that footnote, then ran the launch audits: the app is self-contained (no network, no CDN, strict CSP), touches no page state outside its own box, follows the page's light/dark theme, and has its spacebar play/pause scoped to when the pointer is over the plot. The applet source is released under the MIT license (the mathematical content remains reserved), and it cross-links the sister <a href="besicovitch-sets.html">Besicovitch-sets</a> applet.</em></p>
+
+<p class="prov" style="margin-top:2rem">Built with Claude Code (Opus 4.8). Constructions from Pál (1921), Besicovitch (1963),
+  Cunningham–Schoenberg (1965), and Cunningham (1971).</p>
+  </article>
+</div>
+</body>
+</html>

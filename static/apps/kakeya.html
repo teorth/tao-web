@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Kakeya needle — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  #stage { border: 1px solid var(--line); border-radius: 6px; background: var(--panel); margin-top: 1rem; }
+  #cv { display: block; width: 100%; height: min(60vh, 520px); touch-action: none; }
+  .bar { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin-top: 1rem; }
+  .bar .grp { display: flex; align-items: center; gap: 6px; }
+  .bar label { color: var(--muted); font-size: .9rem; }
+  .bar button { padding: .35rem .7rem; }
+  .bar button.primary { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+  .bar button.on { background: var(--accent-soft); border-color: var(--accent); }
+  .bar input[type=range] { width: 96px; accent-color: var(--accent); }
+  select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .3rem .4rem; }
+  .val { color: var(--accent); font-variant-numeric: tabular-nums; font-family: var(--mono); font-size: .9rem; min-width: 18px; display: inline-block; }
+  #read { margin-left: auto; font-family: var(--mono); font-size: .92rem; }
+  #read b { color: var(--accent); }
+  #commentary { margin-top: 1rem; padding: .7rem .9rem; border-left: 3px solid var(--accent); background: var(--accent-soft); border-radius: 0 6px 6px 0; font-size: .92rem; line-height: 1.5; }
+  #commentary b { color: var(--accent); }
+  #commentary .dash { border-bottom: 2px dashed var(--muted); }
+  .ladder { margin-top: 1rem; display: grid; grid-template-columns: auto 1fr auto; gap: 3px 10px; align-items: center; max-width: 480px; font-size: .85rem; }
+  .ladder .lname { color: var(--muted); white-space: nowrap; }
+  .ladder .lrow.cur .lname { color: var(--accent); font-weight: 600; }
+  .ladder .lbar { height: 12px; background: var(--accent-soft); border-radius: 3px; }
+  .ladder .lrow.cur .lbar { background: var(--accent); }
+  .ladder .lval { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
+  .cap { color: var(--muted); font-size: .85rem; margin: .7rem 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The Kakeya needle</h1>
+    <p class="lede">Kakeya's 1917 problem: turn a unit needle continuously through a full rotation, staying inside a
+      region — which region has the smallest area? Watch the needle turn in the classic solutions, from the disk down
+      to the sliver-thin star, its swept positions painting the region. A companion to the
+      <a href="besicovitch-sets.html">Besicovitch-sets</a> applet (the arbitrarily-small <em>multiply-connected</em>
+      set). Constructions from Pál (1921), Besicovitch (1963), and Cunningham–Schoenberg (1965).</p>
+  </header>
+
+  <div class="bar">
+    <div class="grp"><label>shape</label>
+      <select id="shapesel" aria-label="Kakeya region">
+        <option value="disk">Disk — π/4</option>
+        <option value="reuleaux">Reuleaux triangle — (π−√3)/2</option>
+        <option value="triangle">Equilateral triangle — 1/√3</option>
+        <option value="deltoid" selected>Deltoid — π/8</option>
+        <option value="modhypo">Modified hypocycloid — (2π−2)/(π+8)</option>
+        <option value="modstar">Modified star polygon — π(11/12−2 log 3/2)</option>
+        <option value="star">Bloom–Schoenberg star 𝔄ₙ — (5−2√2)π/24</option>
+        <option value="perron">Besicovitch–Perron tree — area → 0</option>
+      </select></div>
+    <div class="grp" id="nwrap"><label>n</label><input type="range" id="nsl" min="5" max="15" step="2" value="7" aria-label="number of star points"><span class="val" id="nv">7</span></div>
+    <div class="grp" id="pwrap"><label>depth</label><input type="range" id="psl" min="2" max="8" step="1" value="5" aria-label="Perron tree depth"><span class="val" id="pv">5</span></div>
+  </div>
+
+  <div id="stage"><canvas id="cv" width="900" height="500" role="img" aria-label="A unit needle turning continuously inside a Kakeya region, its swept positions filling the set. Choose the region and run the animation with the controls below."></canvas></div>
+  <div class="bar">
+    <div class="grp"><button id="play" class="primary" type="button" title="Turn the needle (spacebar)">▶ Run</button>
+      <button id="step" type="button" title="Advance a little">⏭ Step</button>
+      <button id="clear" type="button" title="Clear the swept region">↻ Clear</button></div>
+    <div class="grp"><label>speed</label><input type="range" id="speed" min="1" max="40" step="1" value="12" aria-label="animation speed"></div>
+    <div class="grp"><label>turn</label><button id="conv" class="on" type="button" title="A full 360° turn, or the 180° return-reversed convention">360°</button></div>
+    <div class="grp"><label><input type="checkbox" id="swept" checked> swept set</label></div>
+    <span id="read">turned <b id="rturn">0°</b> · area <b id="rarea">—</b></span>
+  </div>
+
+  <div id="commentary"></div>
+  <div class="ladder" id="ladder"></div>
+
+  <p class="cap">The needle (thick, one red end) turns while its swept positions (faint) fill the Kakeya set.
+    Runs entirely in your browser; no network.</p>
+
+  <p class="cap" style="margin-top:1rem">One historical construction is not yet included here, for want of the source material:
+    H.&nbsp;J.&nbsp;van&nbsp;Alphen, &ldquo;Uitbreiding van een stelling van Besicovitsch,&rdquo; <em>Mathematica: Tijdschrift
+    voor studeerenden voor de acten wiskunde M.O. en voor studeerenden aan universiteiten</em>, Afdeeling&nbsp;B,
+    jaargang&nbsp;10 (1941/42), pp.&nbsp;144&ndash;157 (W.&nbsp;J.&nbsp;Thieme &amp; Cie, Zutphen) &mdash; which showed a
+    Kakeya set of arbitrarily small area can be kept inside a bounded circle. The article has proved very hard to find
+    online; if you have a digitized copy, I would be glad to obtain it and add the construction to this app.</p>
+</div>
+
+<script src="kakeya.js"></script>
+<script>
+(function () {
+  var K = window.Kakeya;
+  var cv = document.getElementById('cv'), buf = document.createElement('canvas');
+  var playBtn = document.getElementById('play'), stepBtn = document.getElementById('step'), clearBtn = document.getElementById('clear');
+  var speedEl = document.getElementById('speed'), convBtn = document.getElementById('conv'), sweptEl = document.getElementById('swept');
+  var sel = document.getElementById('shapesel'), nsl = document.getElementById('nsl'), nv = document.getElementById('nv'), nwrap = document.getElementById('nwrap');
+  var psl = document.getElementById('psl'), pv = document.getElementById('pv'), pwrap = document.getElementById('pwrap');
+  var rturn = document.getElementById('rturn'), rarea = document.getElementById('rarea'), ladder = document.getElementById('ladder'), commentary = document.getElementById('commentary');
+  var st = { key: 'deltoid', con: null, n: 7, pdepth: 5, t: 0, playing: false, conv: 1, T: null, over: false };
+  var anim = { raf: 0, last: 0 };
+  var COL = { ink: '#1b1d21', mut: '#61656e', line: '#e6e6ea', accent: '#3a5bd9', soft: '#eef1fd', hot: '#c0562e', panel: '#fff' };
+  var SHAPES = [['disk', 'disk'], ['reuleaux', 'Reuleaux triangle'], ['triangle', 'equilateral triangle'], ['deltoid', 'deltoid'], ['modhypo', 'modified hypocycloid'], ['modstar', 'modified star polygon'], ['star', 'Bloom–Schoenberg star'], ['perron', 'Besicovitch–Perron tree']];
+  var COMMENTARY = {
+    disk: "The obvious solution: spin the needle about its midpoint. Area <b>π/4 ≈ 0.785</b>. Kakeya (1917) asked whether any region can do better — and the answer is a resounding yes.",
+    reuleaux: "A <b>Reuleaux triangle</b> of constant width 1. The needle is always a radius from a corner to the opposite arc, so its length stays exactly 1 as it turns. In fact <em>any</em> convex region of width ≥ 1 works (Pál 1921); this one has area <b>(π−√3)/2 ≈ 0.705</b>.",
+    triangle: "Pál (1921) proved the <b>equilateral triangle of height 1</b> is the smallest <em>convex</em> Kakeya set — area <b>1/√3 ≈ 0.577</b>. The needle pivots at a corner (reaching just to the opposite side, since the height is exactly 1), then slides along an edge, and repeats.",
+    deltoid: "The <b>three-cusped hypocycloid</b>, which Kakeya guessed was optimal. The needle is a tangent chord of constant length 1 gliding around the curve — a genuinely smaller region, area <b>π/8 ≈ 0.393</b>. Besicovitch showed even this is far from the smallest.",
+    modhypo: "Cunningham (1965) shaved the deltoid down: roll a slightly-too-long segment tangent to it, with a little slide at each arc-midpoint that confines the extra area to six small lobes, then shrink the whole figure back to a unit needle. Area <b>(2π−2)/(π+8) ≈ 0.122π</b>, below the deltoid. The <span class='dash'>dashed deltoid</span> is the guide; the region is what the needle sweeps.",
+    modstar: "Cunningham's other 1965 construction. On a star polygon (the <span class='dash'>dashed lines</span>) the needle pivots about a spike <em>A</em> while one end runs along the boundary to the opposite notch and back out to the next spike, the other end tracing a conchoid lobe outside the circle. Area <b>→ π(11/12 − 2 log 3⁄2) ≈ 0.106π</b>. Raise <em>n</em> for more, thinner spikes.",
+    star: "The <b>Bloom–Schoenberg star</b> 𝔄ₙ (Cunningham–Schoenberg 1965) — the smallest known <em>star-shaped</em> Kakeya set, area <b>→ (5−2√2)π/24 ≈ 0.090π</b>. The <span class='dash'>dashed arcs</span> are only guides the needle stays tangent to; the region it needs is the shaded star 𝔄ₙ it sweeps out, which <em>contains</em> those arcs — so the needle reaches past the guide arcs but never leaves the region. Raise <em>n</em> for the pinwheel.",
+    perron: "Besicovitch's astonishing 1928 theorem: the area can be made <b>arbitrarily small</b> once the region may be multiply connected. A triangle is cut into <b>2ᵖ</b> thin triangles (shaded), translated to overlap; the needle turns a sliver in each, and between them makes a <b>Pál join</b> — a long thin detour of negligible area, shown here schematically. Raise the depth and watch the area fall toward 0. This one tree turns the needle 45°; eight tile a full rotation (see also the <a href='besicovitch-sets.html'>Besicovitch-sets</a> applet)."
+  };
+
+  function theme() {
+    if (typeof getComputedStyle !== 'function' || !document.documentElement) return;
+    var cs = getComputedStyle(document.documentElement), v = function (n, d) { var x = cs.getPropertyValue(n); return (x && x.trim()) || d; };
+    COL.ink = v('--ink', COL.ink); COL.mut = v('--muted', COL.mut); COL.line = v('--line', COL.line);
+    COL.accent = v('--accent', COL.accent); COL.soft = v('--accent-soft', COL.soft); COL.panel = v('--panel', COL.panel);
+  }
+  function make(key) { return key === 'star' ? K.starBS(st.n) : key === 'modstar' ? K.modStarPolygon(st.n) : key === 'perron' ? K.perronTree(st.pdepth) : ({ disk: K.disk, reuleaux: K.reuleaux, triangle: K.triangle, deltoid: K.deltoid, modhypo: K.modHypocycloid }[key])(); }
+  function usesN() { return st.key === 'star' || st.key === 'modstar'; }
+  function isSwept() { return usesN() || st.key === 'perron' || !!st.con.guide; }
+  function pointsOf(con, key) { return key === 'triangle' ? con.vertices : key === 'star' ? con.A.concat([K.V(0, 0)]) : con.region; }
+  function dpr() { return Math.min(2, window.devicePixelRatio || 1); }
+  function sizeCanvas() { var r = cv.getBoundingClientRect(), d = dpr(); cv.width = Math.round(r.width * d); cv.height = Math.round(r.height * d); return r; }
+
+  function rebuild() {
+    st.con = make(st.key);
+    var r = cv.getBoundingClientRect(), pts = pointsOf(st.con, st.key);
+    var xs = pts.map(function (p) { return p.x; }), ys = pts.map(function (p) { return p.y; });
+    var x0 = Math.min.apply(0, xs), x1 = Math.max.apply(0, xs), y0 = Math.min.apply(0, ys), y1 = Math.max.apply(0, ys);
+    var M = 36, s = Math.min((r.width - 2 * M) / (x1 - x0 || 1), (r.height - 2 * M) / (y1 - y0 || 1));
+    st.T = { s: s, ox: r.width / 2 - s * (x0 + x1) / 2, oy: r.height / 2 + s * (y0 + y1) / 2 };
+    st.t = 0; nwrap.style.display = usesN() ? '' : 'none'; pwrap.style.display = st.key === 'perron' ? '' : 'none';
+    commentary.innerHTML = COMMENTARY[st.key] || '';
+    resetBuffer(); renderLadder(); render();
+  }
+  function P(p) { return { X: st.T.ox + st.T.s * p.x, Y: st.T.oy - st.T.s * p.y }; }
+  function clearBuf() { buf.width = cv.width; buf.height = cv.height; var b = buf.getContext('2d'); b.setTransform(dpr(), 0, 0, dpr(), 0, 0); b.clearRect(0, 0, buf.width, buf.height); }
+  function resetBuffer() { clearBuf(); if (isSwept()) for (var i = 0; i < 400; i++) { var nd = st.con.at(i / 400); if (!nd.join) stampNeedle(nd, 0.03); } }   // seed the swept-region silhouette (Pál-join detours excluded)
+
+  function stampNeedle(nd, alpha) {
+    var b = buf.getContext('2d'); b.setTransform(dpr(), 0, 0, dpr(), 0, 0);
+    var a = P(nd.a), c = P(nd.b); b.globalAlpha = alpha == null ? 0.05 : alpha; b.strokeStyle = COL.accent; b.lineWidth = 1.1;
+    b.beginPath(); b.moveTo(a.X, a.Y); b.lineTo(c.X, c.Y); b.stroke(); b.globalAlpha = 1;
+  }
+
+  function drawRegion(c) {
+    if (st.key === 'perron') {   // the 2^p translated elementary triangles (the shrinking overlapped set)
+      st.con.triangles.forEach(function (tr) { var a = P(tr[0]), b = P(tr[1]), cc = P(tr[2]); c.beginPath(); c.moveTo(a.X, a.Y); c.lineTo(b.X, b.Y); c.lineTo(cc.X, cc.Y); c.closePath(); c.globalAlpha = 0.14; c.fillStyle = COL.accent; c.fill(); c.globalAlpha = 1; });
+      return;
+    }
+    if (isSwept()) {   // guide curve dashed; the region is the swept set painted in the buffer
+      c.strokeStyle = COL.mut; c.lineWidth = 1.3; c.setLineDash([5, 4]);
+      if (st.key === 'star') { for (var i = 0; i < st.con.n; i++) { c.beginPath(); for (var j = 0; j <= 40; j++) { var p = P(st.con.arcPoint(i, j / 40)); j ? c.lineTo(p.X, p.Y) : c.moveTo(p.X, p.Y); } c.stroke(); } }
+      else if (st.key === 'modstar') { st.con.chords.forEach(function (ch) { var p = P(ch[0]), q = P(ch[1]); c.beginPath(); c.moveTo(p.X, p.Y); c.lineTo(q.X, q.Y); c.stroke(); }); }
+      else { c.beginPath(); st.con.guide.forEach(function (p, j) { var q = P(p); j ? c.lineTo(q.X, q.Y) : c.moveTo(q.X, q.Y); }); c.closePath(); c.stroke(); }
+      c.setLineDash([]); return;
+    }
+    var reg = st.con.region; c.beginPath();
+    for (var k = 0; k < reg.length; k++) { var q = P(reg[k]); k ? c.lineTo(q.X, q.Y) : c.moveTo(q.X, q.Y); }
+    c.closePath(); c.fillStyle = COL.soft; c.globalAlpha = 0.5; c.fill(); c.globalAlpha = 1; c.strokeStyle = COL.mut; c.lineWidth = 1.4; c.stroke();
+  }
+
+  function render() {
+    theme(); var d = dpr(), r = sizeCanvas(), c = cv.getContext('2d'); c.setTransform(d, 0, 0, d, 0, 0);
+    c.clearRect(0, 0, r.width, r.height); c.fillStyle = COL.panel; c.fillRect(0, 0, r.width, r.height);
+    c.save(); c.setTransform(1, 0, 0, 1, 0, 0); c.drawImage(buf, 0, 0); c.restore();   // blit swept set
+    drawRegion(c);
+    var nd = st.con.at(st.t);
+    if (st.key === 'star' && nd.T0 && nd.T1) { var t0 = P(nd.T0), t1 = P(nd.T1); c.strokeStyle = COL.mut; c.lineWidth = 1; c.globalAlpha = 0.5; c.beginPath(); c.moveTo(t0.X, t0.Y); c.lineTo(t1.X, t1.Y); c.stroke(); c.globalAlpha = 1; }
+    var a = P(nd.a), b = P(nd.b);
+    c.strokeStyle = COL.accent; c.lineWidth = 3; c.lineCap = 'round'; c.beginPath(); c.moveTo(a.X, a.Y); c.lineTo(b.X, b.Y); c.stroke(); c.lineCap = 'butt';
+    c.fillStyle = COL.hot; c.beginPath(); c.arc(a.X, a.Y, 4, 0, 7); c.fill();
+    c.fillStyle = COL.panel; c.strokeStyle = COL.accent; c.lineWidth = 2; c.beginPath(); c.arc(b.X, b.Y, 4, 0, 7); c.fill(); c.stroke();
+    rturn.innerHTML = '<b>' + Math.round(Math.abs(nd.theta - st.con.at(0).theta) * 180 / Math.PI) + '°</b>';
+    rarea.innerHTML = '<b>' + st.con.area.toFixed(3) + '</b> = ' + (st.con.area / Math.PI).toFixed(3) + 'π';
+  }
+
+  function renderLadder() {
+    var cons = { disk: K.disk(), reuleaux: K.reuleaux(), triangle: K.triangle(), deltoid: K.deltoid(), modhypo: K.modHypocycloid(), modstar: st.key === 'modstar' ? st.con : K.modStarPolygon(st.n), star: st.key === 'star' ? st.con : K.starBS(st.n), perron: st.key === 'perron' ? st.con : K.perronTree(st.pdepth) };
+    var maxA = cons.disk.area; ladder.innerHTML = '';
+    SHAPES.forEach(function (sh) {
+      var a = cons[sh[0]].area, row = document.createElement('div'); row.className = 'lrow' + (sh[0] === st.key ? ' cur' : ''); row.style.display = 'contents';
+      row.innerHTML = '<span class="lname">' + sh[1] + '</span><span class="lbar" style="width:' + (a / maxA * 100).toFixed(1) + '%"></span><span class="lval">' + (a / Math.PI).toFixed(3) + 'π</span>';
+      ladder.appendChild(row);
+    });
+  }
+
+  function tMax() { return st.conv === 1 ? 1 : 0.5; }
+  function advance(dt) { st.t += (+speedEl.value / 100) * dt; while (st.t >= tMax()) st.t -= tMax(); var nd = st.con.at(st.t); if (sweptEl.checked && !nd.join) stampNeedle(nd); }
+  function loop(ts) { if (!st.playing) return; if (!anim.last) anim.last = ts; var dt = Math.min(0.05, (ts - anim.last) / 1000); anim.last = ts; advance(dt); render(); anim.raf = requestAnimationFrame(loop); }
+  function setPlaying(on) { st.playing = on; playBtn.textContent = on ? '⏸ Pause' : '▶ Run'; if (on) { anim.last = 0; anim.raf = requestAnimationFrame(loop); } else cancelAnimationFrame(anim.raf); }
+
+  sel.addEventListener('change', function () { st.key = sel.value; rebuild(); });
+  nsl.addEventListener('input', function () { st.n = +nsl.value; nv.textContent = st.n; if (usesN()) rebuild(); });
+  psl.addEventListener('input', function () { st.pdepth = +psl.value; pv.textContent = st.pdepth; if (st.key === 'perron') rebuild(); });
+  playBtn.addEventListener('click', function () { setPlaying(!st.playing); });
+  stepBtn.addEventListener('click', function () { setPlaying(false); advance(0.06); render(); });
+  clearBtn.addEventListener('click', function () { resetBuffer(); render(); });
+  convBtn.addEventListener('click', function () { st.conv = st.conv === 1 ? 0.5 : 1; convBtn.textContent = st.conv === 1 ? '360°' : '180°'; if (st.t > tMax()) st.t = 0; render(); });
+  sweptEl.addEventListener('change', render);
+  cv.addEventListener('pointerenter', function () { st.over = true; });
+  cv.addEventListener('pointerleave', function () { st.over = false; });
+  window.addEventListener('keydown', function (e) { if (e.code === 'Space' && st.over && !/INPUT|BUTTON|TEXTAREA|SELECT/.test((e.target.tagName || ''))) { e.preventDefault(); setPlaying(!st.playing); } });
+  window.addEventListener('resize', rebuild);
+
+  sel.value = st.key; rebuild();
+  window.__kakeya = { K: K, state: st, rebuild: rebuild, render: render, setPlaying: setPlaying, advance: advance };
+})();
+</script>
+</body>
+</html>
