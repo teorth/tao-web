@@ -1090,20 +1090,21 @@
   var ptrs = {};
   function ptrArr() { return Object.keys(ptrs).map(function (k) { return ptrs[k]; }); }
   canvas.addEventListener('pointerdown', function (e) {
-    if (e.pointerType === 'touch') { if (e.cancelable) e.preventDefault(); if (canvas.focus) canvas.focus(); }   // own the touch so text selection / callout can't hijack a tap
     ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; el.tip.style.display = 'none';
     var n = Object.keys(ptrs).length;
     if (n === 1) {
       st.look = true; st.gesture = false; st.lx = e.clientX; st.ly = e.clientY; st.lyaw = st.yaw; st.lpitch = st.pitch;
-      st.tap = { x: e.clientX, y: e.clientY, moved: false, touch: e.pointerType === 'touch' };
-      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; st.tapPrev = st.hover; st.hover = null;
+      st.downX = e.clientX; st.downY = e.clientY; st.lastTouch = e.pointerType === 'touch'; st.tapMoved = false; st.didGesture = false;
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing';
+      if (!st.lastTouch && st.hover) st.hover = null;   // a mouse drag drops the hovered scope; touch keeps its locked scope (toggled by the tap-click)
     } else if (n === 2) {   // second finger: pinch/two-finger mode, stop looking
-      st.look = false; st.gesture = true; st.tap = null; if (svAnim) svAnim.cancel = true;
+      st.look = false; st.gesture = true; st.didGesture = true; if (svAnim) svAnim.cancel = true;
       var p = ptrArr(); st.gDist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y); st.gCy = (p[0].y + p[1].y) / 2;
     }
-  }, { passive: false });
+  });
   canvas.addEventListener('pointermove', function (e) {
     if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
+    st.lastTouch = e.pointerType === 'touch';   // a bare hover-move is mouse; a touch-move always has a finger down
     var r = canvas.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
     if (st.gesture && Object.keys(ptrs).length >= 2) {
       var p = ptrArr(), d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y), cy = (p[0].y + p[1].y) / 2;
@@ -1112,7 +1113,7 @@
       st.gDist = d; st.gCy = cy; render(); return;
     }
     if (st.look) {
-      if (st.tap && Math.abs(e.clientX - st.tap.x) + Math.abs(e.clientY - st.tap.y) > 14) st.tap.moved = true;
+      if (Math.abs(e.clientX - st.downX) + Math.abs(e.clientY - st.downY) > 14) st.tapMoved = true;
       if (st.cosmic) {   // incremental free-look (parallel transport about local up/right)
         var sens = st.fov / canvas.clientHeight * O.DEG, dx = e.clientX - st.lx, dy = e.clientY - st.ly; st.lx = e.clientX; st.ly = e.clientY;
         var right = norm(cross(st.cfwd, st.cup)); cosmicRot(st.cup, dx * sens); cosmicRot(right, dy * sens); render();
@@ -1120,17 +1121,19 @@
     } else hover(px, py);
   });
   function endPointer(e) {
-    var tap = (st.tap && !st.tap.moved && st.tap.touch) ? st.tap : null;
     delete ptrs[e.pointerId]; var n = Object.keys(ptrs).length;
     if (n < 2) st.gesture = false;
-    if (n === 0) {
-      st.look = false; canvas.style.cursor = 'grab'; st.tap = null;
-      if (tap) { var r = canvas.getBoundingClientRect(); var ob = pickAt(tap.x - r.left, tap.y - r.top, 24); st.hover = (ob && ob === st.tapPrev) ? null : ob; render(); }   // tap an object = lock its telescope (fat radius); tap it again or tap empty = dismiss
-    }
+    if (n === 0) { st.look = false; canvas.style.cursor = 'grab'; }
   }
   canvas.addEventListener('pointerup', endPointer);
   canvas.addEventListener('pointercancel', endPointer);
-  canvas.addEventListener('pointerleave', function () { if (!st.look && !st.gesture && st.hover) { st.hover = null; render(); } el.tip.style.display = 'none'; });
+  canvas.addEventListener('contextmenu', function (e) { e.preventDefault(); });   // suppress the long-press callout/menu over the sky
+  canvas.addEventListener('click', function (e) {   // touch has no hover: a tap toggles the telescope on the tapped object
+    if (!st.lastTouch || st.didGesture || st.tapMoved) return;   // desktop uses hover; ignore the click that ends a drag/pinch
+    var r = canvas.getBoundingClientRect(), ob = pickAt(e.clientX - r.left, e.clientY - r.top, 24);   // fat radius for fingers
+    st.hover = (ob && ob === st.hover) ? null : ob; render();   // tap the same object or empty sky = dismiss
+  });
+  canvas.addEventListener('pointerleave', function () { if (!st.lastTouch && !st.look && !st.gesture && st.hover) { st.hover = null; render(); } el.tip.style.display = 'none'; });
   canvas.addEventListener('wheel', onWheel, { passive: false });
   // God's-eye pane: drag to pan, wheel to zoom about the cursor, buttons for scale + framing
   if (el.godcanvas) {
