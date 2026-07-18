@@ -152,6 +152,28 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/random-variables-making-of.html
+- name: Bayesian probability worksheet
+  category: Probability
+  status: original
+  date: "2026-07-18"
+  description: >-
+    An interactive version of Tao's 2022 “A Bayesian probability worksheet”: fill in the underlying
+    quantities — two hypotheses, their prior, and the likelihoods of the evidence — and the derived boxes
+    (prior odds, likelihood ratio, posterior odds and probabilities) compute themselves, tax-form style.
+    Enter any prior or likelihood as a probability or as odds — the linked boxes follow along — or as a
+    range for interval arithmetic, in which case the posterior is reported as a tight range with a
+    sensitivity panel showing which assumption the conclusion leans on most. A plain-language summary reads
+    off the qualitative prior and whether the evidence raises, lowers, or barely moves it; two further views
+    recast the same update as natural frequencies (an “of 1,000 cases…” table that dissolves the base-rate
+    fallacy) and as an additive weight of evidence in decibans on a log-odds number line. Ships thirteen
+    worked examples — the COVID and mammogram base-rate cases, Monty Hall, Bertrand's box, the three
+    prisoners, the boy-or-girl paradox (with the Tuesday-boy variant), the taxicab and DNA
+    (prosecutor's-fallacy) problems, and Sleeping Beauty as halfer, thirder, and the disagreement shown as a
+    range — each with its own commentary, plus a shareable permalink and copy-as-text export.
+  url: apps/bayes.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/bayes-making-of.html
 # --- Mathematical exposition (original app) ---
 - name: Paper diagram viewer
   category: Mathematical exposition

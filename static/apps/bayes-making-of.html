@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Bayesian probability worksheet — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Bayesian probability worksheet</h1>
+    <p class="prov">A curated transcript of the conversation that built the
+      <a href="bayes.html">Bayesian probability worksheet</a>.</p>
+  </header>
+  <article>
+<p><em>A curated transcript of the conversation (with Claude Code) that turned Tao's 2022 blog post
+<a href="https://terrytao.wordpress.com/2022/10/07/a-bayesian-probability-worksheet/">“A Bayesian probability
+worksheet”</a> — a Bayes-rule update laid out like a tax form — into an interactive applet for
+<a href="https://github.com/teorth/tao-web">tao-web</a>.</em></p>
+
+<p><strong>How to read this.</strong> As with the <a href="random-variables-making-of.html">random-variable</a>,
+<a href="zeta-process-making-of.html">zeta-process</a>, and <a href="kakeya-making-of.html">Kakeya</a>
+transcripts, the aim is to record the <em>process</em>:</p>
+<ul>
+  <li><strong>Terence's messages</strong> are shown mostly verbatim (routine “looks good, continue” replies
+    folded into the narration; long messages trimmed with <code>[…]</code>).</li>
+  <li><strong>Claude's replies</strong> — the actual edits to two files, <code>bayes.js</code> (a DOM-free
+    Bayes-update core) and <code>bayes.html</code> (the app) — are replaced by short <em>italic
+    summaries</em>.</li>
+</ul>
+<p>The core was checked with a headless Node test-harness (growing to 54 checks) and the UI with a DOM-shim
+smoke test (62), including a brute-force verification that the interval arithmetic is <em>exact</em>. Nothing
+was published until the app was complete.</p>
+
+<h2>1. The idea, and one good instinct about ranges</h2>
+<p><strong>Terence</strong> (opening):</p>
+<blockquote><p>I'd like a version of the Bayesian worksheet [from my 2022 post], where I had formatted it like
+a tax form. But on an applet one can format it with editable text fields (for the underlying variables) and
+non-editable text fields (for the derived variables), with the examples in the blog post serving as
+pre-populated examples. One thing that might be nice is for the ability to enter in ranges of
+numbers/probabilities in the entries (i.e., to use interval arithmetic), to get some sense of how sensitive
+Bayesian analysis is to changes in the hypotheses. […] do you have any other design suggestions?</p></blockquote>
+<p><em>Claude read the post to anchor on its actual twelve boxes (two hypotheses, their priors, the prior
+odds, the evidence, the two likelihoods, the likelihood ratio, and the posterior odds and probabilities),
+then proposed the extensions that ended up defining the app: linked inputs (edit a probability or its odds and
+the other follows); a natural-frequencies restatement to defuse the base-rate fallacy; an additive
+log-odds/decibans view; a sensitivity readout for the interval feature; and — the key mathematical
+observation — that because the posterior is monotone in each independent input, evaluating the endpoints gives
+the </em>exact<em> interval, not a conservative over-estimate.</em></p>
+<p><strong>Terence:</strong></p>
+<blockquote><p>All sounds good to me. I also like the extra expansions and the linking of related inputs
+(either can be edited and the other updates automatically). It doesn't have to be faithful to the original, so
+add in the extensions (e.g., the ability to flip to odds instead of probabilities).</p></blockquote>
+
+<h2>2. Stage 0 — the tested core</h2>
+<p><em>Claude wrote <code>bayes.js</code>: every quantity carried as an interval <code>{lo, hi}</code>, with
+monotonicity-aware operations so a range in any box propagates to a tight range in the posterior. A
+brute-force test sampled the input box densely and confirmed the reported bounds were exactly the true minimum
+and maximum. The two worked examples from the post came out on the nose — a positive COVID test at a 2% prior
+gives a 24.6% posterior; at a 50% prior, 94.1% — and the decibans identity (prior + evidence = posterior)
+held to the last digit.</em> Terence: <em>“Numbers look reasonable.”</em></p>
+
+<h2>3. Stage 1 — the worksheet, and a talking summary</h2>
+<p><em>The app: the twelve numbered boxes, white for the inputs and shaded for the derived quantities, each
+showing its formula; a probability/odds toggle; and the linked prior trio, where editing P(H₀), P(H₁), or the
+prior odds updates the other two without clobbering the field being typed in. Validation reports a bad entry
+rather than silently clamping it.</em></p>
+<p><strong>Terence</strong> asked for two refinements:</p>
+<blockquote><p>The summary text currently just has the posterior odds/probability, but one can list the prior
+odds as well. One can also provide a natural-language summary of the situation, giving some qualitative
+assessment […] (that one is “very likely”, “somewhat likely”, etc.) and whether the likelihood increases,
+decreases, or stays roughly the same (with ranges one has to be more equivocal in this conclusion).</p></blockquote>
+<p><em>Claude added a plain-language reading beneath the numbers: “A priori, ‘Employee X has COVID’ is
+<strong>very unlikely</strong>… the evidence <strong>strongly raises</strong> the likelihood, leaving it
+<strong>unlikely</strong>.” When an input is a range the verdict turns equivocal on its own — and a later
+boundary fix made it precise: if the likelihood ratio can only touch 1 from below, it says the evidence “can
+only lower the likelihood, or leave it unchanged,” rather than a vague “could go either way.”</em></p>
+
+<h2>4. Stage 2 — which assumption is the answer resting on?</h2>
+<p><em>The headline feature: enter a range in any box and a sensitivity panel appears, sweeping each input
+across its range with the others held at their midpoints and drawing a sorted bar for each — so one sees at a
+glance that (for the ranged COVID case) the prior contributes 19 points of the posterior's spread, the
+false-positive rate 8, and the true-positive rate only 2. The panel names the dominant assumption and stays
+hidden until a range is actually present.</em></p>
+
+<h2>5. Stage 3 — two more ways to see the same update</h2>
+<p><em>Two collapsible views. <strong>Natural frequencies</strong> restates the update as whole-number counts
+— “Picture 1,000 cases; 20 are infected, 16 of them test positive, alongside 49 false positives, so 16 of 65
+positives are real → 24.6%” — the classic cure for base-rate confusion. <strong>Weight of evidence</strong>
+puts the update in decibans on a number line, where Bayes' rule becomes addition: a prior dot, a posterior
+dot, and the evidence as the segment between them, the same +12 dB whatever the prior.</em></p>
+
+<h2>6. Filling the gallery with paradoxes</h2>
+<p><strong>Terence</strong> wanted more than the COVID examples, and sent a stream of candidates — Monty Hall,
+the boy-or-girl paradox, Bertrand's box, the taxicab problem, the three prisoners, Simpson's paradox, the
+prosecutor's fallacy, and the Tuesday-boy variant.</p>
+<p><em>Most fit the two-hypothesis worksheet beautifully, and Claude added them with per-example commentary —
+noting in passing that Monty Hall, Bertrand's box, and the three prisoners are literally the same update in
+disguise (equal priors, a likelihood ratio of two, a two-thirds answer). Two were declined on principle: the
+prosecutor's fallacy </em>is<em> the DNA example already, and Simpson's paradox is about a trend reversing
+under aggregation — not a single prior-to-posterior update — so forcing it into the worksheet would
+misrepresent it.</em></p>
+
+<h2>7. Sleeping Beauty, as a feature</h2>
+<p><em>Sleeping Beauty was the interesting hold-out: its halfer/thirder dispute has no agreed likelihood, so
+presenting it with a single “answer” would be dishonest. Terence turned that into a use of the interval
+feature:</em></p>
+<blockquote><p>Perhaps Sleeping Beauty could then be a showcase of the interval arithmetic feature, on which
+we give likelihoods as a range? […] Or present two different Sleeping Beauty models in the examples, with
+different parameters, leading to the two different conclusions.</p></blockquote>
+<p><em>Both, in the end. The entire dispute lives in one likelihood, P(E | Heads): halfers set it to 1
+(waking is uninformative → 1/2), thirders to 0.5 (twice the awakenings under Tails → 1/3). The app ships all
+three — a halfer preset, a thirder preset, and a “as a range” preset that enters that likelihood as
+<code>0.5–1</code> and reports the whole disputed span, 1/3 to 1/2, with the sensitivity panel pinning 100% of
+the spread on that single assumption. The applet can display a philosophical disagreement without pretending
+to settle it.</em></p>
+
+<h2>8. Finishing: sharing, and launch</h2>
+<p><em>Two last touches for a worksheet meant to be passed around: a “copy link” button that encodes the whole
+filled worksheet in the URL (the one deliberate URL-write the app's <a href="bayes.html">bounding-box
+rule</a> allows) so a pre-filled example can be dropped straight into a blog post, and a “copy as text” export
+of the finished sheet. Then the launch audits — self-contained (no network, no CDN, strict Content-Security
+Policy), light/dark theme-aware, no page state touched outside the app's own box — and the applet went live.</em></p>
+<p>The applet source is released under the MIT license; the mathematical content remains reserved.</p>
+
+<p class="prov" style="margin-top:2rem">Built with Claude Code (Opus 4.8). Based on Terence Tao,
+  “A Bayesian probability worksheet” (2022).</p>
+  </article>
+</div>
+</body>
+</html>

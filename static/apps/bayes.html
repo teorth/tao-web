@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bayesian probability worksheet — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 50rem; }
+  .toolbar { display: flex; align-items: center; gap: 8px 16px; flex-wrap: wrap; margin: 1.1rem 0 .4rem; }
+  .toolbar .grp { display: flex; align-items: center; gap: 6px; }
+  .toolbar label { color: var(--muted); font-size: .9rem; }
+  select, .seg button, .toolbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .34rem .6rem; }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; padding: .34rem .7rem; color: var(--muted); }
+  .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+
+  #commentary { margin: .1rem 0 .2rem; padding: .7rem .9rem; border-left: 3px solid var(--muted);
+    background: color-mix(in srgb, var(--muted) 10%, transparent); border-radius: 0 8px 8px 0; font-size: .92rem; line-height: 1.5; }
+  #commentary b { color: var(--ink); }
+  h2.sec { font-size: 1rem; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); margin: 1.6rem 0 .5rem; }
+  .worksheet { display: flex; flex-direction: column; gap: .5rem; }
+  .box { display: grid; grid-template-columns: 2rem 1fr auto; gap: .3rem .8rem; align-items: center;
+    border: 1px solid var(--line); border-radius: 8px; padding: .5rem .7rem; background: var(--panel); }
+  .box.calc { background: color-mix(in srgb, var(--accent-soft) 55%, transparent); }
+  .num { grid-row: 1 / span 2; align-self: start; box-sizing: border-box; width: 1.75rem; height: 1.75rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; line-height: 1; font-family: var(--mono); font-size: .82rem; font-weight: 700;
+    color: var(--muted); background: var(--bg); border: 1px solid var(--line); }
+  .box.calc .num { color: var(--accent); border-color: var(--accent); }
+  .lbl { font-size: .95rem; }
+  .lbl .sub { color: var(--muted); font-size: .85rem; display: block; margin-top: .1rem; }
+  .formula { color: var(--muted); font-size: .8rem; font-family: var(--mono); margin-top: .15rem; }
+  .ctl { grid-column: 3; grid-row: 1 / span 2; text-align: right; white-space: nowrap; }
+  .box .err { grid-column: 2 / span 2; color: var(--danger); font-size: .82rem; margin-top: .1rem; min-height: 0; }
+  .box .err:empty { display: none; }
+  /* free-text boxes: label on top, input full-width on its own row */
+  .box.text .lbl { grid-column: 2; }
+  .box.text .ctl { grid-column: 2; grid-row: 2; text-align: left; white-space: normal; }
+
+  input[type=text], input.num-in { font: inherit; color: var(--ink); background: var(--bg); box-sizing: border-box;
+    border: 1px solid var(--line); border-radius: 6px; padding: .35rem .5rem; }
+  input.num-in { width: 8.5rem; text-align: right; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  input.txt-in { width: 100%; }
+  input.invalid { border-color: var(--danger); }
+  .dval { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 1rem; }
+  .box.calc .dval { color: var(--ink); }
+
+  /* emphasis follows the units toggle */
+  .worksheet:not(.show-odds) .posterior-prob .dval,
+  .worksheet.show-odds .posterior-odds .dval { color: var(--accent); font-weight: 700; }
+  .worksheet:not(.show-odds) .prior-prob .num-in:not(:focus) { border-color: var(--accent); }
+  .worksheet.show-odds .prior-odds .num-in:not(:focus) { border-color: var(--accent); }
+
+  #result { margin-top: 1.2rem; padding: .8rem 1rem; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 8px 8px 0; line-height: 1.5; }
+  #result .flow { font-size: 1.05rem; }
+  #result .narr { margin-top: .55rem; font-size: .95rem; }
+  #result b { color: var(--accent); }
+  .sharebar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; margin-top: 1.6rem; }
+  .sharebar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .34rem .7rem; }
+  #sharestatus { font-size: .85rem; }
+  #shareout { flex: 1 1 100%; margin-top: .2rem; font-family: var(--mono); font-size: .8rem; padding: .4rem .5rem; box-sizing: border-box;
+    border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--ink); }
+  .muted { color: var(--muted); }
+  .sens { margin-top: 1.6rem; }
+  .sens-lede { font-size: .92rem; color: var(--muted); margin: .2rem 0 .8rem; line-height: 1.5; }
+  .sens-lede b { color: var(--ink); }
+  .srow { display: grid; grid-template-columns: minmax(7rem, 12rem) 1fr auto; gap: .3rem .8rem; align-items: center; margin: .35rem 0; font-size: .9rem; }
+  .sname { color: var(--ink); }
+  .srow.fixed .sname { color: var(--muted); }
+  .sbarwrap { background: var(--accent-soft); border-radius: 4px; height: 13px; overflow: hidden; }
+  .sbar { height: 100%; background: var(--accent); border-radius: 4px; }
+  .srow.fixed .sbar { background: transparent; }
+  .sval { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: .82rem; white-space: nowrap; }
+
+  details.view { margin-top: 1.5rem; }
+  details.view > summary { cursor: pointer; font-size: 1rem; letter-spacing: .02em; text-transform: uppercase; color: var(--muted); }
+  details.view[open] > summary { margin-bottom: .8rem; }
+  .nf-lede { font-size: .92rem; color: var(--muted); margin: .2rem 0 .7rem; line-height: 1.5; }
+  .nf-lede b, .nf-ppv b { color: var(--ink); }
+  .nf-ppv b { color: var(--accent); }
+  table.nf { border-collapse: collapse; margin: .2rem 0 .7rem; font-size: .9rem; font-variant-numeric: tabular-nums; }
+  table.nf th, table.nf td { border: 1px solid var(--line); padding: .35rem .65rem; text-align: right; }
+  table.nf thead th { color: var(--muted); font-weight: 600; font-size: .8rem; }
+  table.nf tbody th { text-align: left; color: var(--muted); }
+  table.nf td.tp { background: var(--accent-soft); }
+  table.nf td b { font-family: var(--mono); }
+  table.nf .nf-key { display: block; font-size: .72rem; color: var(--muted); font-weight: 400; }
+  table.nf tr.tot td, table.nf tr.tot th { border-top: 2px solid var(--line); color: var(--ink); }
+  .nf-bar { display: flex; height: 16px; border-radius: 4px; overflow: hidden; border: 1px solid var(--line); max-width: 26rem; }
+  .nf-bar .t { background: var(--accent); } .nf-bar .f { background: color-mix(in srgb, var(--muted) 45%, transparent); }
+  .nf-legend { display: flex; gap: 1.2rem; font-size: .8rem; color: var(--muted); margin-top: .35rem; }
+  .nf-k.t::before { content: "\25A0"; color: var(--accent); margin-right: .25rem; }
+  .nf-k.f::before { content: "\25A0"; color: var(--muted); margin-right: .25rem; }
+  .nf-ppv { margin-top: .8rem; font-size: .95rem; }
+  .lo-stmt { font-size: 1rem; margin: .2rem 0 0; }
+  .lo-track { position: relative; height: 40px; background: var(--accent-soft); border-radius: 6px; margin: 1.5rem 0 .5rem; }
+  .lo-zero { position: absolute; top: -7px; bottom: -7px; width: 1px; background: var(--muted); }
+  .lo-zero span { position: absolute; top: -1.1em; left: 50%; transform: translateX(-50%); font-size: .7rem; color: var(--muted); white-space: nowrap; }
+  .lo-seg { position: absolute; top: 50%; height: 5px; transform: translateY(-50%); border-radius: 3px; }
+  .lo-seg.up { background: var(--accent); } .lo-seg.down { background: var(--danger); }
+  .lo-dot { position: absolute; top: 50%; width: 13px; height: 13px; border-radius: 50%; transform: translate(-50%, -50%); border: 2px solid var(--panel); }
+  .lo-dot.prior { background: var(--muted); } .lo-dot.post { background: var(--accent); }
+  .lo-legend { font-size: .82rem; color: var(--muted); display: flex; gap: 1.2rem; }
+  .lo-k.prior::before { content: "\25CF"; color: var(--muted); margin-right: .25rem; }
+  .lo-k.post::before { content: "\25CF"; color: var(--accent); margin-right: .25rem; }
+  details.note { margin-top: 1.4rem; font-size: .92rem; }
+  details.note summary { cursor: pointer; color: var(--muted); }
+  details.note p { margin: .6rem 0; }
+  .cap { color: var(--muted); font-size: .85rem; margin-top: 1.4rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>Bayesian probability worksheet</h1>
+    <p class="lede">Update a belief with evidence, the way a tax form adds up numbers: fill in the
+      <em>underlying</em> quantities (white boxes) and the <em>derived</em> ones (shaded boxes) compute
+      themselves. An interactive version of the
+      <a href="https://terrytao.wordpress.com/2022/10/07/a-bayesian-probability-worksheet/">2022 worksheet</a>.
+      Any prior or likelihood can be edited as a probability or as odds — the linked boxes follow along.</p>
+  </header>
+
+  <div class="toolbar">
+    <div class="grp"><label for="preset">Example</label>
+      <select id="preset">
+        <optgroup label="Tests &amp; base rates">
+          <option value="covid2">COVID test — 2% prior</option>
+          <option value="covid50">COVID test — 50% prior (symptoms)</option>
+          <option value="mammogram">Mammogram screening</option>
+          <option value="taxicab">The blue-cab witness</option>
+        </optgroup>
+        <optgroup label="Classic puzzles">
+          <option value="monty">Monty Hall</option>
+          <option value="bertrand">Bertrand&rsquo;s box</option>
+          <option value="prisoners">Three prisoners</option>
+          <option value="twoChildren">Two children (one is a boy)</option>
+          <option value="twoChildrenTuesday">Two children (a boy born Tuesday)</option>
+        </optgroup>
+        <optgroup label="Sleeping Beauty (halfer vs thirder)">
+          <option value="sleepingThirder">Thirder model (&rarr; 1/3)</option>
+          <option value="sleepingHalfer">Halfer model (&rarr; 1/2)</option>
+          <option value="sleepingRange">As a range (1/3&ndash;1/2)</option>
+        </optgroup>
+        <optgroup label="Forensics">
+          <option value="dna">DNA match (prosecutor&rsquo;s fallacy)</option>
+        </optgroup>
+        <option value="blank">Blank worksheet</option>
+      </select>
+    </div>
+    <div class="grp"><label>Show results as</label>
+      <span class="seg"><button id="unitProb" class="on" type="button">Probability</button><button id="unitOdds" type="button">Odds</button></span>
+    </div>
+    <div class="grp"><button id="reset" type="button">Reset example</button></div>
+  </div>
+
+  <div id="commentary" hidden></div>
+
+  <div class="worksheet" id="ws">
+    <h2 class="sec">Hypotheses &amp; prior</h2>
+    <div class="box input text"><span class="num">1</span>
+      <div class="lbl">Null hypothesis H<sub>0</sub><span class="sub">the default / status quo</span></div>
+      <div class="ctl"><input id="t_h0" class="txt-in" type="text" aria-label="null hypothesis H0"></div></div>
+    <div class="box input text"><span class="num">2</span>
+      <div class="lbl">Alternative hypothesis H<sub>1</sub><span class="sub">the claim under test</span></div>
+      <div class="ctl"><input id="t_h1" class="txt-in" type="text" aria-label="alternative hypothesis H1"></div></div>
+    <div class="box input prior-prob"><span class="num">3</span>
+      <div class="lbl">Prior P(H<sub>0</sub>)<span class="sub">how likely H<sub>0</sub> seems before the evidence</span></div>
+      <div class="ctl"><input id="f_h0" class="num-in" type="text" inputmode="decimal" aria-label="prior probability of H0"></div>
+      <div class="err" id="f_h0_err"></div></div>
+    <div class="box input prior-prob"><span class="num">4</span>
+      <div class="lbl">Prior P(H<sub>1</sub>)<span class="sub">how likely H<sub>1</sub> seems before the evidence</span></div>
+      <div class="ctl"><input id="f_h1" class="num-in" type="text" inputmode="decimal" aria-label="prior probability of H1"></div>
+      <div class="err" id="f_h1_err"></div></div>
+    <div class="box input prior-odds"><span class="num">5</span>
+      <div class="lbl">Prior odds<div class="formula">P(H<sub>1</sub>) : P(H<sub>0</sub>)</div></div>
+      <div class="ctl"><input id="f_odds" class="num-in" type="text" inputmode="decimal" aria-label="prior odds"></div>
+      <div class="err" id="f_odds_err"></div></div>
+
+    <h2 class="sec">Evidence</h2>
+    <div class="box input text"><span class="num">6</span>
+      <div class="lbl">New information E</div>
+      <div class="ctl"><input id="t_e" class="txt-in" type="text" aria-label="evidence E"></div></div>
+    <div class="box input"><span class="num">7</span>
+      <div class="lbl">Likelihood P(E | H<sub>0</sub>)<span class="sub">chance of E if H<sub>0</sub> holds</span></div>
+      <div class="ctl"><input id="f_e0" class="num-in" type="text" inputmode="decimal" aria-label="likelihood of E given H0"></div>
+      <div class="err" id="f_e0_err"></div></div>
+    <div class="box input"><span class="num">8</span>
+      <div class="lbl">Likelihood P(E | H<sub>1</sub>)<span class="sub">chance of E if H<sub>1</sub> holds</span></div>
+      <div class="ctl"><input id="f_e1" class="num-in" type="text" inputmode="decimal" aria-label="likelihood of E given H1"></div>
+      <div class="err" id="f_e1_err"></div></div>
+    <div class="box calc"><span class="num">9</span>
+      <div class="lbl">Likelihood ratio<div class="formula">Box 8 &divide; Box 7</div></div>
+      <div class="ctl"><span class="dval" id="d_lr">—</span></div></div>
+
+    <h2 class="sec">Conclusion</h2>
+    <div class="box calc posterior-odds"><span class="num">10</span>
+      <div class="lbl">Posterior odds<div class="formula">Box 5 &times; Box 9</div></div>
+      <div class="ctl"><span class="dval" id="d_postodds">—</span></div></div>
+    <div class="box calc posterior-prob"><span class="num">11</span>
+      <div class="lbl">Posterior P(H<sub>0</sub> | E)<div class="formula">1 &divide; (1 + Box 10)</div></div>
+      <div class="ctl"><span class="dval" id="d_h0e">—</span></div></div>
+    <div class="box calc posterior-prob"><span class="num">12</span>
+      <div class="lbl">Posterior P(H<sub>1</sub> | E)<div class="formula">Box 10 &divide; (1 + Box 10)</div></div>
+      <div class="ctl"><span class="dval" id="d_h1e">—</span></div></div>
+  </div>
+
+  <div id="result"></div>
+
+  <div id="sens" class="sens" hidden>
+    <h2 class="sec">Sensitivity to the assumptions</h2>
+    <div id="sensbars"></div>
+  </div>
+
+  <details class="view" id="nfwrap" open>
+    <summary>The same update, as natural frequencies</summary>
+    <div id="nf"></div>
+  </details>
+
+  <details class="view" id="lowrap" open>
+    <summary>Weight of evidence (log-odds &middot; decibans)</summary>
+    <div id="lo"></div>
+  </details>
+
+  <div class="sharebar">
+    <button id="sharelink" type="button">Copy link to this worksheet</button>
+    <button id="sharetext" type="button">Copy as text</button>
+    <span id="sharestatus" class="muted" role="status"></span>
+    <input id="shareout" type="text" readonly hidden aria-label="shareable link or worksheet text">
+  </div>
+
+  <details class="note">
+    <summary>When is this worksheet reliable?</summary>
+    <p>The update is only as trustworthy as its inputs. It becomes <em>highly unreliable</em> when the
+      alternative hypothesis H<sub>1</sub> is left vague rather than precisely specified, or when the
+      evidence E is filtered — for instance if a source reports only the facts favourable to one
+      hypothesis. It works well when you are confident that <em>all</em> relevant information, both for and
+      against H<sub>1</sub>, is being reported.</p>
+    <p>Entering a <em>range</em> (e.g. <code>0.03&ndash;0.07</code>, or <code>0.05 &plusmn; 0.02</code>) in
+      any box shows how far the conclusion moves as the assumption varies.</p>
+  </details>
+
+  <p class="cap">Enter numbers as decimals or percentages (<code>0.02</code> or <code>2%</code>), as odds
+    (<code>16</code> or <code>16:1</code> in Box&nbsp;5), or as ranges. The applet source is released under
+    the MIT license; the mathematical content is reserved.</p>
+</div>
+
+<script src="bayes.js"></script>
+<script>
+(function () {
+  'use strict';
+  var B = window.Bayes, iv = B.iv;
+  var ids = ['t_h0', 't_h1', 't_e', 'f_h0', 'f_h1', 'f_odds', 'f_e0', 'f_e1',
+             'd_lr', 'd_postodds', 'd_h0e', 'd_h1e', 'result', 'sens', 'sensbars', 'nf', 'lo', 'ws',
+             'commentary', 'preset', 'unitProb', 'unitOdds', 'reset',
+             'sharelink', 'sharetext', 'sharestatus', 'shareout'];
+  var el = {};
+  ids.forEach(function (id) { el[id] = document.getElementById(id); });
+
+  var state = { unit: 'prob', prior: { mode: 'pH1', value: iv(0.02) }, pE0: iv(0.05), pE1: iv(0.8) };
+  var lastR = null;
+
+  var PRESETS = {
+    covid2: { h0: 'Employee X does not have COVID', h1: 'Employee X has COVID',
+      prior: '0.02', e: 'Employee X tests positive', e0: '0.05', e1: '0.8',
+      note: 'A rare condition plus an imperfect test: even after a positive result the chance of infection is only about 25%, because false positives among the healthy majority outnumber true positives among the infected few. This <b>base-rate</b> effect is the crux of the worksheet.' },
+    covid50: { h0: 'Employee X does not have COVID', h1: 'Employee X has COVID',
+      prior: '0.5', e: 'Employee X tests positive (and shows symptoms)', e0: '0.05', e1: '0.8',
+      note: 'Now suspicion is higher to begin with — symptoms have pushed the prior to even odds. The <b>same</b> test that gave 25% before now yields about 94%. The evidence has not changed; the prior has.' },
+    mammogram: { h0: 'The patient does not have breast cancer', h1: 'The patient has breast cancer',
+      prior: '0.01', e: 'The screening mammogram is positive', e0: '0.09', e1: '0.9',
+      note: 'The textbook base-rate case (Eddy 1978; Gigerenzer). About 1% of the women screened have breast cancer; the mammogram catches 90% of cancers but also flags 9% of healthy women. After a positive result the chance of cancer is only about <b>9%</b> — yet most physicians asked this question guess around 75%. The rare disease and the flood of false positives dominate.' },
+    monty: { h0: 'The car is behind door 1 (your original pick)', h1: 'The car is behind door 2 (the other closed door)',
+      prior: '0.5', e: 'The host opens door 3, revealing a goat', e0: '0.5', e1: '1',
+      note: 'Monty Hall. You pick door 1; the host — who always reveals a goat and never opens your door or the car — opens door 3. He is <b>forced</b> to open door 3 when the car is behind door 2, but has a free choice when it is behind door 1, so the evidence is twice as likely under &ldquo;car behind door 2.&rdquo; Switching wins <b>2/3</b> of the time. (Door 3 had an equal prior share, excluded here because the host opened it — so the two live doors start at even odds.)' },
+    bertrand: { h0: 'You picked the box with one gold and one silver coin', h1: 'You picked the box with two gold coins',
+      prior: '0.5', e: 'The coin you drew from the box is gold', e0: '0.5', e1: '1',
+      note: 'Bertrand&rsquo;s box paradox. Three boxes hold two gold coins, two silver, or one of each; you pick a box at random and draw a gold coin. Is the other coin in that box also gold? The all-silver box is ruled out, leaving two boxes that seem equally likely — so people say 1/2. But a gold coin is <b>twice as likely</b> to come from the two-gold box, giving <b>2/3</b>. (Structurally the same update as Monty Hall.)' },
+    prisoners: { h0: 'Prisoner A (who asked) is the one to be pardoned', h1: 'Prisoner C is the one to be pardoned',
+      prior: '0.5', e: 'The warden, asked to name a different prisoner who will be executed, names B', e0: '0.5', e1: '1',
+      note: 'The three prisoners problem — Monty Hall in disguise. A, B, C each have a 1/3 chance of pardon. A asks the warden to name a <em>different</em> prisoner who will be executed, and the warden says B. A&rsquo;s own chance stays <b>1/3</b> (the warden can always name someone), but C&rsquo;s rises to <b>2/3</b> — because if C were the one pardoned, the warden would have been forced to say B. (H₁ tracks C here.)' },
+    twoChildren: { h0: 'The family has at least one girl', h1: 'Both children are boys',
+      prior: '0.25', e: 'You learn that at least one of the two children is a boy', e0: '0.66667', e1: '1',
+      note: 'The boy-or-girl paradox. Of the four equally likely families BB, BG, GB, GG, learning &ldquo;at least one is a boy&rdquo; only rules out GG — and just one of the remaining three is BB, so the answer is <b>1/3</b>, not 1/2. This assumes you learned it as a yes/no fact about the pair; had you instead <em>met one child</em> and seen a boy, the likelihoods (and the answer, 1/2) would differ. How the evidence is gathered matters.' },
+    twoChildrenTuesday: { h0: 'The family has at least one girl', h1: 'Both children are boys',
+      prior: '0.25', e: 'You learn that at least one child is a boy born on a Tuesday', e0: '0.0952381', e1: '0.2653061',
+      note: 'The boy-or-girl paradox, Tuesday variant (Gary Foshee). &ldquo;I have two children, one is a boy born on a Tuesday — what is the chance both are boys?&rdquo; Astonishingly the day matters: &ldquo;a boy born on Tuesday&rdquo; is rarer among one-boy families than two-boy families, nudging the answer from 1/3 up to <b>13/27 &asymp; 48%</b>. The likelihood P(E) is 13/49 if both are boys but only 2/21 otherwise. As before, this treats &ldquo;at least one boy born on a Tuesday&rdquo; as a fact checked about the pair — the framing does the heavy lifting.' },
+    sleepingThirder: { h0: 'The coin landed Tails (Beauty is woken twice)', h1: 'The coin landed Heads (Beauty is woken once)',
+      prior: '0.5', e: 'Beauty is woken during the experiment and asked her credence that the coin is Heads', e0: '1', e1: '0.5',
+      note: 'Sleeping Beauty, the <b>thirder</b> view. A fair coin decides whether Beauty is woken once (Heads) or twice (Tails, with memory erased between). A thirder treats each awakening as an observation: since Tails yields two awakenings and Heads only one, &ldquo;this awakening&rdquo; is half as likely under Heads — P(E&nbsp;|&nbsp;Heads)&nbsp;=&nbsp;0.5. Her credence in Heads drops to <b>1/3</b>.' },
+    sleepingHalfer: { h0: 'The coin landed Tails (Beauty is woken twice)', h1: 'The coin landed Heads (Beauty is woken once)',
+      prior: '0.5', e: 'Beauty is woken during the experiment and asked her credence that the coin is Heads', e0: '1', e1: '1',
+      note: 'Sleeping Beauty, the <b>halfer</b> view. Same experiment, opposite intuition: waking happens for certain whichever way the coin falls, so being awake is no evidence at all — P(E&nbsp;|&nbsp;Heads)&nbsp;=&nbsp;P(E&nbsp;|&nbsp;Tails)&nbsp;=&nbsp;1, likelihood ratio 1, and her credence in Heads stays at the prior <b>1/2</b>. Halfers and thirders differ only in this one likelihood.' },
+    sleepingRange: { h0: 'The coin landed Tails (Beauty is woken twice)', h1: 'The coin landed Heads (Beauty is woken once)',
+      prior: '0.5', e: 'Beauty is woken during the experiment and asked her credence that the coin is Heads', e0: '1', e1: '0.5-1',
+      note: 'Sleeping Beauty, halfer <em>and</em> thirder at once — a showcase for ranges. The two camps differ only in P(E&nbsp;|&nbsp;Heads): halfers say 1 (waking is uninformative &rarr; 1/2), thirders say 0.5 (Tails produces twice the awakenings &rarr; 1/3). Enter that single likelihood as the range <code>0.5&ndash;1</code> and the worksheet reports the whole disputed span, <b>1/3 to 1/2</b> — the applet can display a philosophical disagreement but not settle it. (Watch the sensitivity panel pin the entire spread on this one assumption.)' },
+    taxicab: { h0: 'The cab was Green', h1: 'The cab was Blue',
+      prior: '0.15', e: 'A witness identifies the cab as Blue', e0: '0.2', e1: '0.8',
+      note: 'Kahneman and Tversky&rsquo;s cab problem. Blue cabs are rare (15%) and an 80%-reliable witness says &ldquo;Blue.&rdquo; The testimony is real evidence (likelihood ratio 4), but not enough to overturn the base rate: the cab is still more likely <b>Green</b> (only about 41% Blue). Answering ~80% — ignoring how few cabs are Blue — is the classic base-rate error.' },
+    dna: { h0: 'The defendant is not the source of the DNA', h1: 'The defendant is the source of the DNA',
+      prior: '0.000001', e: 'The defendant&rsquo;s DNA matches the crime-scene sample', e0: '0.000001', e1: '1',
+      note: 'The prosecutor&rsquo;s fallacy. A &ldquo;one in a million&rdquo; random-match probability is <em>not</em> the probability of innocence. With a million potential suspects and no other evidence, a matching profile leaves the odds roughly <b>even</b> — about 50%. It is the <em>other</em> evidence (raising the prior) that convicts, not the match alone.' },
+    blank: { h0: '', h1: '', prior: '0.5', e: '', e0: '', e1: '', note: '' }
+  };
+
+  function fmtDec(x) { return B.fmtInterval(x, function (v) { return B.fmtNumber(v, 4); }); }
+  function errSlot(id) { return document.getElementById(id + '_err'); }
+  function setErr(id, msg) { el[id].classList.add('invalid'); errSlot(id).textContent = msg; }
+  function clearErr(id) { el[id].classList.remove('invalid'); errSlot(id).textContent = ''; }
+
+  // read a numeric field → interval | null (null = empty or invalid; error shown only when non-empty)
+  function readNum(id, kind) {
+    var s = el[id].value.trim();
+    if (s === '') { clearErr(id); return null; }
+    var r = B.parse(s, kind);
+    if (r.ok) { clearErr(id); return r.value; }
+    setErr(id, r.error); return null;
+  }
+
+  function refreshPrior(driver) {
+    if (!state.prior) return;
+    var v = B.priorViews(state.prior);
+    if (driver !== 'f_h0' && document.activeElement !== el.f_h0) el.f_h0.value = fmtDec(v.pH0);
+    if (driver !== 'f_h1' && document.activeElement !== el.f_h1) el.f_h1.value = fmtDec(v.pH1);
+    if (driver !== 'f_odds' && document.activeElement !== el.f_odds) el.f_odds.value = fmtDec(v.odds);
+  }
+
+  function oddsPair(o) {
+    if (o === Infinity) return 'H₁ certain'; if (o === 0) return 'H₁ impossible';
+    return o >= 1 ? (B.fmtNumber(o, 3) + ' : 1') : ('1 : ' + B.fmtNumber(1 / o, 3));
+  }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  // qualitative reading of a probability of H1
+  function qualWord(p) {
+    if (p >= 0.99) return 'virtually certain'; if (p >= 0.9) return 'very likely';
+    if (p >= 0.65) return 'likely'; if (p >= 0.55) return 'somewhat likely';
+    if (p > 0.45) return 'about as likely as not'; if (p > 0.35) return 'somewhat unlikely';
+    if (p > 0.1) return 'unlikely'; if (p > 0.01) return 'very unlikely';
+    return 'virtually impossible';
+  }
+  function qualPhrase(x) { var a = qualWord(x.lo), b = qualWord(x.hi); return a === b ? a : a + ' to ' + b; }
+  function strengthWord(lr) { var m = lr >= 1 ? lr : 1 / lr; return m >= 10 ? 'strongly' : m >= 3 ? 'moderately' : m >= 1.3 ? 'slightly' : 'barely'; }
+  // how the evidence (likelihood ratio) moves the belief; equivocal when a range straddles 1
+  function directionPhrase(LR) {
+    var lo = LR.lo, hi = LR.hi;
+    if (B.isPoint(LR)) {
+      if (lo === 1) return 'the evidence leaves the likelihood of H₁ essentially unchanged';
+      var s = strengthWord(lo);
+      if (s === 'barely') return 'the evidence leaves the likelihood of H₁ roughly unchanged';
+      return 'the evidence ' + s + (lo > 1 ? ' raises' : ' lowers') + ' the likelihood of H₁';
+    }
+    if (lo >= 1) return lo === 1 ? 'the evidence can only raise the likelihood of H₁ (or leave it unchanged)' : 'the evidence ' + strengthWord(lo) + ' raises the likelihood of H₁';
+    if (hi <= 1) return hi === 1 ? 'the evidence can only lower the likelihood of H₁ (or leave it unchanged)' : 'the evidence ' + strengthWord(hi) + ' lowers the likelihood of H₁';
+    return 'depending on the assumptions, the evidence could either raise or lower the likelihood of H₁';
+  }
+  function narrative(r) {
+    var h1 = (el.t_h1.value || '').trim();
+    var subj = h1 ? '“' + esc(h1) + '”' : 'the alternative hypothesis H₁';
+    return 'A priori, ' + subj + ' is <b>' + qualPhrase(r.pH1) + '</b> (P(H₁) = ' + B.fmtProb(r.pH1) +
+      ', prior odds ' + B.fmtOdds(r.priorOdds) + '). ' + cap(directionPhrase(r.LR)) +
+      ', leaving it <b>' + qualPhrase(r.postH1) + '</b> once the evidence is taken into account (P(H₁ | E) = ' + B.fmtProb(r.postH1) + ').';
+  }
+
+  function renderResult() {
+    if (!lastR) { el.result.innerHTML = '<span class="muted">Fill in the prior and both likelihoods to see the posterior.</span>'; return; }
+    var flow;
+    if (state.unit === 'odds') {
+      flow = 'Prior odds <b>' + B.fmtOdds(lastR.priorOdds) + '</b> &rarr; posterior odds <b>' + B.fmtOdds(lastR.postOdds) + '</b>' +
+        (B.isPoint(lastR.postOdds) ? ' <span class="muted">(' + oddsPair(lastR.postOdds.lo) + ')</span>' : '');
+    } else {
+      flow = 'Prior <b>P(H₁) = ' + B.fmtProb(lastR.pH1) + '</b> <span class="muted">(odds ' + B.fmtOdds(lastR.priorOdds) + ')</span> &rarr; posterior <b>P(H₁ | E) = ' + B.fmtProb(lastR.postH1) + '</b>';
+    }
+    el.result.innerHTML = '<div class="flow">' + flow + '</div><div class="narr">' + narrative(lastR) + '</div>';
+  }
+
+  // Stage 2: how much each single assumption's range moves the posterior (others held at midpoint)
+  function renderSensitivity() {
+    var haveAll = state.prior && state.pE0 && state.pE1;
+    var anyRange = haveAll && (!B.isPoint(state.prior.value) || !B.isPoint(state.pE0) || !B.isPoint(state.pE1));
+    if (!lastR || !anyRange) { el.sens.hidden = true; return; }
+    el.sens.hidden = false;
+    var s = B.sensitivity({ prior: state.prior, pE0: state.pE0, pE1: state.pE1 });
+    var labels = { prior: 'Prior P(H₁)', pE0: 'Likelihood P(E | H₀)', pE1: 'Likelihood P(E | H₁)' };
+    var inputs = { prior: state.prior.value, pE0: state.pE0, pE1: state.pE1 };
+    var items = s.items.slice().sort(function (a, b) { return b.width - a.width; });
+    var maxW = Math.max.apply(null, items.map(function (i) { return i.width; })) || 1;
+    var full = s.full, fullW = 100 * (full.hi - full.lo);
+    var top = (items[0].width > 1e-9 && !B.isPoint(inputs[items[0].key])) ? labels[items[0].key] : null;
+    var head = 'Posterior P(H₁ | E) spans <b>' + B.fmtProb(full) + '</b> — a ' + fullW.toFixed(1) + '-point range. '
+      + 'Sweeping one input across its range with the others held at their midpoints shows where that spread comes from'
+      + (top ? '; the conclusion is most sensitive to <b>' + top + '</b>.' : '.');
+    var rows = items.map(function (it) {
+      var ranged = !B.isPoint(inputs[it.key]);
+      var pts = 100 * it.width, w = ranged ? Math.max(3, 100 * it.width / maxW) : 0;
+      return '<div class="srow' + (ranged ? '' : ' fixed') + '">'
+        + '<div class="sname">' + labels[it.key] + '</div>'
+        + '<div class="sbarwrap"><div class="sbar" style="width:' + w + '%"></div></div>'
+        + '<div class="sval">' + (ranged ? B.fmtProb(it.range) + ' <span class="muted">(' + pts.toFixed(1) + ' pts)</span>' : '<span class="muted">fixed</span>') + '</div>'
+        + '</div>';
+    });
+    el.sensbars.innerHTML = '<p class="sens-lede">' + head + '</p>' + rows.join('');
+  }
+
+  var PLACEHOLDER = '<span class="muted">Fill in the prior and both likelihoods.</span>';
+
+  // Stage 3a: the update restated as whole-number counts (base-rate-fallacy cure; uses midpoints for ranges)
+  function renderNatFreq() {
+    if (!lastR) { el.nf.innerHTML = PLACEHOLDER; return; }
+    var pv = state.prior.value, e0 = state.pE0, e1 = state.pE1;
+    var ranged = !(B.isPoint(pv) && B.isPoint(e0) && B.isPoint(e1));
+    var f = B.naturalFreq(B.mid(pv), B.mid(e0), B.mid(e1), null);
+    var approx = ranged || [f.nH1, f.nH0, f.tp, f.fn, f.fp, f.tn].some(function (v) { return Math.abs(v - Math.round(v)) > 1e-6; });
+    var a = approx ? '≈' : '', C = function (x) { return Math.round(x).toLocaleString(); };
+    var ppv = f.pos > 0 ? f.tp / f.pos : NaN;
+    var lede = 'Picture ' + a + '<b>' + C(f.N) + '</b> comparable cases' + (ranged ? ' <span class="muted">(midpoints of your ranges)</span>' : '') +
+      '. The prior splits them into H₁ and H₀; the likelihoods say how many of each show the evidence E:';
+    var tbl = '<table class="nf"><thead><tr><th></th><th>shows E</th><th>no E</th><th>total</th></tr></thead><tbody>'
+      + '<tr><th>H₁</th><td class="tp"><b>' + a + C(f.tp) + '</b><span class="nf-key">true +</span></td><td>' + a + C(f.fn) + '</td><td>' + a + C(f.nH1) + '</td></tr>'
+      + '<tr><th>H₀</th><td class="fp"><b>' + a + C(f.fp) + '</b><span class="nf-key">false +</span></td><td>' + a + C(f.tn) + '</td><td>' + a + C(f.nH0) + '</td></tr>'
+      + '<tr class="tot"><th>total</th><td>' + a + C(f.pos) + '</td><td>' + a + C(f.neg) + '</td><td>' + C(f.N) + '</td></tr></tbody></table>';
+    var bar = '<div class="nf-bar" title="of all positives, the share truly H₁"><div class="t" style="flex:' + f.tp + '"></div><div class="f" style="flex:' + f.fp + '"></div></div>'
+      + '<div class="nf-legend"><span class="nf-k t">' + a + C(f.tp) + ' true +</span><span class="nf-k f">' + a + C(f.fp) + ' false +</span></div>';
+    var punch = 'Of the ' + a + C(f.pos) + ' cases showing E, only ' + a + C(f.tp) + ' are genuinely H₁ — so <b>P(H₁ | E) = ' + B.fmtProb(B.iv(ppv)) + '</b>.';
+    el.nf.innerHTML = '<p class="nf-lede">' + lede + '</p>' + tbl + bar + '<p class="nf-ppv">' + punch + '</p>';
+  }
+
+  // Stage 3b: in decibans (10·log10 odds) the update is additive — prior + evidence = posterior
+  function renderLogOdds() {
+    if (!lastR) { el.lo.innerHTML = PLACEHOLDER; return; }
+    var pr = lastR.priorDB, wt = lastR.weightDB, po = lastR.postDB;
+    var stmt = 'Prior <b>' + B.fmtDB(pr) + '</b> &nbsp;+&nbsp; evidence <b>' + B.fmtDB(wt) + '</b> &nbsp;=&nbsp; posterior <b>' + B.fmtDB(po) + '</b>.';
+    var vals = [pr.lo, pr.hi, po.lo, po.hi, 0].filter(isFinite);
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    var pad = Math.max(3, (hi - lo) * 0.15); lo -= pad; hi += pad;
+    function cf(x) { return x === Infinity ? hi : x === -Infinity ? lo : x; }
+    function pos(x) { return (cf(x) - lo) / (hi - lo) * 100; }
+    var pm = pos(B.mid(pr)), qm = pos(B.mid(po)), up = B.mid(po) >= B.mid(pr);
+    var track = '<div class="lo-track">'
+      + '<div class="lo-zero" style="left:' + pos(0) + '%"><span>0 dB</span></div>'
+      + '<div class="lo-seg ' + (up ? 'up' : 'down') + '" style="left:' + Math.min(pm, qm) + '%;width:' + Math.abs(qm - pm) + '%"></div>'
+      + '<div class="lo-dot prior" style="left:' + pm + '%"></div>'
+      + '<div class="lo-dot post" style="left:' + qm + '%"></div></div>';
+    var legend = '<div class="lo-legend"><span class="lo-k prior">prior odds</span><span class="lo-k post">posterior odds</span><span class="muted">0 dB = even odds; +10 dB = 10&times; the odds</span></div>';
+    el.lo.innerHTML = '<p class="nf-lede">In <b>decibans</b> (ten times the base-10 log of the odds), Bayes’ rule becomes addition — the evidence adds a fixed weight, whatever the prior:</p>'
+      + '<p class="lo-stmt">' + stmt + '</p>' + track + legend;
+  }
+
+  function recompute() {
+    if (state.prior && state.pE0 && state.pE1) {
+      lastR = B.compute({ prior: state.prior, pE0: state.pE0, pE1: state.pE1 });
+      el.d_lr.textContent = B.fmtOdds(lastR.LR);
+      el.d_postodds.textContent = B.fmtOdds(lastR.postOdds);
+      el.d_h0e.textContent = B.fmtProb(lastR.postH0);
+      el.d_h1e.textContent = B.fmtProb(lastR.postH1);
+    } else {
+      lastR = null;
+      el.d_lr.textContent = el.d_postodds.textContent = el.d_h0e.textContent = el.d_h1e.textContent = '—';
+    }
+    renderResult();
+    renderSensitivity();
+    renderNatFreq();
+    renderLogOdds();
+  }
+
+  function priorEdit(id, mode, kind) {
+    return function () {
+      var v = readNum(id, kind);
+      state.prior = v ? { mode: mode, value: v } : null;
+      if (v) refreshPrior(id);
+      recompute();
+    };
+  }
+  el.f_h0.addEventListener('input', priorEdit('f_h0', 'pH0', 'prob'));
+  el.f_h1.addEventListener('input', priorEdit('f_h1', 'pH1', 'prob'));
+  el.f_odds.addEventListener('input', priorEdit('f_odds', 'odds', 'odds'));
+  el.f_e0.addEventListener('input', function () { state.pE0 = readNum('f_e0', 'prob'); recompute(); });
+  el.f_e1.addEventListener('input', function () { state.pE1 = readNum('f_e1', 'prob'); recompute(); });
+
+  function setUnit(u) {
+    state.unit = u;
+    el.ws.classList.toggle('show-odds', u === 'odds');
+    el.unitProb.classList.toggle('on', u === 'prob');
+    el.unitOdds.classList.toggle('on', u === 'odds');
+    renderResult();
+  }
+  el.unitProb.addEventListener('click', function () { setUnit('prob'); });
+  el.unitOdds.addEventListener('click', function () { setUnit('odds'); });
+
+  function applyPreset(key) {
+    var p = PRESETS[key];
+    el.t_h0.value = p.h0; el.t_h1.value = p.h1; el.t_e.value = p.e;
+    el.f_h1.value = p.prior; el.f_e0.value = p.e0; el.f_e1.value = p.e1;
+    if (p.note) { el.commentary.innerHTML = p.note; el.commentary.hidden = false; }
+    else { el.commentary.innerHTML = ''; el.commentary.hidden = true; }
+    clearErr('f_h0'); clearErr('f_odds');
+    var pv = readNum('f_h1', 'prob');
+    state.prior = pv ? { mode: 'pH1', value: pv } : null;
+    refreshPrior('f_h1');
+    state.pE0 = readNum('f_e0', 'prob'); state.pE1 = readNum('f_e1', 'prob');
+    recompute();
+  }
+  el.preset.addEventListener('change', function () { applyPreset(el.preset.value); });
+  el.reset.addEventListener('click', function () { applyPreset(el.preset.value); });
+
+  // --- share / export (the one deliberate URL-write the app is allowed) ---
+  function buildShareURL() {
+    var loc = window.location, base = loc ? (loc.origin || '') + (loc.pathname || '') : '';
+    var q = new URLSearchParams();
+    q.set('h0', el.t_h0.value); q.set('h1', el.t_h1.value); q.set('e', el.t_e.value);
+    q.set('p', el.f_h1.value); q.set('e0', el.f_e0.value); q.set('e1', el.f_e1.value);
+    if (state.unit === 'odds') q.set('u', 'odds');
+    return base + '#' + q.toString();
+  }
+  function loadFromHash() {
+    var loc = window.location;
+    if (!loc || !loc.hash || loc.hash.length < 2) return false;
+    var q = new URLSearchParams(loc.hash.slice(1));
+    if (!(q.has('p') || q.has('e0') || q.has('e1') || q.has('h1'))) return false;
+    el.t_h0.value = q.get('h0') || ''; el.t_h1.value = q.get('h1') || ''; el.t_e.value = q.get('e') || '';
+    el.f_h1.value = q.get('p') || ''; el.f_e0.value = q.get('e0') || ''; el.f_e1.value = q.get('e1') || '';
+    el.commentary.innerHTML = ''; el.commentary.hidden = true;
+    clearErr('f_h0'); clearErr('f_odds');
+    var pv = readNum('f_h1', 'prob'); state.prior = pv ? { mode: 'pH1', value: pv } : null;
+    refreshPrior('f_h1');
+    state.pE0 = readNum('f_e0', 'prob'); state.pE1 = readNum('f_e1', 'prob');
+    setUnit(q.get('u') === 'odds' ? 'odds' : 'prob');
+    recompute();
+    return true;
+  }
+  function worksheetText() {
+    if (!lastR) return 'Bayesian probability worksheet (fill in the prior and both likelihoods).';
+    var L = ['Bayesian probability worksheet'];
+    if (el.t_h0.value) L.push('H0: ' + el.t_h0.value);
+    if (el.t_h1.value) L.push('H1: ' + el.t_h1.value);
+    L.push('Prior:      P(H0)=' + B.fmtProb(lastR.pH0) + ', P(H1)=' + B.fmtProb(lastR.pH1) + '  (odds ' + B.fmtOdds(lastR.priorOdds) + ')');
+    if (el.t_e.value) L.push('Evidence E: ' + el.t_e.value);
+    L.push('Likelihood: P(E|H0)=' + B.fmtProb(lastR.pE0) + ', P(E|H1)=' + B.fmtProb(lastR.pE1) + '  (ratio ' + B.fmtOdds(lastR.LR) + ')');
+    L.push('Posterior:  P(H0|E)=' + B.fmtProb(lastR.postH0) + ', P(H1|E)=' + B.fmtProb(lastR.postH1) + '  (odds ' + B.fmtOdds(lastR.postOdds) + ')');
+    return L.join('\n');
+  }
+  function copyOut(text, okMsg) {
+    el.shareout.value = text; el.shareout.hidden = false;
+    var nav = window.navigator;
+    if (nav && nav.clipboard && nav.clipboard.writeText) {
+      nav.clipboard.writeText(text).then(function () { el.sharestatus.textContent = okMsg; },
+        function () { el.sharestatus.textContent = 'Copy the text below.'; });
+    } else { el.sharestatus.textContent = 'Copy the text below.'; }
+  }
+  el.sharelink.addEventListener('click', function () {
+    var url = buildShareURL();
+    if (window.history && window.history.replaceState) { try { window.history.replaceState(null, '', url); } catch (e) { } }
+    copyOut(url, 'Link copied — it reopens this exact worksheet.');
+  });
+  el.sharetext.addEventListener('click', function () { copyOut(worksheetText(), 'Worksheet text copied.'); });
+
+  if (!loadFromHash()) applyPreset('covid2');
+
+  window.__bayes = { B: B, state: state, el: el, applyPreset: applyPreset, setUnit: setUnit, recompute: recompute, result: function () { return lastR; }, buildShareURL: buildShareURL, loadFromHash: loadFromHash, worksheetText: worksheetText };
+})();
+</script>
+</body>
+</html>
