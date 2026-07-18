@@ -7,6 +7,11 @@
 <title>A 21st-century orrery — Terence Tao</title>
 <link rel="stylesheet" href="applet.css">
 <style>
+  /* On touch devices a stationary tap on the canvas would otherwise start a text
+     selection that anchors to the prose elsewhere on the page (iOS ignores
+     preventDefault on pointerdown for this). Make the page unselectable on coarse
+     pointers only, so a tap can reach the canvas cleanly; desktop keeps selection. */
+  @media (pointer: coarse) { body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; } }
   #view { position: relative; margin-top: 1rem; }
   #gl { display: block; width: 100%; height: min(64vh, 600px); border: 1px solid var(--line); border-radius: 6px; background: #0a0e17; touch-action: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent; cursor: grab; }
   #readout { position: absolute; left: 10px; top: 10px; font-family: var(--mono); font-size: .82rem; color: #eaf0ff; background: rgba(10,16,28,.55); padding: .5rem .7rem; border-radius: 6px; line-height: 1.5; pointer-events: none; }
