@@ -61,7 +61,7 @@
 
   <div class="card">
     <div id="view">
-      <canvas id="gl" width="960" height="560" tabindex="0" title="drag to look around · arrow keys to pan · scroll wheel to change eye height · hover an object for the telescope"></canvas>
+      <canvas id="gl" width="960" height="560" tabindex="0" title="drag to look around · scroll wheel or two-finger drag to change eye height · pinch to zoom · hover or tap an object for the telescope"></canvas>
       <div id="readout">&nbsp;</div>
       <div id="heading">N 0°</div>
       <div id="eyeline"><span>eye level (0°)</span></div>
@@ -102,7 +102,7 @@
       <label title="settle the debate: include Pluto among the planets"><input id="plutotoggle" type="checkbox"> Pluto is a planet</label>
       <label title="widen or narrow the field of view; the tick marks the ~62° natural view (wider = fisheye-like stretch)">field of view <input id="fov" type="range" min="40" max="150" step="1" value="62" list="fovticks"><datalist id="fovticks"><option value="62" label="natural"></option></datalist></label>
     </div>
-    <p class="hint">Drag to look · arrow keys look around · scroll wheel changes height · hover an object for the telescope.</p>
+    <p class="hint">Drag to look · arrow keys look around · scroll wheel (or two-finger drag) changes height · pinch to zoom · hover or tap an object for the telescope.</p>
     <p class="cap" id="figs">&nbsp;</p>
   </div>
 
@@ -1081,18 +1081,50 @@
   }
   function setCosmic(on) { if (on === st.cosmic) return; if (on) enterCosmic(); else exitCosmic(); }
 
-  canvas.addEventListener('pointerdown', function (e) { st.look = true; st.lx = e.clientX; st.ly = e.clientY; st.lyaw = st.yaw; st.lpitch = st.pitch; if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; if (st.hover) { st.hover = null; } el.tip.style.display = 'none'; });
+  // 1 finger = look around · pinch = field of view · two-finger vertical = eye height · tap = telescope
+  var ptrs = {};
+  function ptrArr() { return Object.keys(ptrs).map(function (k) { return ptrs[k]; }); }
+  canvas.addEventListener('pointerdown', function (e) {
+    ptrs[e.pointerId] = { x: e.clientX, y: e.clientY }; el.tip.style.display = 'none';
+    var n = Object.keys(ptrs).length;
+    if (n === 1) {
+      st.look = true; st.gesture = false; st.lx = e.clientX; st.ly = e.clientY; st.lyaw = st.yaw; st.lpitch = st.pitch;
+      st.tap = { x: e.clientX, y: e.clientY, moved: false, touch: e.pointerType === 'touch' };
+      if (canvas.setPointerCapture) canvas.setPointerCapture(e.pointerId); canvas.style.cursor = 'grabbing'; if (st.hover) st.hover = null;
+    } else if (n === 2) {   // second finger: pinch/two-finger mode, stop looking
+      st.look = false; st.gesture = true; st.tap = null; if (svAnim) svAnim.cancel = true;
+      var p = ptrArr(); st.gDist = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y); st.gCy = (p[0].y + p[1].y) / 2;
+    }
+  });
   canvas.addEventListener('pointermove', function (e) {
+    if (ptrs[e.pointerId]) ptrs[e.pointerId] = { x: e.clientX, y: e.clientY };
     var r = canvas.getBoundingClientRect(), px = e.clientX - r.left, py = e.clientY - r.top;
+    if (st.gesture && Object.keys(ptrs).length >= 2) {
+      var p = ptrArr(), d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y), cy = (p[0].y + p[1].y) / 2;
+      if (st.gDist > 0 && d > 0) { st.fov = clamp(st.fov * st.gDist / d, 40, 150); if (el.fov) el.fov.value = Math.round(st.fov); }   // pinch out = zoom in
+      setSV(st.sv - (cy - st.gCy));   // two-finger drag up = ascend (same sense as the wheel)
+      st.gDist = d; st.gCy = cy; render(); return;
+    }
     if (st.look) {
+      if (st.tap && Math.abs(e.clientX - st.tap.x) + Math.abs(e.clientY - st.tap.y) > 8) st.tap.moved = true;
       if (st.cosmic) {   // incremental free-look (parallel transport about local up/right)
         var sens = st.fov / canvas.clientHeight * O.DEG, dx = e.clientX - st.lx, dy = e.clientY - st.ly; st.lx = e.clientX; st.ly = e.clientY;
         var right = norm(cross(st.cfwd, st.cup)); cosmicRot(st.cup, dx * sens); cosmicRot(right, dy * sens); render();
       } else { var sens = st.fov / canvas.clientHeight; setView(st.lyaw - (e.clientX - st.lx) * sens, st.lpitch + (e.clientY - st.ly) * sens); }
     } else hover(px, py);
   });
-  canvas.addEventListener('pointerup', function () { st.look = false; canvas.style.cursor = 'grab'; });
-  canvas.addEventListener('pointerleave', function () { if (!st.look && st.hover) { st.hover = null; render(); } el.tip.style.display = 'none'; });
+  function endPointer(e) {
+    var tap = (st.tap && !st.tap.moved && st.tap.touch) ? st.tap : null;
+    delete ptrs[e.pointerId]; var n = Object.keys(ptrs).length;
+    if (n < 2) st.gesture = false;
+    if (n === 0) {
+      st.look = false; canvas.style.cursor = 'grab'; st.tap = null;
+      if (tap) { var r = canvas.getBoundingClientRect(); st.hover = pickAt(tap.x - r.left, tap.y - r.top); render(); }   // tap an object = lock its telescope; tap empty = dismiss
+    }
+  }
+  canvas.addEventListener('pointerup', endPointer);
+  canvas.addEventListener('pointercancel', endPointer);
+  canvas.addEventListener('pointerleave', function () { if (!st.look && !st.gesture && st.hover) { st.hover = null; render(); } el.tip.style.display = 'none'; });
   canvas.addEventListener('wheel', onWheel, { passive: false });
   // God's-eye pane: drag to pan, wheel to zoom about the cursor, buttons for scale + framing
   if (el.godcanvas) {
