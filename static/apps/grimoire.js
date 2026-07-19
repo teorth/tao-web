@@ -799,8 +799,17 @@
     // are double-negation (intro via reductio, elim via em); 12.4 is the contrapositive.
     { id: '12.1', kind: 'example', chapter: 12, givens: [], formulas: [A], goal: OR(A, NOT(A)), unlocks: ['12.2', '12.3'], needs: ['em'] },
     { id: '12.2', kind: 'lemma', leanName: "not_not_intro'", chapter: 12, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), unlocks: ['12.4'], needs: [] },
-    { id: '12.3', kind: 'lemma', leanName: 'not_not_elim', chapter: 12, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, unlocks: [], needs: [] },
-    { id: '12.4', kind: 'lemma', leanName: "mt'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), unlocks: ['13.1'], needs: [] },
+    { id: '12.3', kind: 'lemma', leanName: 'not_not_elim', chapter: 12, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, unlocks: ['12.8'], needs: [] },
+    { id: '12.4', kind: 'lemma', leanName: "mt'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), unlocks: ['13.1', '12.5'], needs: [] },
+    // 12.5–12.7 (QED 12.1a/b/c): reductio in its general forms — assume A, reach a contradiction, conclude ¬A.
+    // 12.7 splits on excluded middle instead, and is minted as a lemma (`by_cases'`) that later chapters reuse.
+    { id: '12.5', kind: 'example', chapter: 12, givens: [binding('hAcon', IMPLIES(A, AND(B, NOT(B))))], formulas: [A], goal: NOT(A), unlocks: ['12.6'], needs: [] },
+    { id: '12.6', kind: 'example', chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hAnB', IMPLIES(A, NOT(B)))], formulas: [A], goal: NOT(A), unlocks: ['12.7'], needs: [] },
+    { id: '12.7', kind: 'lemma', leanName: "by_cases'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, unlocks: [], needs: [] },
+    // 12.8–12.9 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
+    // with the minted `not_not_elim` (12.3). The two differ only in the order of the contradictory pair.
+    { id: '12.8', kind: 'example', chapter: 12, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(B, NOT(B))))], formulas: [A, NOT(A)], goal: A, unlocks: ['12.9'], needs: [] },
+    { id: '12.9', kind: 'example', chapter: 12, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(NOT(B), B)))], formulas: [A, NOT(A)], goal: A, unlocks: [], needs: [] },
     // Chapter 13 — True and False as first-class objects (the last propositional chapter). 13.1 introduces them;
     // then the ∨/∧ identities, and the capstone 13.6 = the very definition of negation, ¬A ↔ (A → False).
     { id: '13.1', kind: 'example', chapter: 13, givens: [], formulas: [A], goal: OR(TRUE(), A), unlocks: ['13.2', '13.3'], needs: ['tf'] },
