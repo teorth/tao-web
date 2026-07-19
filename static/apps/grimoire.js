@@ -875,7 +875,7 @@
     { id: '22.4', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
       givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('X', AND(appE('Q', [alpha, X]), appE('Q', [X, alpha]))), unlocks: ['22.5a', '22.6a', '22.6b', '22.8a'], needs: [] },
     { id: '22.5a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [], goal: IFF(NOT(ee('X', appE('P', [X]))), fa('X', NOT(appE('P', [X])))), unlocks: [], needs: [] },
+      givens: [], goal: IFF(NOT(ee('X', appE('P', [X]))), fa('X', NOT(appE('P', [X])))), unlocks: ['22.11', '22.12'], needs: [] },
     { id: '22.6a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hRP', fa('X', IMPLIES(appE('R', [X]), appE('P', [X]))))],
       goal: NOT(ee('X', AND(appE('R', [X]), appE('Q', [X])))), unlocks: ['22.10'], needs: [] },
@@ -897,7 +897,21 @@
     { id: '22.8a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [binding('h', ee('Y', ee('X', appE('Q', [X, Y]))))], goal: ee('X', ee('Y', appE('Q', [X, Y]))), unlocks: ['22.8b'], needs: [] },
     { id: '22.8b', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
-      givens: [binding('h', ee('Y', fa('X', appE('Q', [X, Y]))))], goal: fa('X', ee('Y', appE('Q', [X, Y]))), unlocks: [], needs: [] }
+      givens: [binding('h', ee('Y', fa('X', appE('Q', [X, Y]))))], goal: fa('X', ee('Y', appE('Q', [X, Y]))), unlocks: [], needs: [] },
+    // Helper lemmas → heavier claims via MATCHING (a Grimoire capability QED lacked). The directional De Morgan halves
+    // (22.11/22.12) MINT reusable recipes (the hypothesis pins the predicate P, so they are determinate). 22.13
+    // `forall_dne` reuses the earlier `not_not_elim` (12.3) under a ∀. The classical De Morgan 22.3b then accelerates:
+    // `not_exists_forall_not` fires on `¬∃X,¬P X` (its predicate metavar solved to λx.¬P x by higher-order matching),
+    // then `forall_dne`, then `not_not_elim` — a few steps instead of ~20 raw ones.
+    { id: '22.11', kind: 'lemma', leanName: 'not_exists_forall_not', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hne', NOT(ee('X', appE('P', [X]))))], goal: fa('X', NOT(appE('P', [X]))), unlocks: ['22.13'], needs: [] },
+    { id: '22.12', kind: 'lemma', leanName: 'forall_not_not_exists', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hfn', fa('X', NOT(appE('P', [X]))))], goal: NOT(ee('X', appE('P', [X]))), unlocks: [], needs: [] },
+    { id: '22.13', kind: 'lemma', leanName: 'forall_dne', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hdn', fa('X', NOT(NOT(appE('P', [X])))))], goal: fa('X', appE('P', [X])), unlocks: ['22.3b'], needs: [] },
+    // 22.3b = QED 22.3(b): classical De Morgan `¬∀X,P ↔ ∃X,¬P` — the heavy claim; the forward direction reuses 22.11 + 22.13 + not_not_elim
+    { id: '22.3b', kind: 'lemma', leanName: 'not_forall_iff_exists_not', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [], goal: IFF(NOT(fa('X', appE('P', [X]))), ee('X', NOT(appE('P', [X])))), unlocks: [], needs: [] }
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
