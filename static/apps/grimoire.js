@@ -45,6 +45,7 @@
   function varE(name, sort) { return { tag: 'var', name: name, sort: sort || PROP }; }
   function appE(symName, args) { return { tag: 'app', sym: symName, args: args || [], sort: SYMBOLS[symName].resultSort }; }
   function FORALL(v, body) { return { tag: 'binder', q: 'forall', v: { name: v.name, sort: v.sort }, body: body, sort: PROP }; }
+  function EXISTS(v, body) { return { tag: 'binder', q: 'exists', v: { name: v.name, sort: v.sort }, body: body, sort: PROP }; }
   function AND(a, b) { return appE('AND', [a, b]); }
   function OR(a, b) { return appE('OR', [a, b]); }
   function IMPLIES(a, b) { return appE('IMPLIES', [a, b]); }
@@ -189,10 +190,12 @@
   // ---------- environment: one list of Bindings `name : type` (Lean local context) ----------
   function binding(name, type) { return { name: name, type: type }; }
   function newEnv(exercise) {
-    return { bindings: exercise.givens.map(function (g) { return binding(g.name, g.type); }), goal: exercise.goal, steps: [], parent: null, assumption: null, depth: 0 };
+    // `vars` = the DATA half of the proof state (context variables of a non-Prop sort): given constants, plus any
+    // variables introduced by ∀-introduction or `obtain`. This is the single source of truth for "in context".
+    return { bindings: exercise.givens.map(function (g) { return binding(g.name, g.type); }), vars: (exercise.consts || []).map(function (c) { return { name: c.name, sort: c.sort }; }), goal: exercise.goal, steps: [], parent: null, assumption: null, depth: 0 };
   }
   function withEnv(env, over) {   // immutable env update preserving the nesting fields
-    var o = { bindings: env.bindings, goal: env.goal, steps: env.steps, parent: env.parent, assumption: env.assumption, depth: env.depth };
+    var o = { bindings: env.bindings, vars: env.vars, goal: env.goal, steps: env.steps, parent: env.parent, assumption: env.assumption, depth: env.depth };
     for (var k in over) o[k] = over[k];
     return o;
   }
@@ -421,10 +424,10 @@
   // ---------- Chapter 4: sub-environments (deduction theorem) · Chapter 16: ∀ (variable introduction) ----------
   function openAssumption(env, A) {   // assume the formula A → a child env that imports parent proofs + adds hA:A
     var asm = binding(freshName(A, env), A);
-    return withEnv(env, { bindings: env.bindings.concat([asm]), goal: null, steps: [], parent: env, assumption: { kind: 'hyp', name: asm.name, type: A }, depth: env.depth + 1 });
+    return withEnv(env, { bindings: env.bindings.concat([asm]), vars: env.vars, goal: null, steps: [], parent: env, assumption: { kind: 'hyp', name: asm.name, type: A }, depth: env.depth + 1 });
   }
   function openVariable(env, v) {      // introduce a free variable x : Omega → a child env; discharging gives ∀ x, …
-    return withEnv(env, { bindings: env.bindings, goal: null, steps: [], parent: env, assumption: { kind: 'var', name: v.name, sort: v.sort }, depth: env.depth + 1 });
+    return withEnv(env, { bindings: env.bindings, vars: env.vars.concat([{ name: v.name, sort: v.sort }]), goal: null, steps: [], parent: env, assumption: { kind: 'var', name: v.name, sort: v.sort }, depth: env.depth + 1 });
   }
   // discharge options for a crafted statement P: one per ancestor level k=1..depth → the binder chain placed k up
   function dischargeOptions(env, proofName) {
@@ -476,6 +479,31 @@
     var tenv = withEnv(target, { bindings: target.bindings.concat([bnd]), steps: target.steps.concat([step]) });
     return { ok: true, env: tenv, binding: bnd, solved: tenv.goal ? exprEq(implType, tenv.goal) : false };
   }
+  // ---------- Chapter 19: ∃ elimination (`obtain`) ----------
+  // From an existential hypothesis `h : ∃ x : Ω, P x` and an UNCLAIMED variable name, add a witness variable to the
+  // context together with its defining property `P <name>` — WITHOUT opening a sub-environment; the goal is unchanged.
+  // QED style keeps hypotheses, but Lean's `obtain` consumes its target, so we COPY first: `have h2 := h; obtain ⟨x,hx⟩ := h2`
+  // (the original ∃ survives). Guard: the variable name must not already be in use (a context variable or a hypothesis).
+  function isExists(t) { return t.tag === 'binder' && t.q === 'exists'; }
+  function nameInUse(env, name) { return byName(env, name) != null || env.vars.some(function (v) { return v.name === name; }); }
+  function obtainOptions(env, existName) {   // for the UI: is `existName` a usable ∃ hypothesis?
+    var eb = byName(env, existName);
+    return (eb && isExists(eb.type)) ? { sort: eb.type.v.sort, bound: eb.type.v.name } : null;
+  }
+  function obtain(env, existName, varName) {
+    var eb = byName(env, existName);
+    if (!eb || !isExists(eb.type)) return { ok: false, error: 'select a proof of an existential (∃) statement' };
+    if (!varName) return { ok: false, error: 'name the witness variable' };
+    if (nameInUse(env, varName)) return { ok: false, error: 'the name “' + varName + '” is already in use in this context' };
+    var v = { name: varName, sort: eb.type.v.sort };
+    var witness = substE(eb.type.body, eb.type.v.name, eb.type.v.sort, varE(varName, v.sort));
+    var hx = binding(freshName(witness, env), witness);
+    var copyName = freshName(eb.type, withEnv(env, { bindings: env.bindings.concat([hx]) }));   // fresh, distinct from hx
+    var step = { kind: 'obtain', exist: existName, existType: eb.type, copyName: copyName, varName: varName, sort: v.sort, hxName: hx.name, witness: witness };
+    var env2 = withEnv(env, { vars: env.vars.concat([v]), bindings: env.bindings.concat([hx]), steps: env.steps.concat([step]) });
+    return { ok: true, env: env2, binding: hx, variable: v, solved: env.goal ? exprEq(witness, env.goal) : false };
+  }
+
   // all distinct new statements the current selection can craft (recipes × orderings), for the UI
   function kperms(arr, k) {
     if (k === 0) return [[]];
@@ -594,6 +622,9 @@
           emitSteps(lv.steps, indent + '  ', opts).forEach(function (l) { out.push(l); });
         });
         out.push(indent + '  exact ' + (s.contra ? (s.contra.fals ? s.contra.fals : 'absurd ' + s.contra.pos + ' ' + s.contra.neg) : s.conclName));
+      } else if (s.kind === 'obtain') {   // non-destructive ∃-elim: copy, then destructure the copy (the ∃ survives)
+        out.push(indent + 'have ' + s.copyName + ' := ' + s.exist);
+        out.push(indent + 'obtain ⟨' + s.varName + ', ' + s.hxName + '⟩ := ' + s.copyName);
       } else {
         out.push(indent + 'have ' + s.name + ' : ' + render(s.type, o) + ' := ' + s.lean);
       }
@@ -633,6 +664,8 @@
         s.levels.forEach(function (l) { informalSteps(l.steps, opts).forEach(function (x) { out.push('  ' + x); }); });
         out.push(s.contra ? 'This is a contradiction, so we conclude ' + R(s.type) + '.'
                           : 'Discharging, we obtain ' + R(s.type) + '.');
+      } else if (s.kind === 'obtain') {
+        out.push('Since ' + R(s.existType) + ', fix ' + s.varName + ' : ' + s.sort + ' with ' + R(s.witness) + '.');
       } else {
         var rec = RECIPES[s.recipe];
         out.push('From ' + (s.froms || []).map(R).join(', ') + ' we deduce ' + R(s.type) + '  (' + (rec && rec.informal || s.recipe) + ').');
@@ -655,8 +688,9 @@
   // exercise is playable once accessible, and the union of `needs` over all accessible
   // exercises is the active capability set (so early exercises show a simplified interface).
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
-  var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA);   // term variables of sort Ω (Chapter 16+)
+  var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
   function fa(name, body) { return FORALL({ name: name, sort: OMEGA }, body); }
+  function ee(name, body) { return EXISTS({ name: name, sort: OMEGA }, body); }
   var EXERCISES = [
     { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), unlocks: ['1.2'], needs: ['and.intro'] },
     { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), unlocks: ['2.1'], needs: [] },
@@ -737,7 +771,7 @@
       goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), unlocks: ['18.1'], needs: [] },
     { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hpr', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hp', fa('X', appE('P', [X])))],
-      goal: fa('X', appE('R', [X])), unlocks: ['18.2a', '18.3a', '18.3b', '18.4'], needs: ['instantiate'] },
+      goal: fa('X', appE('R', [X])), unlocks: ['18.2a', '18.3a', '18.3b', '18.4', '18.5', '19.1'], needs: ['instantiate'] },
     // 18.3a "Barbara singular": a term constant α : Ω is given in the context; instantiate hPQ at α, then modus ponens.
     // A LEMMA — minting `barbara` mints a higher-order recipe (P, Q are second-order metavars, α explicit) reusable for 18.3b.
     { id: '18.3a', kind: 'lemma', leanName: 'barbara', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }],
@@ -749,7 +783,28 @@
       goal: fa('X', IMPLIES(appE('S', [X]), appE('R', [X]))), unlocks: [], needs: [] },
     { id: '18.4', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [binding('h', fa('X', fa('Y', appE('Q', [X, Y]))))],
-      goal: fa('Y', fa('X', appE('Q', [X, Y]))), unlocks: [], needs: [] }
+      goal: fa('Y', fa('X', appE('Q', [X, Y]))), unlocks: [], needs: [] },
+    // 18.5 / 18.6 — the ∀ distributes over ∧ (both directions), the capstone pair of the universal-quantifier chapter.
+    { id: '18.5', kind: 'lemma', leanName: "forall_and'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('h', fa('X', AND(appE('P', [X]), appE('Q', [X]))))],
+      goal: AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))), unlocks: ['18.6'], needs: [] },
+    { id: '18.6', kind: 'lemma', leanName: "forall_and_rev'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('h', AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))))],
+      goal: fa('X', AND(appE('P', [X]), appE('Q', [X]))), unlocks: [], needs: [] },
+    // Chapter 19 — the existential quantifier ∃ and its ELIMINATION via `obtain`: given `∃ x, P x` and an UNCLAIMED
+    // variable name, place that variable in context together with its witnessing hypothesis (no sub-environment; the
+    // goal is unchanged). Non-destructive — `have h2 := h; obtain ⟨a, ha⟩ := h2` — so the ∃ survives. (QED §19's
+    // "push" exercises don't port: they moved the goal INTO an ∃ sub-environment, which the Lean model has no need of.)
+    // 19.1 introduces `exists` (obtain → instantiate → modus_ponens); 19.2 (ex falso) and 19.3 (∧-elim) are siblings.
+    { id: '19.1', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
+      goal: C, unlocks: ['19.2', '19.3'], needs: ['exists'] },
+    { id: '19.2', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
+      givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hnp', fa('X', NOT(appE('P', [X]))))],
+      goal: C, unlocks: [], needs: [] },
+    { id: '19.3', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      givens: [binding('hex', ee('x', AND(appE('P', [xL]), appE('Q', [xL])))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
+      goal: C, unlocks: [], needs: [] }
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
@@ -783,7 +838,8 @@
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
-    OMEGA: OMEGA, FORALL: FORALL, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
+    OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
+    obtain: obtain, obtainOptions: obtainOptions, isExists: isExists,
     FORMULA_RECIPES: FORMULA_RECIPES, formulaDeductions: formulaDeductions,
     EXERCISES: EXERCISES, EX_BY_ID: EX_BY_ID,
     PROGRESSION_START: PROGRESSION_START, RECIPE_CAP: RECIPE_CAP, accessibleSet: accessibleSet, activeCaps: activeCaps

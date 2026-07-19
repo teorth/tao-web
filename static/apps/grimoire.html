@@ -35,6 +35,14 @@
   .potion .sep { color: var(--muted); }
   .potion .ty { color: var(--ink); }
   .potion .count { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
+  #benchvars { display: flex; flex-wrap: wrap; align-items: center; gap: .4rem; margin-bottom: .55rem; }
+  #benchvars:empty { display: none; }
+  .ctxlabel { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
+  .gem { display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .55rem; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--panel); font-family: var(--mono); font-size: .9rem; cursor: default; }
+  .gem .nm { color: var(--ink); }
+  .gem .sep { color: var(--muted); }
+  .gem .ty { color: var(--muted); font-family: Georgia, serif; font-style: italic; }
   .selbar { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: .6rem; color: var(--muted); font-size: .9rem; }
   .selbar label { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
   .selbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .28rem .55rem; cursor: pointer; }
@@ -181,6 +189,7 @@
   <div class="cols">
     <div>
       <h2 class="sec" id="benchHead"></h2>
+      <div id="benchvars"></div>
       <div id="bench"></div>
       <div class="selbar">
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
@@ -246,7 +255,7 @@
   var G = window.Grimoire;
   var ids = ['exsel', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
              'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
-             'benchHead', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
+             'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
              'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
@@ -262,7 +271,7 @@
     if (state.cheat) { var all = {}; G.EXERCISES.forEach(function (e) { all[e.id] = true; }); return all; }
     return G.accessibleSet(state.solved);
   }
-  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1 } : G.activeCaps(accessible()); }
+  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1 } : G.activeCaps(accessible()); }
   var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
   function hasCap(c) { return !!caps()[c]; }
 
@@ -270,8 +279,8 @@
   function R(e) { return G.render(e, { parens: state.parens }); }   // render with the current parenthesization mode
 
   var TERMS = {
-    fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
-    plain: { bench: 'Context — tap a hypothesis to select', recipes: 'Rules', spell: 'The proof', formula: 'Formula bench', term: 'Term bench', brew: 'derive', scribe: 'form', gemv: 'build', formbtn: 'Form formula', termbtn: 'Build term', craft: 'Prove:', qed: 'proved', pick: 'Select hypotheses above to see which rules apply.', none: 'No rule applies to that selection.' }
+    fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', obtain: 'unearth', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
+    plain: { bench: 'Context — tap a hypothesis to select', recipes: 'Rules', spell: 'The proof', formula: 'Formula bench', term: 'Term bench', brew: 'derive', scribe: 'form', gemv: 'build', obtain: 'obtain', formbtn: 'Form formula', termbtn: 'Build term', craft: 'Prove:', qed: 'proved', pick: 'Select hypotheses above to see which rules apply.', none: 'No rule applies to that selection.' }
   };
   function gemoji() { return state.fantasy ? '💎 ' : ''; }    // gem prefix for terms (fantasy only)
   function scemoji() { return state.fantasy ? '📜 ' : ''; }   // scroll prefix for formulas (fantasy only)
@@ -363,11 +372,12 @@
     else state.selF.push(i);
     renderFormulas(); renderRecipes();
   }
-  // the local context of data-sort variables in scope: given constants + variables introduced by an enclosing ∀
+  // the local context of data-sort variables in scope. `env.vars` is the single source of truth (given constants +
+  // variables introduced by an enclosing ∀ + variables obtained from an ∃), matching the DATA half of a Lean proof
+  // state. This drives the in-context check below, so a formula/term is usable exactly when its free variables live here.
   function contextVars() {
     var out = {};
-    ((state.ex && state.ex.consts) || []).forEach(function (c) { out[c.name + ':' + c.sort] = 1; });
-    var e = state.env; while (e && e.parent) { if (e.assumption && e.assumption.kind === 'var') out[e.assumption.name + ':' + e.assumption.sort] = 1; e = e.parent; }
+    ((state.env && state.env.vars) || []).forEach(function (v) { out[v.name + ':' + v.sort] = 1; });
     return out;
   }
   // FREE data-sort variables of an expr (skips ∀-bound vars and Prop atoms)
@@ -453,7 +463,18 @@
       '<span class="flask">🧪</span><span class="nm">' + esc(b.name) + '</span><span class="sep">:</span>' +
       '<span class="ty">' + esc(R(b.type)) + '</span>' + (c > 1 ? '<span class="count">×' + c + '</span>' : '') + '</button>';
   }
+  // the data half of the proof state: context variables (given constants + ∀-introduced + ∃-obtained), shown as gems
+  function renderBenchVars() {
+    var vars = (state.env.vars || []);
+    if (!vars.length) { el.benchvars.innerHTML = ''; return; }
+    el.benchvars.innerHTML = '<span class="ctxlabel">' + (state.fantasy ? 'gems in hand' : 'in context') + ':</span> ' +
+      vars.map(function (v) {
+        return '<span class="gem" title="' + esc(flavor(v.name + ' : ' + v.sort + ' — a ' + (state.fantasy ? 'gem' : 'variable') + ' in the current context (use it in the term bench to build or instantiate)')) + '">' +
+          gemoji() + '<span class="nm">' + esc(v.name) + '</span><span class="sep">:</span><span class="ty">' + esc(v.sort) + '</span></span>';
+      }).join('');
+  }
   function renderBench() {
+    renderBenchVars();
     el.bench.innerHTML = state.env.bindings.map(potionHTML).join('');
     Array.prototype.forEach.call(el.bench.querySelectorAll('.potion'), function (btn) {
       var nm = btn.getAttribute('data-name');
@@ -487,6 +508,20 @@
     // ∀-introduction: a selected variable (not already in context) opens a sub-env where it is free
     var cvNow = contextVars();
     var introBrews = hasCap('forall') ? selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; }).map(function (t) { var i = state.ded.length; state.ded.push({ action: 'intro_var', term: t }); return { i: i, t: t }; }) : [];
+    // ∃-elimination (obtain): a selected ∃-hypothesis + a selected UNCLAIMED variable → that variable + its witness enter context
+    var obtainBrews = [];
+    if (hasCap('exists')) {
+      var exSel = state.sel.filter(function (n) { var b = G.byName(state.env, n); return b && G.isExists(b.type); });
+      var freshSel = selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; });
+      exSel.forEach(function (n) {
+        var eb = G.byName(state.env, n);
+        freshSel.forEach(function (t) {
+          var witness = G.substE(eb.type.body, eb.type.v.name, eb.type.v.sort, G.varE(t.name, t.sort));
+          var i = state.ded.length; state.ded.push({ action: 'obtain', exist: n, varName: t.name });
+          obtainBrews.push({ i: i, varName: t.name, sort: t.sort, witness: witness });
+        });
+      });
+    }
 
     var cards = [];   // { active, html } — each recipe/constructor is a card, shown dimmed when it has no valid brew
     function card(name, rule, active, body, title, minted) {
@@ -513,6 +548,11 @@
         dischargeBrews.map(function (b) { return dedBtn(b.i, R(b.out), '↑' + b.level + ' discharge ' + b.name); }).join('') +
         (notIntroBrew ? dedBtn(notIntroBrew.i, R(notIntroBrew.out), notIntroBrew.tip) : '');
       cards.push(card('Assume / Introduce / Discharge', 'assume A · intro x · discharge ⊢ A→B / ∀x,P · reductio ⊢ ¬A', !!abody, abody, 'Assume a formula (→) or introduce a variable (∀) to open a sub-proof; discharge a statement to close it into an implication or a ∀. In a sub-proof, a statement and its negation conclude ¬(the assumption) by reductio.'));
+    }
+    // ∃-elimination: a dedicated "Obtain" card (Chapter 19). Select an ∃ statement and an unclaimed variable name.
+    if (hasCap('exists')) {
+      var obody = obtainBrews.map(function (b) { return dedBtn(b.i, 'fix ' + b.varName + ' : ' + b.sort + ', with ' + R(b.witness), 'obtain ⟨' + b.varName + ', h⟩', T('obtain')); }).join('');
+      cards.push(card('Obtain', '∃ x, P x  +  fresh a  ⊢  a : Ω,  P a', obtainBrews.length > 0, obody, 'From an existential statement and an UNCLAIMED variable name, place that variable in the context together with its witnessing hypothesis. The existential is kept (Lean copies it first). Select the ∃ potion and a fresh variable in the term bench.'));
     }
     // formula constructors — one card each (dimmed when nothing valid is selected), so the palette is always visible
     if (hasCap('formula')) {
@@ -797,7 +837,19 @@
     else if (d.action === 'discharge') doDischarge(d.proofName, d.level);
     else if (d.action === 'not_intro') doNotIntro(d.a, d.b);
     else if (d.action === 'intro_var') doIntroVar(d.term);
+    else if (d.action === 'obtain') doObtain(d.exist, d.varName);
     else if (d.action === 'formula') addCraftedFormula(d.output);
+  }
+  function doObtain(exist, varName) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    var r = G.obtain(state.env, exist, varName); if (!r.ok) return;
+    state.history.push(state.env); state.env = r.env;
+    // the obtained variable becomes a first-class term on the bench (so it can instantiate ∀, build predicates, …)
+    if (!state.terms.some(function (e) { return e.tag === 'var' && e.name === r.variable.name && e.sort === r.variable.sort; }))
+      state.terms.push(G.varE(r.variable.name, r.variable.sort));
+    state.sel = []; state.selF = []; state.selT = [];
+    if (r.solved) markSolved();
+    renderAll();
   }
   function doNotIntro(a, b) {
     state.justUnlocked = null; state.justUnlockedEx = [];
