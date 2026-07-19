@@ -39,10 +39,13 @@
   #benchvars:empty { display: none; }
   .ctxlabel { color: var(--muted); font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; }
   .gem { display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .55rem; border: 1px solid var(--line);
-    border-radius: 8px; background: var(--panel); font-family: var(--mono); font-size: .9rem; cursor: default; }
+    border-radius: 8px; background: var(--panel); color: var(--ink); font-family: var(--mono); font-size: .9rem; cursor: pointer; user-select: none; }
+  .gem:hover { border-color: var(--accent); }
+  .gem.sel { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
   .gem .nm { color: var(--ink); }
   .gem .sep { color: var(--muted); }
   .gem .ty { color: var(--muted); font-family: Georgia, serif; font-style: italic; }
+  .gem .count { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
   .selbar { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: .6rem; color: var(--muted); font-size: .9rem; }
   .selbar label { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
   .selbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .28rem .55rem; cursor: pointer; }
@@ -264,7 +267,7 @@
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML, seltip: el.seltip.textContent };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: false };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: false };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -319,13 +322,13 @@
     var p = state.progress[id];
     if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
     else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
-    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     renderAll();
   }
   function resetExercise() {
     delete state.progress[state.ex.id];
     state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex);
-    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     renderAll();
   }
 
@@ -337,7 +340,7 @@
     else state.sel.push(name);
     renderBench(); renderRecipes();
   }
-  function clearSel() { state.sel = []; state.selF = []; state.selT = []; renderBench(); renderFormulas(); renderTerms(); renderRecipes(); }
+  function clearSel() { state.sel = []; state.selF = []; state.selT = []; state.selV = []; renderBench(); renderFormulas(); renderTerms(); renderRecipes(); }
   // ---- term bench (Chapter 16+): variables of sort Omega ----
   function countT(i) { var k = 0; state.selT.forEach(function (x) { if (x === i) k++; }); return k; }
   function clickTerm(i, shift) {
@@ -347,6 +350,16 @@
     renderTerms(); renderRecipes();
   }
   function selTermExprs() { var seen = {}, out = []; state.selT.forEach(function (i) { if (!seen[i]) { seen[i] = 1; if (state.terms[i]) out.push(state.terms[i]); } }); return out; }
+  // "gems in hand" (context variables in the workbench) are selectable ingredients too, independently of the term bench
+  function countV(key) { var k = 0; state.selV.forEach(function (x) { if (x === key) k++; }); return k; }
+  function clickGemVar(key, shift) {
+    if (shift || state.repeat) state.selV.push(key);
+    else if (countV(key) > 0) state.selV = state.selV.filter(function (x) { return x !== key; });
+    else state.selV.push(key);
+    renderBench(); renderRecipes();
+  }
+  // the selected gems-in-hand as term exprs (looked up in env.vars, so always in context)
+  function selGemExprs() { var out = []; state.selV.forEach(function (key) { var v = (state.env.vars || []).find(function (vv) { return (vv.name + ':' + vv.sort) === key; }); if (v) out.push(G.varE(v.name, v.sort)); }); return out; }
   function parseTerm(raw) {
     var m = raw.match(/^\s*([A-Za-z][A-Za-z0-9_']*)\s*(?::\s*(Omega|Ω)\s*)?$/);
     if (!m) return { ok: false, error: 'a term is a variable name, optionally `name : Ω`  (the only sort so far)' };
@@ -403,6 +416,7 @@
     state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) out.push(G.proofIng(b)); });
     state.selF.forEach(function (i) { if (state.formulas[i] && inContext(state.formulas[i])) out.push(G.formulaIng(state.formulas[i])); });
     state.selT.forEach(function (i) { if (state.terms[i] && inContext(state.terms[i])) out.push(G.formulaIng(state.terms[i])); });
+    selGemExprs().forEach(function (t) { out.push(G.formulaIng(t)); });
     return out;
   }
   function availableRecipes() {
@@ -426,7 +440,7 @@
     state.justUnlockedEx = Object.keys(after).filter(function (id) { return !before[id]; }).sort();
   }
   function selFormulaExprs() { var seen = {}, out = []; state.selF.forEach(function (i) { if (!seen[i]) { seen[i] = 1; if (state.formulas[i]) out.push(state.formulas[i]); } }); return out; }
-  function formulaPool() { var pool = selFormulaExprs().slice(); state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) pool.push(b.type); }); selTermExprs().forEach(function (t) { pool.push(t); }); return pool.filter(inContext); }
+  function formulaPool() { var pool = selFormulaExprs().slice(); state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) pool.push(b.type); }); selTermExprs().concat(selGemExprs()).forEach(function (t) { pool.push(t); }); return pool.filter(inContext); }
   function formulaRecipeList() { return G.FORMULA_RECIPES.concat(G.predRecipes(state.ex)); }   // + this exercise's predicate constructors
 
   // ---- render: goal ----
@@ -469,9 +483,13 @@
     if (!vars.length) { el.benchvars.innerHTML = ''; return; }
     el.benchvars.innerHTML = '<span class="ctxlabel">' + (state.fantasy ? 'gems in hand' : 'in context') + ':</span> ' +
       vars.map(function (v) {
-        return '<span class="gem" title="' + esc(flavor(v.name + ' : ' + v.sort + ' — a ' + (state.fantasy ? 'gem' : 'variable') + ' in the current context (use it in the term bench to build or instantiate)')) + '">' +
-          gemoji() + '<span class="nm">' + esc(v.name) + '</span><span class="sep">:</span><span class="ty">' + esc(v.sort) + '</span></span>';
+        var key = v.name + ':' + v.sort, c = countV(key);
+        return '<button class="gem' + (c > 0 ? ' sel' : '') + '" data-vkey="' + esc(key) + '" title="' + esc(flavor(v.name + ' : ' + v.sort + ' — a ' + (state.fantasy ? 'gem' : 'variable') + ' in the current context; click to select it as an ingredient (e.g. to instantiate a ∀ or build a predicate)')) + '">' +
+          gemoji() + '<span class="nm">' + esc(v.name) + '</span><span class="sep">:</span><span class="ty">' + esc(v.sort) + '</span>' + (c > 1 ? '<span class="count">×' + c + '</span>' : '') + '</button>';
       }).join('');
+    Array.prototype.forEach.call(el.benchvars.querySelectorAll('.gem'), function (btn) {
+      btn.addEventListener('click', function (ev) { clickGemVar(btn.getAttribute('data-vkey'), ev.shiftKey); });
+    });
   }
   function renderBench() {
     renderBenchVars();
@@ -817,7 +835,7 @@
   function doIntroVar(term) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     state.history.push(state.env); state.env = G.openVariable(state.env, { name: term.name, sort: G.OMEGA });
-    state.sel = []; state.selF = []; state.selT = []; state.selT = []; renderAll();
+    state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.selT = []; renderAll();
   }
 
   function doCraft(recipeId, inputs) {
@@ -826,7 +844,7 @@
     if (!res.ok) return;
     state.history.push(state.env);
     state.env = res.env;
-    state.sel = []; state.selF = []; state.selT = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (res.solved) { markSolved(); }
     renderAll();
   }
@@ -847,7 +865,7 @@
     // the obtained variable becomes a first-class term on the bench (so it can instantiate ∀, build predicates, …)
     if (!state.terms.some(function (e) { return e.tag === 'var' && e.name === r.variable.name && e.sort === r.variable.sort; }))
       state.terms.push(G.varE(r.variable.name, r.variable.sort));
-    state.sel = []; state.selF = []; state.selT = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (r.solved) markSolved();
     renderAll();
   }
@@ -855,20 +873,20 @@
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.notIntro(state.env, a, b); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
-    state.sel = []; state.selF = []; state.selT = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (r.solved) markSolved();
     renderAll();
   }
   function doAssume(f) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     state.history.push(state.env); state.env = G.openAssumption(state.env, f);
-    state.sel = []; state.selF = []; state.selT = []; renderAll();
+    state.sel = []; state.selF = []; state.selT = []; state.selV = []; renderAll();
   }
   function doDischarge(name, level) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.discharge(state.env, name, level); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
-    state.sel = []; state.selF = []; state.selT = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (r.solved) { markSolved(); }
     renderAll();
   }
@@ -879,7 +897,7 @@
   el.undo.addEventListener('click', function () {
     if (!state.history.length) return;
     state.env = state.history.pop();
-    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     renderAll();
   });
   el.clearsel.addEventListener('click', clearSel);
@@ -975,7 +993,7 @@
   boot();
 
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
-    clickTerm: clickTerm, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
+    clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
