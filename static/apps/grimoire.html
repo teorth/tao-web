@@ -274,7 +274,7 @@
     if (state.cheat) { var all = {}; G.EXERCISES.forEach(function (e) { all[e.id] = true; }); return all; }
     return G.accessibleSet(state.solved);
   }
-  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1 } : G.activeCaps(accessible()); }
+  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1, 'pick': 1 } : G.activeCaps(accessible()); }
   var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
   function hasCap(c) { return !!caps()[c]; }
 
@@ -282,8 +282,8 @@
   function R(e) { return G.render(e, { parens: state.parens }); }   // render with the current parenthesization mode
 
   var TERMS = {
-    fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', obtain: 'unearth', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
-    plain: { bench: 'Context — tap a hypothesis to select', recipes: 'Rules', spell: 'The proof', formula: 'Formula bench', term: 'Term bench', brew: 'derive', scribe: 'form', gemv: 'build', obtain: 'obtain', formbtn: 'Form formula', termbtn: 'Build term', craft: 'Prove:', qed: 'proved', pick: 'Select hypotheses above to see which rules apply.', none: 'No rule applies to that selection.' }
+    fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', obtain: 'unearth', pick: 'conjure', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
+    plain: { bench: 'Context — tap a hypothesis to select', recipes: 'Rules', spell: 'The proof', formula: 'Formula bench', term: 'Term bench', brew: 'derive', scribe: 'form', gemv: 'build', obtain: 'obtain', pick: 'pick', formbtn: 'Form formula', termbtn: 'Build term', craft: 'Prove:', qed: 'proved', pick: 'Select hypotheses above to see which rules apply.', none: 'No rule applies to that selection.' }
   };
   function gemoji() { return state.fantasy ? '💎 ' : ''; }    // gem prefix for terms (fantasy only)
   function scemoji() { return state.fantasy ? '📜 ' : ''; }   // scroll prefix for formulas (fantasy only)
@@ -526,6 +526,8 @@
     // ∀-introduction: a selected variable (not already in context) opens a sub-env where it is free
     var cvNow = contextVars();
     var introBrews = hasCap('forall') ? selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; }).map(function (t) { var i = state.ded.length; state.ded.push({ action: 'intro_var', term: t }); return { i: i, t: t }; }) : [];
+    // pick (Chapter 21): a selected UNCLAIMED variable can be picked as an arbitrary inhabitant of its (nonempty) sort
+    var pickBrews = hasCap('pick') ? selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; }).map(function (t) { var i = state.ded.length; state.ded.push({ action: 'pick', term: t }); return { i: i, t: t }; }) : [];
     // ∃-elimination (obtain): a selected ∃-hypothesis + a selected UNCLAIMED variable → that variable + its witness enter context
     var obtainBrews = [];
     if (hasCap('exists')) {
@@ -571,6 +573,11 @@
     if (hasCap('exists')) {
       var obody = obtainBrews.map(function (b) { return dedBtn(b.i, 'fix ' + b.varName + ' : ' + b.sort + ', with ' + R(b.witness), 'obtain ⟨' + b.varName + ', h⟩', T('obtain')); }).join('');
       cards.push(card('Obtain', '∃ x, P x  +  fresh a  ⊢  a : Ω,  P a', obtainBrews.length > 0, obody, 'From an existential statement and an UNCLAIMED variable name, place that variable in the context together with its witnessing hypothesis. The existential is kept (Lean copies it first). Select the ∃ potion and a fresh variable in the term bench.'));
+    }
+    // pick an arbitrary inhabitant of a nonempty sort (Chapter 21)
+    if (hasCap('pick')) {
+      var pbody = pickBrews.map(function (b) { return dedBtn(b.i, 'pick ' + b.t.name + ' : ' + b.t.sort + ' arbitrarily', 'have ' + b.t.name + ' : ' + b.t.sort + ' := Classical.choice inferInstance', T('pick')); }).join('');
+      cards.push(card('Pick', 'nonempty Ω  ⊢  a : Ω', pickBrews.length > 0, pbody, 'Every sort is nonempty, so you can pick an arbitrary inhabitant. Select an UNCLAIMED variable in the term bench to place it directly in the context (no hypothesis, no ∀) — informally, “pick a : Ω arbitrarily”.'));
     }
     // formula constructors — one card each (dimmed when nothing valid is selected), so the palette is always visible
     if (hasCap('formula')) {
@@ -856,7 +863,15 @@
     else if (d.action === 'not_intro') doNotIntro(d.a, d.b);
     else if (d.action === 'intro_var') doIntroVar(d.term);
     else if (d.action === 'obtain') doObtain(d.exist, d.varName);
+    else if (d.action === 'pick') doPick(d.term);
     else if (d.action === 'formula') addCraftedFormula(d.output);
+  }
+  function doPick(term) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    var r = G.pick(state.env, term.name, term.sort); if (!r.ok) return;
+    state.history.push(state.env); state.env = r.env;
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
+    renderAll();
   }
   function doObtain(exist, varName) {
     state.justUnlocked = null; state.justUnlockedEx = [];
@@ -992,7 +1007,7 @@
   }
   boot();
 
-  window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
+  window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };

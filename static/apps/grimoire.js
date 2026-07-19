@@ -504,6 +504,19 @@
     return { ok: true, env: env2, binding: hx, variable: v, solved: env.goal ? exprEq(witness, env.goal) : false };
   }
 
+  // ---------- Chapter 21: pick an arbitrary inhabitant of a (nonempty) sort ----------
+  // "pick a : Ω arbitrarily" — add a variable of a NONEMPTY sort directly to the CURRENT context (no hypothesis, no
+  // existential; the goal is unchanged). Every sort in the game is nonempty by construction; Lean gets the witness
+  // from the [Nonempty Ω] instance via `Classical.choice inferInstance`. Informal: "pick a natural number n
+  // arbitrarily". Guard: the name must be unclaimed. Unlike ∀-introduction this opens NO sub-environment.
+  function pick(env, varName, sort) {
+    if (!varName) return { ok: false, error: 'name the variable to pick' };
+    if (nameInUse(env, varName)) return { ok: false, error: 'the name “' + varName + '” is already in use in this context' };
+    var v = { name: varName, sort: sort };
+    var step = { kind: 'pick', varName: varName, sort: sort };
+    return { ok: true, env: withEnv(env, { vars: env.vars.concat([v]), steps: env.steps.concat([step]) }), variable: v };
+  }
+
   // all distinct new statements the current selection can craft (recipes × orderings), for the UI
   function kperms(arr, k) {
     if (k === 0) return [[]];
@@ -606,7 +619,7 @@
   // Lean snippet (Init is imported automatically in Lean 4, so no `import` line is needed)
   function leanPreamble(ex) {
     var lines = [];
-    (ex.sorts || []).forEach(function (s) { lines.push('variable {' + s + '}'); });
+    (ex.sorts || []).forEach(function (s) { lines.push('variable {' + s + '}' + ((ex.nonempty || []).indexOf(s) >= 0 ? ' [Nonempty ' + s + ']' : '')); });
     var atoms = []; ex.givens.forEach(function (g) { propAtoms(g.type, [], atoms); }); propAtoms(ex.goal, [], atoms); atoms.sort();
     if (atoms.length) lines.push('variable {' + atoms.join(' ') + ' : Prop}');
     (ex.preds || []).forEach(function (p) { lines.push('variable {' + p.name + ' : ' + p.argSorts.concat([p.resultSort || PROP]).join(' → ') + '}'); });
@@ -625,6 +638,8 @@
       } else if (s.kind === 'obtain') {   // non-destructive ∃-elim: copy, then destructure the copy (the ∃ survives)
         out.push(indent + 'have ' + s.copyName + ' := ' + s.exist);
         out.push(indent + 'obtain ⟨' + s.varName + ', ' + s.hxName + '⟩ := ' + s.copyName);
+      } else if (s.kind === 'pick') {   // pick an arbitrary inhabitant of a nonempty sort
+        out.push(indent + 'have ' + s.varName + ' : ' + s.sort + ' := Classical.choice inferInstance');
       } else {
         out.push(indent + 'have ' + s.name + ' : ' + render(s.type, o) + ' := ' + s.lean);
       }
@@ -666,6 +681,8 @@
                           : 'Discharging, we obtain ' + R(s.type) + '.');
       } else if (s.kind === 'obtain') {
         out.push('Since ' + R(s.existType) + ', fix ' + s.varName + ' : ' + s.sort + ' with ' + R(s.witness) + '.');
+      } else if (s.kind === 'pick') {
+        out.push('Pick ' + s.varName + ' : ' + s.sort + ' arbitrarily (the sort is nonempty).');
       } else {
         var rec = RECIPES[s.recipe];
         out.push('From ' + (s.froms || []).map(R).join(', ') + ' we deduce ' + R(s.type) + '  (' + (rec && rec.informal || s.recipe) + ').');
@@ -798,13 +815,18 @@
     // 19.1 introduces `exists` (obtain → instantiate → modus_ponens); 19.2 (ex falso) and 19.3 (∧-elim) are siblings.
     { id: '19.1', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, unlocks: ['19.2', '19.3'], needs: ['exists'] },
+      goal: C, unlocks: ['19.2', '19.3', '21.1'], needs: ['exists'] },
     { id: '19.2', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hnp', fa('X', NOT(appE('P', [X]))))],
       goal: C, unlocks: [], needs: [] },
     { id: '19.3', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', AND(appE('P', [xL]), appE('Q', [xL])))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, unlocks: [], needs: [] }
+      goal: C, unlocks: [], needs: [] },
+    // Chapter 21 — every sort in the game is NONEMPTY, so one can "pick a : Ω arbitrarily" (a new recipe that adds a
+    // variable directly to the context, no ∃/witness hypothesis). 21.1: from ∀x, A (A not depending on x) deduce A —
+    // provable only because Ω is inhabited (pick a witness, then instantiate). Minted as the reusable `forall_const'`.
+    { id: '21.1', kind: 'lemma', leanName: "forall_const'", chapter: 21, sorts: [OMEGA], nonempty: [OMEGA], terms: [varE('a', OMEGA)],
+      givens: [binding('hA', fa('X', A))], goal: A, unlocks: [], needs: ['pick'] }
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
@@ -839,7 +861,7 @@
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
-    obtain: obtain, obtainOptions: obtainOptions, isExists: isExists,
+    obtain: obtain, obtainOptions: obtainOptions, isExists: isExists, pick: pick,
     FORMULA_RECIPES: FORMULA_RECIPES, formulaDeductions: formulaDeductions,
     EXERCISES: EXERCISES, EX_BY_ID: EX_BY_ID,
     PROGRESSION_START: PROGRESSION_START, RECIPE_CAP: RECIPE_CAP, accessibleSet: accessibleSet, activeCaps: activeCaps
