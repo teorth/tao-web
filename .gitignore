@@ -15,3 +15,6 @@ venv/
 
 # Claude Code local config / session files
 .claude/
+
+# Local scratch / dev notes (kept local, not part of the site)
+scratch/

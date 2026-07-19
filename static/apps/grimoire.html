@@ -1,0 +1,932 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lean Grimoire — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 60rem; }
+  .ty { font-family: Georgia, 'Times New Roman', serif; font-style: italic; }   /* a TYPE (formula) */
+  .nm { font-family: var(--mono); color: var(--accent); font-weight: 600; }      /* an OBJECT name */
+
+  .toolbar { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin: 1.1rem 0 .3rem; }
+  .toolbar label { color: var(--muted); font-size: .9rem; }
+  select, .toolbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .34rem .6rem; }
+  .toolbar button:not(:disabled) { cursor: pointer; }
+  .toolbar button:disabled { opacity: .45; }
+
+  #goal { margin: .4rem 0 1rem; padding: .7rem .9rem; border-left: 3px solid var(--accent); background: var(--accent-soft);
+    border-radius: 0 8px 8px 0; font-size: 1.05rem; }
+  #goal.solved { border-color: var(--ok, #2c9c4a); background: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
+  #goal .big { font-size: 1.15rem; }
+
+  .cols { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
+  @media (min-width: 52rem) { .cols { grid-template-columns: 1fr 22rem; align-items: start; } }
+  h2.sec { font-size: .82rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0 0 .5rem; }
+
+  #bench { display: flex; flex-wrap: wrap; gap: .5rem; min-height: 2.4rem; }
+  .potion { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem .3rem .5rem; color: var(--ink);
+    border: 1px solid var(--line); border-radius: 999px; background: var(--panel); cursor: pointer; user-select: none; }
+  .potion:hover { border-color: var(--accent); }
+  .potion.sel { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft) inset; background: var(--accent-soft); }
+  .potion .flask { font-size: 1.05rem; filter: saturate(1.2); }
+  .potion .sep { color: var(--muted); }
+  .potion .ty { color: var(--ink); }
+  .potion .count { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
+  .selbar { display: flex; align-items: center; gap: 8px 14px; flex-wrap: wrap; margin-top: .6rem; color: var(--muted); font-size: .9rem; }
+  .selbar label { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
+  .selbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .28rem .55rem; cursor: pointer; }
+  .hint { color: var(--muted); font-size: .9rem; }
+
+  .recipe { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .7rem; margin: .5rem 0; box-sizing: border-box; width: 100%; }
+  .recipe.dim { opacity: .55; }
+  .recipe .head { display: flex; align-items: baseline; gap: .2rem .6rem; flex-wrap: wrap; }
+  .recipe .rname { font-family: var(--mono); font-weight: 700; color: var(--accent); }
+  .recipe .rule { color: var(--muted); font-size: .84rem; }
+  .deduction { display: block; width: 100%; text-align: left; margin-top: .4rem; padding: .4rem .55rem;
+    border: 1px solid var(--accent); border-radius: 6px; background: var(--accent-soft); color: var(--ink); cursor: pointer; font-size: .95rem; }
+  .deduction:hover { background: color-mix(in srgb, var(--accent) 22%, transparent); }
+  .deduction .arrow { color: var(--muted); margin: 0 .35rem; }
+  .deduction code { font-family: var(--mono); font-size: .82rem; color: var(--muted); }
+
+  #spellbook { font-size: .82rem; line-height: 1.55; white-space: pre-wrap; overflow-x: auto;
+    background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .8rem .9rem; }
+  #spellbook.lean { font-family: var(--mono); white-space: pre; }
+  #spellbook .kw { color: var(--accent); }
+  .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; padding: .28rem .6rem; font: inherit; color: var(--muted); background: var(--panel); cursor: pointer; }
+  .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
+  .spellhead { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+
+  /* Fantasy mode: a decorative font on the chrome only (formulas/code stay legible) */
+  .wrap.fantasy h1, .wrap.fantasy h2.sec, .wrap.fantasy .deduction .arrow, .wrap.fantasy #goal .qed { font-family: 'Luminari', 'Papyrus', fantasy; letter-spacing: .01em; }
+
+  .bench2 { margin-top: 1.6rem; }
+  .fbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
+  #formula-in { flex: 1 1 16rem; font: inherit; font-family: var(--mono); color: var(--ink); background: var(--bg);
+    border: 1px solid var(--line); border-radius: 6px; padding: .4rem .55rem; }
+  #formula-in.bad { border-color: var(--danger); }
+  #formula-err { color: var(--danger); font-size: .85rem; }
+  #formula-shelf, #term-shelf { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .5rem; }
+  #term-in { flex: 1 1 16rem; font: inherit; font-family: var(--mono); color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: .4rem .55rem; }
+  #term-in.bad { border-color: var(--danger); }
+  #term-err { color: var(--danger); font-size: .85rem; }
+  .tchip { padding: .28rem .6rem; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--ink); cursor: pointer; font-family: var(--mono); }
+  .tchip:hover { border-color: var(--accent); }
+  .tchip.sel { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
+  .tchip .sort { color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: .82rem; }
+  .sortchip { font: inherit; font-size: .82rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .05rem .45rem; cursor: pointer; font-family: Georgia, serif; font-style: italic; }
+  .sortchip:hover { border-color: var(--accent); }
+  .fchip { padding: .28rem .6rem; border: 1px dashed var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); cursor: pointer; }
+  .fchip:hover { border-color: var(--accent); }
+  .fchip.sel { border-style: solid; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
+  .fchip .count { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
+  .fchip.dim, .tchip.dim { opacity: .45; border-style: dashed; cursor: help; }
+  #goal .unlock { color: var(--accent); font-weight: 600; }
+  #goal .givens { font-size: .9rem; color: var(--muted); margin-bottom: .35rem; }
+  #goal .givens .nm { color: var(--accent); }
+  .recipe.minted .rname { font-style: italic; }
+  details#achwrap { margin: .2rem 0 .4rem; }
+  details#achwrap > summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+  #ach { font-size: .9rem; margin-top: .4rem; line-height: 1.65; }
+  #ach code { font-family: var(--mono); }
+  #ctxmenu { position: fixed; z-index: 50; min-width: 8rem; background: var(--panel); border: 1px solid var(--line);
+    border-radius: 6px; box-shadow: 0 4px 16px rgba(0, 0, 0, .28); overflow: hidden; }
+  #ctxmenu button { display: block; width: 100%; text-align: left; border: 0; background: none; color: var(--ink); padding: .4rem .85rem; cursor: pointer; font: inherit; }
+  #ctxmenu button:hover { background: var(--accent-soft); }
+
+  /* consent / acknowledgment dialog */
+  #dialog { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; background: rgba(0, 0, 0, .4); padding: 1rem; }
+  #dialog[hidden] { display: none; }
+  .dlg-box { max-width: 30rem; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 1.1rem 1.2rem; box-shadow: 0 10px 40px rgba(0, 0, 0, .35); }
+  .dlg-box p { margin: 0 0 1rem; line-height: 1.55; }
+  #dlg-btns { display: flex; gap: .6rem; justify-content: flex-end; }
+  #dlg-btns button { font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: .4rem .8rem; cursor: pointer; }
+  #dlg-btns button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+
+  details.note { margin-top: 1.6rem; font-size: .92rem; }
+  details.note summary { cursor: pointer; color: var(--muted); }
+  .cap { color: var(--muted); font-size: .85rem; margin-top: 1.4rem; }
+
+  /* progression map / tree */
+  details#mapwrap { margin: .2rem 0 .4rem; }
+  details#mapwrap > summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
+  .mapbar { display: flex; align-items: center; gap: .5rem; margin: .5rem 0; flex-wrap: wrap; }
+  .mapbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .25rem .55rem; cursor: pointer; }
+  .mapbar .dev { margin-left: auto; border-style: dashed; color: var(--muted); }   /* DEV cheat — hide at final polish, keep the code */
+  .mapbar .dev.on { border-style: solid; color: var(--accent); border-color: var(--accent); }
+  #mapview { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; height: 340px; touch-action: none; }
+  #mapsvg { width: 100%; height: 100%; display: block; cursor: grab; }
+  #mapsvg.grabbing { cursor: grabbing; }
+  #mapsvg .edge { stroke: var(--line); stroke-width: 1.5; fill: none; }
+  #mapsvg .edge.on { stroke: var(--accent); }
+  #mapsvg .node rect { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+  #mapsvg .node text { fill: var(--muted); font-family: var(--mono); font-size: 12px; text-anchor: middle; dominant-baseline: central; user-select: none; }
+  #mapsvg .node.locked rect { stroke-dasharray: 3 3; }
+  #mapsvg .node.open { cursor: pointer; }
+  #mapsvg .node.open rect { stroke: var(--accent); fill: var(--accent-soft); }
+  #mapsvg .node.open text { fill: var(--ink); }
+  #mapsvg .node.solved rect { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
+  #mapsvg .node.solved text { fill: var(--ink); }
+  #mapsvg .node.cur rect { stroke-width: 2.5; }
+</style>
+</head>
+<body>
+<div class="wrap fantasy" id="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>Lean Grimoire</h1>
+    <p class="lede" id="lede">A proof-crafting game. Combine the statements you already hold — the <strong>potions</strong>
+      🧪, each a proof <span class="nm">hA</span> <span class="sep">:</span> <span class="ty">A</span> — with
+      the <strong>recipes</strong> (Lean-named laws) to brew new statements, until you craft the goal. A live
+      Lean proof assembles itself in the <strong>spellbook</strong> as you play. A rebuilt, Lean-flavoured
+      descendant of the <a href="https://teorth.github.io/QED/">QED</a> game.</p>
+  </header>
+
+  <div class="toolbar">
+    <div><label for="exsel">Exercise</label>
+      <select id="exsel" title="Choose an exercise to work on"></select>
+    </div>
+    <button id="undo" type="button" title="Undo the last step" disabled>Undo</button>
+    <button id="reset" type="button" title="Discard this exercise's progress and start it over">Reset</button>
+    <label title="Toggle between fantasy wording (potions, recipes, spellbook) and plain logic wording (hypotheses, rules, proof)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="fantasy" checked> Fantasy mode</label>
+    <label title="Show every sub-expression with explicit parentheses instead of relying on operator precedence" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="parens"> Explicit parentheses</label>
+    <label title="Save your progress in this browser (local storage only — never sent over any network)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="save"> Save progress</label>
+    <label title="Hide recipes and constructors that have no valid move for the current selection (useful once many are unlocked)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="hideinactive"> Hide inactive</label>
+  </div>
+
+  <details id="mapwrap">
+    <summary id="mapsum" title="The discovery tree — solve an exercise to unlock the next ones">Map — progression tree</summary>
+    <div class="mapbar">
+      <button id="mapzin" type="button" title="Zoom in">+</button>
+      <button id="mapzout" type="button" title="Zoom out">&minus;</button>
+      <button id="mapfit" type="button" title="Fit the whole tree in view">Fit</button>
+      <label title="Keep the map centered on the exercise you are working on (it re-centers when you advance)" style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;color:var(--muted);font-size:.9rem"><input type="checkbox" id="mapfollow"> Follow current</label>
+      <!-- DEV cheat: reveal every exercise (does NOT solve them). Hide this button at final
+           polish once testing is done, but KEEP THE CODE so it is easy to restore. -->
+      <button id="cheat" class="dev" type="button" title="DEV: make every exercise accessible (they still need solving)">Unlock all</button>
+    </div>
+    <div id="mapview"><svg id="mapsvg" xmlns="http://www.w3.org/2000/svg"><g id="mapg"></g></svg></div>
+  </details>
+
+  <details id="achwrap">
+    <summary id="achsum" title="Exercises you have solved and recipes you have unlocked">Achievements</summary>
+    <div id="ach"></div>
+  </details>
+
+  <div id="goal"></div>
+
+  <div class="cols">
+    <div>
+      <h2 class="sec" id="benchHead"></h2>
+      <div id="bench"></div>
+      <div class="selbar">
+        <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
+        <button id="clearsel" type="button" title="Clear the current ingredient selection">Clear</button>
+        <span class="hint" id="seltip" style="margin:0">tip: Shift-tap adds a second copy of a potion</span>
+      </div>
+      <div id="deducehint" class="hint" style="margin-top:.5rem"></div>
+
+      <h2 class="sec" id="recipesHead" style="margin-top:1.4rem"></h2>
+      <div id="recipes"></div>
+    </div>
+
+    <div>
+      <div class="spellhead">
+        <h2 class="sec" id="spellHead" style="margin:0"></h2>
+        <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
+      </div>
+      <pre id="spellbook" class="lean"></pre>
+    </div>
+  </div>
+
+  <div class="bench2" id="termBench" hidden>
+    <h2 class="sec" id="termHead">Term bench <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span></h2>
+    <div id="term-sorts" class="hint" style="margin:0 0 .5rem"></div>
+    <div class="fbar">
+      <input id="term-in" type="text" placeholder="e.g.  x   (a variable of sort Ω)" aria-label="name a variable" title="Name a variable of sort Ω. Type just `x`, or `x : Ω` to be explicit. Enter or Add puts it on the term bench.">
+      <button id="term-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the variable to the term bench">Add variable</button>
+      <span id="term-err"></span>
+    </div>
+    <div id="term-shelf"></div>
+  </div>
+
+  <div class="bench2" id="formulaBench">
+    <h2 class="sec" id="formulaHead"></h2>
+    <div class="fbar">
+      <input id="formula-in" type="text" placeholder="e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab" aria-label="type a formula" title="Type a well-formed formula. Backslash shortcuts (\and, \or, \to, \not, …) expand to symbols on space/Tab. Enter or Add puts it on the bench.">
+      <button id="formula-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the typed formula to the bench">Add</button>
+      <span id="formula-err"></span>
+    </div>
+    <div id="formula-shelf"></div>
+  </div>
+
+  <details class="note" id="howto">
+    <summary>How to play</summary>
+    <p>Select one or more potions on your bench; the <strong>recipes</strong> light up with the statements they
+      let you brew from that selection. Click a brew to add it to your bench — and watch the corresponding
+      <code>have</code> appear in the spellbook. Craft the <strong>goal</strong> to finish the proof (the
+      <code>sorry</code> turns into the final step). <strong>Undo</strong> steps back; names like
+      <span class="nm">hAB</span> are auto-chosen but the objects and their types are kept typographically
+      distinct. The Lean produced is deliberately plain, step-by-step <em>pseudo-Lean</em> — the point is to
+      see the proof being built, not to write the slickest tactic.</p>
+  </details>
+
+  <p class="cap">The applet source is released under the MIT license; the mathematical content is reserved.</p>
+</div>
+<div id="ctxmenu" hidden></div>
+<div id="dialog" hidden><div class="dlg-box"><p id="dlg-msg"></p><div id="dlg-btns"></div></div></div>
+
+<script src="grimoire.js"></script>
+<script>
+(function () {
+  'use strict';
+  var G = window.Grimoire;
+  var ids = ['exsel', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
+             'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
+             'benchHead', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
+             'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'achwrap', 'achsum', 'ach', 'ctxmenu',
+             'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
+             'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
+             'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
+             'lede', 'howto', 'seltip'];
+  var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
+  var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML, seltip: el.seltip.textContent };   // authored (fantasy) prose
+
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: false };
+
+  // ---- progression: which exercises are accessible + which capabilities are active ----
+  function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
+    if (state.cheat) { var all = {}; G.EXERCISES.forEach(function (e) { all[e.id] = true; }); return all; }
+    return G.accessibleSet(state.solved);
+  }
+  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1 } : G.activeCaps(accessible()); }
+  var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
+  function hasCap(c) { return !!caps()[c]; }
+
+  function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
+  function R(e) { return G.render(e, { parens: state.parens }); }   // render with the current parenthesization mode
+
+  var TERMS = {
+    fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
+    plain: { bench: 'Context — tap a hypothesis to select', recipes: 'Rules', spell: 'The proof', formula: 'Formula bench', term: 'Term bench', brew: 'derive', scribe: 'form', gemv: 'build', formbtn: 'Form formula', termbtn: 'Build term', craft: 'Prove:', qed: 'proved', pick: 'Select hypotheses above to see which rules apply.', none: 'No rule applies to that selection.' }
+  };
+  function gemoji() { return state.fantasy ? '💎 ' : ''; }    // gem prefix for terms (fantasy only)
+  function scemoji() { return state.fantasy ? '📜 ' : ''; }   // scroll prefix for formulas (fantasy only)
+  function T(k) { return TERMS[state.fantasy ? 'fantasy' : 'plain'][k]; }
+  // when fantasy mode is OFF, swap the fantasy vocabulary out of any prose/tooltip (word-boundary, case-aware)
+  var VOCAB = [['potions', 'hypotheses'], ['potion', 'hypothesis'], ['recipes', 'rules'], ['recipe', 'rule'], ['ingredients', 'inputs'], ['ingredient', 'input'], ['spellbook', 'proof'], ['brewing', 'deriving'], ['brews', 'derives'], ['brew', 'derive'], ['crafting', 'building'], ['crafts', 'builds'], ['craft', 'build']];
+  function capw(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
+  function flavor(s) {
+    if (state.fantasy) return s;
+    var out = s;
+    VOCAB.forEach(function (p) { out = out.replace(new RegExp('\\b' + p[0] + '\\b', 'g'), p[1]).replace(new RegExp('\\b' + capw(p[0]) + '\\b', 'g'), capw(p[1])); });
+    return out;
+  }
+
+  // ---- exercises dropdown (restricted to accessible exercises) ----
+  function rebuildDropdown() {
+    var acc = accessible();
+    el.exsel.innerHTML = '';
+    G.EXERCISES.forEach(function (ex) {
+      if (!acc[ex.id]) return;
+      var o = document.createElement('option');
+      o.value = ex.id;
+      o.textContent = 'Exercise ' + ex.id + (ex.leanName ? ' — ' + ex.leanName : '');
+      el.exsel.appendChild(o);
+    });
+    if (state.ex) el.exsel.value = state.ex.id;
+  }
+
+  function saveProgress() {   // keep each exercise's work so switching away and back resumes it
+    if (state.ex) state.progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };
+  }
+  function exTerms(ex) { return (ex.consts || []).map(function (c) { return G.varE(c.name, c.sort); }).concat((ex.terms || []).slice()); }   // context constants + variables to intro
+  function loadExercise(id) {
+    saveProgress();
+    state.ex = G.EX_BY_ID[id];
+    var p = state.progress[id];
+    if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
+    else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
+    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    renderAll();
+  }
+  function resetExercise() {
+    delete state.progress[state.ex.id];
+    state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex);
+    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    renderAll();
+  }
+
+  function selectedNames() { return state.sel.slice(); }
+  function count(name) { var k = 0; state.sel.forEach(function (n) { if (n === name) k++; }); return k; }
+  function clickSel(name, shift) {
+    if (shift || state.repeat) state.sel.push(name);
+    else if (count(name) > 0) state.sel = state.sel.filter(function (n) { return n !== name; });
+    else state.sel.push(name);
+    renderBench(); renderRecipes();
+  }
+  function clearSel() { state.sel = []; state.selF = []; state.selT = []; renderBench(); renderFormulas(); renderTerms(); renderRecipes(); }
+  // ---- term bench (Chapter 16+): variables of sort Omega ----
+  function countT(i) { var k = 0; state.selT.forEach(function (x) { if (x === i) k++; }); return k; }
+  function clickTerm(i, shift) {
+    if (shift || state.repeat) state.selT.push(i);
+    else if (countT(i) > 0) state.selT = state.selT.filter(function (x) { return x !== i; });
+    else state.selT.push(i);
+    renderTerms(); renderRecipes();
+  }
+  function selTermExprs() { var seen = {}, out = []; state.selT.forEach(function (i) { if (!seen[i]) { seen[i] = 1; if (state.terms[i]) out.push(state.terms[i]); } }); return out; }
+  function parseTerm(raw) {
+    var m = raw.match(/^\s*([A-Za-z][A-Za-z0-9_']*)\s*(?::\s*(Omega|Ω)\s*)?$/);
+    if (!m) return { ok: false, error: 'a term is a variable name, optionally `name : Ω`  (the only sort so far)' };
+    return { ok: true, expr: G.varE(m[1], G.OMEGA) };
+  }
+  function addTerm() {
+    var raw = el['term-in'].value.trim();
+    if (!raw) return;
+    var r = parseTerm(raw);
+    if (!r.ok) { el['term-in'].classList.add('bad'); el['term-err'].textContent = r.error; return; }
+    if (state.terms.some(function (t) { return G.exprEq(t, r.expr); })) { el['term-in'].value = ''; return; }
+    state.terms.push(r.expr); el['term-in'].value = ''; renderTerms(); renderRecipes();
+  }
+  function deleteTerm(i) {
+    state.terms = state.terms.filter(function (_, j) { return j !== i; });
+    state.selT = state.selT.filter(function (x) { return x !== i; }).map(function (x) { return x > i ? x - 1 : x; });
+    renderTerms(); renderRecipes();
+  }
+  function countF(i) { var k = 0; state.selF.forEach(function (x) { if (x === i) k++; }); return k; }
+  function clickFormula(i, shift) {
+    if (shift || state.repeat) state.selF.push(i);
+    else if (countF(i) > 0) state.selF = state.selF.filter(function (x) { return x !== i; });
+    else state.selF.push(i);
+    renderFormulas(); renderRecipes();
+  }
+  // the local context of data-sort variables in scope: given constants + variables introduced by an enclosing ∀
+  function contextVars() {
+    var out = {};
+    ((state.ex && state.ex.consts) || []).forEach(function (c) { out[c.name + ':' + c.sort] = 1; });
+    var e = state.env; while (e && e.parent) { if (e.assumption && e.assumption.kind === 'var') out[e.assumption.name + ':' + e.assumption.sort] = 1; e = e.parent; }
+    return out;
+  }
+  // FREE data-sort variables of an expr (skips ∀-bound vars and Prop atoms)
+  function freeTermVars(t, bound, out) {
+    bound = bound || []; out = out || [];
+    if (t.tag === 'var') { if (t.sort !== 'Prop' && bound.indexOf(t.name) < 0 && !out.some(function (v) { return v.name === t.name && v.sort === t.sort; })) out.push(t); }
+    else if (t.tag === 'binder') freeTermVars(t.body, bound.concat([t.v.name]), out);
+    else t.args.forEach(function (a) { freeTermVars(a, bound, out); });
+    return out;
+  }
+  // a term/formula is usable only if all its free variables are in the current context (else it won't build in Lean):
+  // e.g. a fresh `foo` can't instantiate ∀x,P x until it's intro'd, and Q(x,y) is unusable once x,y leave scope
+  function inContext(t) { var cv = contextVars(); return freeTermVars(t).every(function (v) { return cv[v.name + ':' + v.sort]; }); }
+  // an explanatory message when a term/formula is unusable in the current context (null when fine)
+  function contextIssue(t) {
+    var cv = contextVars(), missing = freeTermVars(t).filter(function (v) { return !cv[v.name + ':' + v.sort]; });
+    if (!missing.length) return null;
+    var names = missing.map(function (v) { return v.name; }).join(', ');
+    return 'not usable right now — it involves the variable ' + names + ', which ' + (missing.length > 1 ? 'are' : 'is') + ' not in the current context (introduce ' + (missing.length > 1 ? 'them' : 'it') + ' first)';
+  }
+  function ingredients() {
+    var out = [];
+    state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) out.push(G.proofIng(b)); });
+    state.selF.forEach(function (i) { if (state.formulas[i] && inContext(state.formulas[i])) out.push(G.formulaIng(state.formulas[i])); });
+    state.selT.forEach(function (i) { if (state.terms[i] && inContext(state.terms[i])) out.push(G.formulaIng(state.terms[i])); });
+    return out;
+  }
+  function availableRecipes() {
+    var cp = caps();
+    var list = G.BASE_RECIPES.filter(function (r) { var need = G.RECIPE_CAP[r.id]; return !need || cp[need]; });   // gate base recipes by capability
+    Object.keys(state.unlocked).forEach(function (id) { if (id !== state.ex.leanName && state.unlocked[id].arity > 0) list.push(state.unlocked[id]); });
+    return list;
+  }
+  function unlockCurrent() {
+    var ln = state.ex.leanName;
+    if (state.ex.kind === 'lemma' && ln && !state.unlocked[ln]) {
+      var rc = G.recipeFromExercise(state.ex);
+      G.RECIPES[rc.id] = rc; state.unlocked[ln] = rc; state.justUnlocked = ln;
+    }
+  }
+  function markSolved() {   // record the solve + which exercises it newly reveals on the map
+    var before = accessible();
+    state.solved[state.ex.id] = true;
+    unlockCurrent();
+    var after = accessible();
+    state.justUnlockedEx = Object.keys(after).filter(function (id) { return !before[id]; }).sort();
+  }
+  function selFormulaExprs() { var seen = {}, out = []; state.selF.forEach(function (i) { if (!seen[i]) { seen[i] = 1; if (state.formulas[i]) out.push(state.formulas[i]); } }); return out; }
+  function formulaPool() { var pool = selFormulaExprs().slice(); state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) pool.push(b.type); }); selTermExprs().forEach(function (t) { pool.push(t); }); return pool.filter(inContext); }
+  function formulaRecipeList() { return G.FORMULA_RECIPES.concat(G.predRecipes(state.ex)); }   // + this exercise's predicate constructors
+
+  // ---- render: goal ----
+  function rootEnv() { var e = state.env; while (e.parent) e = e.parent; return e; }
+  function assumptionChain() { var out = [], e = state.env; while (e.parent) { out.unshift(e.assumption); e = e.parent; } return out; }
+  function isSolved() { var r = rootEnv(); return r.bindings.some(function (b) { return G.exprEq(b.type, r.goal); }); }
+  function renderGoal() {
+    if (state.env.parent) {   // inside a sub-environment
+      el.goal.className = '';
+      el.goal.innerHTML =
+        '<div class="givens">▸ ' + assumptionChain().map(function (a) { return a.kind === 'var' ? 'for arbitrary <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(a.sort) + '</span>' : 'assuming <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(R(a.type)) + '</span>'; }).join(', then ') + '</div>' +
+        '<div>' + flavor('Craft here, then <strong>discharge</strong> a statement. Overall goal:') + ' <span class="ty">' + esc(R(rootEnv().goal)) + '</span></div>';
+      return;
+    }
+    var solved = isSolved(), root = rootEnv();
+    el.goal.className = solved ? 'solved' : '';
+    var givens = state.ex.givens.length
+      ? '<div class="givens">Given ' + state.ex.givens.map(function (g) { return '<span class="nm">' + esc(g.name) + '</span> : <span class="ty">' + esc(R(g.type)) + '</span>'; }).join(', ') + '</div>'
+      : '';
+    var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
+    var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
+      ? ' <span class="unlock">🗺️ unlocked on the map: ' + state.justUnlockedEx.map(function (id) { return '<code>' + esc(id) + '</code>'; }).join(', ') + '</span>' : '';
+    var main = solved
+      ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
+      : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
+    el.goal.innerHTML = givens + '<div>' + main + '</div>';
+  }
+
+  // ---- render: bench (potions) ----
+  function potionHTML(b) {
+    var c = count(b.name);
+    var title = esc(flavor(b.name + ' : ' + R(b.type) + ' — a proof. Click to select as an ingredient; right-click to rename or delete.'));
+    return '<button class="potion' + (c > 0 ? ' sel' : '') + '" data-name="' + b.name + '" title="' + title + '">' +
+      '<span class="flask">🧪</span><span class="nm">' + esc(b.name) + '</span><span class="sep">:</span>' +
+      '<span class="ty">' + esc(R(b.type)) + '</span>' + (c > 1 ? '<span class="count">×' + c + '</span>' : '') + '</button>';
+  }
+  function renderBench() {
+    el.bench.innerHTML = state.env.bindings.map(potionHTML).join('');
+    Array.prototype.forEach.call(el.bench.querySelectorAll('.potion'), function (btn) {
+      var nm = btn.getAttribute('data-name');
+      btn.addEventListener('click', function (ev) { clickSel(nm, ev.shiftKey); });
+      btn.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault(); ev.stopPropagation();
+        showCtx(ev.clientX, ev.clientY, [{ label: 'Rename…', fn: function () { renamePotion(nm); } }, { label: 'Delete', fn: function () { deletePotion(nm); } }]);
+      });
+    });
+  }
+
+  // ---- render: recipes with their available brews for the current selection ----
+  function dedBtn(i, outStr, code, verb) {
+    verb = verb || T('brew');
+    return '<button class="deduction" data-idx="' + i + '" title="' + esc(flavor(verb + ' ' + outStr +'  ·  ' + code)) + '"><span class="arrow">' + verb + ' →</span><span class="ty">' + esc(outStr) + '</span>  <code>' + esc(code) + '</code></button>';
+  }
+  function renderRecipes() {
+    var recipes = availableRecipes();
+    state.ded = [];
+    var proofByRecipe = {};
+    G.deductions(state.env, ingredients(), recipes).forEach(function (d) {
+      var i = state.ded.length; state.ded.push({ action: 'proof', d: d });
+      (proofByRecipe[d.recipeId] = proofByRecipe[d.recipeId] || []).push({ i: i, out: d.output, lean: d.lean });
+    });
+    var assumeBrews = selFormulaExprs().filter(inContext).map(function (f) { var i = state.ded.length; state.ded.push({ action: 'assume', formula: f }); return { i: i, f: f }; });
+    var dischargeBrews = [];
+    if (state.env.parent) state.sel.forEach(function (n) {
+      G.dischargeOptions(state.env, n).forEach(function (o) { var i = state.ded.length; state.ded.push({ action: 'discharge', proofName: n, level: o.level, output: o.output }); dischargeBrews.push({ i: i, name: n, level: o.level, out: o.output }); });
+    });
+    var formulaBrews = G.formulaDeductions(formulaPool(), state.formulas, formulaRecipeList()).filter(function (d) { return !FCAP[d.recipeId] || hasCap(FCAP[d.recipeId]); }).map(function (d) { var i = state.ded.length; state.ded.push({ action: 'formula', output: d.output }); return { i: i, out: d.output, recipeId: d.recipeId }; });
+    // ∀-introduction: a selected variable (not already in context) opens a sub-env where it is free
+    var cvNow = contextVars();
+    var introBrews = hasCap('forall') ? selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; }).map(function (t) { var i = state.ded.length; state.ded.push({ action: 'intro_var', term: t }); return { i: i, t: t }; }) : [];
+
+    var cards = [];   // { active, html } — each recipe/constructor is a card, shown dimmed when it has no valid brew
+    function card(name, rule, active, body, title, minted) {
+      return { active: active, html: '<div class="recipe' + (active ? '' : ' dim') + (minted ? ' minted' : '') + '" title="' + esc(title || (name + ' — ' + rule)) + '"><div class="head"><span class="rname">' + esc(name) + '</span><span class="rule ty">' + esc(rule) + '</span></div>' + body + '</div>' };
+    }
+    // proof recipes
+    recipes.forEach(function (r) {
+      var brews = proofByRecipe[r.id] || [];
+      cards.push(card(r.leanName, r.rule, brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), b.lean); }).join(''), r.leanName + ' — ' + r.rule, r.minted));
+    });
+    // assume / introduce / discharge / reductio
+    var notIntroBrew = null;
+    if (hasCap('neg') && state.env.parent) {
+      var nio = G.notIntroOption(state.env, state.sel);
+      if (nio) {
+        var ni = state.ded.length;
+        state.ded.push({ action: 'not_intro', a: nio.fals || nio.pos, b: nio.fals ? null : nio.neg });
+        notIntroBrew = { i: ni, out: nio.output, tip: nio.fals ? 'reductio (from ' + nio.fals + ')' : 'reductio (contradiction ' + nio.pos + ', ' + nio.neg + ')' };
+      }
+    }
+    if (hasCap('assume')) {
+      var abody = assumeBrews.map(function (b) { return dedBtn(b.i, 'assume ' + R(b.f), 'intro'); }).join('') +
+        introBrews.map(function (b) { return dedBtn(b.i, 'introduce ' + b.t.name + ' : ' + b.t.sort, 'intro ' + b.t.name); }).join('') +
+        dischargeBrews.map(function (b) { return dedBtn(b.i, R(b.out), '↑' + b.level + ' discharge ' + b.name); }).join('') +
+        (notIntroBrew ? dedBtn(notIntroBrew.i, R(notIntroBrew.out), notIntroBrew.tip) : '');
+      cards.push(card('Assume / Introduce / Discharge', 'assume A · intro x · discharge ⊢ A→B / ∀x,P · reductio ⊢ ¬A', !!abody, abody, 'Assume a formula (→) or introduce a variable (∀) to open a sub-proof; discharge a statement to close it into an implication or a ∀. In a sub-proof, a statement and its negation conclude ¬(the assumption) by reductio.'));
+    }
+    // formula constructors — one card each (dimmed when nothing valid is selected), so the palette is always visible
+    if (hasCap('formula')) {
+      var fByRecipe = {};
+      formulaBrews.forEach(function (b) { (fByRecipe[b.recipeId] = fByRecipe[b.recipeId] || []).push(b); });
+      formulaRecipeList().forEach(function (r) {
+        if (r.cap && !hasCap(r.cap)) return;   // gated constructors appear only once their capability is active
+        var brews = fByRecipe[r.id] || [];
+        cards.push(card(r.leanName, r.rule, brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), 'formula', T('scribe')); }).join(''), (state.fantasy ? 'Scribe a scroll' : 'Form a formula') + ' — ' + r.rule));
+      });
+    }
+
+    el.recipes.innerHTML = cards.filter(function (c) { return !state.hideInactive || c.active; }).map(function (c) { return c.html; }).join('');
+    Array.prototype.forEach.call(el.recipes.querySelectorAll('.deduction'), function (btn) {
+      btn.addEventListener('click', function () { doCraftIdx(+btn.getAttribute('data-idx')); });
+    });
+    el.deducehint.textContent = (ingredients().length === 0 && !state.env.parent) ? T('pick') : '';
+  }
+
+  // ---- render: spellbook (Lean or informal QED-style) ----
+  function renderSpellbook() {
+    var opts = { parens: state.parens };
+    if (state.style === 'informal') {
+      el.spellbook.className = '';
+      el.spellbook.innerHTML = esc(G.emitInformal(state.ex, rootEnv(), opts));
+    } else {
+      el.spellbook.className = 'lean';
+      el.spellbook.innerHTML = esc(G.leanPreamble(state.ex) + G.emitLive(state.ex, state.env, opts)).replace(/\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g, '<span class="kw">$1</span>');
+    }
+  }
+
+  function applyTerms() {
+    el.benchHead.textContent = T('bench'); el.recipesHead.textContent = T('recipes'); el.spellHead.textContent = T('spell');
+    el.formulaHead.innerHTML = flavor(T('formula') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— type a formula, then tap it to use as an ingredient (e.g. for Or.inl)</span>');
+    el.termHead.innerHTML = T('term') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span>';
+    el['formula-add'].textContent = T('formbtn'); el['term-add'].textContent = T('termbtn');
+    el.lede.innerHTML = flavor(ORIG.lede);
+    el.howto.innerHTML = flavor(ORIG.howto);
+    el.seltip.textContent = flavor(ORIG.seltip);
+  }
+  function renderFormulas() {
+    el['formula-shelf'].innerHTML = state.formulas.map(function (e, i) {
+      var c = countF(i);
+      var issue = contextIssue(e);
+      return '<button class="fchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-fi="' + i + '" title="' + esc(issue || flavor('formula ' + R(e) +' — click to select as an ingredient (or, while typing, to paste); right-click to delete')) + '">' + scemoji() + '<span class="ty">' + esc(R(e)) + '</span>' + (c > 1 ? ' <span class="count">×' + c + '</span>' : '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(el['formula-shelf'].querySelectorAll('.fchip'), function (btn) {
+      var i = +btn.getAttribute('data-fi');
+      btn.addEventListener('mousedown', function (ev) {   // while typing a formula, click a chip to paste it into the box
+        if (ev.button === 0 && document.activeElement === el['formula-in']) { ev.preventDefault(); pasteIntoFormula(R(state.formulas[i])); btn._pasted = true; }
+      });
+      btn.addEventListener('click', function (ev) { if (btn._pasted) { btn._pasted = false; return; } clickFormula(i, ev.shiftKey); });
+      btn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, [{ label: 'Delete', fn: function () { deleteFormula(i); } }]); });
+    });
+  }
+  function renderAch() {
+    var solved = Object.keys(state.solved), recipes = Object.keys(state.unlocked);
+    el.achsum.textContent = 'Achievements — ' + solved.length + ' solved, ' + recipes.length + ' recipe' + (recipes.length === 1 ? '' : 's') + ' unlocked';
+    el.ach.innerHTML =
+      '<div><strong>Exercises solved:</strong> ' + (solved.length ? solved.sort().map(esc).join(', ') : '—') + '</div>' +
+      '<div><strong>Recipes unlocked:</strong> ' + (recipes.length ? recipes.map(function (r) { return '<code>' + esc(r) + '</code>'; }).join(', ') : '—') + '</div>';
+  }
+  // ---- progression map: an SVG discovery tree with pan/zoom ----
+  var MAP = (function () {
+    var NS = 'http://www.w3.org/2000/svg';
+    // static layout: y = longest-path depth from the start node; x = spread among same-depth nodes
+    var parents = {};
+    G.EXERCISES.forEach(function (e) { (e.unlocks || []).forEach(function (u) { (parents[u] = parents[u] || []).push(e.id); }); });
+    var dmemo = {};
+    function depth(id) {
+      if (id in dmemo) return dmemo[id];
+      dmemo[id] = 0;
+      var ps = parents[id] || [];
+      return dmemo[id] = ps.length ? 1 + Math.max.apply(null, ps.map(depth)) : 0;
+    }
+    var byDepth = {}, layers = 0;
+    G.EXERCISES.forEach(function (e) { var d = depth(e.id); (byDepth[d] = byDepth[d] || []).push(e.id); layers = Math.max(layers, d + 1); });
+    var COLW = 104, ROWH = 62, NW = 78, NH = 30, maxRow = 0;
+    Object.keys(byDepth).forEach(function (d) { maxRow = Math.max(maxRow, byDepth[d].length); });
+    var pos = {};
+    Object.keys(byDepth).forEach(function (d) {
+      var row = byDepth[d], n = row.length;
+      row.forEach(function (id, i) { pos[id] = { x: (i - (n - 1) / 2) * COLW + maxRow * COLW / 2, y: (+d) * ROWH + ROWH / 2 }; });
+    });
+    var W = maxRow * COLW, H = layers * ROWH;
+    var view = { tx: 0, ty: 0, s: 1 }, down = null, dragged = false, fitted = false, lastFollow = null;
+    function apply() { el.mapg.setAttribute('transform', 'translate(' + view.tx + ',' + view.ty + ') scale(' + view.s + ')'); }
+    function fit() {
+      var vw = el.mapview.clientWidth || 600, vh = el.mapview.clientHeight || 340;
+      view.s = Math.min(vw / (W + COLW), vh / (H + ROWH), 1.4);
+      view.tx = (vw - W * view.s) / 2; view.ty = 14; apply();
+    }
+    function focusNode(id, s) {   // centre one node at a comfortable large zoom (used for the opening view)
+      var p = pos[id] || pos['1.1']; if (!p) return fit();
+      var vw = el.mapview.clientWidth || 600, vh = el.mapview.clientHeight || 340;
+      view.s = s == null ? 1.6 : s;
+      view.tx = vw / 2 - p.x * view.s; view.ty = vh / 2 - p.y * view.s; apply();
+    }
+    function zoom(f, cx, cy) {
+      var vw = el.mapview.clientWidth || 600, vh = el.mapview.clientHeight || 340;
+      if (cx == null) { cx = vw / 2; cy = vh / 2; }
+      var ns = Math.max(0.3, Math.min(3, view.s * f));
+      view.tx = cx - (cx - view.tx) * (ns / view.s); view.ty = cy - (cy - view.ty) * (ns / view.s);
+      view.s = ns; apply();
+    }
+    function render() {
+      var acc = accessible(), g = el.mapg;
+      while (g.firstChild) g.removeChild(g.firstChild);
+      G.EXERCISES.forEach(function (e) {
+        (e.unlocks || []).forEach(function (u) {
+          var a = pos[e.id], b = pos[u]; if (!a || !b) return;
+          var ln = document.createElementNS(NS, 'line');
+          ln.setAttribute('x1', a.x); ln.setAttribute('y1', a.y + NH / 2);
+          ln.setAttribute('x2', b.x); ln.setAttribute('y2', b.y - NH / 2);
+          ln.setAttribute('class', 'edge' + (acc[u] ? ' on' : ''));
+          g.appendChild(ln);
+        });
+      });
+      G.EXERCISES.forEach(function (e) {
+        var p = pos[e.id]; if (!p) return;
+        var open = !!acc[e.id], done = !!state.solved[e.id];
+        var node = document.createElementNS(NS, 'g');
+        node.setAttribute('class', 'node ' + (done ? 'solved' : open ? 'open' : 'locked') + (state.ex && state.ex.id === e.id ? ' cur' : ''));
+        var r = document.createElementNS(NS, 'rect');
+        r.setAttribute('x', p.x - NW / 2); r.setAttribute('y', p.y - NH / 2); r.setAttribute('width', NW); r.setAttribute('height', NH); r.setAttribute('rx', 7);
+        node.appendChild(r);
+        var t = document.createElementNS(NS, 'text');
+        t.setAttribute('x', p.x); t.setAttribute('y', p.y); t.textContent = open ? (e.id + (done ? ' ✓' : '')) : '🔒';
+        node.appendChild(t);
+        var ti = document.createElementNS(NS, 'title');
+        ti.textContent = open ? ('Exercise ' + e.id + (e.leanName ? ' — ' + e.leanName : '') + (done ? ' (solved)' : '')) : 'Locked — solve earlier exercises to reveal';
+        node.appendChild(ti);
+        g.appendChild(node);   // selection is handled by tap hit-testing in the pointerup handler
+      });
+      // auto-center on the current exercise when "Follow current" is on and the exercise just changed
+      if (state.mapFollow && el.mapwrap.open && state.ex && lastFollow !== state.ex.id) focusNode(state.ex.id);
+      if (state.ex) lastFollow = state.ex.id;
+    }
+    el.mapsvg.addEventListener('pointerdown', function (e) { down = { x: e.clientX, y: e.clientY, tx: view.tx, ty: view.ty }; dragged = false; el.mapsvg.classList.add('grabbing'); if (el.mapsvg.setPointerCapture) el.mapsvg.setPointerCapture(e.pointerId); });
+    el.mapsvg.addEventListener('pointermove', function (e) { if (!down) return; var dx = e.clientX - down.x, dy = e.clientY - down.y; if (Math.abs(dx) + Math.abs(dy) > 3) dragged = true; view.tx = down.tx + dx; view.ty = down.ty + dy; apply(); });
+    function endPan() { down = null; el.mapsvg.classList.remove('grabbing'); }
+    el.mapsvg.addEventListener('pointerup', function (e) {   // a tap (no drag) on an unlocked node selects that exercise
+      var wasDrag = dragged; endPan();
+      if (wasDrag) return;
+      var b = el.mapview.getBoundingClientRect();
+      var gx = (e.clientX - b.left - view.tx) / view.s, gy = (e.clientY - b.top - view.ty) / view.s, acc = accessible();
+      G.EXERCISES.forEach(function (ex) {
+        var p = pos[ex.id]; if (!p || !acc[ex.id]) return;
+        if (gx >= p.x - NW / 2 && gx <= p.x + NW / 2 && gy >= p.y - NH / 2 && gy <= p.y + NH / 2) loadExercise(ex.id);
+      });
+    });
+    el.mapsvg.addEventListener('pointercancel', endPan);
+    el.mapsvg.addEventListener('wheel', function (e) { e.preventDefault(); var b = el.mapview.getBoundingClientRect(); zoom(e.deltaY < 0 ? 1.12 : 0.89, e.clientX - b.left, e.clientY - b.top); }, { passive: false });
+    el.mapzin.addEventListener('click', function () { zoom(1.2); });
+    el.mapzout.addEventListener('click', function () { zoom(1 / 1.2); });
+    el.mapfit.addEventListener('click', fit);
+    el.mapwrap.addEventListener('toggle', function () { if (el.mapwrap.open) { if (!fitted) { fitted = true; focusNode(state.ex ? state.ex.id : '1.1'); } else if (state.mapFollow && state.ex) { focusNode(state.ex.id); } } });
+    el.mapfollow.addEventListener('change', function () { state.mapFollow = el.mapfollow.checked; if (state.mapFollow && el.mapwrap.open && state.ex) { focusNode(state.ex.id); } persist(); });
+    return { render: render, fit: fit, focusNode: focusNode, pos: pos, view: view };
+  })();
+  function renderMap() { MAP.render(); }
+
+  el.cheat.addEventListener('click', function () { state.cheat = !state.cheat; el.cheat.classList.toggle('on', state.cheat); renderAll(); });
+
+  // ---- save progress (opt-in; browser local storage only, never sent over any network) ----
+  var SAVE_KEY = 'grimoire.v1';
+  function storageGet() { try { return localStorage.getItem(SAVE_KEY); } catch (e) { return null; } }
+  function storageSet(v) { try { localStorage.setItem(SAVE_KEY, v); } catch (e) {} }
+  function storageDel() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
+  function currentBlob() {
+    var progress = {}; Object.keys(state.progress).forEach(function (k) { progress[k] = state.progress[k]; });
+    if (state.ex) progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };   // capture the live board
+    return { v: 1, solved: state.solved, progress: progress, last: state.ex ? state.ex.id : null,
+             fantasy: state.fantasy, parens: state.parens, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow };
+  }
+  function persist() { if (state.save) storageSet(JSON.stringify(currentBlob())); }
+  function clearSaved() { storageDel(); }
+  function loadSaved() { var raw = storageGet(); if (!raw) return null; try { return JSON.parse(raw); } catch (e) { return null; } }
+  function restore(saved) {
+    state.solved = saved.solved || {};
+    // recipe objects hold match functions, so they are not stored — re-mint them for every solved lemma
+    Object.keys(state.solved).forEach(function (id) {
+      var ex = G.EX_BY_ID[id];
+      if (ex && ex.kind === 'lemma' && ex.leanName && !state.unlocked[ex.leanName]) {
+        var rc = G.recipeFromExercise(ex); G.RECIPES[rc.id] = rc; state.unlocked[ex.leanName] = rc;
+      }
+    });
+    state.progress = saved.progress || {};
+    state.fantasy = saved.fantasy !== false;   // default on
+    state.parens = !!saved.parens;
+    state.hideInactive = !!saved.hideInactive;
+    state.mapFollow = !!saved.mapFollow;
+    state.style = saved.style === 'informal' ? 'informal' : 'lean';
+  }
+
+  // consent (on enable) / acknowledgment (on disable) dialog
+  var dlgButtons = [];
+  function showDialog(msg, buttons) {
+    dlgButtons = buttons;
+    el['dlg-msg'].textContent = msg;
+    el['dlg-btns'].innerHTML = buttons.map(function (b, i) { return '<button data-di="' + i + '"' + (b.primary ? ' class="primary"' : '') + '>' + esc(b.label) + '</button>'; }).join('');
+    el.dialog.hidden = false;
+    Array.prototype.forEach.call(el['dlg-btns'].querySelectorAll('button'), function (btn) {
+      btn.addEventListener('click', function () { clickDialog(+btn.getAttribute('data-di')); });
+    });
+  }
+  function clickDialog(i) { el.dialog.hidden = true; if (dlgButtons[i]) dlgButtons[i].fn(); }
+  el.save.addEventListener('change', function () {
+    if (el.save.checked) {
+      showDialog('Save your progress in this browser? Your solved exercises, current work, and display preferences are stored locally in this browser only — nothing is ever sent over a network. You can turn this off at any time.', [
+        { label: 'Save progress', primary: true, fn: function () { state.save = true; persist(); } },
+        { label: 'Cancel', fn: function () { el.save.checked = false; state.save = false; } }
+      ]);
+    } else {
+      state.save = false; clearSaved();
+      showDialog('Progress saving is now off. Your current progress will not be restored the next time you open this page, and the previously saved data has been cleared from this browser.', [
+        { label: 'OK', primary: true, fn: function () {} }
+      ]);
+    }
+  });
+
+  function renderAll() {
+    rebuildDropdown();
+    el.formulaBench.hidden = !hasCap('formula');   // formula bench appears only from Chapter 3
+    el.termBench.hidden = !hasCap('forall');       // term bench appears only from Chapter 16
+    applyTerms(); renderGoal(); renderBench(); renderFormulas(); renderTerms(); renderRecipes(); renderSpellbook(); renderAch(); renderMap();
+    el.undo.disabled = state.history.length === 0;
+    persist();
+  }
+  function availableSorts() { return (state.ex && state.ex.sorts && state.ex.sorts.length) ? state.ex.sorts.slice() : [G.OMEGA]; }
+  // clicking a sort annotates the term in the input (`x` → `x : Ω`); a compound term (fixed sort) is left alone
+  function appendSort(sort) {
+    var inp = el['term-in'], m = inp.value.match(/^\s*([A-Za-z][A-Za-z0-9_']*)\s*(?::\s*\S+\s*)?$/);
+    if (!m) return;   // not a bare variable (e.g. a compound term) → its sort is fixed, do nothing
+    inp.value = m[1] + ' : ' + sort;
+    inp.classList.remove('bad'); el['term-err'].textContent = ''; inp.focus();
+  }
+  function renderTerms() {
+    el['term-sorts'].innerHTML = 'Sorts available: ' + availableSorts().map(function (s) { return '<button class="sortchip" data-sort="' + esc(s) + '" title="annotate the typed term with  : ' + esc(s) + '  (handy since ' + esc(s) + ' is hard to type)">' + esc(s) + '</button>'; }).join(' ');
+    Array.prototype.forEach.call(el['term-sorts'].querySelectorAll('.sortchip'), function (btn) { btn.addEventListener('click', function () { appendSort(btn.getAttribute('data-sort')); }); });
+    el['term-shelf'].innerHTML = state.terms.map(function (e, i) {
+      var c = countT(i);
+      var issue = e.tag === 'var' ? null : contextIssue(e);   // a bare variable can always be intro'd, so is never greyed; a compound term needs its variables in context
+      var lbl = e.tag === 'var' ? (esc(e.name) + ' <span class="sort">: ' + esc(e.sort) + '</span>') : esc(R(e));
+      return '<button class="tchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-ti="' + i + '" title="' + esc(issue || flavor('variable ' + e.name + ' : ' + e.sort + ' — select to introduce it (∀) or to build a predicate; right-click to delete')) + '">' + gemoji() + lbl + (c > 1 ? ' <span class="sort">×' + c + '</span>' : '') + '</button>';
+    }).join('');
+    Array.prototype.forEach.call(el['term-shelf'].querySelectorAll('.tchip'), function (btn) {
+      var i = +btn.getAttribute('data-ti');
+      btn.addEventListener('mousedown', function (ev) {   // while typing a term, click a chip to paste it (for compound terms)
+        if (ev.button === 0 && document.activeElement === el['term-in']) { ev.preventDefault(); pasteIntoTerm(R(state.terms[i])); btn._pasted = true; }
+      });
+      btn.addEventListener('click', function (ev) { if (btn._pasted) { btn._pasted = false; return; } clickTerm(i, ev.shiftKey); });
+      btn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, [{ label: 'Delete', fn: function () { deleteTerm(i); } }]); });
+    });
+  }
+  function pasteIntoTerm(text) {
+    var inp = el['term-in'], pos = (inp.selectionStart == null ? inp.value.length : inp.selectionStart), v = inp.value;
+    inp.value = v.slice(0, pos) + text + v.slice(pos);
+    var np = pos + text.length; if (inp.setSelectionRange) inp.setSelectionRange(np, np);
+    inp.focus(); inp.classList.remove('bad'); el['term-err'].textContent = '';
+  }
+  function doIntroVar(term) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    state.history.push(state.env); state.env = G.openVariable(state.env, { name: term.name, sort: G.OMEGA });
+    state.sel = []; state.selF = []; state.selT = []; state.selT = []; renderAll();
+  }
+
+  function doCraft(recipeId, inputs) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    var res = G.craft(state.env, recipeId, inputs);
+    if (!res.ok) return;
+    state.history.push(state.env);
+    state.env = res.env;
+    state.sel = []; state.selF = []; state.selT = [];
+    if (res.solved) { markSolved(); }
+    renderAll();
+  }
+  function doCraftIdx(i) {
+    var d = state.ded[i]; if (!d) return;
+    if (d.action === 'proof') doCraft(d.d.recipeId, d.d.inputs);
+    else if (d.action === 'assume') doAssume(d.formula);
+    else if (d.action === 'discharge') doDischarge(d.proofName, d.level);
+    else if (d.action === 'not_intro') doNotIntro(d.a, d.b);
+    else if (d.action === 'intro_var') doIntroVar(d.term);
+    else if (d.action === 'formula') addCraftedFormula(d.output);
+  }
+  function doNotIntro(a, b) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    var r = G.notIntro(state.env, a, b); if (!r.ok) return;
+    state.history.push(state.env); state.env = r.env;
+    state.sel = []; state.selF = []; state.selT = [];
+    if (r.solved) markSolved();
+    renderAll();
+  }
+  function doAssume(f) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    state.history.push(state.env); state.env = G.openAssumption(state.env, f);
+    state.sel = []; state.selF = []; state.selT = []; renderAll();
+  }
+  function doDischarge(name, level) {
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    var r = G.discharge(state.env, name, level); if (!r.ok) return;
+    state.history.push(state.env); state.env = r.env;
+    state.sel = []; state.selF = []; state.selT = [];
+    if (r.solved) { markSolved(); }
+    renderAll();
+  }
+  function addCraftedFormula(f) { state.formulas.push(f); state.sel = []; state.selF = []; renderAll(); }
+
+  el.exsel.addEventListener('change', function () { loadExercise(el.exsel.value); });
+  el.reset.addEventListener('click', resetExercise);
+  el.undo.addEventListener('click', function () {
+    if (!state.history.length) return;
+    state.env = state.history.pop();
+    state.sel = []; state.selF = []; state.selT = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    renderAll();
+  });
+  el.clearsel.addEventListener('click', clearSel);
+  el.repeat.addEventListener('change', function () { state.repeat = el.repeat.checked; });
+  el.fantasy.addEventListener('change', function () { setFantasy(el.fantasy.checked); });
+  function setFantasy(on) { state.fantasy = on; el.wrap.className = 'wrap' + (on ? ' fantasy' : ''); renderAll(); }
+  function setStyle(s) { state.style = s; el.styleLean.className = s === 'lean' ? 'on' : ''; el.styleInformal.className = s === 'informal' ? 'on' : ''; renderSpellbook(); }
+  el.styleLean.addEventListener('click', function () { setStyle('lean'); });
+  el.styleInformal.addEventListener('click', function () { setStyle('informal'); });
+  el.parens.addEventListener('change', function () { state.parens = el.parens.checked; renderAll(); });
+  el.hideinactive.addEventListener('change', function () { state.hideInactive = el.hideinactive.checked; renderRecipes(); });
+
+  // right-click context menu (rename/delete a potion; delete a formula)
+  function showCtx(x, y, items) {
+    el.ctxmenu.innerHTML = items.map(function (it, i) { return '<button data-ci="' + i + '">' + esc(it.label) + '</button>'; }).join('');
+    el.ctxmenu.style.left = x + 'px'; el.ctxmenu.style.top = y + 'px'; el.ctxmenu.hidden = false;
+    Array.prototype.forEach.call(el.ctxmenu.querySelectorAll('button'), function (btn) {
+      btn.addEventListener('click', function (ev) { ev.stopPropagation(); el.ctxmenu.hidden = true; items[+btn.getAttribute('data-ci')].fn(); });
+    });
+  }
+  document.addEventListener('click', function () { el.ctxmenu.hidden = true; });
+  document.addEventListener('contextmenu', function () { el.ctxmenu.hidden = true; });
+  function renamePotion(name) {
+    var nn = window.prompt('Rename ' + name + ' to:', name);
+    if (nn == null) return; nn = nn.trim();
+    if (!nn || G.byName(state.env, nn)) return;
+    state.history.push(state.env); state.env = G.rename(state.env, name, nn); state.sel = []; renderAll();
+  }
+  function deletePotion(name) {
+    var r = G.deleteBinding(state.env, name);
+    if (!r.ok) { el.deducehint.textContent = r.error; return; }
+    state.history.push(state.env); state.env = r.env; state.sel = state.sel.filter(function (n) { return n !== name; }); renderAll();
+  }
+  function deleteFormula(i) {
+    state.formulas = state.formulas.filter(function (_, j) { return j !== i; });
+    state.selF = state.selF.filter(function (x) { return x !== i; }).map(function (x) { return x > i ? x - 1 : x; });
+    renderFormulas(); renderRecipes();
+  }
+  function pasteIntoFormula(text) {
+    var inp = el['formula-in'], pos = (inp.selectionStart == null ? inp.value.length : inp.selectionStart), v = inp.value;
+    inp.value = v.slice(0, pos) + text + v.slice(pos);
+    var np = pos + text.length; if (inp.setSelectionRange) inp.setSelectionRange(np, np);
+    inp.focus(); inp.classList.remove('bad'); el['formula-err'].textContent = '';
+  }
+
+  // ---- formula bench: live \-expansion + parse (inert until Chapter 3) ----
+  function expandAt(input) {
+    var v = input.value, pos = input.selectionStart;
+    var before = v.slice(0, pos);
+    var m = before.match(/\\[a-zA-Z]+$/);
+    if (!m) return false;
+    var expanded = G.expandAbbrevs(m[0]);
+    if (expanded === m[0]) return false;         // not a known abbreviation
+    input.value = v.slice(0, pos - m[0].length) + expanded + v.slice(pos);
+    var np = pos - m[0].length + expanded.length;
+    input.setSelectionRange(np, np);
+    return true;
+  }
+  el['formula-in'].addEventListener('keydown', function (e) {
+    if (e.key === ' ' || e.key === 'Tab') { if (expandAt(el['formula-in'])) { if (e.key === 'Tab') e.preventDefault(); } }
+    else if (e.key === 'Enter') { addFormula(); }
+  });
+  el['formula-in'].addEventListener('input', function () { el['formula-in'].classList.remove('bad'); el['formula-err'].textContent = ''; });
+  el['formula-add'].addEventListener('click', addFormula);
+  function addFormula() {
+    var raw = el['formula-in'].value.trim();
+    if (!raw) return;
+    var r = G.parse(raw);
+    if (!r.ok) { el['formula-in'].classList.add('bad'); el['formula-err'].textContent = r.error; return; }
+    state.formulas.push(r.expr);
+    el['formula-in'].value = '';
+    renderFormulas();
+  }
+  // ---- term bench: name a variable (Chapter 16+) ----
+  el['term-in'].addEventListener('keydown', function (e) { if (e.key === 'Enter') addTerm(); });
+  el['term-in'].addEventListener('input', function () { el['term-in'].classList.remove('bad'); el['term-err'].textContent = ''; });
+  el['term-add'].addEventListener('click', addTerm);
+
+  function boot() {
+    var saved = loadSaved();
+    if (saved) {   // a stored blob means the user opted in previously — restore and keep saving on
+      state.save = true; el.save.checked = true;
+      restore(saved);
+      el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.hideinactive.checked = state.hideInactive; el.mapfollow.checked = state.mapFollow;
+      el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
+      el.styleLean.className = state.style === 'lean' ? 'on' : '';
+      el.styleInformal.className = state.style === 'informal' ? 'on' : '';
+      loadExercise(saved.last && G.EX_BY_ID[saved.last] && accessible()[saved.last] ? saved.last : G.EXERCISES[0].id);
+    } else {
+      loadExercise(G.EXERCISES[0].id);
+    }
+  }
+  boot();
+
+  window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
+    clickTerm: clickTerm, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
+    accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
+    clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
+})();
+</script>
+</body>
+</html>
