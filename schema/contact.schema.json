@@ -21,6 +21,7 @@
         "zoom": { "type": "string" },
         "mastodon": { "type": "string" },
         "bluesky": { "type": "string" },
+        "youtube": { "type": "string" },
         "pronouns": { "type": "string" },
         "note": { "type": "string" }
       }

@@ -856,7 +856,8 @@ def build_contact(contact: dict, travel: dict | None = None) -> str:
     if c.get("email"):
         rows.append(("Email", f'<a href="mailto:{html.escape(c["email"])}">{html.escape(c["email"])}</a>'))
     for lbl, key, short in [("Blog", "blog", None), ("Zoom", "zoom", None),
-                            ("Mastodon", "mastodon", "@tao"), ("Bluesky", "bluesky", "@teorth")]:
+                            ("Mastodon", "mastodon", "@tao"), ("Bluesky", "bluesky", "@teorth"),
+                            ("YouTube", "youtube", "@TerenceTao27")]:
         if c.get(key):
             rows.append((lbl, link(c[key], short or c[key].replace("https://", ""))))
     if c.get("pronouns"):
