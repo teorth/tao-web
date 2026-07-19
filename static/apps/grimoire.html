@@ -274,7 +274,7 @@
     if (state.cheat) { var all = {}; G.EXERCISES.forEach(function (e) { all[e.id] = true; }); return all; }
     return G.accessibleSet(state.solved);
   }
-  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1, 'pick': 1 } : G.activeCaps(accessible()); }
+  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1, 'pick': 1, 'exists_intro': 1 } : G.activeCaps(accessible()); }
   var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
   function hasCap(c) { return !!caps()[c]; }
 
@@ -845,9 +845,9 @@
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.selT = []; renderAll();
   }
 
-  function doCraft(recipeId, inputs) {
+  function doCraft(recipeId, inputs, which) {
     state.justUnlocked = null; state.justUnlockedEx = [];
-    var res = G.craft(state.env, recipeId, inputs);
+    var res = G.craft(state.env, recipeId, inputs, which);   // `which` picks the specific result of a multi-output recipe (∃-intro)
     if (!res.ok) return;
     state.history.push(state.env);
     state.env = res.env;
@@ -857,7 +857,7 @@
   }
   function doCraftIdx(i) {
     var d = state.ded[i]; if (!d) return;
-    if (d.action === 'proof') doCraft(d.d.recipeId, d.d.inputs);
+    if (d.action === 'proof') doCraft(d.d.recipeId, d.d.inputs, d.d.output);
     else if (d.action === 'assume') doAssume(d.formula);
     else if (d.action === 'discharge') doDischarge(d.proofName, d.level);
     else if (d.action === 'not_intro') doNotIntro(d.a, d.b);

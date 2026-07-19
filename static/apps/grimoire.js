@@ -310,6 +310,34 @@
       return [{ output: substE(h.body, h.v.name, h.v.sort, t), lean: inp[0].name + ' ' + render(t, { lean: true }) }];
     }
   });
+  // ---------- Chapter 22: existential introduction (finite occurrence-abstraction) ----------
+  // enumAbstract(φ, t, xv): every body ψ with ψ[xv := t] = φ — i.e. φ with SOME SUBSET of the occurrences of the
+  // (variable) witness t replaced by the fresh bound variable xv. Finite (2^#occurrences); the player picks which.
+  // The witness is always a context VARIABLE (no compound terms yet), so each occurrence is independently abstract/keep.
+  function cartesian(lists) {
+    return lists.reduce(function (acc, l) { var out = []; acc.forEach(function (a) { l.forEach(function (x) { out.push(a.concat([x])); }); }); return out; }, [[]]);
+  }
+  function enumAbstract(e, t, xv) {
+    if (e.tag === 'var') return exprEq(e, t) ? [xv, e] : [e];
+    if (e.tag === 'binder') return enumAbstract(e.body, t, xv).map(function (b) { return { tag: 'binder', q: e.q, v: e.v, body: b, sort: PROP }; });
+    return cartesian(e.args.map(function (a) { return enumAbstract(a, t, xv); })).map(function (args) { return appE(e.sym, args); });
+  }
+  function dedupExprs(list) { var out = []; list.forEach(function (e) { if (!out.some(function (o) { return exprEq(o, e); })) out.push(e); }); return out; }
+  function freshBoundName(e, avoid) { var used = varsInto(e, {}); used[avoid] = 1; if (!used['x']) return 'x'; for (var i = 0; ; i++) if (!used['x' + i]) return 'x' + i; }
+  // ∃-introduction: a proof of P(t) and a witness term t yield the finitely-many ∃ x, (P with some t's abstracted).
+  // All share the Lean anonymous-constructor witness `⟨t, h⟩`; the `have`-type ascription disambiguates which body —
+  // so the STEP records the concrete result (no lambda is ever shown to, or built by, the player).
+  defRecipe({ id: 'Exists.intro', leanName: 'Exists.intro', chapter: 22, arity: 2, rule: 'a proof of P(t), and a term t ⊢ ∃ x, P(x)', informal: 'existential introduction',
+    match: function (inp) {
+      if (inp.length !== 2 || !inp[0].proof || inp[1].proof) return [];
+      var proof = inp[0], t = inp[1].type;
+      if (t.tag !== 'var') return [];   // the witness is a context variable
+      var xname = freshBoundName(proof.type, t.name), xv = varE(xname, t.sort);
+      return dedupExprs(enumAbstract(proof.type, t, xv)).map(function (body) {
+        return { output: EXISTS({ name: xname, sort: t.sort }, body), lean: '⟨' + render(t, { lean: true }) + ', ' + proof.name + '⟩' };
+      });
+    }
+  });
   var BASE_RECIPES = Object.keys(RECIPES).map(function (k) { return RECIPES[k]; });
 
   // ---------- generic (higher-order) unifier → a solved lemma becomes a reusable recipe ----------
@@ -407,14 +435,17 @@
 
   // apply a recipe to selected input bindings -> a new env (immutably) + the created binding
   // inputs: each a proof-binding NAME (string) or an ingredient object ({type,name?,proof})
-  function craft(env, recipeId, inputs) {
+  function craft(env, recipeId, inputs, which) {
     var recipe = RECIPES[recipeId];
     if (!recipe) return { ok: false, error: 'unknown recipe ' + recipeId };
     var ings = inputs.map(function (x) { if (typeof x === 'string') { var b = byName(env, x); return b ? proofIng(b) : null; } return x; });
     if (ings.some(function (i) { return !i; })) return { ok: false, error: 'unknown ingredient' };
     var cands = recipe.match(ings, env);
     if (!cands.length) return { ok: false, error: 'that recipe does not apply to those ingredients' };
-    var c = cands[0], name = freshName(c.output, env);
+    // `which` (an output Expr) selects among the finitely-many results of a multi-output recipe (e.g. ∃-introduction)
+    var c = which ? cands.filter(function (x) { return exprEq(x.output, which); })[0] : cands[0];
+    if (!c) return { ok: false, error: 'that specific result is not available' };
+    var name = freshName(c.output, env);
     var b = binding(name, c.output);
     var step = { recipe: recipeId, name: name, type: c.output, lean: c.lean, froms: ings.map(function (i) { return i.type; }) };
     var env2 = withEnv(env, { bindings: env.bindings.concat([b]), steps: env.steps.concat([step]) });
@@ -535,7 +566,8 @@
       kperms(ings, r.arity).forEach(function (inp) {
         r.match(inp, env).forEach(function (c) {
           if (env.bindings.some(function (b) { return exprEq(b.type, c.output); })) return;   // already crafted
-          var key = r.id + '|' + inp.map(function (i) { return i.proof ? i.name : 'φ:' + render(i.type); }).join(',');
+          // key includes the OUTPUT so a multi-output recipe (∃-introduction) offers each distinct result separately
+          var key = r.id + '|' + inp.map(function (i) { return i.proof ? i.name : 'φ:' + render(i.type); }).join(',') + '|' + render(c.output);
           if (seen[key]) return; seen[key] = 1;
           res.push({ recipeId: r.id, inputs: inp, output: c.output, lean: c.lean });
         });
@@ -826,14 +858,24 @@
     // variable directly to the context, no ∃/witness hypothesis). 21.1: from ∀x, A (A not depending on x) deduce A —
     // provable only because Ω is inhabited (pick a witness, then instantiate). Minted as the reusable `forall_const'`.
     { id: '21.1', kind: 'lemma', leanName: "forall_const'", chapter: 21, sorts: [OMEGA], nonempty: [OMEGA], terms: [varE('a', OMEGA)],
-      givens: [binding('hA', fa('X', A))], goal: A, unlocks: [], needs: ['pick'] }
+      givens: [binding('hA', fa('X', A))], goal: A, unlocks: ['22.1'], needs: ['pick'] },
+    // Chapter 22 — EXISTENTIAL INTRODUCTION: from a proof of P(t) and a witness term t, conclude ∃x, P(x). The witness
+    // occurrences are abstracted, and since that choice is not unique the player selects among the finitely-many results
+    // (e.g. Q(α,α) offers ∃x,Q(x,x) / ∃x,Q(x,α) / ∃x,Q(α,x) / ∃x,Q(α,α)). 22.1 introduces it; 22.2 is the ∀→∃ implication
+    // (needs a witness, so pick one first — Chapter 21); 22.3 is the four-way choice exercise.
+    { id: '22.1', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+      givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), unlocks: ['22.2', '22.3'], needs: ['exists_intro'] },
+    { id: '22.2', kind: 'lemma', leanName: 'exists_of_forall', chapter: 22, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), unlocks: [], needs: [] },
+    { id: '22.3', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+      givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('x', appE('Q', [xL, xL])), unlocks: [], needs: [] }
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
   // ---------- progression: accessible exercises + active capabilities from the solved set ----------
   var PROGRESSION_START = ['1.1'];
   // which capability each base recipe requires (minted lemmas gate themselves via `state.unlocked`)
-  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate' };
+  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate', 'Exists.intro': 'exists_intro' };
   // accessible = start ∪ { successors of every solved exercise }.  `solved` is an id→truthy map (or array).
   function accessibleSet(solved) {
     var acc = {}; PROGRESSION_START.forEach(function (id) { acc[id] = true; });
@@ -861,7 +903,7 @@
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
-    obtain: obtain, obtainOptions: obtainOptions, isExists: isExists, pick: pick,
+    obtain: obtain, obtainOptions: obtainOptions, isExists: isExists, pick: pick, enumAbstract: enumAbstract,
     FORMULA_RECIPES: FORMULA_RECIPES, formulaDeductions: formulaDeductions,
     EXERCISES: EXERCISES, EX_BY_ID: EX_BY_ID,
     PROGRESSION_START: PROGRESSION_START, RECIPE_CAP: RECIPE_CAP, accessibleSet: accessibleSet, activeCaps: activeCaps
