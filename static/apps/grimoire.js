@@ -767,11 +767,20 @@
     // so this reads correctly on the tree.
     { id: '6.1a', kind: 'lemma', leanName: 'Impl.idem', chapter: 6, givens: [], formulas: [A], goal: IMPLIES(A, A), unlocks: ['4.1', '5.1', '6.1b', '7.1'], needs: ['assume'] },
     { id: '4.1', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), unlocks: [], needs: [] },
-    { id: '5.1', kind: 'example', chapter: 5, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), unlocks: [], needs: [] },
+    { id: '5.1', kind: 'example', chapter: 5, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), unlocks: ['5.2'], needs: [] },
+    // 5.2 (QED 5.2): two assumptions deep, and the inner goal is the inner assumption — the first time a
+    // sub-proof is opened inside a sub-proof. An optional leaf, like 5.1 itself.
+    { id: '5.2', kind: 'example', chapter: 5, givens: [], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, A)), unlocks: [], needs: [] },
     // 6.1b is an OPTIONAL side-branch; the main path runs 6.1a → 7.1.
-    { id: '6.1b', kind: 'example', chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, OR(A, B)), A), unlocks: [], needs: [] },
-    { id: '7.1', kind: 'example', chapter: 7, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), unlocks: ['8.2'], needs: [] },
-    { id: '8.2', kind: 'lemma', leanName: 'implies_trans', chapter: 8, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), unlocks: ['8.3', '8.4a'], needs: ['mp'] },
+    { id: '6.1b', kind: 'example', chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, OR(A, B)), A), unlocks: ['6.2'], needs: [] },
+    // 6.2 (QED 6.2): the deduction theorem applied twice over — a statement you already hold can be
+    // discharged through BOTH assumptions at once, giving A → B → C from C alone.
+    { id: '6.2', kind: 'lemma', leanName: "imp_const'", chapter: 6, givens: [binding('hC', C)], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), unlocks: [], needs: [] },
+    { id: '7.1', kind: 'example', chapter: 7, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), unlocks: ['8.1'], needs: [] },
+    // 8.1 (QED 8.1a): modus ponens by itself — one craft. It introduces the `mp` capability, so it is now
+    // the entry to Chapter 8 rather than 8.2 (implies_trans), which needs a sub-proof as well.
+    { id: '8.1', kind: 'example', chapter: 8, givens: [binding('hA', A), binding('hAB', IMPLIES(A, B))], formulas: [A, B], goal: B, unlocks: ['8.2'], needs: ['mp'] },
+    { id: '8.2', kind: 'lemma', leanName: 'implies_trans', chapter: 8, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), unlocks: ['8.3', '8.4a'], needs: [] },
     // 8.3 roots an OPTIONAL branch (8.3 → 8.5a → 8.5b); the main Chapter-8 spine is 8.2 → 8.4a → 8.4b → 8.6b.
     { id: '8.3', kind: 'lemma', leanName: "And.symm'", chapter: 8, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, B), AND(B, A)), unlocks: ['8.5a'], needs: [] },
     { id: '8.4a', kind: 'lemma', leanName: "And.elim'", chapter: 8, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(AND(A, B), C), unlocks: ['8.4b', '8.4c'], needs: [] },
