@@ -22,6 +22,7 @@
   var OMEGA = 'Ω';     // the first data sort (Chapter 16+); modeled in Lean by `variable {Ω}` (Ω is a valid identifier)
   var SET = 'Set';     // Chapter 23: an ABSTRACT sort — a carrier equipped with a membership relation
   var MAGMA = 'M';     // Chapter 23: the axiom-free teaching sort (a magma with a constant and a unary map)
+  var GRP = 'G';       // Chapter 25: a group — the first sort whose theory carries AXIOMS
 
   // ---------- sort registry: which sorts exist, and what each one carries ----------
   // Sorts are deliberately NOT first-class (no sort variables, no inference): this is a hardcoded table.
@@ -73,6 +74,10 @@
   defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
   defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
   defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
+  // Chapter 25: the group carrier's operations.
+  defSym({ name: 'one', arity: 0, fixity: 'atom', uni: '1', leanApp: 'one', resultSort: GRP });
+  defSym({ name: 'mul', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '·', abbrev: ['\\mul', '\\cdot'], argSorts: [GRP, GRP], resultSort: GRP, leanApp: 'mul' });
+  defSym({ name: 'inv', arity: 1, fixity: 'app', argSorts: [GRP], resultSort: GRP, uni: 'inv' });
   // Chapter 24: EQUALITY — the one relation every sort has, and the only operation Ω will ever carry.
   // `polyArgs` marks it as sort-polymorphic: both sides must share a sort, and it may not compare formulas.
   // Infix in Lean too, so no `leanApp` is needed.
@@ -273,6 +278,7 @@
       // `star c (f c)`, never `star c f c` — which would read as a three-argument application.
       // minPrec 100 is the marker for "I am an argument position".
       if (lean && s.leanApp) {   // an infix relation is emitted as the plain function it stands for
+        if (!e.args.length) return s.leanApp;   // a constant: `1` on the board is `one` in Lean
         var la = s.leanApp + ' ' + e.args.map(function (a) { return go(a, 100, false); }).join(' ');
         return minPrec >= 100 ? '(' + la + ')' : la;
       }
@@ -296,7 +302,15 @@
   function newEnv(exercise) {
     // `vars` = the DATA half of the proof state (context variables of a non-Prop sort): given constants, plus any
     // variables introduced by ∀-introduction or `obtain`. This is the single source of truth for "in context".
-    return { bindings: exercise.givens.map(function (g) { return binding(g.name, g.type); }), vars: (exercise.consts || []).map(function (c) { return { name: c.name, sort: c.sort }; }), goal: exercise.goal, steps: [], parent: null, assumption: null, depth: 0 };
+    // A sort may carry AXIOMS. They are part of the theory rather than of any one exercise, so they are in
+    // hand from the start — as potions, like any other hypothesis — instead of being restated as givens
+    // every time (which is what makes QED's group exercises so bulky). They reach Lean the same way: as
+    // ordinary `variable` hypotheses, so the theorem reads "for any group …" and no `axiom` is ever declared.
+    var ax = [];
+    (exercise.sorts || []).forEach(function (sn) {
+      ((SORTS[sn] || {}).axioms || []).forEach(function (a) { ax.push(binding(a.name, a.type)); });
+    });
+    return { bindings: ax.concat(exercise.givens.map(function (g) { return binding(g.name, g.type); })), vars: (exercise.consts || []).map(function (c) { return { name: c.name, sort: c.sort }; }), goal: exercise.goal, steps: [], parent: null, assumption: null, depth: 0 };
   }
   function withEnv(env, over) {   // immutable env update preserving the nesting fields
     var o = { bindings: env.bindings, vars: env.vars, goal: env.goal, steps: env.steps, parent: env.parent, assumption: env.assumption, depth: env.depth };
@@ -797,7 +811,16 @@
     var gs = ex.givens.map(function (g) { return '(' + g.name + ' : ' + render(g.type, o) + ')'; }).join(' ');
     var params = [cs, gs].filter(Boolean).join(' ');
     var head = ex.kind === 'lemma' ? ('theorem ' + ex.leanName) : 'example';   // `theorem` is core Lean; `lemma` needs Mathlib
-    return head + (params ? ' ' + params : '') + ' : ' + render(ex.goal, o) + ' := by';
+    // Lean only auto-includes a section `variable` that the STATEMENT mentions. A theory's operations and
+    // axioms are typically used only inside the proof body, so they must be pulled in explicitly — without
+    // this the body fails with "unknown identifier mul_one".
+    var inc = [];
+    (ex.sorts || []).forEach(function (sn) {
+      ((SORTS[sn] || {}).ops || []).forEach(function (op) { inc.push(op.lean); });
+      ((SORTS[sn] || {}).axioms || []).forEach(function (a) { inc.push(a.name); });
+    });
+    var incLine = inc.length ? 'include ' + inc.join(' ') + ' in\n' : '';
+    return incLine + head + (params ? ' ' + params : '') + ' : ' + render(ex.goal, o) + ' := by';
   }
   function goalNameIn(env) {
     for (var i = env.bindings.length - 1; i >= 0; i--) if (exprEq(env.bindings[i].type, env.goal)) return env.bindings[i].name;
@@ -811,6 +834,7 @@
       lines.push('variable {' + s + '}' + ((ex.nonempty || []).indexOf(s) >= 0 ? ' [Nonempty ' + s + ']' : ''));
       // an abstract sort also declares the operations it owns, so the proof stands alone with no `axiom`
       ((SORTS[s] || {}).ops || []).forEach(function (op) { lines.push('variable (' + op.lean + ' : ' + op.type.join(' → ') + ')'); });
+      ((SORTS[s] || {}).axioms || []).forEach(function (a) { lines.push('variable (' + a.name + ' : ' + render(a.type, { lean: true }) + ')'); });
     });
     var atoms = []; ex.givens.forEach(function (g) { propAtoms(g.type, [], atoms); }); propAtoms(ex.goal, [], atoms); atoms.sort();
     if (atoms.length) lines.push('variable {' + atoms.join(' ') + ' : Prop}');
@@ -899,6 +923,22 @@
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
   var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
   var beta = varE('β', OMEGA), gamma = varE('γ', OMEGA);      // further Ω constants, for the equality chapter
+  // ---------- Chapter 25: the theory of groups ----------
+  // An ABSTRACT theory: carrier G with 1, ·, inv, and five axioms. Parameterised rather than axiomatised —
+  // every one of these becomes a `variable` hypothesis, so the emitted theorem holds of ANY such structure
+  // and the module is consistent by construction. Both identities and both inverses are included (rather
+  // than the minimal left-handed presentation) so the chapter's exercises are the interesting CONSEQUENCES.
+  var gv = function (n) { return varE(n, GRP); };
+  var g1 = appE('one', []), gmul = function (a, b) { return appE('mul', [a, b]); }, ginv = function (a) { return appE('inv', [a]); };
+  defSort({ name: GRP, kind: 'abstract',
+    ops: [{ sym: 'one', lean: 'one', type: [GRP] }, { sym: 'mul', lean: 'mul', type: [GRP, GRP, GRP] }, { sym: 'inv', lean: 'inv', type: [GRP, GRP] }],
+    axioms: [
+      { name: 'one_mul', type: faS('x', GRP, appE('EQ', [gmul(g1, gv('x')), gv('x')])) },
+      { name: 'mul_one', type: faS('x', GRP, appE('EQ', [gmul(gv('x'), g1), gv('x')])) },
+      { name: 'mul_assoc', type: faS('x', GRP, faS('y', GRP, faS('z', GRP, appE('EQ', [gmul(gmul(gv('x'), gv('y')), gv('z')), gmul(gv('x'), gmul(gv('y'), gv('z')))])))) },
+      { name: 'inv_mul', type: faS('x', GRP, appE('EQ', [gmul(ginv(gv('x')), gv('x')), g1])) },
+      { name: 'mul_inv', type: faS('x', GRP, appE('EQ', [gmul(gv('x'), ginv(gv('x'))), g1])) }
+    ] });
   function eq(a, b) { return appE('EQ', [a, b]); }
   var cO = function (n) { return { name: n, sort: OMEGA }; };
   function fa(name, body) { return FORALL({ name: name, sort: OMEGA }, body); }
@@ -1255,7 +1295,20 @@
     // 24.6: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
     { id: '24.6', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 24, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hab', eq(alpha, beta))], formulas: [appE('P', [alpha]), appE('P', [beta])],
-      goal: IFF(appE('P', [alpha]), appE('P', [beta])), unlocks: [], needs: [] },
+      goal: IFF(appE('P', [alpha]), appE('P', [beta])), unlocks: ['25.1'], needs: [] },
+    // ---------- Chapter 25: GROUPS — the first branch chapter, and the first theory with AXIOMS.
+    // The five axioms are in hand from the start because they belong to the sort, not to the exercise:
+    // no exercise restates them. They reach Lean as `variable` hypotheses, so each theorem holds of any
+    // group and nothing is ever declared with `axiom`.
+    // 25.1 (QED 24.3): a left identity and a right identity must coincide. Needs no group axiom at all —
+    // it is pure equality reasoning, which makes it the gentle way in.
+    { id: '25.1', kind: 'example', chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
+      givens: [binding('hL', faS('x', GRP, appE('EQ', [gmul(gv('α'), gv('x')), gv('x')]))),
+               binding('hR', faS('x', GRP, appE('EQ', [gmul(gv('x'), gv('β')), gv('x')])))],
+      formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), unlocks: ['25.2'], needs: ['groups'] },
+    // 25.2: the inverse of the identity is the identity — the first proof that actually uses the axioms.
+    { id: '25.2', kind: 'lemma', leanName: "inv_one'", chapter: 25, sorts: [GRP], consts: [], terms: [],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
