@@ -57,6 +57,10 @@
   defSym({ name: 'S', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'S' });
   // Chapter 23: a RELATION. Infix on the board (`Y ∈ X`) but a plain function in Lean (`mem Y X`) — no
   // typeclass is introduced. `leanApp` names the function the infix form emits as.
+  // Chapter 24: EQUALITY — the one relation every sort has, and the only operation Ω will ever carry.
+  // `polyArgs` marks it as sort-polymorphic: both sides must share a sort, and it may not compare formulas.
+  // Infix in Lean too, so no `leanApp` is needed.
+  defSym({ name: 'EQ', arity: 2, fixity: 'infix', prec: 38, uni: '=', abbrev: ['\\eq', '\\equals'], resultSort: PROP, polyArgs: true });
   defSym({ name: 'MEM', arity: 2, fixity: 'infix', prec: 38, uni: '∈', abbrev: ['\\in', '\\mem'], argSorts: [SET, SET], resultSort: PROP, leanApp: 'mem' });
 
   // ---------- Expr: {tag:'var',name,sort} | {tag:'app',sym,args,sort} | {tag:'binder',q,v,body,sort} ----------
@@ -124,6 +128,9 @@
 
   // ---------- parser: precedence climbing over the registry ----------
   var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity !== 'atom') UNI_OP[s.uni] = k; });
+  // Identifiers admit Greek letters, because the Ω-sorted constants the game hands out are α, β, γ …
+  // (Ω itself is a sort name, never an identifier). Without this a player simply cannot type `α = β`.
+  var IDENT_CH = /[A-Za-z0-9_'\u0370-\u03ff\u1f00-\u1fff]/;
   function tokenize(str) {
     var toks = [], i = 0;
     while (i < str.length) {
@@ -131,8 +138,8 @@
       if (/\s/.test(c)) { i++; continue; }
       if (c === '(' || c === ')') { toks.push({ t: c }); i++; continue; }
       if (UNI_OP[c]) { toks.push({ t: 'op', sym: UNI_OP[c] }); i++; continue; }
-      if (/[A-Za-z0-9_']/.test(c)) {
-        var j = i; while (j < str.length && /[A-Za-z0-9_']/.test(str[j])) j++;
+      if (IDENT_CH.test(c)) {
+        var j = i; while (j < str.length && IDENT_CH.test(str[j])) j++;
         var w = str.slice(i, j); i = j;
         if (w === 'True') toks.push({ t: 'atom', sym: 'TRUE' });
         else if (w === 'False') toks.push({ t: 'atom', sym: 'FALSE' });
@@ -146,7 +153,14 @@
   // A symbol that declares `argSorts` only applies to arguments of those sorts. Reporting this beats
   // building an ill-sorted formula that would later fail to match anything for no visible reason.
   function argSortError(sym, args) {
-    var d = SYMBOLS[sym]; if (!d || !d.argSorts) return null;
+    var d = SYMBOLS[sym]; if (!d) return null;
+    if (d.polyArgs) {   // both sides share one sort, and it is a data sort (comparing formulas is not equality)
+      var s0 = sortOf(args[0]), s1 = sortOf(args[1]);
+      if (s0 === PROP || s1 === PROP) return d.uni + ' compares terms, not formulas';
+      if (s0 !== s1) return d.uni + ' compares two terms of the same sort, but got ' + s0 + ' and ' + s1;
+      return null;
+    }
+    if (!d.argSorts) return null;
     for (var i = 0; i < args.length; i++) {
       if (sortOf(args[i]) !== d.argSorts[i]) {
         return d.uni + ' needs ' + d.argSorts[i] + ' on ' + (i === 0 ? 'the left' : 'the right') +
@@ -377,6 +391,38 @@
       return dedupExprs(enumAbstract(proof.type, t, xv)).map(function (body) {
         return { output: EXISTS({ name: xname, sort: t.sort }, body), lean: '⟨' + render(t, { lean: true }) + ', ' + proof.name + '⟩' };
       });
+    }
+  });
+  // ---------- Chapter 24: equality ----------
+  // Only two primitives are needed. Everything else — symmetry, transitivity, congruence — is an EXERCISE
+  // the player derives from them, which is the point of the chapter.
+  defRecipe({ id: 'Eq.refl', leanName: 'Eq.refl', chapter: 24, arity: 1, rule: 'a term t ⊢ t = t', informal: 'everything equals itself',
+    match: function (inp) {
+      if (inp.length !== 1 || inp[0].proof || sortOf(inp[0].type) === PROP) return [];
+      return [{ output: appE('EQ', [inp[0].type, inp[0].type]), lean: 'Eq.refl ' + render(inp[0].type, { lean: true }) }];
+    }
+  });
+  // Rewriting: from a proof of P and an equation a = b, replace SOME occurrences of a by b. Which ones is a
+  // genuine choice, so this reuses `enumAbstract` — the same finite-choice machinery as ∃-introduction. The
+  // abstracted body IS the Lean motive, which is why `Eq.subst` can pin down exactly the chosen occurrences
+  // (plain `rw` would rewrite all of them).
+  defRecipe({ id: 'rw', leanName: 'Eq.subst', chapter: 24, arity: 2, rule: 'a proof of P, and a proof of a = b ⊢ P with some a’s rewritten to b', informal: 'rewrite along an equation',
+    match: function (inp) {
+      if (inp.length !== 2 || !inp[0].proof || !inp[1].proof) return [];
+      var h = inp[0], eq = inp[1].type;
+      if (!(eq.tag === 'app' && eq.sym === 'EQ')) return [];
+      var a = eq.args[0], b = eq.args[1];
+      if (a.tag !== 'var') return [];                      // rewriting along a compound term comes with Chapter 23's operations
+      var xname = freshBoundName(h.type, a.name), xv = varE(xname, a.sort);
+      var out = [];
+      dedupExprs(enumAbstract(h.type, a, xv)).forEach(function (psi) {
+        if (exprEq(psi, h.type)) return;                   // abstracting nothing rewrites nothing
+        out.push({
+          output: substE(psi, xname, a.sort, b),
+          lean: 'Eq.subst (motive := fun ' + xname + ' => ' + render(psi, { lean: true }) + ') ' + inp[1].name + ' ' + h.name
+        });
+      });
+      return out;
     }
   });
   var BASE_RECIPES = Object.keys(RECIPES).map(function (k) { return RECIPES[k]; });
@@ -795,6 +841,9 @@
   // exercises is the active capability set (so early exercises show a simplified interface).
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
   var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
+  var beta = varE('β', OMEGA), gamma = varE('γ', OMEGA);      // further Ω constants, for the equality chapter
+  function eq(a, b) { return appE('EQ', [a, b]); }
+  var cO = function (n) { return { name: n, sort: OMEGA }; };
   function fa(name, body) { return FORALL({ name: name, sort: OMEGA }, body); }
   function ee(name, body) { return EXISTS({ name: name, sort: OMEGA }, body); }
   function faS(name, sort, body) { return FORALL({ name: name, sort: sort }, body); }
@@ -1102,14 +1151,39 @@
       unlocks: ['23.2'], needs: ['sets'] },
     { id: '23.2', kind: 'example', chapter: 23, sorts: [SET], terms: [],
       givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
-      formulas: [FALSE()], goal: FALSE(), unlocks: [], needs: [] },
+      formulas: [FALSE()], goal: FALSE(), unlocks: ['24.1'], needs: [] },
+    // ---------- Chapter 24: EQUALITY. Largely original: QED supplies only symmetry and transitivity, and
+    // here even those are EXERCISES rather than primitives. The chapter has just two primitives —
+    // `Eq.refl` (a term equals itself) and `rw` (rewrite some occurrences along an equation) — and every
+    // other fact is derived from them. `rw` reuses ∃-introduction's finite-choice machinery, so choosing
+    // WHICH occurrences move is part of the puzzle (24.3 is where that first bites).
+    // Equality is also the one relation every sort shares, so these lemmas serve every later chapter.
+    { id: '24.1', kind: 'example', chapter: 24, sorts: [OMEGA], consts: [cO('α')], terms: [alpha],
+      givens: [], formulas: [], goal: eq(alpha, alpha), unlocks: ['24.2'], needs: ['eq'] },
+    { id: '24.2', kind: 'example', chapter: 24, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      givens: [binding('hP', appE('P', [alpha])), binding('hab', eq(alpha, beta))],
+      formulas: [], goal: appE('P', [beta]), unlocks: ['24.3'], needs: [] },
+    // 24.3: Q(α,α) has TWO occurrences of α, so rewriting offers Q(β,α), Q(α,β) and Q(β,β) — pick one.
+    { id: '24.3', kind: 'example', chapter: 24, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      givens: [binding('hQ', appE('Q', [alpha, alpha])), binding('hab', eq(alpha, beta))],
+      formulas: [], goal: appE('Q', [alpha, beta]), unlocks: ['24.4'], needs: [] },
+    // 24.4: symmetry (QED 24.1a) — rewrite inside `α = α` itself. The prettiest use of the two primitives.
+    { id: '24.4', kind: 'lemma', leanName: "Eq.symm'", chapter: 24, sorts: [OMEGA], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      givens: [binding('hab', eq(alpha, beta))], formulas: [], goal: eq(beta, alpha), unlocks: ['24.5'], needs: [] },
+    // 24.5: transitivity (QED 24.1b) — a single rewrite of the first equation along the second.
+    { id: '24.5', kind: 'lemma', leanName: "Eq.trans'", chapter: 24, sorts: [OMEGA], consts: [cO('α'), cO('β'), cO('γ')], terms: [alpha, beta, gamma],
+      givens: [binding('hab', eq(alpha, beta)), binding('hbc', eq(beta, gamma))], formulas: [], goal: eq(alpha, gamma), unlocks: ['24.6'], needs: [] },
+    // 24.6: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
+    { id: '24.6', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 24, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      givens: [binding('hab', eq(alpha, beta))], formulas: [appE('P', [alpha]), appE('P', [beta])],
+      goal: IFF(appE('P', [alpha]), appE('P', [beta])), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
   // ---------- progression: accessible exercises + active capabilities from the solved set ----------
   var PROGRESSION_START = ['1.1'];
   // which capability each base recipe requires (minted lemmas gate themselves via `state.unlocked`)
-  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate', 'Exists.intro': 'exists_intro' };
+  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate', 'Exists.intro': 'exists_intro', 'Eq.refl': 'eq', 'rw': 'eq' };
   // accessible = start ∪ { successors of every solved exercise }.  `solved` is an id→truthy map (or array).
   function accessibleSet(solved) {
     var acc = {}; PROGRESSION_START.forEach(function (id) { acc[id] = true; });
