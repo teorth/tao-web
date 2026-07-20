@@ -21,6 +21,7 @@
   var PROP = 'Prop';   // the only sort in Stage 0; the field exists everywhere for the many-sorted future
   var OMEGA = 'Ω';     // the first data sort (Chapter 16+); modeled in Lean by `variable {Ω}` (Ω is a valid identifier)
   var SET = 'Set';     // Chapter 23: an ABSTRACT sort — a carrier equipped with a membership relation
+  var MAGMA = 'M';     // Chapter 23: the axiom-free teaching sort (a magma with a constant and a unary map)
 
   // ---------- sort registry: which sorts exist, and what each one carries ----------
   // Sorts are deliberately NOT first-class (no sort variables, no inference): this is a hardcoded table.
@@ -35,6 +36,16 @@
   function defSort(d) { SORTS[d.name] = d; return d; }
   defSort({ name: OMEGA, kind: 'generic', ops: [] });
   defSort({ name: SET, kind: 'abstract', ops: [{ lean: 'mem', type: [SET, SET, PROP] }] });
+  // Chapter 23's teaching sort: a MAGMA — a carrier with a binary operation, plus a constant and a unary
+  // map. Deliberately axiom-free, so nothing can be proved ABOUT c, f or ∗ and attention stays on the
+  // mechanic of building and placing terms. `c` is a SORT-LEVEL constant (0-ary operation): it belongs to
+  // the theory, so it auto-populates the term bench in every exercise over M — unlike the per-exercise
+  // constants α, β. The group and Nat chapters get `one`/`zero` the same way.
+  defSort({ name: MAGMA, kind: 'abstract', ops: [
+    { sym: 'c', lean: 'c', type: [MAGMA] },
+    { sym: 'f', lean: 'f', type: [MAGMA, MAGMA] },
+    { sym: 'star', lean: 'star', type: [MAGMA, MAGMA, MAGMA] }
+  ] });
 
   // ---------- symbol registry: one table drives parse + render + Lean emit ----------
   // {name, arity, fixity:'infix'|'prefix'|'atom', prec, assoc:'right', uni, abbrev:[…], resultSort}
@@ -51,12 +62,17 @@
   // Chapter 16+: predicate symbols (function application, rendered `Q(x, y)` on the board, `Q x y` in Lean).
   // The registry entry only marks the symbol as an `app` of result-sort Prop; each exercise's `preds` pins the
   // actual arity/argument sorts (so `Q` can be binary in one exercise and a predicate letter reused elsewhere).
-  defSym({ name: 'P', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'P' });
-  defSym({ name: 'Q', arity: 2, fixity: 'app', argSorts: [OMEGA, OMEGA], resultSort: PROP, uni: 'Q' });
-  defSym({ name: 'R', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'R' });
-  defSym({ name: 'S', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'S' });
+  defSym({ name: 'P', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'P' });
+  defSym({ name: 'Q', arity: 2, fixity: 'app', argSorts: [OMEGA, OMEGA], resultSort: PROP, flex: true, uni: 'Q' });
+  defSym({ name: 'R', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'R' });
+  defSym({ name: 'S', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'S' });
   // Chapter 23: a RELATION. Infix on the board (`Y ∈ X`) but a plain function in Lean (`mem Y X`) — no
   // typeclass is introduced. `leanApp` names the function the infix form emits as.
+  // Chapter 23 operations. Note an `app` symbol emits its OWN NAME in Lean, so the registry name is the
+  // Lean function name; `star` is infix on the board but a function in Lean, like ∈.
+  defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
+  defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
+  defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
   // Chapter 24: EQUALITY — the one relation every sort has, and the only operation Ω will ever carry.
   // `polyArgs` marks it as sort-polymorphic: both sides must share a sort, and it may not compare formulas.
   // Infix in Lean too, so no `leanApp` is needed.
@@ -127,7 +143,10 @@
   function expandAbbrevs(str) { return String(str).replace(/\\[a-zA-Z]+/g, function (m) { return ABBREV[m] !== undefined ? ABBREV[m] : m; }); }
 
   // ---------- parser: precedence climbing over the registry ----------
-  var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity !== 'atom') UNI_OP[s.uni] = k; });
+  // Only genuine operator CHARACTERS go here. An `app` symbol (a predicate P, an operation f) is written as
+  // an identifier followed by its arguments, so registering its name as an operator character would stop it
+  // ever tokenising as an identifier — which is exactly why `P(x)` could not be typed before.
+  var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity !== 'atom' && s.fixity !== 'app') UNI_OP[s.uni] = k; });
   // Identifiers admit Greek letters, because the Ω-sorted constants the game hands out are α, β, γ …
   // (Ω itself is a sort name, never an identifier). Without this a player simply cannot type `α = β`.
   var IDENT_CH = /[A-Za-z0-9_'\u0370-\u03ff\u1f00-\u1fff]/;
@@ -136,7 +155,7 @@
     while (i < str.length) {
       var c = str[i];
       if (/\s/.test(c)) { i++; continue; }
-      if (c === '(' || c === ')') { toks.push({ t: c }); i++; continue; }
+      if (c === '(' || c === ')' || c === ',') { toks.push({ t: c }); i++; continue; }
       if (UNI_OP[c]) { toks.push({ t: 'op', sym: UNI_OP[c] }); i++; continue; }
       if (IDENT_CH.test(c)) {
         var j = i; while (j < str.length && IDENT_CH.test(str[j])) j++;
@@ -153,7 +172,7 @@
   // A symbol that declares `argSorts` only applies to arguments of those sorts. Reporting this beats
   // building an ill-sorted formula that would later fail to match anything for no visible reason.
   function argSortError(sym, args) {
-    var d = SYMBOLS[sym]; if (!d) return null;
+    var d = SYMBOLS[sym]; if (!d || d.flex) return null;   // a predicate letter's sorts come from the exercise
     if (d.polyArgs) {   // both sides share one sort, and it is a data sort (comparing formulas is not equality)
       var s0 = sortOf(args[0]), s1 = sortOf(args[1]);
       if (s0 === PROP || s1 === PROP) return d.uni + ' compares terms, not formulas';
@@ -203,7 +222,33 @@
       var t = toks[pos++];
       if (!t) return { ok: false, error: 'unexpected end of input' };
       if (t.t === '(') { var e = expr(0); if (!e.ok) return e; var c = toks[pos++]; if (!c || c.t !== ')') return { ok: false, error: 'expected “)”' }; return e; }
-      if (t.t === 'id') return { ok: true, expr: varE(t.name, sortOfName(t.name)) };
+      if (t.t === 'id') {
+        // `name(arg, …)` is an application of a registered symbol — a predicate (Q(x,y)) or an operation (f(x))
+        if (toks[pos] && toks[pos].t === '(') {
+          var d = SYMBOLS[t.name];
+          if (!d || d.fixity !== 'app') return { ok: false, error: '“' + t.name + '” is not a function or predicate' };
+          pos++;
+          var args = [];
+          if (toks[pos] && toks[pos].t === ')') pos++;
+          else {
+            while (true) {
+              var a = expr(0); if (!a.ok) return a;
+              args.push(a.expr);
+              var nx = toks[pos++];
+              if (nx && nx.t === ',') continue;
+              if (nx && nx.t === ')') break;
+              return { ok: false, error: 'expected “,” or “)” in the arguments of ' + t.name };
+            }
+          }
+          if (args.length !== d.arity) return { ok: false, error: t.name + ' takes ' + d.arity + ' argument' + (d.arity === 1 ? '' : 's') + ', but got ' + args.length };
+          var badA = argSortError(t.name, args);
+          if (badA) return { ok: false, error: badA };
+          return { ok: true, expr: appE(t.name, args) };
+        }
+        var d0 = SYMBOLS[t.name];
+        if (d0 && d0.arity === 0 && d0.fixity === 'atom') return { ok: true, expr: appE(t.name, []) };   // a sort's constant
+        return { ok: true, expr: varE(t.name, sortOfName(t.name)) };
+      }
       if (t.t === 'atom') return { ok: true, expr: appE(t.sym, []) };
       return { ok: false, error: 'expected a formula' };
     }
@@ -224,20 +269,26 @@
         return (BINDER_PREC < minPrec || (parens && !top)) ? '(' + str + ')' : str;
       }
       var s = SYMBOLS[e.sym];
+      // In Lean an application binds tighter than anything, so a nested one must be parenthesised:
+      // `star c (f c)`, never `star c f c` — which would read as a three-argument application.
+      // minPrec 100 is the marker for "I am an argument position".
       if (lean && s.leanApp) {   // an infix relation is emitted as the plain function it stands for
-        return s.leanApp + ' ' + e.args.map(function (a) { return go(a, 100, false); }).join(' ');
+        var la = s.leanApp + ' ' + e.args.map(function (a) { return go(a, 100, false); }).join(' ');
+        return minPrec >= 100 ? '(' + la + ')' : la;
       }
       if (s.fixity === 'atom') return s.uni;
       if (s.fixity === 'app') {   // predicate application: `Q x y` in Lean, `Q(x, y)` on the board
         var args = e.args.map(function (a) { return go(a, lean ? 100 : 0, false); });
-        return lean ? e.sym + ' ' + args.join(' ') : e.sym + '(' + args.join(', ') + ')';
+        if (!lean) return e.sym + '(' + args.join(', ') + ')';
+        var ap = e.sym + (args.length ? ' ' + args.join(' ') : '');
+        return minPrec >= 100 ? '(' + ap + ')' : ap;
       }
       var str;
       if (s.fixity === 'prefix') str = s.uni + ' ' + go(e.args[0], s.prec, false);
       else str = go(e.args[0], s.assoc === 'left' ? s.prec : s.prec + 1, false) + ' ' + s.uni + ' ' + go(e.args[1], s.assoc === 'right' ? s.prec : s.prec + 1, false);
       return (s.prec < minPrec || (parens && !top)) ? '(' + str + ')' : str;
     }
-    return go(e, 0, true);
+    return (opts && opts.arg) ? go(e, 100, false) : go(e, 0, true);
   }
 
   // ---------- environment: one list of Bindings `name : type` (Lean local context) ----------
@@ -362,7 +413,7 @@
       if (inp.length !== 2 || !inp[0].proof || inp[1].proof) return [];
       var h = inp[0].type, t = inp[1].type;
       if (h.tag !== 'binder' || h.q !== 'forall' || sortOf(t) !== h.v.sort) return [];
-      return [{ output: substE(h.body, h.v.name, h.v.sort, t), lean: inp[0].name + ' ' + render(t, { lean: true }) }];
+      return [{ output: substE(h.body, h.v.name, h.v.sort, t), lean: inp[0].name + ' ' + render(t, { lean: true, arg: true }) }];
     }
   });
   // ---------- Chapter 22: existential introduction (finite occurrence-abstraction) ----------
@@ -372,11 +423,18 @@
   function cartesian(lists) {
     return lists.reduce(function (acc, l) { var out = []; acc.forEach(function (a) { l.forEach(function (x) { out.push(a.concat([x])); }); }); return out; }, [[]]);
   }
+  // Every ψ with ψ[xv := t] = e — i.e. e with SOME occurrences of t abstracted to xv.
+  // `t` may be COMPOUND (`f c`, `α ∗ β`), not just a variable: the check happens at every node, so an
+  // occurrence can be abstracted whole, or left alone and its innards searched instead. Bound variables are
+  // compared by de Bruijn depth in exprEq, so a t mentioning a context variable never captures a bound one.
   function enumAbstract(e, t, xv) {
-    if (e.tag === 'var') return exprEq(e, t) ? [xv, e] : [e];
-    if (e.tag === 'binder') return enumAbstract(e.body, t, xv).map(function (b) { return { tag: 'binder', q: e.q, v: e.v, body: b, sort: PROP }; });
-    return cartesian(e.args.map(function (a) { return enumAbstract(a, t, xv); })).map(function (args) { return appE(e.sym, args); });
+    var here = exprEq(e, t) ? [xv] : [];
+    if (e.tag === 'var') return here.concat([e]);
+    if (e.tag === 'binder') return here.concat(enumAbstract(e.body, t, xv).map(function (b) { return { tag: 'binder', q: e.q, v: e.v, body: b, sort: PROP }; }));
+    return here.concat(cartesian(e.args.map(function (a) { return enumAbstract(a, t, xv); })).map(function (args) { return appE(e.sym, args); }));
   }
+  // a bound name fresh for BOTH the formula and the (possibly compound) term being abstracted
+  function freshBoundNameFor(e, t) { var used = varsInto(e, {}); varsInto(t, used); if (!used['x']) return 'x'; for (var i = 0; ; i++) if (!used['x' + i]) return 'x' + i; }
   function dedupExprs(list) { var out = []; list.forEach(function (e) { if (!out.some(function (o) { return exprEq(o, e); })) out.push(e); }); return out; }
   function freshBoundName(e, avoid) { var used = varsInto(e, {}); used[avoid] = 1; if (!used['x']) return 'x'; for (var i = 0; ; i++) if (!used['x' + i]) return 'x' + i; }
   // ∃-introduction: a proof of P(t) and a witness term t yield the finitely-many ∃ x, (P with some t's abstracted).
@@ -386,8 +444,8 @@
     match: function (inp) {
       if (inp.length !== 2 || !inp[0].proof || inp[1].proof) return [];
       var proof = inp[0], t = inp[1].type;
-      if (t.tag !== 'var') return [];   // the witness is a context variable
-      var xname = freshBoundName(proof.type, t.name), xv = varE(xname, t.sort);
+      if (sortOf(t) === PROP) return [];   // the witness is a TERM — a context variable or one built from operations
+      var xname = freshBoundNameFor(proof.type, t), xv = varE(xname, sortOf(t));
       return dedupExprs(enumAbstract(proof.type, t, xv)).map(function (body) {
         return { output: EXISTS({ name: xname, sort: t.sort }, body), lean: '⟨' + render(t, { lean: true }) + ', ' + proof.name + '⟩' };
       });
@@ -399,7 +457,7 @@
   defRecipe({ id: 'Eq.refl', leanName: 'Eq.refl', chapter: 24, arity: 1, rule: 'a term t ⊢ t = t', informal: 'everything equals itself',
     match: function (inp) {
       if (inp.length !== 1 || inp[0].proof || sortOf(inp[0].type) === PROP) return [];
-      return [{ output: appE('EQ', [inp[0].type, inp[0].type]), lean: 'Eq.refl ' + render(inp[0].type, { lean: true }) }];
+      return [{ output: appE('EQ', [inp[0].type, inp[0].type]), lean: 'Eq.refl ' + render(inp[0].type, { lean: true, arg: true }) }];
     }
   });
   // Rewriting: from a proof of P and an equation a = b, replace SOME occurrences of a by b. Which ones is a
@@ -412,8 +470,7 @@
       var h = inp[0], eq = inp[1].type;
       if (!(eq.tag === 'app' && eq.sym === 'EQ')) return [];
       var a = eq.args[0], b = eq.args[1];
-      if (a.tag !== 'var') return [];                      // rewriting along a compound term comes with Chapter 23's operations
-      var xname = freshBoundName(h.type, a.name), xv = varE(xname, a.sort);
+      var xname = freshBoundNameFor(h.type, a), xv = varE(xname, sortOf(a));
       var out = [];
       dedupExprs(enumAbstract(h.type, a, xv)).forEach(function (psi) {
         if (exprEq(psi, h.type)) return;                   // abstracting nothing rewrites nothing
@@ -514,7 +571,7 @@
         for (var i = 0; i < g; i++) { var pi = inp[c + i]; if (!pi.proof || !unifyHO(givens[i], pi.type, subst, {})) return []; }
         for (var j = 0; j < f; j++) { var xi = inp[c + g + j]; if (xi.proof || sortOf(xi.type) !== freeVars[j].sort) return []; if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return []; subst[freeVars[j].name] = xi.type; }
         for (var p in predMetas) if (!subst[p]) return [];           // DETERMINACY GUARD: every predicate metavar must be pinned down
-        var explicit = inp.slice(0, c).map(function (i) { return render(i.type, { lean: true }); }).concat(inp.slice(c, c + g).map(function (i) { return i.name; }));
+        var explicit = inp.slice(0, c).map(function (i) { return render(i.type, { lean: true, arg: true }); }).concat(inp.slice(c, c + g).map(function (i) { return i.name; }));
         return [{ output: applySubstHO(concl, subst), lean: name + (explicit.length ? ' ' + explicit.join(' ') : '') }];
       }
     };
@@ -1151,7 +1208,29 @@
       unlocks: ['23.2'], needs: ['sets'] },
     { id: '23.2', kind: 'example', chapter: 23, sorts: [SET], terms: [],
       givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
-      formulas: [FALSE()], goal: FALSE(), unlocks: ['24.1'], needs: [] },
+      formulas: [FALSE()], goal: FALSE(), unlocks: ['23.3'], needs: [] },
+    // ---------- Chapter 23, second half: OPERATIONS. The sort M is a magma — a carrier with a constant c,
+    // a unary f and a binary ∗, and NO axioms at all. Nothing can be proved about them, which is the point:
+    // these five drills are about BUILDING terms and putting them where a variable would go. `c` arrives in
+    // the term bench on its own, because a 0-ary operation belongs to the sort rather than to the exercise.
+    { id: '23.3', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [varE('x', MAGMA)],
+      givens: [], formulas: [],
+      goal: faS('x', MAGMA, IMPLIES(appE('P', [appE('f', [varE('x', MAGMA)])]), appE('P', [appE('f', [varE('x', MAGMA)])]))), unlocks: ['23.4'], needs: ['ops'] },
+    { id: '23.4', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
+      givens: [binding('h', faS('x', MAGMA, appE('P', [varE('x', MAGMA)])))], formulas: [],
+      goal: appE('P', [appE('c', [])]), unlocks: ['23.5'], needs: [] },
+    // 23.5: the same move, but the term must be BUILT first — f(c) ∗ c
+    { id: '23.5', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
+      givens: [binding('h', faS('x', MAGMA, appE('P', [varE('x', MAGMA)])))], formulas: [],
+      goal: appE('P', [appE('star', [appE('f', [appE('c', [])]), appE('c', [])])]), unlocks: ['23.6'], needs: [] },
+    // 23.6: a COMPOUND ∃-witness. Q(f c, f c) abstracts three ways over f c — pick the one asked for.
+    { id: '23.6', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'Q', argSorts: [MAGMA, MAGMA], resultSort: PROP }], terms: [],
+      givens: [binding('hQ', appE('Q', [appE('f', [appE('c', [])]), appE('f', [appE('c', [])])]))], formulas: [],
+      goal: eeS('x', MAGMA, appE('Q', [varE('x', MAGMA), appE('f', [appE('c', [])])])), unlocks: ['23.7'], needs: [] },
+    // 23.7: rewriting reaches INSIDE a term — α sits under f, and only the equation α = β is given.
+    { id: '23.7', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
+      givens: [binding('hP', appE('P', [appE('f', [varE('α', MAGMA)])])), binding('hab', appE('EQ', [varE('α', MAGMA), varE('β', MAGMA)]))],
+      formulas: [], goal: appE('P', [appE('f', [varE('β', MAGMA)])]), unlocks: ['24.1'], needs: [] },
     // ---------- Chapter 24: EQUALITY. Largely original: QED supplies only symmetry and transitivity, and
     // here even those are EXERCISES rather than primitives. The chapter has just two primitives —
     // `Eq.refl` (a term equals itself) and `rw` (rewrite some occurrences along an equation) — and every

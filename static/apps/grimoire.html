@@ -215,7 +215,7 @@
         <h2 class="sec" id="termHead">Term bench <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span></h2>
         <div id="term-sorts" class="hint" style="margin:0 0 .5rem"></div>
         <div class="fbar">
-          <input id="term-in" type="text" placeholder="e.g.  x   (a variable of sort Ω)" aria-label="name a variable" title="Name a variable of sort Ω. Type just `x`, or `x : Ω` to be explicit. Enter or Add puts it on the term bench.">
+          <input id="term-in" type="text" placeholder="e.g.  x   or   f(c) ∗ c" aria-label="name a variable or build a term" title="Name a new variable (`x`, or `x : Ω` to pick its sort), or BUILD a term from the sort’s operations, e.g. `f(c)` or `f(c) ∗ c`. Enter or Add puts it on the term bench.">
           <button id="term-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the variable to the term bench">Add variable</button>
           <span id="term-err"></span>
         </div>
@@ -332,7 +332,17 @@
   function saveProgress() {   // keep each exercise's work so switching away and back resumes it
     if (state.ex) state.progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };
   }
-  function exTerms(ex) { return (ex.consts || []).map(function (c) { return G.varE(c.name, c.sort); }).concat((ex.terms || []).slice()); }   // context constants + variables to intro
+  // context constants + variables to intro + every CONSTANT the sorts in play own (a 0-ary operation
+  // belongs to the theory, not to the exercise, so it is simply there from the start)
+  function exTerms(ex) {
+    var out = (ex.consts || []).map(function (c) { return G.varE(c.name, c.sort); }).concat((ex.terms || []).slice());
+    (ex.sorts || []).forEach(function (sn) {
+      ((G.SORTS[sn] || {}).ops || []).forEach(function (op) {
+        if (op.type.length === 1) out.push(G.appE(op.sym, []));   // 0-ary: result sort only
+      });
+    });
+    return out;
+  }
   function loadExercise(id) {
     saveProgress();
     if (MAP && MAP.refollow) MAP.refollow();   // re-picking the current exercise should still re-centre the map
@@ -389,10 +399,24 @@
   }
   // the selected gems-in-hand as term exprs (looked up in env.vars, so always in context)
   function selGemExprs() { var out = []; state.selV.forEach(function (key) { var v = (state.env.vars || []).find(function (vv) { return (vv.name + ':' + vv.sort) === key; }); if (v) out.push(G.varE(v.name, v.sort)); }); return out; }
+  // Two shapes are accepted. A bare NEW name (optionally `name : Sort`) declares a variable — that is how a
+  // player names something to introduce. Anything else is parsed as a TERM built from the sort's operations,
+  // e.g. `f(c)` or `f(c) ∗ c`, with the sorts of the gems in context supplying the identifiers' sorts.
   function parseTerm(raw) {
-    var m = raw.match(/^\s*([A-Za-z][A-Za-z0-9_']*)\s*(?::\s*(Omega|Ω)\s*)?$/);
-    if (!m) return { ok: false, error: 'a term is a variable name, optionally `name : Ω`  (the only sort so far)' };
-    return { ok: true, expr: G.varE(m[1], G.OMEGA) };
+    var sorts = availableSorts();
+    var m = raw.match(/^\s*([A-Za-z\u0370-\u03ff][A-Za-z0-9_'\u0370-\u03ff]*)\s*(?::\s*([^\s]+)\s*)?$/);
+    if (m && !G.SYMBOLS[m[1]]) {
+      var sort = m[2] ? (m[2] === 'Omega' ? G.OMEGA : m[2]) : sorts[0];
+      if (sorts.indexOf(sort) < 0) return { ok: false, error: 'this exercise has no sort “' + sort + '” — it uses ' + sorts.join(', ') };
+      return { ok: true, expr: G.varE(m[1], sort) };
+    }
+    var ctx = {};
+    ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
+    (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
+    var r = G.parse(raw, ctx);
+    if (!r.ok) return r;
+    if (G.sortOf(r.expr) === 'Prop') return { ok: false, error: 'that is a formula, not a term — scribe it on the scroll shelf instead' };
+    return r;
   }
   function addTerm() {
     var raw = el['term-in'].value.trim();
