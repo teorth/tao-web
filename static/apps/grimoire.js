@@ -822,14 +822,14 @@
     // Chapter 12 — negation introduction (reductio) + excluded middle (classical). 12.1 introduces em; 12.2/12.3
     // are double-negation (intro via reductio, elim via em); 12.4 is the contrapositive.
     { id: '12.1', kind: 'example', chapter: 12, givens: [], formulas: [A], goal: OR(A, NOT(A)), unlocks: ['12.2', '12.3'], needs: ['em'] },
-    { id: '12.2', kind: 'lemma', leanName: "not_not_intro'", chapter: 12, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), unlocks: ['12.4'], needs: [] },
+    { id: '12.2', kind: 'lemma', leanName: "not_not_intro'", chapter: 12, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), unlocks: ['12.4', '12.20'], needs: [] },
     { id: '12.3', kind: 'lemma', leanName: 'not_not_elim', chapter: 12, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, unlocks: ['12.8'], needs: [] },
-    { id: '12.4', kind: 'lemma', leanName: "mt'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), unlocks: ['13.1', '12.5'], needs: [] },
+    { id: '12.4', kind: 'lemma', leanName: "mt'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), unlocks: ['13.1', '12.5', '12.17'], needs: [] },
     // 12.5–12.7 (QED 12.1a/b/c): reductio in its general forms — assume A, reach a contradiction, conclude ¬A.
     // 12.7 splits on excluded middle instead, and is minted as a lemma (`by_cases'`) that later chapters reuse.
     { id: '12.5', kind: 'example', chapter: 12, givens: [binding('hAcon', IMPLIES(A, AND(B, NOT(B))))], formulas: [A], goal: NOT(A), unlocks: ['12.6'], needs: [] },
     { id: '12.6', kind: 'example', chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hAnB', IMPLIES(A, NOT(B)))], formulas: [A], goal: NOT(A), unlocks: ['12.7'], needs: [] },
-    { id: '12.7', kind: 'lemma', leanName: "by_cases'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, unlocks: ['12.10'], needs: [] },
+    { id: '12.7', kind: 'lemma', leanName: "by_cases'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, unlocks: ['12.10', '12.21'], needs: [] },
     // 12.8–12.9 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
     // with the minted `not_not_elim` (12.3). The two differ only in the order of the contradictory pair.
     { id: '12.8', kind: 'example', chapter: 12, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(B, NOT(B))))], formulas: [A, NOT(A)], goal: A, unlocks: ['12.9'], needs: [] },
@@ -841,7 +841,24 @@
     { id: '12.11', kind: 'lemma', leanName: "not_or_intro'", chapter: 12, givens: [binding('hnAnB', AND(NOT(A), NOT(B)))], formulas: [A, B, OR(A, B)], goal: NOT(OR(A, B)), unlocks: ['12.12'], needs: [] },
     { id: '12.12', kind: 'lemma', leanName: "not_and_of_not_or'", chapter: 12, givens: [binding('hnAonB', OR(NOT(A), NOT(B)))], formulas: [A, B, AND(A, B), NOT(A), NOT(B)], goal: NOT(AND(A, B)), unlocks: ['12.13'], needs: [] },
     // (`not_and'` is already declared by core Lean's Init, so this one is `not_and_or'` — cf. Mathlib's not_and_or.)
-    { id: '12.13', kind: 'lemma', leanName: "not_and_or'", chapter: 12, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), unlocks: [], needs: [] },
+    { id: '12.13', kind: 'lemma', leanName: "not_and_or'", chapter: 12, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), unlocks: ['12.14'], needs: [] },
+    // 12.14–12.16 (QED 12.4a/b/c): implication as a disjunction. 12.16 is just the two halves glued with
+    // Iff.intro, so it reuses them rather than reproving anything.
+    { id: '12.14', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), unlocks: ['12.15'], needs: [] },
+    { id: '12.15', kind: 'lemma', leanName: "imp_of_not_or'", chapter: 12, givens: [binding('hnAB', OR(NOT(A), B))], formulas: [A, B, NOT(A)], goal: IMPLIES(A, B), unlocks: ['12.16', '12.22'], needs: [] },
+    { id: '12.16', kind: 'lemma', leanName: "imp_iff_not_or'", chapter: 12, givens: [], formulas: [A, B, NOT(A), IMPLIES(A, B), OR(NOT(A), B)], goal: IFF(IMPLIES(A, B), OR(NOT(A), B)), unlocks: [], needs: [] },
+    // 12.17–12.19 (QED 12.6b/c/d): the contrapositive family. All three are corollaries of the minted mt'
+    // (12.4) — two or three moves each, rather than a fresh reductio every time.
+    { id: '12.17', kind: 'lemma', leanName: "mt_apply'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnB', NOT(B))], formulas: [A, B], goal: NOT(A), unlocks: ['12.18'], needs: [] },
+    { id: '12.18', kind: 'lemma', leanName: "not_of_iff'", chapter: 12, givens: [binding('hnA', NOT(A)), binding('hiff', IFF(A, B))], formulas: [A, B], goal: NOT(B), unlocks: ['12.19'], needs: [] },
+    { id: '12.19', kind: 'lemma', leanName: "not_of_imp_not'", chapter: 12, givens: [binding('hAnB', IMPLIES(A, NOT(B))), binding('hB', B)], formulas: [A, B], goal: NOT(A), unlocks: [], needs: [] },
+    // 12.20 (QED 12.2c): the ↔ form of double negation, from the two halves already minted (12.2, 12.3).
+    { id: '12.20', kind: 'lemma', leanName: "not_not_iff'", chapter: 12, givens: [], formulas: [A, NOT(A), NOT(NOT(A))], goal: IFF(A, NOT(NOT(A))), unlocks: [], needs: [] },
+    // 12.21 (QED 12.7) Peirce's law, the classical capstone: split on A with by_cases'; in the ¬A case a
+    // vacuous A → B feeds the hypothesis. 12.22 (QED 12.8) is resolution, and falls out of 12.15 + Or.imp_left'.
+    // (core Lean's Init already declares `peirce'`, hence `peirce_law'` — cf. the not_and' collision at 12.13)
+    { id: '12.21', kind: 'lemma', leanName: "peirce_law'", chapter: 12, givens: [binding('hPA', IMPLIES(IMPLIES(A, B), A))], formulas: [A, B, NOT(A)], goal: A, unlocks: [], needs: [] },
+    { id: '12.22', kind: 'lemma', leanName: "resolution'", chapter: 12, givens: [binding('hAB', OR(A, B)), binding('hnAC', OR(NOT(A), C))], formulas: [A, B, C], goal: OR(C, B), unlocks: [], needs: [] },
     // Chapter 13 — True and False as first-class objects (the last propositional chapter). 13.1 introduces them;
     // then the ∨/∧ identities, and the capstone 13.6 = the very definition of negation, ¬A ↔ (A → False).
     { id: '13.1', kind: 'example', chapter: 13, givens: [], formulas: [A], goal: OR(TRUE(), A), unlocks: ['13.2', '13.3'], needs: ['tf'] },
