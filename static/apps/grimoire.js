@@ -828,13 +828,25 @@
     // Chapter 10 — bi-implication (↔). 10.1 introduces Iff; symmetry (10.2) and transitivity (10.3) are the
     // MANDATORY spine (10.3 will unlock Ch11 later); reflexivity (10.4) and the ↔-congruences (10.5–10.7,
     // QED 10.1b/d/f) are optional side-branches.
-    { id: '10.1', kind: 'example', chapter: 10, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, unlocks: ['10.2', '10.5'], needs: ['iff'] },
+    { id: '10.1', kind: 'example', chapter: 10, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, unlocks: ['10.2', '10.5', '10.8'], needs: ['iff'] },
     { id: '10.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 10, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), unlocks: ['10.3', '10.4'], needs: [] },
     { id: '10.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 10, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), unlocks: ['11.1'], needs: [] },
-    { id: '10.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 10, givens: [], formulas: [A], goal: IFF(A, A), unlocks: [], needs: [] },
+    { id: '10.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 10, givens: [], formulas: [A], goal: IFF(A, A), unlocks: ['10.12'], needs: [] },
     { id: '10.5', kind: 'example', chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: AND(C, B), unlocks: ['10.6', '10.7'], needs: [] },
     { id: '10.6', kind: 'example', chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: [], needs: [] },
     { id: '10.7', kind: 'example', chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: IMPLIES(C, B), unlocks: [], needs: [] },
+    // 10.8 is a Grimoire helper, not a QED exercise: it turns a ↔ into the implication hiding inside it.
+    // With it, QED's three "second slot" congruences (10.1c/e/g) each become two crafts, reusing the
+    // monotonicity lemmas already minted (8.6b for ∧, 9.6 for ∨, 8.2 for →) — the same shape as 9.14–9.17.
+    { id: '10.8', kind: 'lemma', leanName: "Iff.imp'", chapter: 10, givens: [binding('hiff', IFF(A, B))], formulas: [A, B], goal: IMPLIES(A, B), unlocks: ['10.9'], needs: [] },
+    { id: '10.9', kind: 'lemma', leanName: "And.congr_right'", chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: AND(A, C), unlocks: ['10.10'], needs: [] },
+    { id: '10.10', kind: 'lemma', leanName: "Or.congr_right'", chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: OR(A, C), unlocks: ['10.11'], needs: [] },
+    { id: '10.11', kind: 'lemma', leanName: "imp_congr_right'", chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), unlocks: [], needs: [] },
+    // 10.12–10.14 (QED 10.3, 10.4, 10.5): building a ↔ rather than using one. 10.12 is Iff.intro bare; the
+    // other two glue it onto lemmas already minted (Or.idem/or_self_elim', And.assoc_left/right).
+    { id: '10.12', kind: 'example', chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hBA', IMPLIES(B, A))], formulas: [A, B], goal: IFF(A, B), unlocks: ['10.13'], needs: [] },
+    { id: '10.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 10, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), unlocks: ['10.14'], needs: [] },
+    { id: '10.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 10, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), unlocks: [], needs: [] },
     // Chapter 11 — from a contradiction, anything (ex falso, via `absurd`). 11.1 intro; 11.2 optional sibling.
     { id: '11.1', kind: 'example', chapter: 11, givens: [binding('hAnA', AND(A, NOT(A)))], formulas: [A, B], goal: B, unlocks: ['11.2', '12.1'], needs: ['neg'] },
     { id: '11.2', kind: 'example', chapter: 11, givens: [binding('hnAA', AND(NOT(A), A))], formulas: [A, B], goal: B, unlocks: [], needs: [] },
