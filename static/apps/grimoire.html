@@ -75,7 +75,7 @@
   /* Fantasy mode: a decorative font on the chrome only (formulas/code stay legible) */
   .wrap.fantasy h1, .wrap.fantasy h2.sec, .wrap.fantasy .deduction .arrow, .wrap.fantasy #goal .qed { font-family: 'Luminari', 'Papyrus', fantasy; letter-spacing: .01em; }
 
-  .bench2 { margin-top: 1.6rem; }
+  .bench2 { margin-top: 1rem; }   /* the gem/scroll shelves sit inside the workbench column, under the potions */
   .fbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
   #formula-in { flex: 1 1 16rem; font: inherit; font-family: var(--mono); color: var(--ink); background: var(--bg);
     border: 1px solid var(--line); border-radius: 6px; padding: .4rem .55rem; }
@@ -199,6 +199,26 @@
       <h2 class="sec" id="benchHead"></h2>
       <div id="benchvars"></div>
       <div id="bench"></div>
+      <div class="bench2" id="termBench" hidden>
+        <h2 class="sec" id="termHead">Term bench <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span></h2>
+        <div id="term-sorts" class="hint" style="margin:0 0 .5rem"></div>
+        <div class="fbar">
+          <input id="term-in" type="text" placeholder="e.g.  x   (a variable of sort Ω)" aria-label="name a variable" title="Name a variable of sort Ω. Type just `x`, or `x : Ω` to be explicit. Enter or Add puts it on the term bench.">
+          <button id="term-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the variable to the term bench">Add variable</button>
+          <span id="term-err"></span>
+        </div>
+        <div id="term-shelf"></div>
+      </div>
+
+      <div class="bench2" id="formulaBench">
+        <h2 class="sec" id="formulaHead"></h2>
+        <div class="fbar">
+          <input id="formula-in" type="text" placeholder="e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab" aria-label="type a formula" title="Type a well-formed formula. Backslash shortcuts (\and, \or, \to, \not, …) expand to symbols on space/Tab. Enter or Add puts it on the bench.">
+          <button id="formula-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the typed formula to the bench">Add</button>
+          <span id="formula-err"></span>
+        </div>
+        <div id="formula-shelf"></div>
+      </div>
       <div class="selbar">
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
         <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both A and B out of A ∧ B"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
@@ -207,7 +227,7 @@
       </div>
       <div id="deducehint" class="hint" style="margin-top:.5rem"></div>
 
-      <h2 class="sec" id="recipesHead" style="margin-top:1.4rem"></h2>
+      <h2 class="sec" id="recipesHead" style="margin-top:1.5rem"></h2>
       <div id="recipes"></div>
     </div>
 
@@ -218,27 +238,6 @@
       </div>
       <pre id="spellbook" class="lean"></pre>
     </div>
-  </div>
-
-  <div class="bench2" id="termBench" hidden>
-    <h2 class="sec" id="termHead">Term bench <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span></h2>
-    <div id="term-sorts" class="hint" style="margin:0 0 .5rem"></div>
-    <div class="fbar">
-      <input id="term-in" type="text" placeholder="e.g.  x   (a variable of sort Ω)" aria-label="name a variable" title="Name a variable of sort Ω. Type just `x`, or `x : Ω` to be explicit. Enter or Add puts it on the term bench.">
-      <button id="term-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the variable to the term bench">Add variable</button>
-      <span id="term-err"></span>
-    </div>
-    <div id="term-shelf"></div>
-  </div>
-
-  <div class="bench2" id="formulaBench">
-    <h2 class="sec" id="formulaHead"></h2>
-    <div class="fbar">
-      <input id="formula-in" type="text" placeholder="e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab" aria-label="type a formula" title="Type a well-formed formula. Backslash shortcuts (\and, \or, \to, \not, …) expand to symbols on space/Tab. Enter or Add puts it on the bench.">
-      <button id="formula-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the typed formula to the bench">Add</button>
-      <span id="formula-err"></span>
-    </div>
-    <div id="formula-shelf"></div>
   </div>
 
   <details class="note" id="howto">
