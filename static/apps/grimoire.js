@@ -607,7 +607,15 @@
         for (var i = 0; i < g; i++) { var pi = inp[c + i]; if (!pi.proof || !unifyHO(givens[i], pi.type, subst, {})) return []; }
         for (var j = 0; j < f; j++) { var xi = inp[c + g + j]; if (xi.proof || !sortMatch(freeVars[j].sort, sortOf(xi.type), subst)) return []; if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return []; subst[freeVars[j].name] = xi.type; }
         for (var p in predMetas) if (!subst[p]) return [];           // DETERMINACY GUARD: every predicate metavar must be pinned down
-        var explicit = inp.slice(0, c).map(function (i) { return render(i.type, { lean: true, arg: true }); }).concat(inp.slice(c, c + g).map(function (i) { return i.name; }));
+        // A lemma proved inside a theory was emitted with `include <ops and axioms> in`, which makes those
+        // section variables EXPLICIT parameters of the theorem. So a use site must pass them — by name,
+        // since the using proof is in the same section and has the very same variables in scope.
+        var theoryArgs = [];
+        (ex.sorts || []).forEach(function (sn) {
+          ((SORTS[sn] || {}).ops || []).forEach(function (op) { theoryArgs.push(op.lean); });
+          ((SORTS[sn] || {}).axioms || []).forEach(function (a) { theoryArgs.push(a.name); });
+        });
+        var explicit = theoryArgs.concat(inp.slice(0, c).map(function (i) { return render(i.type, { lean: true, arg: true }); })).concat(inp.slice(c, c + g).map(function (i) { return i.name; }));
         return [{ output: applySortSubst(applySubstHO(concl, subst), subst[SORTVAR]), lean: name + (explicit.length ? ' ' + explicit.join(' ') : '') }];
       }
     };
@@ -1337,7 +1345,14 @@
       consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }, { name: 'γ', sort: GRP }],
       terms: [gv('α'), gv('β'), gv('γ')],
       givens: [binding('h', appE('EQ', [gmul(gv('α'), gv('β')), gmul(gv('α'), gv('γ'))]))],
-      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), unlocks: [], needs: [] },
+      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), unlocks: ['25.4'], needs: [] },
+    // 25.4 (QED 24.6): the inverse is an involution. A pure chain of rewrites through the axioms.
+    { id: '25.4', kind: 'lemma', leanName: "inv_inv'", chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }], terms: [gv('α')],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), unlocks: ['25.5'], needs: [] },
+    // 25.5 (QED 24.5): the inverse of a product reverses it. The chapter's capstone — it shows that
+    // (α·β)·(inv β·inv α) = 1, matches that against (α·β)·inv(α·β) = 1, and CANCELS with the minted 25.3.
+    { id: '25.5', kind: 'lemma', leanName: "mul_inv_rev'", chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(gmul(gv('α'), gv('β'))), gmul(ginv(gv('β')), ginv(gv('α')))]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
