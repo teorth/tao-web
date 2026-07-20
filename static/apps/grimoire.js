@@ -460,6 +460,18 @@
   function openVariable(env, v) {      // introduce a free variable x : Omega → a child env; discharging gives ∀ x, …
     return withEnv(env, { bindings: env.bindings, vars: env.vars.concat([{ name: v.name, sort: v.sort }]), goal: null, steps: [], parent: env, assumption: { kind: 'var', name: v.name, sort: v.sort }, depth: env.depth + 1 });
   }
+  // Abandon a sub-proof: step back out to an ancestor environment, throwing away the assumption (or the
+  // introduced variable) together with everything crafted inside it. `levels` says how far to climb, so
+  // abandoning an outer level discards the inner ones with it. Nothing is emitted — a sub-environment leaves
+  // no trace in its parent until it is discharged — so unlike discharging, this leaves no `have` behind.
+  function abandon(env, levels) {
+    var k = levels == null ? 1 : levels;
+    if (!env.parent) return { ok: false, error: 'not inside a sub-proof' };
+    if (k < 1 || k > env.depth) return { ok: false, error: 'no such sub-proof level' };
+    var e = env;
+    for (var i = 0; i < k; i++) e = e.parent;
+    return { ok: true, env: e, abandoned: k };
+  }
   // discharge options for a crafted statement P: one per ancestor level k=1..depth → the binder chain placed k up
   function dischargeOptions(env, proofName) {
     var pb = byName(env, proofName); if (!pb || !env.parent) return [];
@@ -964,7 +976,7 @@
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal,
-    openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, implChain: implChain,
+    openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
     obtain: obtain, obtainOptions: obtainOptions, isExists: isExists, pick: pick, enumAbstract: enumAbstract,

@@ -21,6 +21,9 @@
     border-radius: 0 8px 8px 0; font-size: 1.05rem; }
   #goal.solved { border-color: var(--ok, #2c9c4a); background: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
   #goal .gonext { margin-top: .5rem; font-weight: 600; border-color: var(--ok, #2c9c4a); }
+  #goal .abandon { margin-left: .35rem; padding: 0 .3rem; font: inherit; font-size: .85em; line-height: 1.4;
+    color: var(--muted); background: none; border: 1px solid transparent; border-radius: 5px; cursor: pointer; vertical-align: baseline; }
+  #goal .abandon:hover { color: var(--ink); border-color: var(--line); background: var(--panel); }
   #goal .big { font-size: 1.15rem; }
 
   .cols { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
@@ -272,7 +275,7 @@
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML, seltip: el.seltip.textContent };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -329,6 +332,17 @@
     if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
     else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    renderAll();
+  }
+  // Abandon a sub-proof: back out to an ancestor, discarding what was crafted inside. Unlike discharging,
+  // this adds nothing to the proof — the parent never recorded the sub-environment in the first place.
+  function doAbandon(levels) {
+    var res = G.abandon(state.env, levels);
+    if (!res.ok) return;
+    state.justUnlocked = null; state.justUnlockedEx = [];
+    state.history.push(state.env);
+    state.env = res.env;
+    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     renderAll();
   }
   function resetExercise() {
@@ -457,7 +471,19 @@
     if (state.env.parent) {   // inside a sub-environment
       el.goal.className = '';
       el.goal.innerHTML =
-        '<div class="givens">▸ ' + assumptionChain().map(function (a) { return a.kind === 'var' ? 'for arbitrary <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(a.sort) + '</span>' : 'assuming <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(R(a.type)) + '</span>'; }).join(', then ') + '</div>' +
+        '<div class="givens">▸ ' + (function () {
+          var chain = assumptionChain(), n = chain.length;
+          return chain.map(function (a, i) {
+            var levels = n - i;                       // abandoning an outer level discards the inner ones too
+            var body = a.kind === 'var'
+              ? 'for arbitrary <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(a.sort) + '</span>'
+              : 'assuming <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(R(a.type)) + '</span>';
+            var tip = levels === 1
+              ? 'Abandon this sub-proof — discard ' + a.name + ' and everything crafted inside it. Nothing is added to the proof.'
+              : 'Abandon back to here — discard ' + a.name + ', the ' + (levels - 1) + ' sub-proof' + (levels === 2 ? '' : 's') + ' inside it, and everything crafted there.';
+            return body + '<button class="abandon" type="button" data-abandon="' + levels + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '">✕</button>';
+          }).join(', then ');
+        })() + '</div>' +
         '<div>' + flavor('Craft here, then <strong>discharge</strong> a statement. Overall goal:') + ' <span class="ty">' + esc(R(rootEnv().goal)) + '</span></div>';
       return;
     }
@@ -608,7 +634,11 @@
       });
     }
 
-    el.recipes.innerHTML = cards.filter(function (c) { return !state.hideInactive || c.active; }).map(function (c) { return c.html; }).join('');
+    // Hiding only kicks in once something is selected. With an empty selection almost nothing is applicable,
+    // so hiding would blank the whole panel and leave a new player with no idea what recipes exist — the
+    // clutter this option targets is the long list of cards that do NOT apply to the selection you just made.
+    var anySel = state.sel.length || state.selF.length || state.selT.length || state.selV.length;
+    el.recipes.innerHTML = cards.filter(function (c) { return !state.hideInactive || !anySel || c.active; }).map(function (c) { return c.html; }).join('');
     Array.prototype.forEach.call(el.recipes.querySelectorAll('.deduction'), function (btn) {
       btn.addEventListener('click', function () { doCraftIdx(+btn.getAttribute('data-idx')); });
     });
@@ -790,7 +820,7 @@
     state.progress = saved.progress || {};
     state.fantasy = saved.fantasy !== false;   // default on
     state.parens = !!saved.parens;
-    state.hideInactive = !!saved.hideInactive;
+    state.hideInactive = saved.hideInactive !== false;   // default on
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
     state.style = saved.style === 'informal' ? 'informal' : 'lean';
@@ -964,6 +994,10 @@
   el.prevex.addEventListener('click', function () { var id = neighbour(-1, false); if (id) loadExercise(id); });
   el.nextex.addEventListener('click', function () { var id = neighbour(1, false); if (id) loadExercise(id); });
   el.nextunsolved.addEventListener('click', function () { var id = nextUnsolved(); if (id) loadExercise(id); });
+  el.goal.addEventListener('click', function (ev) {
+    var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-abandon');
+    if (k) doAbandon(+k);
+  });
   el.reset.addEventListener('click', resetExercise);
   el.undo.addEventListener('click', function () {
     if (!state.history.length) return;
@@ -1091,7 +1125,7 @@
 
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
-    neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu,
+    neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu, doAbandon: doAbandon,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
