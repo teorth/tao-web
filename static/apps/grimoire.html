@@ -99,6 +99,15 @@
   .fchip.sel { border-style: solid; border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
   .fchip .count { font-family: var(--mono); color: var(--muted); font-size: .8rem; }
   .fchip.dim, .tchip.dim { opacity: .45; border-style: dashed; cursor: help; }
+  /* Selection is signalled by BACKGROUND, but the shared applet.css gives every <button> a
+     `filter: brightness(1.06)` on hover — which lightened a selected chip back towards its unselected
+     look, so selecting appeared to only briefly highlight it. Hover must therefore not touch brightness
+     or background: it gets an outer ring instead, which reads the same in light and dark themes and
+     composes with the inset ring that marks selection. */
+  .potion:hover, .fchip:hover, .tchip:hover, .gem:hover, .sortchip:hover { filter: none; }
+  .potion:hover, .fchip:hover, .tchip:hover, .gem:hover { box-shadow: 0 0 0 2px var(--accent-soft); }
+  .potion.sel:hover, .fchip.sel:hover, .tchip.sel:hover, .gem.sel:hover {
+    box-shadow: 0 0 0 2px var(--accent-soft) inset, 0 0 0 2px var(--accent); }
   #goal .unlock { color: var(--accent); font-weight: 600; }
   #goal .givens { font-size: .9rem; color: var(--muted); margin-bottom: .35rem; }
   #goal .givens .nm { color: var(--accent); }

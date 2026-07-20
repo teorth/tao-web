@@ -784,15 +784,20 @@
     // Chapter 9 — case analysis (∨ elimination), a WEB of QED §9 exercises. 9.1 introduces case_analysis; three
     // imp-lemma gateways (9.4/9.5/9.6) each unlock Chapter 10 (complete ANY path); associativity (9.7/9.8) and
     // distributivity (9.9–9.12) are optional sibling branches. Every one is solvable with BASE recipes only.
-    { id: '9.1', kind: 'example', chapter: 9, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), unlocks: ['9.2', '9.3', '9.7', '9.8'], needs: ['case'] },
-    { id: '9.2', kind: 'lemma', leanName: "Or.symm'", chapter: 9, givens: [], formulas: [A, B], goal: IMPLIES(OR(A, B), OR(B, A)), unlocks: ['9.4', '9.6'], needs: [] },
+    { id: '9.1', kind: 'example', chapter: 9, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), unlocks: ['9.2', '9.3', '9.7'], needs: ['case'] },
+    { id: '9.2', kind: 'lemma', leanName: "Or.symm'", chapter: 9, givens: [], formulas: [A, B], goal: IMPLIES(OR(A, B), OR(B, A)), unlocks: ['9.4', '9.6', '9.2b'], needs: [] },
+    // 9.2b is the hypothesis form of 9.2, mirroring And.comm' (2.1) for ∨. A one-move consequence of the
+    // minted Or.symm', and in turn the lemma that makes 9.8 cheap (see the comment there).
+    { id: '9.2b', kind: 'lemma', leanName: "Or.comm'", chapter: 9, givens: [binding('hAB', OR(A, B))], formulas: [A, B], goal: OR(B, A), unlocks: ['9.8'], needs: [] },
     { id: '9.3', kind: 'lemma', leanName: "Or.elim'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, unlocks: ['9.5'], needs: [] },
     // three Chapter-10 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
     { id: '9.4', kind: 'lemma', leanName: "Or.imp_left'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: ['10.1'], needs: [] },
     { id: '9.5', kind: 'lemma', leanName: "Or.imp'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), unlocks: ['10.1'], needs: [] },
     { id: '9.6', kind: 'lemma', leanName: "Or.imp_right'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), unlocks: ['10.1'], needs: [] },
     // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
-    { id: '9.7', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 9, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), unlocks: ['9.9', '9.12'], needs: [] },
+    { id: '9.7', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 9, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), unlocks: ['9.9', '9.12', '9.8'], needs: [] },
+    // 9.8 is reachable from BOTH 9.7 (Or.assoc_left) and 9.2b (Or.comm'), so both are in principle in hand
+    // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
     { id: '9.8', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 9, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), unlocks: ['9.10', '9.11'], needs: [] },
     { id: '9.9', kind: 'lemma', leanName: "or_and_left'", chapter: 9, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), unlocks: [], needs: [] },
     { id: '9.10', kind: 'lemma', leanName: "and_or_left'", chapter: 9, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), unlocks: [], needs: [] },
