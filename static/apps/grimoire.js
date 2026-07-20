@@ -1005,6 +1005,7 @@
     axioms: [
       { name: 'add_zero', type: faS('a', NAT, appE('EQ', [nadd(nv('a'), n0), nv('a')])) },
       { name: 'add_succ', type: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nv('a'), nsucc(nv('b'))), nsucc(nadd(nv('a'), nv('b')))]))) },
+      { name: 'le_def', type: faS('a', NAT, faS('b', NAT, IFF(nle(nv('a'), nv('b')), eeS('k', NAT, appE('EQ', [nadd(nv('a'), nv('k')), nv('b')]))))) },
       { name: 'not_succ_le', type: faS('a', NAT, NOT(nle(nsucc(nv('a')), nv('a')))) }
     ] });
 
@@ -1428,7 +1429,20 @@
     { id: '26.4', kind: 'lemma', leanName: "add_assoc'", chapter: 26, sorts: [NAT], terms: [nv('n')],
       givens: [], formulas: [],
       goal: faS('a', NAT, faS('b', NAT, faS('c', NAT, appE('EQ', [nadd(nadd(nv('a'), nv('b')), nv('c')), nadd(nv('a'), nadd(nv('b'), nv('c')))])))),
-      unlocks: [], needs: [] },
+      unlocks: ['26.5'], needs: [] },
+    // 26.5–26.7: ORDER, defined as `a ≤ b` iff `b` is `a` plus something. So the order facts are earned
+    // from the addition ladder rather than assumed: reflexivity is add_zero, transitivity is add_assoc.
+    { id: '26.5', kind: 'lemma', leanName: "le_refl'", chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [], goal: faS('a', NAT, nle(nv('a'), nv('a'))), unlocks: ['26.6'], needs: [] },
+    { id: '26.6', kind: 'lemma', leanName: "le_trans'", chapter: 26, sorts: [NAT],
+      consts: [{ name: 'a', sort: NAT }, { name: 'b', sort: NAT }, { name: 'c', sort: NAT }], terms: [nv('a'), nv('b'), nv('c')],
+      givens: [binding('hab', nle(nv('a'), nv('b'))), binding('hbc', nle(nv('b'), nv('c')))],
+      formulas: [], goal: nle(nv('a'), nv('c')), unlocks: ['26.7'], needs: [] },
+    // 26.7: the capstone. QED had to hand you the key fact as a hypothesis; here it is a theorem of the
+    // module, and everything else in the proof is the player's own ≤ machinery.
+    { id: '26.7', kind: 'example', chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [FALSE()],
+      goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
