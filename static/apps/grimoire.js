@@ -790,9 +790,12 @@
     // minted Or.symm', and in turn the lemma that makes 9.8 cheap (see the comment there).
     { id: '9.2b', kind: 'lemma', leanName: "Or.comm'", chapter: 9, givens: [binding('hAB', OR(A, B))], formulas: [A, B], goal: OR(B, A), unlocks: ['9.8'], needs: [] },
     { id: '9.3', kind: 'lemma', leanName: "Or.elim'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, unlocks: ['9.5'], needs: [] },
+    // 9.5 is the GENERAL two-implication form, so 9.4 and 9.6 are corollaries of it (take the other
+    // implication to be the identity, i.e. the minted Impl.idem). It therefore sits before them and
+    // unlocks them, giving a two-move alternate route in addition to the from-scratch one via 9.2.
+    { id: '9.5', kind: 'lemma', leanName: "Or.imp'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), unlocks: ['10.1', '9.4', '9.6'], needs: [] },
     // three Chapter-10 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
     { id: '9.4', kind: 'lemma', leanName: "Or.imp_left'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: ['10.1'], needs: [] },
-    { id: '9.5', kind: 'lemma', leanName: "Or.imp'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), unlocks: ['10.1'], needs: [] },
     { id: '9.6', kind: 'lemma', leanName: "Or.imp_right'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), unlocks: ['10.1'], needs: [] },
     // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
     { id: '9.7', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 9, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), unlocks: ['9.9', '9.12', '9.8'], needs: [] },
