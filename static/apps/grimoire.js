@@ -747,11 +747,15 @@
     { id: '2.2a', kind: 'lemma', leanName: 'And.assoc_left', chapter: 2, givens: [binding('hABC', AND(AND(A, B), C))], goal: AND(A, AND(B, C)), unlocks: ['3.1a'], needs: [] },
     { id: '2.2b', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), unlocks: ['3.1a'], needs: [] },
     { id: '3.1a', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), unlocks: ['3.1b'], needs: ['or', 'formula'] },
-    { id: '3.1b', kind: 'lemma', leanName: 'Or.idem', chapter: 3, givens: [binding('hA', A)], formulas: [A], goal: OR(A, A), unlocks: ['4.1', '5.1'], needs: [] },
-    // 4.1 is an OPTIONAL side-branch (a gentler deduction-theorem example); the main path runs 3.1b → 5.1.
+    { id: '3.1b', kind: 'lemma', leanName: 'Or.idem', chapter: 3, givens: [binding('hA', A)], formulas: [A], goal: OR(A, A), unlocks: ['6.1a'], needs: [] },
+    // 6.1a (⊢ A → A) is the SIMPLEST assume-then-discharge exercise — bare intro/discharge with nothing
+    // inside — so it introduces the deduction theorem (and the `assume` capability) even though its chapter
+    // number is higher. 4.1 and 5.1 then hang off it as optional side-branches: same shape, but 4.1 crafts
+    // an ∧ before discharging and 5.1 uses a bulkier formula. Map rows come from DAG depth, not chapter,
+    // so this reads correctly on the tree.
+    { id: '6.1a', kind: 'lemma', leanName: 'Impl.idem', chapter: 6, givens: [], formulas: [A], goal: IMPLIES(A, A), unlocks: ['4.1', '5.1', '6.1b', '7.1'], needs: ['assume'] },
     { id: '4.1', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), unlocks: [], needs: [] },
-    { id: '5.1', kind: 'example', chapter: 5, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), unlocks: ['6.1a'], needs: ['assume'] },
-    { id: '6.1a', kind: 'lemma', leanName: 'Impl.idem', chapter: 6, givens: [], formulas: [A], goal: IMPLIES(A, A), unlocks: ['6.1b', '7.1'], needs: [] },
+    { id: '5.1', kind: 'example', chapter: 5, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), unlocks: [], needs: [] },
     // 6.1b is an OPTIONAL side-branch; the main path runs 6.1a → 7.1.
     { id: '6.1b', kind: 'example', chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, OR(A, B)), A), unlocks: [], needs: [] },
     { id: '7.1', kind: 'example', chapter: 7, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), unlocks: ['8.2'], needs: [] },

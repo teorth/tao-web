@@ -642,7 +642,7 @@
     el['formula-shelf'].innerHTML = state.formulas.map(function (e, i) {
       var c = countF(i);
       var issue = contextIssue(e);
-      return '<button class="fchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-fi="' + i + '" title="' + esc(issue || flavor('formula ' + R(e) +' — click to select as an ingredient (or, while typing, to paste); right-click to delete')) + '">' + scemoji() + '<span class="ty">' + esc(R(e)) + '</span>' + (c > 1 ? ' <span class="count">×' + c + '</span>' : '') + '</button>';
+      return '<button class="fchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-fi="' + i + '" title="' + esc(issue || flavor('formula ' + R(e) +' — click to select as an ingredient (or, while typing, to paste); right-click to assume or delete')) + '">' + scemoji() + '<span class="ty">' + esc(R(e)) + '</span>' + (c > 1 ? ' <span class="count">×' + c + '</span>' : '') + '</button>';
     }).join('');
     Array.prototype.forEach.call(el['formula-shelf'].querySelectorAll('.fchip'), function (btn) {
       var i = +btn.getAttribute('data-fi');
@@ -650,7 +650,9 @@
         if (ev.button === 0 && document.activeElement === el['formula-in']) { ev.preventDefault(); pasteIntoFormula(R(state.formulas[i])); btn._pasted = true; }
       });
       btn.addEventListener('click', function (ev) { if (btn._pasted) { btn._pasted = false; return; } clickFormula(i, ev.shiftKey); });
-      btn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, [{ label: 'Delete', fn: function () { deleteFormula(i); } }]); });
+      btn.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, formulaMenu(i));
+      });
     });
   }
   function renderAch() {
@@ -872,7 +874,7 @@
       var c = countT(i);
       var issue = e.tag === 'var' ? null : contextIssue(e);   // a bare variable can always be intro'd, so is never greyed; a compound term needs its variables in context
       var lbl = e.tag === 'var' ? (esc(e.name) + ' <span class="sort">: ' + esc(e.sort) + '</span>') : esc(R(e));
-      return '<button class="tchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-ti="' + i + '" title="' + esc(issue || flavor('variable ' + e.name + ' : ' + e.sort + ' — select to introduce it (∀) or to build a predicate; right-click to delete')) + '">' + gemoji() + lbl + (c > 1 ? ' <span class="sort">×' + c + '</span>' : '') + '</button>';
+      return '<button class="tchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-ti="' + i + '" title="' + esc(issue || flavor('variable ' + e.name + ' : ' + e.sort + ' — select to introduce it (∀) or to build a predicate; right-click to introduce or delete')) + '">' + gemoji() + lbl + (c > 1 ? ' <span class="sort">×' + c + '</span>' : '') + '</button>';
     }).join('');
     Array.prototype.forEach.call(el['term-shelf'].querySelectorAll('.tchip'), function (btn) {
       var i = +btn.getAttribute('data-ti');
@@ -880,7 +882,9 @@
         if (ev.button === 0 && document.activeElement === el['term-in']) { ev.preventDefault(); pasteIntoTerm(R(state.terms[i])); btn._pasted = true; }
       });
       btn.addEventListener('click', function (ev) { if (btn._pasted) { btn._pasted = false; return; } clickTerm(i, ev.shiftKey); });
-      btn.addEventListener('contextmenu', function (ev) { ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, [{ label: 'Delete', fn: function () { deleteTerm(i); } }]); });
+      btn.addEventListener('contextmenu', function (ev) {
+        ev.preventDefault(); ev.stopPropagation(); showCtx(ev.clientX, ev.clientY, termMenu(i));
+      });
     });
   }
   function pasteIntoTerm(text) {
@@ -981,6 +985,21 @@
   el.hideinactive.addEventListener('change', function () { state.hideInactive = el.hideinactive.checked; renderRecipes(); });
 
   // right-click context menu (rename/delete a potion; delete a formula)
+  // Right-click menus for scrolls (formulas) and gems (variables). Assuming a formula and introducing a
+  // variable are by far the commonest things done with them, so each gets a shortcut here alongside Delete —
+  // but only once the relevant capability is unlocked, so early chapters stay uncluttered.
+  function formulaMenu(i) {
+    var items = [];
+    if (hasCap('assume')) items.push({ label: 'Assume', fn: function () { doAssume(state.formulas[i]); } });
+    items.push({ label: 'Delete', fn: function () { deleteFormula(i); } });
+    return items;
+  }
+  function termMenu(i) {
+    var items = [];
+    if (hasCap('forall')) items.push({ label: 'Introduce', fn: function () { doIntroVar(state.terms[i]); } });
+    items.push({ label: 'Delete', fn: function () { deleteTerm(i); } });
+    return items;
+  }
   function showCtx(x, y, items) {
     el.ctxmenu.innerHTML = items.map(function (it, i) { return '<button data-ci="' + i + '">' + esc(it.label) + '</button>'; }).join('');
     el.ctxmenu.style.left = x + 'px'; el.ctxmenu.style.top = y + 'px'; el.ctxmenu.hidden = false;
@@ -1065,7 +1084,7 @@
 
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
-    neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList,
+    neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
