@@ -1413,7 +1413,22 @@
     // equations give `a + 0` and `a + succ b`; everything on the LEFT has to be earned by induction.
     { id: '26.1', kind: 'lemma', leanName: "zero_add'", chapter: 26, sorts: [NAT], terms: [nv('n')],
       givens: [], formulas: [],
-      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), unlocks: [], needs: ['induction'] },
+      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), unlocks: ['26.2'], needs: ['induction'] },
+    // 26.2: the other half of the asymmetry. `a + succ b` is definitional; `succ a + b` must be earned.
+    { id: '26.2', kind: 'lemma', leanName: "succ_add'", chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nsucc(nv('a')), nv('b')), nsucc(nadd(nv('a'), nv('b')))]))),
+      unlocks: ['26.3'], needs: [] },
+    // 26.3: commutativity — the first rung that pays for the two before it.
+    { id: '26.3', kind: 'lemma', leanName: "add_comm'", chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nv('a'), nv('b')), nadd(nv('b'), nv('a'))]))),
+      unlocks: ['26.4'], needs: [] },
+    // 26.4: associativity, by induction on the third summand.
+    { id: '26.4', kind: 'lemma', leanName: "add_assoc'", chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, faS('c', NAT, appE('EQ', [nadd(nadd(nv('a'), nv('b')), nv('c')), nadd(nv('a'), nadd(nv('b'), nv('c')))])))),
+      unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
