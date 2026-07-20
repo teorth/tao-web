@@ -989,11 +989,11 @@
     // 22.6c = QED 22.4(c): derive an ∃ whose body has a negation proved by an inner reductio
     { id: '22.6c', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hex', ee('X', AND(appE('R', [X]), appE('P', [X]))))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), unlocks: [], needs: [] },
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), unlocks: ['22.6d'], needs: [] },
     // 22.7a = QED 22.5(a): a chained syllogism with an existential witness
     { id: '22.7a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hQR', fa('X', IMPLIES(appE('Q', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('P', [X]), appE('R', [X]))), unlocks: [], needs: [] },
+      goal: ee('X', AND(appE('P', [X]), appE('R', [X]))), unlocks: ['22.7b'], needs: [] },
     // 22.10 = QED 22.8: a ∀-goal syllogism combining instantiation, chaining and an inner reductio
     { id: '22.10', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPnQ', fa('X', IMPLIES(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hnQR', fa('X', IMPLIES(NOT(appE('Q', [X])), appE('R', [X])))), binding('hnrs', NOT(ee('X', AND(appE('R', [X]), appE('S', [X])))))],
@@ -1015,7 +1015,34 @@
       givens: [binding('hdn', fa('X', NOT(NOT(appE('P', [X])))))], goal: fa('X', appE('P', [X])), unlocks: ['22.3b'], needs: [] },
     // 22.3b = QED 22.3(b): classical De Morgan `¬∀X,P ↔ ∃X,¬P` — the heavy claim; the forward direction reuses 22.11 + 22.13 + not_not_elim
     { id: '22.3b', kind: 'lemma', leanName: 'not_forall_iff_exists_not', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [], goal: IFF(NOT(fa('X', appE('P', [X]))), ee('X', NOT(appE('P', [X])))), unlocks: [], needs: [] }
+      givens: [], goal: IFF(NOT(fa('X', appE('P', [X]))), ee('X', NOT(appE('P', [X])))), unlocks: [], needs: [] },
+    // 22.6d/e = QED 22.4(d)/(e) and 22.7b–e = QED 22.5(b)–(e): the rest of the syllogism family. All follow the
+    // same shape — unearth a witness from the ∃, derive the missing component at that witness, then ∃-introduce
+    // back. 22.6d additionally reuses the minted `mt'` (12.4) at the witness, and 22.7b/c/d get their negated
+    // component from an inner reductio against the ¬∃ hypothesis.
+    { id: '22.6d', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hex', ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))))],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), unlocks: ['22.6e'], needs: [] },
+    { id: '22.6e', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hex', ee('X', AND(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X]))))],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), unlocks: [], needs: [] },
+    { id: '22.7b', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hRP', fa('X', IMPLIES(appE('R', [X]), appE('P', [X])))), binding('hex', ee('X', appE('R', [X])))],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), unlocks: ['22.7c'], needs: [] },
+    { id: '22.7c', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hnrq', NOT(ee('X', AND(appE('R', [X]), appE('Q', [X]))))), binding('hex', ee('X', appE('R', [X])))],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), unlocks: ['22.7d'], needs: [] },
+    { id: '22.7d', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), unlocks: ['22.7e'], needs: [] },
+    { id: '22.7e', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
+      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), unlocks: ['22.9'], needs: [] },
+    // 22.9 = QED 22.7: two independent existentials may be merged into a nested one, and split back out.
+    // The ∧ never mixes the witnesses, which is exactly why both directions go through.
+    { id: '22.9', kind: 'lemma', leanName: "exists_and_iff'", chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X, Y],
+      givens: [], formulas: [AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))],
+      goal: IFF(AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
