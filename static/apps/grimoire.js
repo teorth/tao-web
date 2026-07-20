@@ -287,7 +287,9 @@
   defRecipe({ id: 'Classical.em', leanName: 'Classical.em', chapter: 12, arity: 1, rule: 'a formula A ⊢ A ∨ ¬A', informal: 'the law of the excluded middle',
     match: function (inp) {
       if (inp.length !== 1 || inp[0].proof || sortOf(inp[0].type) !== PROP) return [];
-      return [{ output: OR(inp[0].type, NOT(inp[0].type)), lean: 'Classical.em (' + render(inp[0].type) + ')' }];
+      // must use the LEAN renderer: on a predicate application the display form is `Q(x, y)`, which Lean
+      // rejects — it wants `Q x y`. (Only ever exercised on propositional atoms until 16.2, where the two differ.)
+      return [{ output: OR(inp[0].type, NOT(inp[0].type)), lean: 'Classical.em (' + render(inp[0].type, { lean: true }) + ')' }];
     }
   });
   // Chapter 13: True and False become first-class. True is trivially provable; from False, anything (ex falso).
@@ -897,14 +899,22 @@
     { id: '13.3', kind: 'example', chapter: 13, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), unlocks: [], needs: [] },
     { id: '13.4', kind: 'lemma', leanName: "true_and'", chapter: 13, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), unlocks: ['13.6'], needs: [] },
     { id: '13.5', kind: 'lemma', leanName: "false_or'", chapter: 13, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), unlocks: [], needs: [] },
-    { id: '13.6', kind: 'lemma', leanName: 'not_iff_imp_false', chapter: 13, givens: [], formulas: [A, FALSE(), NOT(A), IMPLIES(A, FALSE())], goal: IFF(NOT(A), IMPLIES(A, FALSE())), unlocks: ['17.1'], needs: [] },
+    { id: '13.6', kind: 'lemma', leanName: 'not_iff_imp_false', chapter: 13, givens: [], formulas: [A, FALSE(), NOT(A), IMPLIES(A, FALSE())], goal: IFF(NOT(A), IMPLIES(A, FALSE())), unlocks: ['17.1', '13.7'], needs: [] },
+    // 13.7 (QED 13.2a) is the one place a reductio closes on a DIRECT proof of False rather than on a
+    // contradictory pair; 13.8 (QED 13.3c) is True acting as the unit of implication.
+    { id: '13.7', kind: 'example', chapter: 13, givens: [], formulas: [A, FALSE(), AND(FALSE(), A)], goal: NOT(AND(FALSE(), A)), unlocks: ['13.8'], needs: [] },
+    { id: '13.8', kind: 'lemma', leanName: "iff_true_imp'", chapter: 13, givens: [], formulas: [A, TRUE(), IMPLIES(TRUE(), A)], goal: IFF(A, IMPLIES(TRUE(), A)), unlocks: [], needs: [] },
     // Chapters 16–18 — first-order logic over the generic sort Ω. Introduce a free variable (a sub-env, like an
     // assumption); discharging a proof gives ∀ x : Ω, … . 17.1 (one variable, unary predicate) is the gentle entry;
     // 16.1 (two variables) is an optional side-quest. Ch 18 adds universal_instantiation (the ∀ analogue of MP).
     { id: '17.1', kind: 'example', chapter: 17, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [X],
       goal: fa('X', IMPLIES(appE('P', [X]), appE('P', [X]))), unlocks: ['16.1', '17.2'], needs: ['forall'] },
     { id: '16.1', kind: 'example', chapter: 16, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
-      goal: FORALL({ name: 'x', sort: OMEGA }, FORALL({ name: 'y', sort: OMEGA }, IMPLIES(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), appE('Q', [varE('x', OMEGA), varE('y', OMEGA)])))), unlocks: [], needs: [] },
+      goal: FORALL({ name: 'x', sort: OMEGA }, FORALL({ name: 'y', sort: OMEGA }, IMPLIES(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), appE('Q', [varE('x', OMEGA), varE('y', OMEGA)])))), unlocks: ['16.2'], needs: [] },
+    // 16.2 (QED 16.1): excluded middle holds of every instance of a two-place predicate. Introduce both
+    // variables, invoke Classical.em on Q(x, y), then discharge straight through both levels.
+    { id: '16.2', kind: 'example', chapter: 16, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
+      goal: fa('x', fa('y', OR(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), NOT(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]))))), unlocks: [], needs: [] },
     { id: '17.2', kind: 'example', chapter: 17, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [fa('X', fa('Y', appE('Q', [X, Y])))],
       goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), unlocks: ['18.1'], needs: [] },
     { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
@@ -928,7 +938,12 @@
       goal: AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))), unlocks: ['18.6'], needs: [] },
     { id: '18.6', kind: 'lemma', leanName: "forall_and_rev'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('h', AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))))],
-      goal: fa('X', AND(appE('P', [X]), appE('Q', [X]))), unlocks: [], needs: [] },
+      goal: fa('X', AND(appE('P', [X]), appE('Q', [X]))), unlocks: ['18.7'], needs: [] },
+    // 18.7 (QED's 18.6): a hypothesis independent of X may be moved in or out of a ∀. Note Grimoire's own
+    // 18.5/18.6 are the ∀-over-∧ pair, a DIFFERENT statement — QED's 18.6 had no counterpart until now.
+    { id: '18.7', kind: 'lemma', leanName: "forall_imp_comm'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [], formulas: [A, fa('X', appE('P', [X])), IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))],
+      goal: IFF(IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))), unlocks: [], needs: [] },
     // Chapter 19 — the existential quantifier ∃ and its ELIMINATION via `obtain`: given `∃ x, P x` and an UNCLAIMED
     // variable name, place that variable in context together with its witnessing hypothesis (no sub-environment; the
     // goal is unchanged). Non-destructive — `have h2 := h; obtain ⟨a, ha⟩ := h2` — so the ∃ survives. (QED §19's
