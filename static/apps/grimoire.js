@@ -533,15 +533,37 @@
     return body;
   }
   // Miller-pattern higher-order unification. `rigid` (name->1) are the ∀-bound variables aligned so far.
+  // ---------- sort polymorphism ----------
+  // Every exercise built before Chapter 23 lives over Ω, and its minted lemma is pure first-order logic, so
+  // it must apply at ANY sort — M, Set, a group's carrier. That is the ONLY polymorphism needed: a lemma
+  // about Nat never has to generalise. So when matching, Ω in a TEMPLATE is a sort metavariable while every
+  // other sort is rigid, and the binding is made ONCE PER APPLICATION (stored under a reserved key), which
+  // is what stops a single lemma straddling two sorts. Lean needs nothing: `variable {Ω}` already makes the
+  // emitted theorem polymorphic, so applying it elsewhere is ordinary instantiation.
+  var SORTVAR = '@sort';
+  function sortMatch(tsort, esort, subst) {
+    if (tsort !== OMEGA) return tsort === esort;      // a concrete sort matches only itself
+    if (esort === PROP) return false;                 // Ω ranges over DATA sorts
+    if (subst[SORTVAR]) return subst[SORTVAR] === esort;
+    subst[SORTVAR] = esort; return true;
+  }
+  // rewrite Ω to whatever the match settled on, so the crafted statement is stated at the target sort
+  function applySortSubst(e, to) {
+    if (!to || to === OMEGA) return e;
+    if (e.tag === 'var') return e.sort === OMEGA ? varE(e.name, to) : e;
+    if (e.tag === 'binder') return { tag: 'binder', q: e.q, v: { name: e.v.name, sort: e.v.sort === OMEGA ? to : e.v.sort }, body: applySortSubst(e.body, to), sort: PROP };
+    return appE(e.sym, e.args.map(function (a) { return applySortSubst(a, to); }));
+  }
   function unifyHO(tmpl, expr, subst, rigid) {
     if (tmpl.tag === 'var') {
-      if (rigid[tmpl.name]) return expr.tag === 'var' && expr.name === tmpl.name && expr.sort === tmpl.sort;   // a bound var matches only itself
+      if (rigid[tmpl.name]) return expr.tag === 'var' && expr.name === tmpl.name && sortMatch(tmpl.sort, expr.sort, subst);   // a bound var matches only itself
       if (subst[tmpl.name]) return exprEq(subst[tmpl.name], expr);                                             // first-order metavar: consistency
       if (rigidVarsIn(expr, rigid, []).length) return false;                                                   // a metavar may not capture a bound variable
+      if (!sortMatch(tmpl.sort, sortOf(expr), subst)) return false;
       subst[tmpl.name] = expr; return true;
     }
     if (tmpl.tag === 'binder') {
-      if (expr.tag !== 'binder' || tmpl.q !== expr.q || tmpl.v.sort !== expr.v.sort) return false;
+      if (expr.tag !== 'binder' || tmpl.q !== expr.q || !sortMatch(tmpl.v.sort, expr.v.sort, subst)) return false;
       var canon = '#' + (GENSYM++), r2 = {}; for (var k in rigid) r2[k] = 1; r2[canon] = 1;
       return unifyHO(substE(tmpl.body, tmpl.v.name, tmpl.v.sort, varE(canon, tmpl.v.sort)),
                      substE(expr.body, expr.v.name, expr.v.sort, varE(canon, expr.v.sort)), subst, r2);
@@ -581,12 +603,12 @@
       match: function (inp) {
         if (inp.length !== arity) return [];
         var subst = {};
-        for (var i = 0; i < c; i++) { var ti = inp[i]; if (ti.proof || sortOf(ti.type) !== consts[i].sort) return []; subst[consts[i].name] = ti.type; }
+        for (var i = 0; i < c; i++) { var ti = inp[i]; if (ti.proof || !sortMatch(consts[i].sort, sortOf(ti.type), subst)) return []; subst[consts[i].name] = ti.type; }
         for (var i = 0; i < g; i++) { var pi = inp[c + i]; if (!pi.proof || !unifyHO(givens[i], pi.type, subst, {})) return []; }
-        for (var j = 0; j < f; j++) { var xi = inp[c + g + j]; if (xi.proof || sortOf(xi.type) !== freeVars[j].sort) return []; if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return []; subst[freeVars[j].name] = xi.type; }
+        for (var j = 0; j < f; j++) { var xi = inp[c + g + j]; if (xi.proof || !sortMatch(freeVars[j].sort, sortOf(xi.type), subst)) return []; if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return []; subst[freeVars[j].name] = xi.type; }
         for (var p in predMetas) if (!subst[p]) return [];           // DETERMINACY GUARD: every predicate metavar must be pinned down
         var explicit = inp.slice(0, c).map(function (i) { return render(i.type, { lean: true, arg: true }); }).concat(inp.slice(c, c + g).map(function (i) { return i.name; }));
-        return [{ output: applySubstHO(concl, subst), lean: name + (explicit.length ? ' ' + explicit.join(' ') : '') }];
+        return [{ output: applySortSubst(applySubstHO(concl, subst), subst[SORTVAR]), lean: name + (explicit.length ? ' ' + explicit.join(' ') : '') }];
       }
     };
   }
@@ -1308,7 +1330,14 @@
       formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), unlocks: ['25.2'], needs: ['groups'] },
     // 25.2: the inverse of the identity is the identity — the first proof that actually uses the axioms.
     { id: '25.2', kind: 'lemma', leanName: "inv_one'", chapter: 25, sorts: [GRP], consts: [], terms: [],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), unlocks: [], needs: [] },
+      givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), unlocks: ['25.3'], needs: [] },
+    // 25.3 (QED 24.4): left cancellation. The long one, and the first proof that needs an equation read
+    // BACKWARDS — which is Eq.symm' (24.4) applied at G, i.e. the payoff of sort polymorphism.
+    { id: '25.3', kind: 'lemma', leanName: "mul_left_cancel'", chapter: 25, sorts: [GRP],
+      consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }, { name: 'γ', sort: GRP }],
+      terms: [gv('α'), gv('β'), gv('γ')],
+      givens: [binding('h', appE('EQ', [gmul(gv('α'), gv('β')), gmul(gv('α'), gv('γ'))]))],
+      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
