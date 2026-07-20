@@ -23,6 +23,7 @@
   var SET = 'Set';     // Chapter 23: an ABSTRACT sort — a carrier equipped with a membership relation
   var MAGMA = 'M';     // Chapter 23: the axiom-free teaching sort (a magma with a constant and a unary map)
   var GRP = 'G';       // Chapter 25: a group — the first sort whose theory carries AXIOMS
+  var NAT = 'Nat';     // Chapter 26: the first CONCRETE sort — modelled on core Lean's Nat, reached by `import`
 
   // ---------- sort registry: which sorts exist, and what each one carries ----------
   // Sorts are deliberately NOT first-class (no sort variables, no inference): this is a hardcoded table.
@@ -74,6 +75,11 @@
   defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
   defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
   defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
+  // Chapter 26: Peano arithmetic. `0` on the board is `zero` in Lean; `+` and `≤` are plain functions.
+  defSym({ name: 'nzero', arity: 0, fixity: 'atom', uni: '0', leanApp: 'zero', resultSort: NAT });
+  defSym({ name: 'succ', arity: 1, fixity: 'app', argSorts: [NAT], resultSort: NAT, uni: 'succ' });
+  defSym({ name: 'add', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '+', abbrev: ['\\add', '\\plus'], argSorts: [NAT, NAT], resultSort: NAT, leanApp: 'add' });
+  defSym({ name: 'le', arity: 2, fixity: 'infix', prec: 50, uni: '≤', abbrev: ['\\le', '\\leq'], argSorts: [NAT, NAT], resultSort: PROP, leanApp: 'le' });
   // Chapter 25: the group carrier's operations.
   defSym({ name: 'one', arity: 0, fixity: 'atom', uni: '1', leanApp: 'one', resultSort: GRP });
   defSym({ name: 'mul', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '·', abbrev: ['\\mul', '\\cdot'], argSorts: [GRP, GRP], resultSort: GRP, leanApp: 'mul' });
@@ -265,12 +271,14 @@
   // ---------- renderer: minimal parentheses (shared by the board and the Lean output) ----------
   // opts.parens = true makes every compound sub-expression explicitly parenthesized (order-of-operations)
   var BINDER_PREC = 10;   // ∀/∃ bind looser than every connective (so they parenthesize as operands)
+  // a sort may be written one way on the board and another in Lean (`Nat` vs the module's `Nat'`)
+  function sortName(sn, lean) { return (lean && (SORTS[sn] || {}).lean) || sn; }
   function render(e, opts) {
     var parens = !!(opts && opts.parens), lean = !!(opts && opts.lean);
     function go(e, minPrec, top) {
       if (e.tag === 'var') return e.name;
       if (e.tag === 'binder') {
-        var str = (e.q === 'forall' ? '∀' : '∃') + ' ' + e.v.name + ' : ' + e.v.sort + ', ' + go(e.body, 0, false);
+        var str = (e.q === 'forall' ? '∀' : '∃') + ' ' + e.v.name + ' : ' + sortName(e.v.sort, lean) + ', ' + go(e.body, 0, false);
         return (BINDER_PREC < minPrec || (parens && !top)) ? '(' + str + ')' : str;
       }
       var s = SYMBOLS[e.sym];
@@ -496,6 +504,25 @@
       return out;
     }
   });
+  // Chapter 26: INDUCTION. The motive is not searched for — it is READ OFF the step's antecedent, which is
+  // the only thing it could be, and then the two soundness conditions are checked outright:
+  //   step : ∀ n, (A(n) → B(n))   with   B = A[n := succ n]   and   base = A[n := 0].
+  // Both checks are first-order (substE + exprEq), so no higher-order unification is involved; this sits
+  // beside `rw` and `Exists.intro`, which likewise sidestep it by structure rather than by search.
+  defRecipe({ id: 'induction', leanName: 'induction', chapter: 26, arity: 2,
+    rule: 'a proof of P(0), and a proof of ∀ n, (P(n) → P(succ n)) ⊢ ∀ n, P(n)', informal: 'proof by induction',
+    match: function (inp) {
+      if (inp.length !== 2 || !inp[0].proof || !inp[1].proof) return [];
+      var base = inp[0].type, step = inp[1].type;
+      if (step.tag !== 'binder' || step.q !== 'forall' || step.v.sort !== NAT) return [];
+      var body = step.body;
+      if (!(body.tag === 'app' && body.sym === 'IMPLIES')) return [];
+      var A = body.args[0], B = body.args[1], nm = step.v.name;
+      if (!exprEq(B, substE(A, nm, NAT, appE('succ', [varE(nm, NAT)])))) return [];   // the step really steps
+      if (!exprEq(base, substE(A, nm, NAT, appE('nzero', [])))) return [];            // the base really starts
+      return [{ output: FORALL({ name: nm, sort: NAT }, A), lean: "induction' " + inp[0].name + ' ' + inp[1].name }];
+    }
+  });
   var BASE_RECIPES = Object.keys(RECIPES).map(function (k) { return RECIPES[k]; });
 
   // ---------- generic (higher-order) unifier → a solved lemma becomes a reusable recipe ----------
@@ -612,6 +639,7 @@
         // since the using proof is in the same section and has the very same variables in scope.
         var theoryArgs = [];
         (ex.sorts || []).forEach(function (sn) {
+          if ((SORTS[sn] || {}).kind === 'concrete') return;   // imported names need no explicit passing
           ((SORTS[sn] || {}).ops || []).forEach(function (op) { theoryArgs.push(op.lean); });
           ((SORTS[sn] || {}).axioms || []).forEach(function (a) { theoryArgs.push(a.name); });
         });
@@ -837,7 +865,7 @@
   function leanOpts(opts) { return { parens: !!(opts && opts.parens), lean: true }; }   // Lean render (predicates as `Q x y`)
   function leanHeader(ex, opts) {
     var o = leanOpts(opts);
-    var cs = (ex.consts || []).map(function (c) { return '(' + c.name + ' : ' + c.sort + ')'; }).join(' ');   // term constants in context
+    var cs = (ex.consts || []).map(function (c) { return '(' + c.name + ' : ' + sortName(c.sort, true) + ')'; }).join(' ');   // term constants in context
     var gs = ex.givens.map(function (g) { return '(' + g.name + ' : ' + render(g.type, o) + ')'; }).join(' ');
     var params = [cs, gs].filter(Boolean).join(' ');
     var head = ex.kind === 'lemma' ? ('theorem ' + ex.leanName) : 'example';   // `theorem` is core Lean; `lemma` needs Mathlib
@@ -846,6 +874,7 @@
     // this the body fails with "unknown identifier mul_one".
     var inc = [];
     (ex.sorts || []).forEach(function (sn) {
+      if ((SORTS[sn] || {}).kind === 'concrete') return;   // module contents are imported, not section variables
       ((SORTS[sn] || {}).ops || []).forEach(function (op) { inc.push(op.lean); });
       ((SORTS[sn] || {}).axioms || []).forEach(function (a) { inc.push(a.name); });
     });
@@ -858,9 +887,20 @@
   }
   // declares the sorts, propositional atoms and predicates so the emitted proof is a standalone, buildable
   // Lean snippet (Init is imported automatically in Lean 4, so no `import` line is needed)
+  // A concrete sort lives in its own Lean module: the proof `import`s it rather than declaring variables.
+  // Imports must head the FILE, so these are returned separately for the caller to hoist.
+  function leanImports(ex) {
+    var out = [];
+    (ex.sorts || []).forEach(function (sn) {
+      var d = SORTS[sn] || {};
+      if (d.module) out.push({ imp: 'import ' + d.module, open: d.open ? 'open ' + d.open : null });
+    });
+    return out;
+  }
   function leanPreamble(ex) {
     var lines = [];
     (ex.sorts || []).forEach(function (s) {
+      if ((SORTS[s] || {}).kind === 'concrete') return;   // it is a real type in its own module, not a variable
       lines.push('variable {' + s + '}' + ((ex.nonempty || []).indexOf(s) >= 0 ? ' [Nonempty ' + s + ']' : ''));
       // an abstract sort also declares the operations it owns, so the proof stands alone with no `axiom`
       ((SORTS[s] || {}).ops || []).forEach(function (op) { lines.push('variable (' + op.lean + ' : ' + op.type.join(' → ') + ')'); });
@@ -953,6 +993,21 @@
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
   var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
   var beta = varE('β', OMEGA), gamma = varE('γ', OMEGA);      // further Ω constants, for the equality chapter
+  // ---------- Chapter 26: Peano arithmetic ----------
+  // A CONCRETE sort: `Nat` is modelled on core Lean's `Nat` in its own module, so its "axioms" are proved
+  // theorems there and the theory is consistent by construction. The proof reaches them by `import`.
+  var nv = function (n) { return varE(n, NAT); };
+  var n0 = appE('nzero', []), nsucc = function (a) { return appE('succ', [a]); }, nadd = function (a, b) { return appE('add', [a, b]); };
+  var nle = function (a, b) { return appE('le', [a, b]); };
+  defSort({ name: NAT, kind: 'concrete', lean: "Nat'", module: 'Grimoire.Nat', open: "Grimoire Grimoire.Nat'",
+    ops: [{ sym: 'nzero', lean: 'zero', type: [NAT] }, { sym: 'succ', lean: 'succ', type: [NAT, NAT] },
+          { sym: 'add', lean: 'add', type: [NAT, NAT, NAT] }, { sym: 'le', lean: 'le', type: [NAT, NAT, PROP] }],
+    axioms: [
+      { name: 'add_zero', type: faS('a', NAT, appE('EQ', [nadd(nv('a'), n0), nv('a')])) },
+      { name: 'add_succ', type: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nv('a'), nsucc(nv('b'))), nsucc(nadd(nv('a'), nv('b')))]))) },
+      { name: 'not_succ_le', type: faS('a', NAT, NOT(nle(nsucc(nv('a')), nv('a')))) }
+    ] });
+
   // ---------- Chapter 25: the theory of groups ----------
   // An ABSTRACT theory: carrier G with 1, ·, inv, and five axioms. Parameterised rather than axiomatised —
   // every one of these becomes a `variable` hypothesis, so the emitted theorem holds of ANY such structure
@@ -1352,14 +1407,20 @@
     // 25.5 (QED 24.5): the inverse of a product reverses it. The chapter's capstone — it shows that
     // (α·β)·(inv β·inv α) = 1, matches that against (α·β)·inv(α·β) = 1, and CANCELS with the minted 25.3.
     { id: '25.5', kind: 'lemma', leanName: "mul_inv_rev'", chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(gmul(gv('α'), gv('β'))), gmul(ginv(gv('β')), ginv(gv('α')))]), unlocks: [], needs: [] },
+      givens: [], formulas: [], goal: appE('EQ', [ginv(gmul(gv('α'), gv('β'))), gmul(ginv(gv('β')), ginv(gv('α')))]), unlocks: ['26.1'], needs: [] },
+    // ---------- Chapter 26: PEANO ARITHMETIC. The first CONCRETE sort: `Nat` is a real type in its own
+    // Lean module, so the proof `import`s it instead of quantifying over a carrier. Its two defining
+    // equations give `a + 0` and `a + succ b`; everything on the LEFT has to be earned by induction.
+    { id: '26.1', kind: 'lemma', leanName: "zero_add'", chapter: 26, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), unlocks: [], needs: ['induction'] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
   // ---------- progression: accessible exercises + active capabilities from the solved set ----------
   var PROGRESSION_START = ['1.1'];
   // which capability each base recipe requires (minted lemmas gate themselves via `state.unlocked`)
-  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate', 'Exists.intro': 'exists_intro', 'Eq.refl': 'eq', 'rw': 'eq' };
+  var RECIPE_CAP = { 'And.intro': 'and.intro', 'And.left': 'and.elim', 'And.right': 'and.elim', 'Or.inl': 'or', 'Or.inr': 'or', 'modus_ponens': 'mp', 'case_analysis': 'case', 'Iff.intro': 'iff', 'Iff.mp': 'iff', 'Iff.mpr': 'iff', 'absurd': 'neg', 'Classical.em': 'em', 'True.intro': 'tf', 'False.elim': 'tf', 'universal_instantiation': 'instantiate', 'Exists.intro': 'exists_intro', 'Eq.refl': 'eq', 'rw': 'eq', 'induction': 'induction' };
   // accessible = start ∪ { successors of every solved exercise }.  `solved` is an id→truthy map (or array).
   function accessibleSet(solved) {
     var acc = {}; PROGRESSION_START.forEach(function (id) { acc[id] = true; });
@@ -1381,7 +1442,7 @@
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
     expandAbbrevs: expandAbbrevs, parse: parse, render: render,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
-    SORTS: SORTS, defSort: defSort, SET: SET,
+    SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal,
