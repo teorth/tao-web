@@ -779,8 +779,8 @@
     { id: '8.4c', kind: 'lemma', leanName: 'implies_swap', chapter: 8, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, C)), unlocks: [], needs: [] },   // optional leaf
     { id: '8.5a', kind: 'lemma', leanName: 'implies_and_self', chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(A, B)), unlocks: ['8.5b'], needs: [] },
     { id: '8.5b', kind: 'lemma', leanName: "implies_and_self'", chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(B, A)), unlocks: [], needs: [] },   // optional leaf
-    { id: '8.6a', kind: 'lemma', leanName: "And.imp_left'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [], goal: AND(C, B), unlocks: [], needs: [] },   // optional leaf
-    { id: '8.6b', kind: 'lemma', leanName: "And.imp_right'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), unlocks: ['9.1'], needs: [] },
+    { id: '8.6a', kind: 'lemma', leanName: "And.imp_left'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [], goal: AND(C, B), unlocks: ['9.14'], needs: [] },
+    { id: '8.6b', kind: 'lemma', leanName: "And.imp_right'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), unlocks: ['9.1', '9.16'], needs: [] },
     // Chapter 9 — case analysis (∨ elimination), a WEB of QED §9 exercises. 9.1 introduces case_analysis; three
     // imp-lemma gateways (9.4/9.5/9.6) each unlock Chapter 10 (complete ANY path); associativity (9.7/9.8) and
     // distributivity (9.9–9.12) are optional sibling branches. Every one is solvable with BASE recipes only.
@@ -789,14 +789,14 @@
     // 9.2b is the hypothesis form of 9.2, mirroring And.comm' (2.1) for ∨. A one-move consequence of the
     // minted Or.symm', and in turn the lemma that makes 9.8 cheap (see the comment there).
     { id: '9.2b', kind: 'lemma', leanName: "Or.comm'", chapter: 9, givens: [binding('hAB', OR(A, B))], formulas: [A, B], goal: OR(B, A), unlocks: ['9.8'], needs: [] },
-    { id: '9.3', kind: 'lemma', leanName: "Or.elim'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, unlocks: ['9.5'], needs: [] },
+    { id: '9.3', kind: 'lemma', leanName: "Or.elim'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, unlocks: ['9.5', '9.13'], needs: [] },
     // 9.5 is the GENERAL two-implication form, so 9.4 and 9.6 are corollaries of it (take the other
     // implication to be the identity, i.e. the minted Impl.idem). It therefore sits before them and
     // unlocks them, giving a two-move alternate route in addition to the from-scratch one via 9.2.
     { id: '9.5', kind: 'lemma', leanName: "Or.imp'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), unlocks: ['10.1', '9.4', '9.6'], needs: [] },
     // three Chapter-10 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
-    { id: '9.4', kind: 'lemma', leanName: "Or.imp_left'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: ['10.1'], needs: [] },
-    { id: '9.6', kind: 'lemma', leanName: "Or.imp_right'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), unlocks: ['10.1'], needs: [] },
+    { id: '9.4', kind: 'lemma', leanName: "Or.imp_left'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: ['10.1', '9.15'], needs: [] },
+    { id: '9.6', kind: 'lemma', leanName: "Or.imp_right'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), unlocks: ['10.1', '9.17'], needs: [] },
     // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
     { id: '9.7', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 9, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), unlocks: ['9.9', '9.12', '9.8'], needs: [] },
     // 9.8 is reachable from BOTH 9.7 (Or.assoc_left) and 9.2b (Or.comm'), so both are in principle in hand
@@ -806,6 +806,16 @@
     { id: '9.10', kind: 'lemma', leanName: "and_or_left'", chapter: 9, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), unlocks: [], needs: [] },
     { id: '9.11', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 9, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), unlocks: [], needs: [] },
     { id: '9.12', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 9, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), unlocks: [], needs: [] },
+    // 9.13 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
+    { id: '9.13', kind: 'lemma', leanName: "or_self_elim'", chapter: 9, givens: [binding('hAA', OR(A, A))], formulas: [A], goal: A, unlocks: [], needs: [] },
+    // 9.14–9.17 (QED 9.5a–d): the congruence/monotonicity family — an implication A → B may be applied inside
+    // either slot of a ∧ or a ∨. Each is the IMPLICATION form of a hypothesis-form lemma already minted
+    // (8.6a/8.6b for ∧, 9.4/9.6 for ∨), so each is just assume, apply, discharge. The `mono` names are because
+    // And.imp_left'/And.imp_right' are already taken by 8.6a/8.6b.
+    { id: '9.14', kind: 'lemma', leanName: "And.mono_left'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(A, C)], goal: IMPLIES(AND(A, C), AND(B, C)), unlocks: [], needs: [] },
+    { id: '9.15', kind: 'lemma', leanName: "Or.mono_left'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(A, C)], goal: IMPLIES(OR(A, C), OR(B, C)), unlocks: [], needs: [] },
+    { id: '9.16', kind: 'lemma', leanName: "And.mono_right'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(C, A)], goal: IMPLIES(AND(C, A), AND(C, B)), unlocks: [], needs: [] },
+    { id: '9.17', kind: 'lemma', leanName: "Or.mono_right'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(C, A)], goal: IMPLIES(OR(C, A), OR(C, B)), unlocks: [], needs: [] },
     // Chapter 10 — bi-implication (↔). 10.1 introduces Iff; symmetry (10.2) and transitivity (10.3) are the
     // MANDATORY spine (10.3 will unlock Ch11 later); reflexivity (10.4) and the ↔-congruences (10.5–10.7,
     // QED 10.1b/d/f) are optional side-branches.
