@@ -20,6 +20,21 @@
 
   var PROP = 'Prop';   // the only sort in Stage 0; the field exists everywhere for the many-sorted future
   var OMEGA = 'Ω';     // the first data sort (Chapter 16+); modeled in Lean by `variable {Ω}` (Ω is a valid identifier)
+  var SET = 'Set';     // Chapter 23: an ABSTRACT sort — a carrier equipped with a membership relation
+
+  // ---------- sort registry: which sorts exist, and what each one carries ----------
+  // Sorts are deliberately NOT first-class (no sort variables, no inference): this is a hardcoded table.
+  // `kind` decides how the sort reaches Lean:
+  //   'generic'  — Ω, the polymorphic sort. No operations at all (equality will be its only relation).
+  //   'abstract' — emitted as a `variable` preamble bundling its carrier and its operations, so a theorem
+  //                reads "for any type equipped with these …". Consistent by construction: no `axiom`.
+  //   'concrete' — (later) modelled on a core Lean type in its own module, reached by `import`.
+  // Each sort OWNS its operations, so the term/formula benches can offer only what is legal for the sorts in
+  // play — an illegal move cannot be expressed rather than having to be detected and rejected.
+  var SORTS = {};
+  function defSort(d) { SORTS[d.name] = d; return d; }
+  defSort({ name: OMEGA, kind: 'generic', ops: [] });
+  defSort({ name: SET, kind: 'abstract', ops: [{ lean: 'mem', type: [SET, SET, PROP] }] });
 
   // ---------- symbol registry: one table drives parse + render + Lean emit ----------
   // {name, arity, fixity:'infix'|'prefix'|'atom', prec, assoc:'right', uni, abbrev:[…], resultSort}
@@ -40,6 +55,9 @@
   defSym({ name: 'Q', arity: 2, fixity: 'app', argSorts: [OMEGA, OMEGA], resultSort: PROP, uni: 'Q' });
   defSym({ name: 'R', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'R' });
   defSym({ name: 'S', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, uni: 'S' });
+  // Chapter 23: a RELATION. Infix on the board (`Y ∈ X`) but a plain function in Lean (`mem Y X`) — no
+  // typeclass is introduced. `leanApp` names the function the infix form emits as.
+  defSym({ name: 'MEM', arity: 2, fixity: 'infix', prec: 38, uni: '∈', abbrev: ['\\in', '\\mem'], argSorts: [SET, SET], resultSort: PROP, leanApp: 'mem' });
 
   // ---------- Expr: {tag:'var',name,sort} | {tag:'app',sym,args,sort} | {tag:'binder',q,v,body,sort} ----------
   function varE(name, sort) { return { tag: 'var', name: name, sort: sort || PROP }; }
@@ -125,7 +143,23 @@
     }
     return { toks: toks };
   }
-  function parse(str) {
+  // A symbol that declares `argSorts` only applies to arguments of those sorts. Reporting this beats
+  // building an ill-sorted formula that would later fail to match anything for no visible reason.
+  function argSortError(sym, args) {
+    var d = SYMBOLS[sym]; if (!d || !d.argSorts) return null;
+    for (var i = 0; i < args.length; i++) {
+      if (sortOf(args[i]) !== d.argSorts[i]) {
+        return d.uni + ' needs ' + d.argSorts[i] + ' on ' + (i === 0 ? 'the left' : 'the right') +
+               ', but got ' + (sortOf(args[i]) === PROP ? 'a formula' : sortOf(args[i]));
+      }
+    }
+    return null;
+  }
+  // `ctx` (optional) maps an identifier to its sort — the data variables currently in context (the gems).
+  // Without it every identifier is a propositional atom, which is right for Chapters 1–13 but wrong the
+  // moment a sort carries a relation: `r ∈ r` needs to know that r is a Set element, not a proposition.
+  function parse(str, ctx) {
+    var sortOfName = function (n) { return (ctx && ctx[n]) || PROP; };
     var tk = tokenize(expandAbbrevs(str));
     if (tk.error) return { ok: false, error: tk.error };
     var toks = tk.toks, pos = 0;
@@ -140,6 +174,8 @@
         pos++;
         var rhs = expr(s.assoc === 'left' ? s.prec + 1 : s.prec);
         if (!rhs.ok) return rhs;
+        var bad = argSortError(t.sym, [e, rhs.expr]);
+        if (bad) return { ok: false, error: bad };
         e = appE(t.sym, [e, rhs.expr]);
       }
       return { ok: true, expr: e };
@@ -153,7 +189,7 @@
       var t = toks[pos++];
       if (!t) return { ok: false, error: 'unexpected end of input' };
       if (t.t === '(') { var e = expr(0); if (!e.ok) return e; var c = toks[pos++]; if (!c || c.t !== ')') return { ok: false, error: 'expected “)”' }; return e; }
-      if (t.t === 'id') return { ok: true, expr: varE(t.name, PROP) };
+      if (t.t === 'id') return { ok: true, expr: varE(t.name, sortOfName(t.name)) };
       if (t.t === 'atom') return { ok: true, expr: appE(t.sym, []) };
       return { ok: false, error: 'expected a formula' };
     }
@@ -174,6 +210,9 @@
         return (BINDER_PREC < minPrec || (parens && !top)) ? '(' + str + ')' : str;
       }
       var s = SYMBOLS[e.sym];
+      if (lean && s.leanApp) {   // an infix relation is emitted as the plain function it stands for
+        return s.leanApp + ' ' + e.args.map(function (a) { return go(a, 100, false); }).join(' ');
+      }
       if (s.fixity === 'atom') return s.uni;
       if (s.fixity === 'app') {   // predicate application: `Q x y` in Lean, `Q(x, y)` on the board
         var args = e.args.map(function (a) { return go(a, lean ? 100 : 0, false); });
@@ -665,7 +704,11 @@
   // Lean snippet (Init is imported automatically in Lean 4, so no `import` line is needed)
   function leanPreamble(ex) {
     var lines = [];
-    (ex.sorts || []).forEach(function (s) { lines.push('variable {' + s + '}' + ((ex.nonempty || []).indexOf(s) >= 0 ? ' [Nonempty ' + s + ']' : '')); });
+    (ex.sorts || []).forEach(function (s) {
+      lines.push('variable {' + s + '}' + ((ex.nonempty || []).indexOf(s) >= 0 ? ' [Nonempty ' + s + ']' : ''));
+      // an abstract sort also declares the operations it owns, so the proof stands alone with no `axiom`
+      ((SORTS[s] || {}).ops || []).forEach(function (op) { lines.push('variable (' + op.lean + ' : ' + op.type.join(' → ') + ')'); });
+    });
     var atoms = []; ex.givens.forEach(function (g) { propAtoms(g.type, [], atoms); }); propAtoms(ex.goal, [], atoms); atoms.sort();
     if (atoms.length) lines.push('variable {' + atoms.join(' ') + ' : Prop}');
     (ex.preds || []).forEach(function (p) { lines.push('variable {' + p.name + ' : ' + p.argSorts.concat([p.resultSort || PROP]).join(' → ') + '}'); });
@@ -754,6 +797,10 @@
   var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
   function fa(name, body) { return FORALL({ name: name, sort: OMEGA }, body); }
   function ee(name, body) { return EXISTS({ name: name, sort: OMEGA }, body); }
+  function faS(name, sort, body) { return FORALL({ name: name, sort: sort }, body); }
+  function eeS(name, sort, body) { return EXISTS({ name: name, sort: sort }, body); }
+  function mem(a, b) { return appE('MEM', [a, b]); }
+  var setV = function (n) { return varE(n, SET); };
   var EXERCISES = [
     { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), unlocks: ['1.2'], needs: ['and.intro'] },
     { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), unlocks: ['2.1'], needs: [] },
@@ -1042,7 +1089,20 @@
     // The ∧ never mixes the witnesses, which is exactly why both directions go through.
     { id: '22.9', kind: 'lemma', leanName: "exists_and_iff'", chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [], formulas: [AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))],
-      goal: IFF(AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))), unlocks: [], needs: [] },
+      goal: IFF(AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))), unlocks: ['23.1'], needs: [] },
+    // ---------- Chapter 23: SORTS WITH OPERATIONS. `Set` is an ABSTRACT sort — a carrier equipped with a
+    // membership relation, emitted as a `variable` preamble (never an `axiom`), so each theorem reads
+    // "for any type with such a relation …". Note nothing here can be proved ABOUT ∈ yet: without equality
+    // an operation is opaque, so the facts you need arrive as hypotheses. That is the cliffhanger for Ch24.
+    // 23.1 is the notation drill (QED 23.1b's role); 23.2 is Russell's paradox (QED 23.2), which needs only
+    // a relation — no operations — and which Grimoire can state honestly as `False` where QED writes ¬True.
+    { id: '23.1', kind: 'example', chapter: 23, sorts: [SET], terms: [setV('X'), setV('Y')],
+      givens: [], formulas: [],
+      goal: faS('X', SET, faS('Y', SET, IMPLIES(mem(setV('Y'), setV('X')), mem(setV('Y'), setV('X'))))),
+      unlocks: ['23.2'], needs: ['sets'] },
+    { id: '23.2', kind: 'example', chapter: 23, sorts: [SET], terms: [],
+      givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
+      formulas: [FALSE()], goal: FALSE(), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
@@ -1071,6 +1131,7 @@
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
     expandAbbrevs: expandAbbrevs, parse: parse, render: render,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
+    SORTS: SORTS, defSort: defSort, SET: SET,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal,

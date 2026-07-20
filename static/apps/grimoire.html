@@ -1104,7 +1104,12 @@
   function addFormula() {
     var raw = el['formula-in'].value.trim();
     if (!raw) return;
-    var r = G.parse(raw);
+    // the data variables in context (the gems) tell the parser their sorts, so `r ∈ r` reads r as a Set
+    // element rather than as a propositional atom
+    var ctx = {};
+    ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
+    (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
+    var r = G.parse(raw, ctx);
     if (!r.ok) { el['formula-in'].classList.add('bad'); el['formula-err'].textContent = r.error; return; }
     state.formulas.push(r.expr);
     el['formula-in'].value = '';
@@ -1132,7 +1137,7 @@
   }
   boot();
 
-  window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
+  window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, doObtain: doObtain, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
     neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu, doAbandon: doAbandon,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
