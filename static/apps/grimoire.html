@@ -20,6 +20,7 @@
   #goal { margin: .4rem 0 1rem; padding: .7rem .9rem; border-left: 3px solid var(--accent); background: var(--accent-soft);
     border-radius: 0 8px 8px 0; font-size: 1.05rem; }
   #goal.solved { border-color: var(--ok, #2c9c4a); background: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
+  #goal .gonext { margin-top: .5rem; font-weight: 600; border-color: var(--ok, #2c9c4a); }
   #goal .big { font-size: 1.15rem; }
 
   .cols { display: grid; grid-template-columns: 1fr; gap: 1.2rem; }
@@ -159,6 +160,9 @@
   <div class="toolbar">
     <div><label for="exsel">Exercise</label>
       <select id="exsel" title="Choose an exercise to work on"></select>
+      <button id="prevex" type="button" title="Go to the previous unlocked exercise">◀</button>
+      <button id="nextex" type="button" title="Go to the next unlocked exercise">▶</button>
+      <button id="nextunsolved" type="button" title="Jump to the next exercise you have not solved yet">Next unsolved ⏭</button>
     </div>
     <button id="undo" type="button" title="Undo the last step" disabled>Undo</button>
     <button id="reset" type="button" title="Discard this exercise's progress and start it over">Reset</button>
@@ -174,7 +178,8 @@
       <button id="mapzin" type="button" title="Zoom in">+</button>
       <button id="mapzout" type="button" title="Zoom out">&minus;</button>
       <button id="mapfit" type="button" title="Fit the whole tree in view">Fit</button>
-      <label title="Keep the map centered on the exercise you are working on (it re-centers when you advance)" style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;color:var(--muted);font-size:.9rem"><input type="checkbox" id="mapfollow"> Follow current</label>
+      <button id="mapcur" type="button" title="Centre the map on the exercise you are working on (a one-off jump — it does not turn on Follow current)">Current</button>
+      <label title="Keep the map centered on the exercise you are working on (it re-centers when you advance)" style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;color:var(--muted);font-size:.9rem"><input type="checkbox" id="mapfollow" checked> Follow current</label>
       <!-- DEV cheat: reveal every exercise (does NOT solve them). Hide this button at final
            polish once testing is done, but KEEP THE CODE so it is easy to restore. -->
       <button id="cheat" class="dev" type="button" title="DEV: make every exercise accessible (they still need solving)">Unlock all</button>
@@ -196,6 +201,7 @@
       <div id="bench"></div>
       <div class="selbar">
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
+        <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both A and B out of A ∧ B"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
         <button id="clearsel" type="button" title="Clear the current ingredient selection">Clear</button>
         <span class="hint" id="seltip" style="margin:0">tip: Shift-tap adds a second copy of a potion</span>
       </div>
@@ -256,18 +262,18 @@
 (function () {
   'use strict';
   var G = window.Grimoire;
-  var ids = ['exsel', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
-             'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
+  var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
+             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
-             'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
+             'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapcur', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
              'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
              'lede', 'howto', 'seltip'];
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML, seltip: el.seltip.textContent };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: false };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: false, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -318,6 +324,7 @@
   function exTerms(ex) { return (ex.consts || []).map(function (c) { return G.varE(c.name, c.sort); }).concat((ex.terms || []).slice()); }   // context constants + variables to intro
   function loadExercise(id) {
     saveProgress();
+    if (MAP && MAP.refollow) MAP.refollow();   // re-picking the current exercise should still re-centre the map
     state.ex = G.EX_BY_ID[id];
     var p = state.progress[id];
     if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
@@ -467,6 +474,19 @@
       ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
     el.goal.innerHTML = givens + '<div>' + main + '</div>';
+    // once solved, offer the next thing to do right where the player is looking (appended as a real
+    // element, not markup, so it carries its own handler)
+    if (solved) {
+      var nx = nextUnsolved();
+      if (nx) {
+        var b = document.createElement('button');
+        b.className = 'gonext';
+        b.textContent = (state.fantasy ? '⚔ Next quest: ' : '⏭ Next unsolved: ') + nx;
+        b.title = 'Go to exercise ' + nx;
+        b.addEventListener('click', function () { loadExercise(nx); });
+        el.goal.appendChild(b);
+      }
+    }
   }
 
   // ---- render: bench (potions) ----
@@ -670,6 +690,7 @@
       view.s = Math.min(vw / (W + COLW), vh / (H + ROWH), 1.4);
       view.tx = (vw - W * view.s) / 2; view.ty = 14; apply();
     }
+    function refollow() { lastFollow = null; }   // forget the last followed node, so re-picking it re-centres
     function focusNode(id, s) {   // centre one node at a comfortable large zoom (used for the opening view)
       var p = pos[id] || pos['1.1']; if (!p) return fit();
       var vw = el.mapview.clientWidth || 600, vh = el.mapview.clientHeight || 340;
@@ -734,9 +755,10 @@
     el.mapzin.addEventListener('click', function () { zoom(1.2); });
     el.mapzout.addEventListener('click', function () { zoom(1 / 1.2); });
     el.mapfit.addEventListener('click', fit);
+    el.mapcur.addEventListener('click', function () { if (state.ex) focusNode(state.ex.id); });
     el.mapwrap.addEventListener('toggle', function () { if (el.mapwrap.open) { if (!fitted) { fitted = true; focusNode(state.ex ? state.ex.id : '1.1'); } else if (state.mapFollow && state.ex) { focusNode(state.ex.id); } } });
     el.mapfollow.addEventListener('change', function () { state.mapFollow = el.mapfollow.checked; if (state.mapFollow && el.mapwrap.open && state.ex) { focusNode(state.ex.id); } persist(); });
-    return { render: render, fit: fit, focusNode: focusNode, pos: pos, view: view };
+    return { render: render, fit: fit, focusNode: focusNode, refollow: refollow, pos: pos, view: view };
   })();
   function renderMap() { MAP.render(); }
 
@@ -751,7 +773,7 @@
     var progress = {}; Object.keys(state.progress).forEach(function (k) { progress[k] = state.progress[k]; });
     if (state.ex) progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };   // capture the live board
     return { v: 1, solved: state.solved, progress: progress, last: state.ex ? state.ex.id : null,
-             fantasy: state.fantasy, parens: state.parens, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow };
+             fantasy: state.fantasy, parens: state.parens, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
   }
   function persist() { if (state.save) storageSet(JSON.stringify(currentBlob())); }
   function clearSaved() { storageDel(); }
@@ -769,7 +791,8 @@
     state.fantasy = saved.fantasy !== false;   // default on
     state.parens = !!saved.parens;
     state.hideInactive = !!saved.hideInactive;
-    state.mapFollow = !!saved.mapFollow;
+    state.mapFollow = saved.mapFollow !== false;   // default on
+    state.autoclear = saved.autoclear !== false;   // default on
     state.style = saved.style === 'informal' ? 'informal' : 'lean';
   }
 
@@ -799,11 +822,38 @@
     }
   });
 
+  // ---- navigation between exercises (EXERCISES order, restricted to the ones unlocked so far) ----
+  function accList() { var acc = accessible(); return G.EXERCISES.filter(function (e) { return acc[e.id]; }); }
+  function neighbour(dir, unsolvedOnly) {
+    var list = accList(); if (!list.length || !state.ex) return null;
+    var i = -1; for (var k = 0; k < list.length; k++) if (list[k].id === state.ex.id) { i = k; break; }
+    if (i < 0) return null;
+    for (var j = i + dir; j >= 0 && j < list.length; j += dir)
+      if (!unsolvedOnly || !state.solved[list[j].id]) return list[j].id;
+    return null;
+  }
+  // "the natural next thing": the next unsolved unlocked exercise after this one, else the first unsolved
+  // one anywhere in the unlocked set (so finishing a side-branch still hands you something to do).
+  function nextUnsolved() {
+    var fwd = neighbour(1, true); if (fwd) return fwd;
+    var list = accList();
+    for (var k = 0; k < list.length; k++)
+      if (!state.solved[list[k].id] && !(state.ex && list[k].id === state.ex.id)) return list[k].id;
+    return null;
+  }
+  function renderNav() {
+    el.prevex.disabled = !neighbour(-1, false);
+    el.nextex.disabled = !neighbour(1, false);
+    var nu = nextUnsolved();
+    el.nextunsolved.disabled = !nu;
+    el.nextunsolved.title = nu ? 'Jump to exercise ' + nu + ' — the next one you have not solved yet'
+                               : 'Everything unlocked so far is solved';
+  }
   function renderAll() {
     rebuildDropdown();
     el.formulaBench.hidden = !hasCap('formula');   // formula bench appears only from Chapter 3
     el.termBench.hidden = !hasCap('forall');       // term bench appears only from Chapter 16
-    applyTerms(); renderGoal(); renderBench(); renderFormulas(); renderTerms(); renderRecipes(); renderSpellbook(); renderAch(); renderMap();
+    applyTerms(); renderGoal(); renderBench(); renderFormulas(); renderTerms(); renderRecipes(); renderSpellbook(); renderAch(); renderMap(); renderNav();
     el.undo.disabled = state.history.length === 0;
     persist();
   }
@@ -851,7 +901,8 @@
     if (!res.ok) return;
     state.history.push(state.env);
     state.env = res.env;
-    state.sel = []; state.selF = []; state.selT = []; state.selV = [];
+    // keeping the selection lets you draw several statements from the same ingredients (both halves of an ∧, say)
+    if (state.autoclear) { state.sel = []; state.selF = []; state.selT = []; state.selV = []; }
     if (res.solved) { markSolved(); }
     renderAll();
   }
@@ -908,6 +959,9 @@
   function addCraftedFormula(f) { state.formulas.push(f); state.sel = []; state.selF = []; renderAll(); }
 
   el.exsel.addEventListener('change', function () { loadExercise(el.exsel.value); });
+  el.prevex.addEventListener('click', function () { var id = neighbour(-1, false); if (id) loadExercise(id); });
+  el.nextex.addEventListener('click', function () { var id = neighbour(1, false); if (id) loadExercise(id); });
+  el.nextunsolved.addEventListener('click', function () { var id = nextUnsolved(); if (id) loadExercise(id); });
   el.reset.addEventListener('click', resetExercise);
   el.undo.addEventListener('click', function () {
     if (!state.history.length) return;
@@ -922,6 +976,7 @@
   function setStyle(s) { state.style = s; el.styleLean.className = s === 'lean' ? 'on' : ''; el.styleInformal.className = s === 'informal' ? 'on' : ''; renderSpellbook(); }
   el.styleLean.addEventListener('click', function () { setStyle('lean'); });
   el.styleInformal.addEventListener('click', function () { setStyle('informal'); });
+  el.autoclear.addEventListener('change', function () { state.autoclear = el.autoclear.checked; persist(); });
   el.parens.addEventListener('change', function () { state.parens = el.parens.checked; renderAll(); });
   el.hideinactive.addEventListener('change', function () { state.hideInactive = el.hideinactive.checked; renderRecipes(); });
 
@@ -996,19 +1051,21 @@
     if (saved) {   // a stored blob means the user opted in previously — restore and keep saving on
       state.save = true; el.save.checked = true;
       restore(saved);
-      el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.hideinactive.checked = state.hideInactive; el.mapfollow.checked = state.mapFollow;
-      el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
-      el.styleLean.className = state.style === 'lean' ? 'on' : '';
-      el.styleInformal.className = state.style === 'informal' ? 'on' : '';
-      loadExercise(saved.last && G.EX_BY_ID[saved.last] && accessible()[saved.last] ? saved.last : G.EXERCISES[0].id);
-    } else {
-      loadExercise(G.EXERCISES[0].id);
     }
+    // the controls always mirror `state`, so each default is defined in exactly one place (the state
+    // literal) rather than being duplicated as a `checked` attribute in the markup
+    el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.hideinactive.checked = state.hideInactive;
+    el.mapfollow.checked = state.mapFollow; el.autoclear.checked = state.autoclear; el.repeat.checked = state.repeat;
+    el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
+    el.styleLean.className = state.style === 'lean' ? 'on' : '';
+    el.styleInformal.className = state.style === 'informal' ? 'on' : '';
+    loadExercise(saved && saved.last && G.EX_BY_ID[saved.last] && accessible()[saved.last] ? saved.last : G.EXERCISES[0].id);
   }
   boot();
 
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
+    neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
