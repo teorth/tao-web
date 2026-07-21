@@ -37,7 +37,7 @@
   var SORTS = {};
   function defSort(d) { SORTS[d.name] = d; return d; }
   defSort({ name: OMEGA, kind: 'generic', ops: [] });
-  defSort({ name: SET, kind: 'abstract', ops: [{ lean: 'mem', type: [SET, SET, PROP] }] });
+  defSort({ name: SET, kind: 'abstract', ops: [{ sym: 'MEM', lean: 'mem', type: [SET, SET, PROP] }] });   // ∪/∩ and the axioms are attached below, once the Expr helpers exist
   // Chapter 23's teaching sort: a MAGMA — a carrier with a binary operation, plus a constant and a unary
   // map. Deliberately axiom-free, so nothing can be proved ABOUT c, f or ∗ and attention stays on the
   // mechanic of building and placing terms. `c` is a SORT-LEVEL constant (0-ary operation): it belongs to
@@ -75,6 +75,9 @@
   defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
   defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
   defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
+  // Chapter 27: set operations. Both are infix on the board and plain functions in Lean.
+  defSym({ name: 'union', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '∪', abbrev: ['\\union', '\\cup'], argSorts: [SET, SET], resultSort: SET, leanApp: 'union' });
+  defSym({ name: 'inter', arity: 2, fixity: 'infix', prec: 70, assoc: 'left', uni: '∩', abbrev: ['\\inter', '\\cap'], argSorts: [SET, SET], resultSort: SET, leanApp: 'inter' });
   // Chapter 26: Peano arithmetic. `0` on the board is `zero` in Lean; `+` and `≤` are plain functions.
   defSym({ name: 'nzero', arity: 0, fixity: 'atom', uni: '0', leanApp: 'zero', resultSort: NAT });
   defSym({ name: 'succ', arity: 1, fixity: 'app', argSorts: [NAT], resultSort: NAT, uni: 'succ' });
@@ -993,6 +996,27 @@
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
   var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
   var beta = varE('β', OMEGA), gamma = varE('γ', OMEGA);      // further Ω constants, for the equality chapter
+  // ---------- Chapter 27: naive set theory ----------
+  // ∪ and ∩ are not primitive: each is pinned down by WHEN SOMETHING BELONGS TO IT, and sets are equal when
+  // they have the same members. So every set law is the corresponding PROPOSITIONAL law transported through
+  // membership — commutativity of ∪ is Or.symm', of ∩ is And.symm', distributivity is and_or_left'. The
+  // chapter is where Chapters 2 and 9 come back and pay.
+  var sv2 = function (n) { return varE(n, SET); };
+  var smem = function (x, a) { return appE('MEM', [x, a]); };
+  var sunion = function (a, b) { return appE('union', [a, b]); }, sinter = function (a, b) { return appE('inter', [a, b]); };
+  SORTS[SET].ops = SORTS[SET].ops.concat([
+    { sym: 'union', lean: 'union', type: [SET, SET, SET] },
+    { sym: 'inter', lean: 'inter', type: [SET, SET, SET] }
+  ]);
+  SORTS[SET].axioms = [
+    { name: 'mem_union', type: faS('x', SET, faS('a', SET, faS('b', SET,
+        IFF(smem(sv2('x'), sunion(sv2('a'), sv2('b'))), OR(smem(sv2('x'), sv2('a')), smem(sv2('x'), sv2('b'))))))) },
+    { name: 'mem_inter', type: faS('x', SET, faS('a', SET, faS('b', SET,
+        IFF(smem(sv2('x'), sinter(sv2('a'), sv2('b'))), AND(smem(sv2('x'), sv2('a')), smem(sv2('x'), sv2('b'))))))) },
+    { name: 'ext', type: faS('a', SET, faS('b', SET,
+        IMPLIES(faS('x', SET, IFF(smem(sv2('x'), sv2('a')), smem(sv2('x'), sv2('b')))), appE('EQ', [sv2('a'), sv2('b')])))) }
+  ];
+
   // ---------- Chapter 26: Peano arithmetic ----------
   // A CONCRETE sort: `Nat` is modelled on core Lean's `Nat` in its own module, so its "axioms" are proved
   // theorems there and the theory is consistent by construction. The proof reaches them by `import`.
@@ -1442,7 +1466,17 @@
     // module, and everything else in the proof is the player's own ≤ machinery.
     { id: '26.7', kind: 'example', chapter: 26, sorts: [NAT], terms: [nv('n')],
       givens: [], formulas: [FALSE()],
-      goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), unlocks: [], needs: [] },
+      goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), unlocks: ['27.1'], needs: [] },
+    // ---------- Chapter 27: SETS. Two sets are equal when they have the same members, so each law below
+    // is the propositional law of Chapter 2 or 9, transported through membership by extensionality.
+    { id: '27.1', kind: 'lemma', leanName: "union_comm'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
+      givens: [], formulas: [],
+      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), unlocks: ['27.2'], needs: ['sets'] },
+    { id: '27.2', kind: 'lemma', leanName: "inter_comm'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
+      givens: [], formulas: [],
+      goal: appE('EQ', [sinter(sv2('a'), sv2('b')), sinter(sv2('b'), sv2('a'))]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
