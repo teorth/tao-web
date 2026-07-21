@@ -1355,10 +1355,7 @@
     { id: '23.1', kind: 'example', chapter: 23, sorts: [SET], terms: [setV('X'), setV('Y')],
       givens: [], formulas: [],
       goal: faS('X', SET, faS('Y', SET, IMPLIES(mem(setV('Y'), setV('X')), mem(setV('Y'), setV('X'))))),
-      unlocks: ['23.2'], needs: ['sets'] },
-    { id: '23.2', kind: 'example', chapter: 23, sorts: [SET], terms: [],
-      givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
-      formulas: [FALSE()], goal: FALSE(), unlocks: ['23.3'], needs: [] },
+      unlocks: ['23.3'], needs: ['sets'] },
     // ---------- Chapter 23, second half: OPERATIONS. The sort M is a magma — a carrier with a constant c,
     // a unary f and a binary ∗, and NO axioms at all. Nothing can be proved about them, which is the point:
     // these five drills are about BUILDING terms and putting them where a variable would go. `c` arrives in
@@ -1472,11 +1469,23 @@
     { id: '27.1', kind: 'lemma', leanName: "union_comm'", chapter: 27, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
-      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), unlocks: ['27.2'], needs: ['sets'] },
+      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), unlocks: ['27.2', '27.3'], needs: ['sets'] },
     { id: '27.2', kind: 'lemma', leanName: "inter_comm'", chapter: 27, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
-      goal: appE('EQ', [sinter(sv2('a'), sv2('b')), sinter(sv2('b'), sv2('a'))]), unlocks: [], needs: [] },
+      goal: appE('EQ', [sinter(sv2('a'), sv2('b')), sinter(sv2('b'), sv2('a'))]), unlocks: ['27.4'], needs: [] },
+    // 27.3 (QED 23.2) Russell's paradox — an optional side-quest, disjoint from the algebra of ∪ and ∩:
+    // it needs only membership, and it is where a set theory this naive is shown to break.
+    { id: '27.3', kind: 'example', chapter: 27, sorts: [SET], terms: [],
+      givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
+      formulas: [FALSE()], goal: FALSE(), unlocks: [], needs: [] },   // an optional leaf: it leads nowhere on purpose
+    // 27.4: the capstone. Distributivity of ∩ over ∪ is exactly the propositional distributivity of
+    // Chapter 9 (and_or_left' / and_or_left_rev), carried across membership in both directions.
+    { id: '27.4', kind: 'lemma', leanName: "inter_union_distrib'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
+      terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
+      goal: appE('EQ', [sinter(sv2('a'), sunion(sv2('b'), sv2('c'))),
+                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
