@@ -1137,8 +1137,8 @@
     { id: '10.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 10, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), unlocks: ['10.3', '10.4'], needs: [] },
     { id: '10.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 10, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), unlocks: ['11.1'], needs: [] },
     { id: '10.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 10, givens: [], formulas: [A], goal: IFF(A, A), unlocks: ['10.12'], needs: [] },
-    { id: '10.5', kind: 'example', chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: AND(C, B), unlocks: ['10.6', '10.7'], needs: [] },
-    { id: '10.6', kind: 'example', chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: [], needs: [] },
+    { id: '10.5', kind: 'lemma', leanName: "And.congr_left'", chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: AND(C, B), unlocks: ['10.6', '10.7'], needs: [] },
+    { id: '10.6', kind: 'lemma', leanName: "Or.congr_left'", chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: OR(C, B), unlocks: [], needs: [] },
     { id: '10.7', kind: 'example', chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: IMPLIES(C, B), unlocks: [], needs: [] },
     // 10.8 is a Grimoire helper, not a QED exercise: it turns a ↔ into the implication hiding inside it.
     // With it, QED's three "second slot" congruences (10.1c/e/g) each become two crafts, reusing the
@@ -1485,7 +1485,25 @@
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sinter(sv2('a'), sunion(sv2('b'), sv2('c'))),
-                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), unlocks: [], needs: [] },
+                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), unlocks: ['27.5'], needs: [] },
+    // 27.5–27.6: associativity, the same shape again — the bridge is Chapter 2/9's associativity, with the
+    // left- and right-slot congruences (10.5/10.6, 10.9/10.10) reaching into whichever operand is unfolded.
+    { id: '27.5', kind: 'lemma', leanName: "union_assoc'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
+      terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
+      goal: appE('EQ', [sunion(sunion(sv2('a'), sv2('b')), sv2('c')), sunion(sv2('a'), sunion(sv2('b'), sv2('c')))]),
+      unlocks: ['27.6'], needs: [] },
+    { id: '27.6', kind: 'lemma', leanName: "inter_assoc'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
+      terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
+      goal: appE('EQ', [sinter(sinter(sv2('a'), sv2('b')), sv2('c')), sinter(sv2('a'), sinter(sv2('b'), sv2('c')))]),
+      unlocks: ['27.7'], needs: [] },
+    // 27.7: the dual capstone — ∪ over ∩, from or_and_left' / or_and_left_rev.
+    { id: '27.7', kind: 'lemma', leanName: "union_inter_distrib'", chapter: 27, sorts: [SET],
+      consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
+      terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
+      goal: appE('EQ', [sunion(sv2('a'), sinter(sv2('b'), sv2('c'))),
+                        sinter(sunion(sv2('a'), sv2('b')), sunion(sv2('a'), sv2('c')))]), unlocks: [], needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 
