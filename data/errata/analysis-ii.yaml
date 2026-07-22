@@ -87,6 +87,13 @@ editions:
   - id: corrected-fourth-edition-0001
     page: '34'
     text: "“Theorem 1.2.10” should be “Proposition 1.2.10”."
+  - id: corrected-fourth-edition-0002
+    page: '142'
+    text: "In the sixth line, in “we are using $g$ to represent the implicit function defining $x_n$ in\
+      \ terms of $x_1, \\dots, x_n$”, the final sequence should be $x_1, \\dots, x_{n-1}$."
+    reported_by:
+      - Jeff Jia Cai
+    date: '2026-07-21'
 - id: fourth-edition
   name: Fourth edition
   errata:
