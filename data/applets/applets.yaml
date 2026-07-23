@@ -217,6 +217,24 @@ applets:
   description: The Perron-tree construction of a small-area set that still contains a unit segment in every direction — vary the iterations and overlap.
   url: apps/besicovitch-sets.html
   source: https://www.math.ucla.edu/~tao/java/Besicovitch.html
+# --- Algebraic geometry (original app, first published here) ---
+- name: Jacobian counterexample explorer
+  category: Algebraic geometry
+  status: original
+  date: "2026-07-23"
+  description: >-
+    A companion to Tao's digestion of the Alpöge–Fable counterexample to the complex Jacobian conjecture.
+    The construction lives on a 3-dimensional variety X — a copy of ℝ³ carrying two coordinate systems,
+    (a,y,z) and a slightly singular (a,b,c) — on which a linear form L and a quadratic form Q multiply to a
+    cubic F(L,Q) = L·Q. Edit either coordinate system (by typing or with arrows) and watch L, Q, the cubic,
+    the resultant and the roots update, alongside a live plot of L, Q and L·Q — the plane doubling as the
+    complex plane when Q's roots go complex. When the cubic has three real roots the multiplication map is
+    3-to-1: click a root of Q to re-factor the same cubic onto a different point of X, the failure of
+    injectivity made visible. Copy the data as text or share a deep-link to any point.
+  url: apps/jacobian.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/jacobian-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra

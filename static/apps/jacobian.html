@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jacobian counterexample explorer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .panels { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; align-items: start; }
+  @media (max-width: 640px) { .panels { grid-template-columns: 1fr; } }
+  .panel h2 { font-size: .95rem; margin: 0 0 .1rem; }
+  .panel .sub { font-size: .78rem; color: var(--muted); margin: 0 0 .7rem; min-height: 1.1em; }
+  .coordrow { display: flex; align-items: center; gap: .5rem; margin: .35rem 0; }
+  .coordrow label { width: 1.4em; font-style: italic; font-family: "Cambria Math", Cambria, Georgia, serif; font-size: 1.05rem; }
+  .coordrow input { width: 8em; font-family: var(--mono); }
+  .coordrow input:disabled { color: var(--muted); background: var(--accent-soft); }
+  .coordrow input.bad { border-color: var(--danger); }
+  .coordrow .spin { width: 1.7em; padding: .15rem 0; font-size: 1rem; line-height: 1; }
+  .coordrow .spin:disabled { color: var(--muted); }
+  .note { font-size: .76rem; color: var(--muted); margin: .5rem 0 0; }
+  .plotwrap { margin-top: 1.1rem; }
+  .legend { font-size: .82rem; margin-bottom: .35rem; display: flex; flex-wrap: wrap; gap: .25rem 1rem; align-items: center; }
+  .legend label { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
+  .legend b { font-weight: 700; }
+  #plot { width: 100%; height: 300px; display: block; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+  /* curve colours as theme-aware variables (read by the canvas too, so it follows both the OS scheme and a
+     data-theme toggle) — mirror applet.css's four-way pattern */
+  :root { --cv-L: #2f6fd0; --cv-Q: #2c9c4a; --cv-LQ: #9b59b6; }
+  @media (prefers-color-scheme: dark) { :root { --cv-L: #7aa6f0; --cv-Q: #63c07e; --cv-LQ: #c495e0; } }
+  :root[data-theme="light"] { --cv-L: #2f6fd0; --cv-Q: #2c9c4a; --cv-LQ: #9b59b6; }
+  :root[data-theme="dark"] { --cv-L: #7aa6f0; --cv-Q: #63c07e; --cv-LQ: #c495e0; }
+  .lg-L { color: var(--cv-L); } .lg-Q { color: var(--cv-Q); } .lg-LQ { color: var(--cv-LQ); }
+  .err { color: var(--danger); font-size: .82rem; margin: .5rem 0 0; min-height: 1.1em; }
+  .status { font-size: .84rem; margin: .5rem 0 0; padding: .5rem .7rem; border-radius: 6px; background: var(--accent-soft); color: var(--ink); }
+  .export { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-top: 1rem; }
+  .export .msg { font-size: .8rem; color: var(--accent); }
+  .data { margin-top: 1.1rem; }
+  .data table { border-collapse: collapse; width: 100%; }
+  .data th, .data td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .data th { width: 8.5em; font-weight: 600; color: var(--muted); font-size: .82rem; }
+  .data td { font-family: var(--mono); font-size: .9rem; }
+  .mono { font-family: var(--mono); }
+  .pin { color: var(--accent); font-weight: 700; }        /* the coefficient pinned to 1 on X */
+  .cmplx { color: var(--accent); }
+  .flash { animation: flash 0.6s ease-out; }
+  @keyframes flash { from { background: var(--accent-soft); } to { background: transparent; } }
+  .presets { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .3rem; }
+  .presets button { font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Jacobian counterexample explorer</h1>
+    <p class="lede">A companion to Terence Tao&rsquo;s digestion of the Alp&ouml;ge&ndash;Fable
+      counterexample to the (complex) <strong>Jacobian conjecture</strong>. The construction lives on a
+      3-dimensional variety
+      <span class="mono">X = {(a,b,c,d,e) : Res(L,Q)=1, ad+bc=1}</span>, which is a copy of
+      <span class="mono">&#8477;&sup3;</span> carrying two coordinate systems. Here
+      <span class="mono">L(s,t)=a&middot;s+b&middot;t</span> is a linear form and
+      <span class="mono">Q(s,t)=c&middot;s&sup2;+d&middot;s&middot;t+e&middot;t&sup2;</span> a quadratic
+      one; the map of interest is multiplication
+      <span class="mono">F(L,Q)=L&middot;Q</span>, a cubic. Edit either coordinate system below &mdash; by
+      typing or with the arrows &mdash; and watch all the data, the plot of
+      <span class="mono">L, Q</span> and <span class="mono">L&middot;Q</span>, and the roots update. When
+      the cubic has three real roots the multiplication map is 3-to-1: <strong>click a root of Q on the
+      plot</strong> to re-factor the same cubic and land on a different point of X &mdash; the map&rsquo;s
+      failure of injectivity, made visible.</p>
+    <p class="prov">Companion to the blog post
+      <a href="https://terrytao.wordpress.com/2026/07/21/a-digestion-of-the-jacobian-conjecture-counterexample/">&ldquo;A
+      digestion of the Jacobian conjecture counterexample&rdquo;</a>. Runs entirely in your browser.</p>
+  </header>
+
+  <div class="card">
+    <div class="panels">
+      <!-- master chart -->
+      <div class="panel">
+        <h2>Coordinates <span class="var mono">(a, y, z)</span></h2>
+        <p class="sub">The master chart &mdash; a global copy of &#8477;&sup3;, valid everywhere.</p>
+        <div class="coordrow"><label for="in-a1">a</label><button type="button" class="spin" data-for="in-a1" data-dir="-1">&minus;</button><input id="in-a1" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-a1" data-dir="1">+</button></div>
+        <div class="coordrow"><label for="in-y">y</label><button type="button" class="spin" data-for="in-y" data-dir="-1">&minus;</button><input id="in-y" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-y" data-dir="1">+</button></div>
+        <div class="coordrow"><label for="in-z">z</label><button type="button" class="spin" data-for="in-z" data-dir="-1">&minus;</button><input id="in-z" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-z" data-dir="1">+</button></div>
+        <p class="note">Editing <span class="mono">a</span> here holds <span class="mono">y, z</span> fixed. Arrows step by 0.1.</p>
+      </div>
+      <!-- singular chart -->
+      <div class="panel">
+        <h2>Coordinates <span class="var mono">(a, b, c)</span></h2>
+        <p class="sub" id="abc-sub">A derived chart, singular at <span class="mono">a=0</span>.</p>
+        <div class="coordrow"><label for="in-a2">a</label><button type="button" class="spin" data-for="in-a2" data-dir="-1">&minus;</button><input id="in-a2" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-a2" data-dir="1">+</button></div>
+        <div class="coordrow"><label for="in-b">b</label><button type="button" class="spin" data-for="in-b" data-dir="-1">&minus;</button><input id="in-b" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-b" data-dir="1">+</button></div>
+        <div class="coordrow"><label for="in-c">c</label><button type="button" class="spin" data-for="in-c" data-dir="-1">&minus;</button><input id="in-c" type="text" inputmode="decimal" autocomplete="off"><button type="button" class="spin" data-for="in-c" data-dir="1">+</button></div>
+        <p class="note">Editing <span class="mono">a</span> here holds <span class="mono">b, c</span> fixed
+          &mdash; a different motion. Setting <span class="mono">a=0</span> snaps
+          <span class="mono">b=c=1</span> and keeps <span class="mono">d, e</span>.</p>
+      </div>
+    </div>
+    <p class="err" id="err" role="alert"></p>
+
+    <div class="presets">
+      <button type="button" data-ayz="0,0,-0.25">Preset P&#8320;</button>
+      <button type="button" data-ayz="1,-1.5,6.5">Preset P&#8321;</button>
+      <button type="button" data-ayz="-1,1.5,6.5">Preset P&#8322;</button>
+      <button type="button" data-ayz="-0.5,0,0.5">Q real (3 real roots)</button>
+    </div>
+
+    <div class="plotwrap">
+      <div class="legend">
+        <label><input type="checkbox" id="show-L" checked><b class="lg-L">&mdash;</b> <span class="lg-L">L</span></label>
+        <label><input type="checkbox" id="show-Q" checked><b class="lg-Q">&mdash;</b> <span class="lg-Q">Q</span></label>
+        <label><input type="checkbox" id="show-LQ" checked><b class="lg-LQ">&mdash;</b> <span class="lg-LQ">L&middot;Q</span></label>
+        <label><input type="checkbox" id="show-cplx" checked><span class="lg-Q">complex roots of Q</span></label>
+      </div>
+      <p class="note" style="margin:0 0 .35rem">Curves are graphs over <span class="mono">x = s/t</span> (the chart <span class="mono">t=1</span>); dots on the axis are real roots (filled = L&rsquo;s, open = Q&rsquo;s). When Q&rsquo;s roots are complex the plane doubles as the <span class="mono">s/t</span>-plane and they appear as a faded pair above and below the axis (height = imaginary part).</p>
+      <canvas id="plot"></canvas>
+      <p class="status" id="status"></p>
+    </div>
+
+    <div class="data">
+      <table>
+        <tr><th>d, e <span style="font-weight:400">(derived)</span></th><td><span id="out-d"></span>,&nbsp; <span id="out-e"></span></td></tr>
+        <tr><th>L(s,t)</th><td id="out-L"></td></tr>
+        <tr><th>Q(s,t)</th><td id="out-Q"></td></tr>
+        <tr><th>F(L,Q) = L&middot;Q</th><td id="out-F"></td></tr>
+        <tr><th>Res(L,Q)</th><td id="out-res"></td></tr>
+        <tr><th>ad + bc</th><td id="out-adbc"></td></tr>
+        <tr><th>root of L</th><td id="out-rootL"></td></tr>
+        <tr><th>roots of Q</th><td id="out-rootsQ"></td></tr>
+      </table>
+    </div>
+
+    <div class="export">
+      <button type="button" id="copy-data">Copy data as text</button>
+      <button type="button" id="copy-link">Copy shareable link</button>
+      <span class="msg" id="copy-msg" role="status"></span>
+    </div>
+  </div>
+
+  <footer>Coded with the assistance of Claude Code &middot; Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="jacobian.js"></script>
+<script>
+(function () {
+  'use strict';
+  var J = window.Jacobian;
+  var el = {};
+  ['in-a1', 'in-y', 'in-z', 'in-a2', 'in-b', 'in-c', 'abc-sub', 'plot', 'err',
+   'show-L', 'show-Q', 'show-LQ', 'show-cplx', 'status', 'copy-data', 'copy-link', 'copy-msg',
+   'out-d', 'out-e', 'out-L', 'out-Q', 'out-F', 'out-res', 'out-adbc', 'out-rootL', 'out-rootsQ']
+    .forEach(function (id) { el[id] = document.getElementById(id); });
+
+  // one edit function per input — used by both typing and the +/− arrows, so they stay consistent
+  var EDIT = {
+    'in-a1': function (x) { return J.editAyz(st, x); },
+    'in-y':  function (x) { return J.editY(st, x); },
+    'in-z':  function (x) { return J.editZ(st, x); },
+    'in-a2': function (x) { return J.editAabc(st, x); },
+    'in-b':  function (x) { return J.editB(st, x); },
+    'in-c':  function (x) { return J.editC(st, x); }
+  };
+
+  var st = J.fromAYZ(1, -1.5, 6.5);   // start at P₁ (a generic point, real a)
+  var hoverX = null;                  // data x under the cursor (null = not hovering), for the plot readout
+  var geom = null;                    // last plot geometry + clickable Q-root dots, for hover/click hit-testing
+
+  // ---------- number formatting ----------
+  function num(x) {
+    if (!isFinite(x)) return '—';
+    if (Math.abs(x) < 1e-12) x = 0;
+    var r = Math.round(x);
+    if (Math.abs(x - r) < 1e-9) return String(r);      // show integers cleanly
+    return (+x.toFixed(4)).toString();
+  }
+  function term(coef, sym) {                            // a signed term like " + 3·s" or " − s²"
+    if (Math.abs(coef) < 1e-12) return '';
+    var sign = coef < 0 ? ' − ' : ' + ', mag = Math.abs(coef);
+    var m = (Math.abs(mag - 1) < 1e-9 && sym) ? '' : num(mag);
+    return sign + m + (m && sym ? '·' : '') + sym;
+  }
+  function poly(terms) {                                // join terms, trimming a leading " + "
+    var s = terms.map(function (t) { return term(t[0], t[1]); }).join('');
+    s = s.replace(/^ \+ /, '').replace(/^ − /, '−');
+    return s === '' ? '0' : s;
+  }
+  function root(r) {
+    if (!r) return '—';
+    if (r.inf) return '∞';
+    if (Math.abs(r.im) < 1e-12) return num(r.re);
+    return '<span class="cmplx">' + num(r.re) + (r.im < 0 ? ' − ' : ' + ') + num(Math.abs(r.im)) + ' i</span>';
+  }
+
+  function setErr(msg) { el['err'].textContent = msg || ''; }
+  function statusMsg() {
+    var info = J.realRootInfo(st);
+    if (info.qComplex) return 'L·Q has one real root (Q’s are complex): a single real factorization, and the multiplication map looks injective near here.';
+    if (info.nDistinct === 3) return 'L·Q has three real roots ⇒ three real factorizations. The multiplication map is 3-to-1 here — click a hollow Q-root on the plot to promote it into L.';
+    return 'L·Q has a repeated real root (' + info.nDistinct + ' distinct): a degenerate factorization.';
+  }
+
+  // ---------- render ----------
+  function render() {
+    // render only runs after a committed, valid change, so any stale error state is now resolved
+    setErr('');
+    ['in-a1', 'in-y', 'in-z', 'in-a2', 'in-b', 'in-c'].forEach(function (id) { el[id].classList.remove('bad'); });
+    // inputs (do not clobber a field the user is mid-edit; render fills all on each committed change)
+    el['in-a1'].value = num(st.a); el['in-y'].value = num(st.y); el['in-z'].value = num(st.z);
+    el['in-a2'].value = num(st.a); el['in-b'].value = num(st.b); el['in-c'].value = num(st.c);
+
+    var singular = (st.a === 0);
+    el['in-b'].disabled = singular; el['in-c'].disabled = singular;
+    el['abc-sub'].innerHTML = singular
+      ? 'At <span class="mono">a=0</span> the chart collapses: <span class="mono">b=c=1</span> are forced, and <span class="mono">d,e</span> parametrise the fibre.'
+      : 'A derived chart, singular at <span class="mono">a=0</span>.';
+
+    el['out-d'].textContent = num(st.d);
+    el['out-e'].textContent = num(st.e);
+    el['out-L'].innerHTML = poly([[st.a, 's'], [st.b, 't']]);
+    el['out-Q'].innerHTML = poly([[st.c, 's²'], [st.d, 's·t'], [st.e, 't²']]);
+    // F = L·Q, with the s²t coefficient (always 1 on X) flagged. The pinned term is emitted verbatim
+    // (styled) rather than through term(), and the whole string's leading sign is trimmed at the end.
+    var C = st.cubic;
+    var fhtml = term(C[0], 's³') + ' + <span class="pin">1·s²t</span>' + term(C[2], 's·t²') + term(C[3], 't³');
+    el['out-F'].innerHTML = fhtml.replace(/^ \+ /, '').replace(/^ − /, '−');
+    el['out-res'].innerHTML = num(st.res) + ' <span class="note" style="display:inline">(always 1 on X)</span>';
+    el['out-adbc'].innerHTML = num(st.a * st.d + st.b * st.c) + ' <span class="note" style="display:inline">(always 1 on X)</span>';
+    el['status'].textContent = statusMsg();
+    el['out-rootL'].innerHTML = 's/t = ' + root(st.rootL);
+    el['out-rootsQ'].innerHTML = 's/t = ' + st.rootsQ.map(root).join(', ');
+    Array.prototype.forEach.call(document.querySelectorAll('.spin'), function (btn) {   // disable arrows on disabled fields
+      var t = btn.getAttribute('data-for');
+      btn.disabled = (t === 'in-b' || t === 'in-c') && singular;
+    });
+    drawPlot();
+    flash();
+  }
+
+  // ---------- plot: L, Q, L·Q in the affine chart t = 1 (guarded so the DOM-shim test skips it) ----------
+  function drawPlot() {
+    var cv = el['plot'];
+    if (!cv || !cv.getContext) return;
+    var cs = getComputedStyle(document.documentElement);
+    function cvar(name, fb) { return ((cs.getPropertyValue(name) || '').trim()) || fb; }
+    var col = { bg: cvar('--panel', '#fff'), axis: cvar('--muted', '#888'), grid: cvar('--line', '#eee'), sans: cvar('--sans', 'sans-serif') };
+    // curve colours come from the same CSS variables as the legend, so the canvas follows the OS scheme AND a data-theme toggle
+    var CL = cvar('--cv-L', '#2f6fd0'), CQ = cvar('--cv-Q', '#2c9c4a'), CLQ = cvar('--cv-LQ', '#9b59b6');
+    var dpr = window.devicePixelRatio || 1, w = cv.clientWidth || 600, h = cv.clientHeight || 300;
+    cv.width = Math.round(w * dpr); cv.height = Math.round(h * dpr);
+    var g = cv.getContext('2d'); g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, w, h); g.fillStyle = col.bg; g.fillRect(0, 0, w, h);
+
+    var show = { L: el['show-L'].checked, Q: el['show-Q'].checked, LQ: el['show-LQ'].checked };
+    var showCplx = el['show-cplx'].checked;
+    var P = J.plotData(st, { show: show, complex: showCplx }), xr = P.xr, yr = P.yr, mL = 8, mR = 8, mT = 10, mB = 10;
+    function X(x) { return mL + (x - xr[0]) / (xr[1] - xr[0]) * (w - mL - mR); }
+    function Y(y) { return mT + (yr[1] - y) / (yr[1] - yr[0]) * (h - mT - mB); }
+    var pxPerX = (w - mL - mR) / (xr[1] - xr[0]);   // horizontal units → pixels (used isotropically for the complex layer)
+    g.strokeStyle = col.grid; g.lineWidth = 1;
+    for (var xi = Math.ceil(xr[0]); xi <= Math.floor(xr[1]); xi++) { g.beginPath(); g.moveTo(X(xi), mT); g.lineTo(X(xi), h - mB); g.stroke(); }
+    g.strokeStyle = col.axis; g.lineWidth = 1.2;
+    if (yr[0] < 0 && yr[1] > 0) { g.beginPath(); g.moveTo(mL, Y(0)); g.lineTo(w - mR, Y(0)); g.stroke(); }
+    if (xr[0] < 0 && xr[1] > 0) { g.beginPath(); g.moveTo(X(0), mT); g.lineTo(X(0), h - mB); g.stroke(); }
+    // integer x-tick labels along the axis, and a disclosure of the (clamped) vertical half-scale
+    g.fillStyle = col.axis; g.font = '11px ' + col.sans; g.textAlign = 'center'; g.textBaseline = 'top';
+    var axisPy = (yr[0] < 0 && yr[1] > 0) ? Y(0) : (h - mB);
+    for (var xj = Math.ceil(xr[0]); xj <= Math.floor(xr[1]); xj++) {
+      if (xj !== 0) g.fillText(String(xj), X(xj), Math.min(axisPy + 3, h - 14));
+    }
+    g.textAlign = 'left'; g.textBaseline = 'alphabetic';
+    g.fillText('y: ±' + (Math.round(yr[1] * 10) / 10), mL + 2, mT + 11);
+    function curve(pts, color, width) {
+      g.strokeStyle = color; g.lineWidth = width; g.beginPath(); var on = false;
+      for (var i = 0; i < pts.length; i++) {
+        var px = X(pts[i][0]), py = Y(pts[i][1]);
+        if (py < mT - 60 || py > h - mB + 60) { on = false; continue; }   // break across off-canvas spikes
+        if (!on) { g.moveTo(px, py); on = true; } else g.lineTo(px, py);
+      }
+      g.stroke();
+    }
+    if (show.L) curve(P.L, CL, 1.6);
+    if (show.Q) curve(P.Q, CQ, 1.6);
+    if (show.LQ) curve(P.LQ, CLQ, 2.4);
+    function dot(x, color, filled) {
+      if (x < xr[0] || x > xr[1]) return;
+      g.beginPath(); g.arc(X(x), Y(0), 4.5, 0, 2 * Math.PI);
+      if (filled) { g.fillStyle = color; g.fill(); }
+      else { g.fillStyle = col.bg; g.fill(); g.strokeStyle = color; g.lineWidth = 2; g.stroke(); }
+    }
+    if (show.L && P.rootL !== null) dot(P.rootL, CL, true);       // root markers track their curve's visibility
+    var hot = [];                                                  // clickable Q real-root dots (screen pos + qIdx)
+    if (show.Q) st.rootsQ.forEach(function (r, i) {
+      if (r.inf || Math.abs(r.im) >= 1e-9 || r.re < xr[0] || r.re > xr[1]) return;
+      dot(r.re, CQ, false);
+      hot.push({ px: X(r.re), py: Y(0), qIdx: i });
+    });
+    // complex roots: the plane doubles as the s/t-plane, so the conjugate pair sits at (Re, ±Im), the
+    // imaginary part measured in the horizontal units (isotropic), and faded to read as a separate layer
+    if (showCplx && P.rootsQcomplex.length) {
+      g.save(); g.globalAlpha = 0.5;
+      var px0 = X(P.rootsQcomplex[0].re);
+      if (P.rootsQcomplex.length === 2) {
+        g.strokeStyle = CQ; g.setLineDash([3, 3]); g.lineWidth = 1;
+        g.beginPath(); g.moveTo(px0, Y(0) - P.rootsQcomplex[0].im * pxPerX); g.lineTo(px0, Y(0) - P.rootsQcomplex[1].im * pxPerX); g.stroke();
+        g.setLineDash([]);
+      }
+      P.rootsQcomplex.forEach(function (r) {
+        g.beginPath(); g.arc(X(r.re), Y(0) - r.im * pxPerX, 4.5, 0, 2 * Math.PI); g.fillStyle = CQ; g.fill();
+      });
+      g.restore();
+    }
+
+    // hover readout: a dashed cursor at x and a small box of L, Q, L·Q values at that x
+    if (hoverX !== null && hoverX >= xr[0] && hoverX <= xr[1]) {
+      var hx = X(hoverX);
+      g.save(); g.globalAlpha = 0.55; g.strokeStyle = col.axis; g.setLineDash([2, 3]); g.lineWidth = 1;
+      g.beginPath(); g.moveTo(hx, mT); g.lineTo(hx, h - mB); g.stroke(); g.restore();
+      var yl = J.evalL(st, hoverX), yq = J.evalQ(st, hoverX);
+      var rows = [['x = ' + hoverX.toFixed(3), col.axis], ['L = ' + yl.toFixed(3), CL], ['Q = ' + yq.toFixed(3), CQ], ['L·Q = ' + (yl * yq).toFixed(3), CLQ]];
+      g.font = '11px ' + col.sans; g.textBaseline = 'top';
+      var bw = 96, bh = rows.length * 14 + 8, bx = hx + 10 + bw > w ? hx - 10 - bw : hx + 10, by = mT + 4;
+      g.globalAlpha = 0.92; g.fillStyle = col.bg; g.fillRect(bx, by, bw, bh);
+      g.globalAlpha = 1; g.strokeStyle = col.grid; g.lineWidth = 1; g.strokeRect(bx, by, bw, bh);
+      g.textAlign = 'left';
+      rows.forEach(function (rw, i) { g.fillStyle = rw[1]; g.fillText(rw[0], bx + 6, by + 5 + i * 14); });
+    }
+
+    // publish geometry for the mouse handlers (data↔pixel + the clickable dots)
+    geom = { hot: hot, dataX: function (px) { return xr[0] + (px - mL) / (w - mL - mR) * (xr[1] - xr[0]); } };
+  }
+  function flash() {
+    ['out-L', 'out-Q', 'out-F', 'out-rootsQ'].forEach(function (id) {
+      var n = el[id]; n.classList.remove('flash'); void n.offsetWidth; n.classList.add('flash');
+    });
+  }
+
+  // ---------- editing ----------
+  function parse(v) { v = (v || '').trim(); if (v === '' || v === '-' || v === '.') return null; var x = Number(v); return isFinite(x) ? x : null; }
+  function applyEdit(id, x) {                          // route a numeric value through the field's edit fn
+    var res = EDIT[id](x);
+    if (res && res.ok === false) return false;
+    st = (res && res.state) ? res.state : res;
+    render();
+    return true;
+  }
+  var LBL = { 'in-a1': 'a', 'in-y': 'y', 'in-z': 'z', 'in-a2': 'a', 'in-b': 'b', 'in-c': 'c' };
+  Object.keys(EDIT).forEach(function (id) {
+    var input = el[id];
+    input.addEventListener('change', function () {
+      var x = parse(input.value);
+      if (x === null) { input.classList.add('bad'); setErr('“' + input.value + '” is not a number — ' + LBL[id] + ' unchanged.'); return; }
+      if (!applyEdit(id, x)) { input.classList.add('bad'); setErr(EDIT[id](x).reason || 'that value is not allowed here.'); return; }
+    });
+  });
+  // +/− arrows: step the field by 0.1 on a clean grid (so a can land exactly on 0 and trigger the snap);
+  // press-and-hold repeats, while a plain click or keyboard activation does a single step
+  Array.prototype.forEach.call(document.querySelectorAll('.spin'), function (btn) {
+    function step() {
+      if (btn.disabled) return;
+      var id = btn.getAttribute('data-for'), dir = +btn.getAttribute('data-dir'), s = 0.1;
+      var cur = parse(el[id].value); if (cur === null) cur = 0;
+      var v = Math.round((cur + dir * s) / s) * s;
+      if (Math.abs(v) < 1e-9) v = 0;
+      applyEdit(id, v);
+    }
+    var held = false, delay = null, rep = null;
+    function stop() { if (delay) { clearTimeout(delay); delay = null; } if (rep) { clearInterval(rep); rep = null; } }
+    btn.addEventListener('pointerdown', function (e) {
+      if (btn.disabled) return;
+      e.preventDefault(); held = true; step();
+      delay = setTimeout(function () { rep = setInterval(step, 80); }, 400);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) { btn.addEventListener(ev, stop); });
+    btn.addEventListener('click', function () { if (held) { held = false; return; } step(); });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.presets button'), function (btn) {
+    btn.addEventListener('click', function () {
+      var p = btn.getAttribute('data-ayz').split(',').map(Number);
+      st = J.fromAYZ(p[0], p[1], p[2]); render();
+    });
+  });
+
+  ['show-L', 'show-Q', 'show-LQ', 'show-cplx'].forEach(function (id) {
+    el[id].addEventListener('change', function () { drawPlot(); });
+  });
+  if (window.addEventListener) window.addEventListener('resize', function () { drawPlot(); });   // guard: the DOM shim's window has no addEventListener
+
+  // ---------- plot mouse interaction: hover readout, and click a real Q-root to swap it into L ----------
+  function nearHot(px, py) {
+    if (!geom) return null;
+    for (var i = 0; i < geom.hot.length; i++) { var d = geom.hot[i]; if (Math.hypot(px - d.px, py - d.py) < 10) return d.qIdx; }
+    return null;
+  }
+  var cv = el['plot'];
+  if (cv.addEventListener && cv.getBoundingClientRect) {   // a real canvas only; the DOM shim lacks getBoundingClientRect
+    cv.addEventListener('mousemove', function (e) {
+      var rect = cv.getBoundingClientRect(), px = e.clientX - rect.left, py = e.clientY - rect.top;
+      hoverX = geom ? geom.dataX(px) : null;
+      if (cv.style) cv.style.cursor = nearHot(px, py) !== null ? 'pointer' : 'default';
+      drawPlot();
+    });
+    cv.addEventListener('mouseleave', function () { hoverX = null; if (cv.style) cv.style.cursor = 'default'; drawPlot(); });
+    cv.addEventListener('click', function (e) {
+      var rect = cv.getBoundingClientRect(), qIdx = nearHot(e.clientX - rect.left, e.clientY - rect.top);
+      if (qIdx === null) return;
+      var r = J.swapRootIntoL(st, qIdx);
+      if (r.ok) { st = r.state; render(); } else { setErr(r.reason); }
+    });
+  }
+
+  // ---------- export: copy the data as text, or a shareable deep-link ----------
+  function dataText() {
+    var C = st.cubic;
+    function rootStr(r) { return r.inf ? '∞' : (Math.abs(r.im) < 1e-12 ? num(r.re) : num(r.re) + (r.im < 0 ? ' - ' : ' + ') + num(Math.abs(r.im)) + 'i'); }
+    return [
+      '(a, y, z)       = (' + [st.a, st.y, st.z].map(num).join(', ') + ')',
+      '(a, b, c, d, e) = (' + [st.a, st.b, st.c, st.d, st.e].map(num).join(', ') + ')',
+      'L(s,t) = ' + poly([[st.a, 's'], [st.b, 't']]),
+      'Q(s,t) = ' + poly([[st.c, 's^2'], [st.d, 's t'], [st.e, 't^2']]),
+      'L*Q    = ' + (term(C[0], 's^3') + ' + s^2 t' + term(C[2], 's t^2') + term(C[3], 't^3')).replace(/^ \+ /, ''),
+      'Res(L,Q) = 1,   ad + bc = 1',
+      'root of L:  s/t = ' + rootStr(st.rootL),
+      'roots of Q: s/t = ' + st.rootsQ.map(rootStr).join(', ')
+    ].join('\n');
+  }
+  function copyText(str, okMsg) {
+    function done() { el['copy-msg'].textContent = okMsg; setTimeout(function () { el['copy-msg'].textContent = ''; }, 1800); }
+    function fallback() { try { var ta = document.createElement('textarea'); ta.value = str; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); } catch (e) {} }
+    if (typeof navigator !== 'undefined' && navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(str).then(done, function () { fallback(); done(); });
+    else { fallback(); done(); }
+  }
+  el['copy-data'].addEventListener('click', function () { copyText(dataText(), 'Data copied'); });
+  el['copy-link'].addEventListener('click', function () {
+    var base = (typeof window !== 'undefined' && window.location) ? (window.location.origin + window.location.pathname) : '';
+    copyText(base + '#' + [st.a, st.y, st.z].map(function (v) { return +v.toFixed(6); }).join(','), 'Link copied');
+  });
+  // a shared link (#a,y,z) sets the starting point — a deliberate deep-link, the only URL read/use here
+  if (typeof window !== 'undefined' && window.location && window.location.hash) {
+    var parts = window.location.hash.slice(1).split(',').map(Number);
+    if (parts.length === 3 && parts.every(isFinite)) st = J.fromAYZ(parts[0], parts[1], parts[2]);
+  }
+
+  render();
+  window.__jacobian = { get state() { return st; }, get geom() { return geom; }, el: el, render: render,
+    setState: function (s) { st = s; render(); }, setHover: function (x) { hoverX = x; drawPlot(); } };
+})();
+</script>
+</body>
+</html>

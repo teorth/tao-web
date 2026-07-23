@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Jacobian counterexample explorer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem;
+    border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem;
+    border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em;
+    background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Jacobian counterexample explorer</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="jacobian.html">Jacobian counterexample explorer</a>.</p>
+  </header>
+  <article>
+<p><em>A lightly edited transcript of the conversation that built the <a href="jacobian.html">Jacobian counterexample explorer</a>, a companion to the blog post <a href="https://terrytao.wordpress.com/2026/07/21/a-digestion-of-the-jacobian-conjecture-counterexample/">&quot;A digestion of the Jacobian conjecture counterexample&quot;</a>. The app was built in a single session.</em></p>
+<p><strong>How to read this.</strong> Terence Tao&#x27;s messages appear verbatim in the blockquotes; the assistant&#x27;s replies are summarised in italics between them. Routine &quot;looks good, continue&quot; replies are folded into the narration.</p>
+<h2>1. Reading the mathematics first</h2>
+<blockquote><p>I&#x27;d like to create an app to visualize the Jacobian conjecture example discussed in [the blog post], in particular displaying the <code>(a,y,z)</code> and <code>(a,b,c)</code> coordinates for the same space X, and also displaying the data <code>(a,b,c,d,e)</code>, L, Q, F(L,Q) = L·Q, Res(L,Q) (though this is always 1), and the roots of L and Q (the latter being complex). I&#x27;d like the viewer to be able to modify <code>a,y,z</code> or <code>a,b,c</code> and have all the other data update automatically [...] modifying <code>a</code> while keeping <code>y,z</code> fixed is different from modifying <code>a</code> while keeping <code>b,c</code> fixed. One issue is that the <code>a,b,c</code> coordinates are slightly singular; sending <code>a</code> to zero in particular forces <code>b,c</code> to equal 1, so we need to think about the GUI to handle that. But the first step is for you to read the blog post and see if you understand the mathematics behind the construction.</p></blockquote>
+<p><em>The assistant read the post and the underlying announcement, then reconstructed the algebra to check its understanding rather than paraphrasing it. It confirmed the shape of the construction — the space <code>X = {Res(L,Q)=1, ad+bc=1}</code>, a copy of ℝ³ carrying two coordinate charts — derived the change-of-variables and the <code>d,e</code> formulas from scratch, and verified numerically that the three known collision points lie on X. Three points were flagged for confirmation: that F should display the product <code>L·Q</code>, that the real slice was intended, and how far the singular chart should be handled.</em></p>
+<h2>2. Scope, and the singular fibre</h2>
+<blockquote><p>1: yes I meant L * Q. 2: I&#x27;d like to illustrate the L, Q interpretation of the counterexample rather than the original map (1) [...]. 3: for simplicity I&#x27;d like to keep <code>a,y,z</code> (and hence <code>a,b,c,d,e,L,Q</code>) all real. The one thing that can be complex is the roots of Q, but this would be a non-text-editable field and so should not cause GUI issues.</p><p>To deal with the <code>(a,b,c)</code> coordinate singularity at <code>a=0</code> one could make the rule that if one sets <code>a</code> to equal zero in the <code>(a,b,c)</code> coordinates then <code>b, c</code> are automatically set to 1 while <code>d, e</code> remain where they were, which should uniquely fix <code>a,y,z</code> which I agree should be the master coordinates.</p></blockquote>
+<p><em>The assistant checked that this rule closes up: holding <code>d,e</code> and snapping <code>b=c=1</code> at <code>a=0</code> gives master coordinates <code>(0, 2d, 8d² − e/2)</code>, which feed back through the chart to return the same <code>d,e</code>. It then built the pure logic as a DOM-free module — the two charts, the six field edits each holding the right pair fixed, the snap rule, and the roots — with a set of node tests covering the defining identities and the round-trips.</em></p>
+<h2>3. Stage 1, and a plan for stage 2</h2>
+<blockquote><p>Stage 1 sounds good. For stage 2 one simple interface to skip to is to be able to click on either of the two roots of Q (when they are real and distinct) to swap that into a root of L and adjust everything else accordingly to preserve L·Q. It can go in a new algebraic geometry section.</p></blockquote>
+<p><em>Stage 1 — the two live coordinate panels, the derived data (<code>d, e</code>, <code>L</code>, <code>Q</code>, the cubic <code>L·Q</code> with its pinned <code>s²t</code> coefficient, <code>Res</code>, and the roots) — went in, with the singular-chart handling wired through. The click-to-swap idea was recorded for stage 2 and a new &quot;Algebraic geometry&quot; category noted for the catalogue.</em></p>
+<h2>4. Arrows, and a plot</h2>
+<blockquote><p>This looks good. I&#x27;d like some arrows to be able to increment <code>a,b,c</code> or <code>a,y,z</code>. Also if we can have a plot of L, Q, and LQ as part of the GUI that would be great.</p></blockquote>
+<p><em>The assistant added +/− arrows to every field, routed through the same edit logic so the two-chart distinction and the singularity rule were preserved, and stepping on a clean grid so <code>a</code> could land exactly on zero. It added a canvas plot of <code>L</code>, <code>Q</code> and <code>L·Q</code> as functions of <code>x = s/t</code>, with the real roots drawn as marks on the axis: <code>L·Q</code>&#x27;s crossings are exactly <code>L</code>&#x27;s together with <code>Q</code>&#x27;s, which is the factorization picture the app is about.</em></p>
+<h2>5. The complex plane, and decluttering</h2>
+<blockquote><p>Looks great. One suggestion: when the roots of Q become complex, we can still display them in the same graph by having the plane double as the complex plane, so one has two roots (maybe in some faded color) displayed above and below the real axis. One could have checkmark options to suppress complex zeroes (or to suppress L, Q, or LQ) to declutter the display as needed.</p></blockquote>
+<p><em>Complex roots of Q are now drawn as a faded conjugate pair at <code>(Re, ±Im)</code>, using the horizontal scale for the imaginary part so the plane reads as the <code>s/t</code>-plane. Four checkboxes toggle <code>L</code>, <code>Q</code>, <code>L·Q</code> and the complex layer; hiding a curve also rescales the vertical window to fit what remains.</em></p>
+<h2>6. Audits, and a review</h2>
+<blockquote><p>Looks good. Can you run the standard audits and also review it if there are any useful additions to the GUI that might be appropriate?</p></blockquote>
+<p><em>The assistant ran the routine checks (no network, storage, or page-state side effects; a complete document). It fixed three items: the canvas colours now follow a theme toggle rather than the OS setting alone; a stale error flag is cleared on the next valid edit; and a rejected input now shows a message instead of only a red border. It added axis labels, and proposed a set of additions.</em></p>
+<blockquote><p>All the cheap options sound good. An export feature and the hover readout also sound good. Implementing these and Stage 2 sounds good to me.</p></blockquote>
+<h2>7. Stage 2, export, and hover</h2>
+<p><em>The last batch went in together. <strong>Stage 2</strong>: clicking a real root of Q promotes it into L, re-factoring the same cubic <code>L·Q</code> — the multiplication map&#x27;s non-injectivity, made a click, with the <code>Res=1</code> normalisation fixing the scaling uniquely. A status line reports how many real factorizations the current cubic has, and points at the click when there are three. Also added: the <code>ad+bc = 1</code> row, hold-to-repeat on the arrows, a hover readout of <code>L</code>, <code>Q</code>, <code>L·Q</code> under the cursor, a &quot;copy data as text&quot; button, and a shareable deep-link that the app restores on load.</em></p>
+<h2>8. Publishing</h2>
+<blockquote><p>Looks good. I think it is good to go. Update the applet page to describe the current app accurately, make a making of page, and update the main applet page with an algebraic geometry section.</p></blockquote>
+<p><em>The description was brought up to date, this page written, and the app catalogued under a new Algebraic geometry section.</em></p>
+<hr>
+<p><em>The construction is a small, self-contained slice of algebra: a cubic form factors into a linear and a quadratic factor in more than one way, and normalising that ambiguity produces a polynomial map that is locally injective but not globally so. The app keeps every derived quantity in view at once and lets both coordinate systems be edited, so the singular chart and the factorization ambiguity — the two features that carry the mathematics — can be handled directly rather than described.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>
