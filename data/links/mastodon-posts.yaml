@@ -83,6 +83,7 @@ sections:
   - "[The distinction between accuracy and inerrancy](https://mathstodon.xyz/@tao/114202916107427434)(Mar\
     \ 21, 2025)"
 - title: AI, proof assistants, and other machine assistance
+  description: "For a curated overview of my views, see [My views on AI](ai-views.html) — a living summary distilled from these posts and other writings, with a companion [interview](ai-views-interview.html)."
   entries:
   - "[First encounter with ChatGPT](https://mathstodon.xyz/@tao/109445735818439353) (Dec 2, 2022)"
   - "[AI tools and homework assignments](https://mathstodon.xyz/@tao/109543141003492779) (Dec 19, 2022)"

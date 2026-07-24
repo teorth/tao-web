@@ -1020,6 +1020,8 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
         napp = len((applets or {}).get("applets") or [])
         body += ('<p class="desc"><a href="applets.html"><strong>Interactive tools</strong></a> '
                  f'&mdash; {napp} experimental math apps and games, old and newly ported.</p>')
+    body += ('<p class="desc"><a href="ai-views.html"><strong>My views on AI</strong></a> '
+             '&mdash; a living, curated summary of my thinking on AI in mathematics, with a companion interview.</p>')
     for l in sorted(links, key=lambda d: d["title"].lower()):
         blurb = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", l.get("description", ""))
         blurb = f" &mdash; {html.escape(blurb)}" if blurb else ""
