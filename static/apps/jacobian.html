@@ -40,6 +40,12 @@
   .data th, .data td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--line); vertical-align: top; }
   .data th { width: 8.5em; font-weight: 600; color: var(--muted); font-size: .82rem; }
   .data td { font-family: var(--mono); font-size: .9rem; }
+  .orig { margin-top: 1rem; }
+  .orig summary { cursor: pointer; font-weight: 600; font-size: .9rem; color: var(--ink); }
+  .orig table { border-collapse: collapse; width: 100%; margin-top: .3rem; }
+  .orig th, .orig td { text-align: left; padding: .3rem .5rem; border-bottom: 1px solid var(--line); }
+  .orig th { width: 8.5em; font-weight: 600; color: var(--muted); font-size: .82rem; }
+  .orig td { font-family: var(--mono); font-size: .9rem; }
   .mono { font-family: var(--mono); }
   .pin { color: var(--accent); font-weight: 700; }        /* the coefficient pinned to 1 on X */
   .cmplx { color: var(--accent); }
@@ -99,10 +105,10 @@
     <p class="err" id="err" role="alert"></p>
 
     <div class="presets">
-      <button type="button" data-ayz="0,0,-0.25">Preset P&#8320;</button>
-      <button type="button" data-ayz="1,-1.5,6.5">Preset P&#8321;</button>
-      <button type="button" data-ayz="-1,1.5,6.5">Preset P&#8322;</button>
-      <button type="button" data-ayz="-0.5,0,0.5">Q real (3 real roots)</button>
+      <button type="button" data-ayz="0,0,0.125">Collision P&#8320;</button>
+      <button type="button" data-ayz="1,-1.5,-3.25">Collision P&#8321;</button>
+      <button type="button" data-ayz="-1,1.5,-3.25">Collision P&#8322;</button>
+      <button type="button" data-ayz="0.6,1,0.5">Q complex</button>
     </div>
 
     <div class="plotwrap">
@@ -130,6 +136,21 @@
       </table>
     </div>
 
+    <details class="orig">
+      <summary>Original map &mdash; the blog&rsquo;s equation (1)</summary>
+      <p class="note" style="margin:.4rem 0 .6rem">The point of X corresponds to the original variables
+        <span class="mono">(z&#8321;, z&#8322;, z&#8323;) = (a, y, &minus;2z)</span>, at which the map of
+        equation (1) evaluates to <span class="mono">F(z&#8321;,z&#8322;,z&#8323;) = (be, 2(ae+bd), 2ac)</span>
+        &mdash; a linear reindexing of the coefficients of <span class="mono">L&middot;Q</span>. So the
+        original map is the multiplication map in disguise (constant Jacobian <span class="mono">&minus;2</span>),
+        and the three <strong>Collision</strong> presets are its three coinciding preimages &mdash; the three
+        factorizations of one cubic.</p>
+      <table>
+        <tr><th>(z&#8321;, z&#8322;, z&#8323;)</th><td id="out-z"></td></tr>
+        <tr><th>F(z&#8321;, z&#8322;, z&#8323;)</th><td id="out-Feq1"></td></tr>
+      </table>
+    </details>
+
     <div class="export">
       <button type="button" id="copy-data">Copy data as text</button>
       <button type="button" id="copy-link">Copy shareable link</button>
@@ -148,7 +169,8 @@
   var el = {};
   ['in-a1', 'in-y', 'in-z', 'in-a2', 'in-b', 'in-c', 'abc-sub', 'plot', 'err',
    'show-L', 'show-Q', 'show-LQ', 'show-cplx', 'status', 'copy-data', 'copy-link', 'copy-msg',
-   'out-d', 'out-e', 'out-L', 'out-Q', 'out-F', 'out-res', 'out-adbc', 'out-rootL', 'out-rootsQ']
+   'out-d', 'out-e', 'out-L', 'out-Q', 'out-F', 'out-res', 'out-adbc', 'out-rootL', 'out-rootsQ',
+   'out-z', 'out-Feq1']
     .forEach(function (id) { el[id] = document.getElementById(id); });
 
   // one edit function per input — used by both typing and the +/− arrows, so they stay consistent
@@ -228,6 +250,10 @@
     el['status'].textContent = statusMsg();
     el['out-rootL'].innerHTML = 's/t = ' + root(st.rootL);
     el['out-rootsQ'].innerHTML = 's/t = ' + st.rootsQ.map(root).join(', ');
+    // the blog's equation (1): original variables (z1,z2,z3) = (a, y, -2z) and F there
+    var zc = J.originalCoords(st), Feq = J.originalMap(st);
+    el['out-z'].textContent = '(' + num(zc.z1) + ', ' + num(zc.z2) + ', ' + num(zc.z3) + ')';
+    el['out-Feq1'].textContent = '(' + Feq.map(num).join(', ') + ')';
     Array.prototype.forEach.call(document.querySelectorAll('.spin'), function (btn) {   // disable arrows on disabled fields
       var t = btn.getAttribute('data-for');
       btn.disabled = (t === 'in-b' || t === 'in-c') && singular;
@@ -421,7 +447,8 @@
       'L*Q    = ' + (term(C[0], 's^3') + ' + s^2 t' + term(C[2], 's t^2') + term(C[3], 't^3')).replace(/^ \+ /, ''),
       'Res(L,Q) = 1,   ad + bc = 1',
       'root of L:  s/t = ' + rootStr(st.rootL),
-      'roots of Q: s/t = ' + st.rootsQ.map(rootStr).join(', ')
+      'roots of Q: s/t = ' + st.rootsQ.map(rootStr).join(', '),
+      'eq.(1): (z1,z2,z3) = (' + [J.originalCoords(st).z1, J.originalCoords(st).z2, J.originalCoords(st).z3].map(num).join(', ') + '),   F = (' + J.originalMap(st).map(num).join(', ') + ')'
     ].join('\n');
   }
   function copyText(str, okMsg) {

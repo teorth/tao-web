@@ -171,12 +171,27 @@
     return { ok: true, state: fromABC(ap, bp, cp) };
   }
 
+  // ---------- the blog's original map, equation (1), and its correspondence to X ----------
+  // A point of X (master coords a,y,z) corresponds to the original variables  (z1,z2,z3) = (a, y, -2z),
+  // and there  F(z1,z2,z3) = (be, 2(ae+bd), 2ac)  — a linear reindexing of the free coefficients
+  // (ac, ae+bd, be) of the cubic L·Q. So the original map is the multiplication map in disguise: its three
+  // colliding preimages are the three factorizations of one cubic (verified against eq. (1) to 1e-12).
+  function originalCoords(st) { return { z1: st.a, z2: st.y, z3: -2 * st.z }; }
+  function evalEq1(z1, z2, z3) {
+    var u = 1 + z1 * z2, v = 4 + 3 * z1 * z2;
+    return [u * u * u * z3 + z2 * z2 * u * v,
+            z2 + 3 * z1 * u * u * z3 + 3 * z1 * z2 * z2 * v,
+            2 * z1 - 3 * z1 * z1 * z2 - z1 * z1 * z1 * z3];
+  }
+  function originalMap(st) { var c = originalCoords(st); return evalEq1(c.z1, c.z2, c.z3); }
+
   var API = {
     fromAYZ: fromAYZ, fromABC: fromABC, rootOfL: rootOfL, rootsQ: rootsOfQ,
     editAyz: editAyz, editY: editY, editZ: editZ,
     editAabc: editAabc, editB: editB, editC: editC,
     evalL: evalL, evalQ: evalQ, plotData: plotData,
-    realRootInfo: realRootInfo, swapRootIntoL: swapRootIntoL
+    realRootInfo: realRootInfo, swapRootIntoL: swapRootIntoL,
+    originalCoords: originalCoords, evalEq1: evalEq1, originalMap: originalMap
   };
   if (typeof module !== 'undefined' && module.exports) module.exports = API;
   root.Jacobian = API;
