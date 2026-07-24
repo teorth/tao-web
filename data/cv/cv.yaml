@@ -717,6 +717,11 @@ editorial_note:
   text: Advice on submitting papers to journals
   url: "https://www.math.ucla.edu/~tao/submissions.html"
 service:
+- start: '2026'
+  organization: Mathematical Discourse
+  role: Scientific Board
+  editorial: true
+  url: "https://www.mathematicaldiscourse.org/"
 - start: '2025'
   organization: Foundation for Science and AI Research (SAIR)
   role: Co-founder
