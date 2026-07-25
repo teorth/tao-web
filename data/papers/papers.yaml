@@ -552,7 +552,7 @@ works:
     url: "https://arxiv.org/abs/2409.01343"
   - type: discussion
     url: "https://terrytao.wordpress.com/2024/09/03/planar-point-sets-with-forbidden-four-point-patterns-and-few-distinct-distances/"
-- id: higher-uniformity-of-arithmetic-functions-in-short-intervals
+- id: higher-uniformity-of-arithmetic-functions-in-short-intervals-ii
   kind: paper
   title: Higher uniformity of arithmetic functions in short intervals II. Almost all intervals
   coauthors:
@@ -843,7 +843,7 @@ works:
     url: "https://arxiv.org/abs/2203.01511"
   - type: discussion
     url: "https://terrytao.wordpress.com/2022/03/03/measurable-tilings-by-abelian-group-actions/"
-- id: higher-uniformity-of-arithmetic-functions-in-short-intervals
+- id: higher-uniformity-of-arithmetic-functions-in-short-intervals-i
   kind: paper
   title: Higher uniformity of arithmetic functions in short intervals I. All intervals
   coauthors:
@@ -1409,7 +1409,7 @@ works:
     url: "https://terrytao.wordpress.com/2019/08/13/eigenvectors-from-eigenvalues/"
   - type: discussion
     url: "https://terrytao.wordpress.com/2019/12/03/eigenvectors-from-eigenvalues-a-survey-of-a-basic-identity-in-linear-algebra/"
-- id: on-the-universality-of-the-incompressible-euler-equation-on-
+- id: on-the-universality-of-the-incompressible-euler-equation-ii
   kind: paper
   title: On the universality of the incompressible Euler equation on compact manifolds, II. Non-rigidity of Euler flows
   year: 2019
@@ -1613,7 +1613,7 @@ works:
     url: "https://arxiv.org/abs/1702.00912"
   - type: discussion
     url: "https://terrytao.wordpress.com/2017/02/05/a-bound-on-partitioning-clusters/"
-- id: correlations-of-the-von-mangoldt-and-higher-divisor-function
+- id: correlations-of-the-von-mangoldt-and-higher-divisor-functions-i
   kind: paper
   title: Correlations of the von Mangoldt and higher divisor functions I. Long shift ranges
   coauthors:
@@ -1686,7 +1686,7 @@ works:
     url: "https://arxiv.org/abs/1711.04337"
   - type: discussion
     url: "https://terrytao.wordpress.com/2017/11/15/an-inverse-theorem-for-kempermans-inequality/"
-- id: correlations-of-the-von-mangoldt-and-higher-divisor-function
+- id: correlations-of-the-von-mangoldt-and-higher-divisor-functions-ii
   kind: paper
   title: Correlations of the von Mangoldt and higher divisor functions II. Divisor correlations in short ranges
   coauthors:
@@ -1736,7 +1736,7 @@ works:
     url: "https://arxiv.org/abs/1707.02389"
   - type: discussion
     url: "https://terrytao.wordpress.com/2017/07/11/on-the-universality-of-potential-well-dynamics/"
-- id: on-the-universality-of-the-incompressible-euler-equation-on-
+- id: on-the-universality-of-the-incompressible-euler-equation
   kind: paper
   title: On the universality of the incompressible Euler equation on compact manifolds
   year: 2017
@@ -1833,7 +1833,7 @@ works:
     url: "https://arxiv.org/abs/1611.07441"
   - type: discussion
     url: "https://terrytao.wordpress.com/2016/11/22/an-integration-approach-to-the-toeplitz-square-peg-problem/"
-- id: finite-time-blowup-for-a-supercritical-defocusing-nonlinear-
+- id: finite-time-blowup-for-a-supercritical-defocusing-nonlinear-wave
   kind: paper
   title: Finite time blowup for a supercritical defocusing nonlinear wave system
   year: 2016
@@ -1876,7 +1876,7 @@ works:
     url: "http://arxiv.org/abs/1606.08481"
   - type: discussion
     url: "https://terrytao.wordpress.com/2016/06/29/finite-time-blowup-for-lagrangian-modifications-of-the-three-dimensional-euler-equation/"
-- id: finite-time-blowup-for-a-supercritical-defocusing-nonlinear-
+- id: finite-time-blowup-for-a-supercritical-defocusing-nonlinear-schrodinger
   kind: paper
   title: Finite time blowup for a supercritical defocusing nonlinear Schrödinger system
   year: 2016
@@ -2512,7 +2512,7 @@ works:
     url: "http://www.math.ac.vn/publications/acta/"
   - type: discussion
     url: "http://terrytao.wordpress.com/2010/05/18/random-matrices-localization-of-the-eigenvalues-and-the-necessity-of-four-moments/"
-- id: the-inverse-conjecture-for-the-gowers-norm-over-finite-field
+- id: the-inverse-conjecture-for-the-gowers-norm-over-finite-fields-low-char
   kind: paper
   title: The inverse conjecture for the Gowers norm over finite fields in low characteristic
   coauthors:
@@ -3618,7 +3618,7 @@ works:
     url: "http://arxiv.org/abs/0810.2994"
   - type: discussion
     url: "http://terrytao.wordpress.com/2008/10/18/from-the-littlewood-offord-problem-to-the-circular-law-universality-of-the-spectral-distribution-of-random-matrices/"
-- id: the-inverse-conjecture-for-the-gowers-norm-over-finite-field
+- id: the-inverse-conjecture-for-the-gowers-norm-over-finite-fields-corresp
   kind: paper
   title: The inverse conjecture for the Gowers norm over finite fields via the correspondence principle
   coauthors:
