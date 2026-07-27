@@ -718,6 +718,20 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
             rows.append((html.escape(s["years"]), dd))
         return _cv_rows(rows)
 
+    def postdocs_block(long: bool) -> str:
+        pds = cv.get("postdocs", [])
+        if not long:
+            return f'<p>{len(pds)} postdoctoral scholars mentored (full list on the ' \
+                   '<a href="cv-long.html">full CV</a>).</p>'
+        rows = []
+        for p in pds:
+            nm = html.escape(p["name"])
+            if p.get("url"):
+                nm = f'<a href="{html.escape(p["url"])}">{nm}</a>'
+            dd = f'{nm} <span class="meta">({html.escape(p["title"])})</span>'
+            rows.append((html.escape(p["years"]), dd))
+        return _cv_rows(rows)
+
     def service_block(long: bool) -> str:
         items = cv.get("service", [])
         if not long:
@@ -764,6 +778,8 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
         if not short:
             body.append(_cv_section("Teaching", teaching_block()))
         body.append(_cv_section("Students", students_block(not short)))
+        if cv.get("postdocs"):
+            body.append(_cv_section("Postdoctoral mentees", postdocs_block(not short)))
         body.append(_cv_section("Professional service and editorial" + ("" if not short else " (selected)"),
                                 service_block(not short)))
         if not short:
@@ -1083,6 +1099,18 @@ def build_index(books: list[dict], links: list[dict] = (), teaching: dict | None
                  '<details class="section">'
                  f'<summary>Former students <span class="count">({len(former)})</span></summary>'
                  f'<ul class="book-list">{"".join(frows)}</ul></details></details>')
+    postdocs = (cv or {}).get("postdocs") or []
+    if postdocs:
+        def pname(p):
+            nm = html.escape(p["name"])
+            return f'<a href="{html.escape(p["url"])}">{nm}</a>' if p.get("url") else nm
+        prows = []
+        for p in reversed(postdocs):
+            prows.append(f'<li><span class="year">{html.escape(str(p.get("years", "")))}</span> '
+                         f'{pname(p)}<span class="coauth"> &middot; {html.escape(p["title"])}</span></li>')
+        body += ('<details class="section" id="postdocs">'
+                 f'<summary>Postdoctoral mentees <span class="count">({len(postdocs)})</span></summary>'
+                 f'<ul class="book-list">{"".join(prows)}</ul></details>')
     editorial = [s for s in ((cv or {}).get("service") or []) if s.get("editorial")]
     if editorial:
         def jname(s):

@@ -649,6 +649,40 @@ students:
   years: 2025–
   atc: 2025
   url: "https://www.math.ucla.edu/~bengoldman"
+postdocs:
+- name: Camil Muscalu
+  title: E. R. Hedrick Assistant Professor
+  years: 2000–2003
+- name: Xiaochun Li
+  title: E. R. Hedrick Assistant Professor
+  years: 2001–2004
+- name: Ioan Bejenaru
+  title: E. R. Hedrick Assistant Professor
+  years: 2004–2007
+- name: Ciprian Demeter
+  title: E. R. Hedrick Assistant Professor
+  years: 2004–2007
+- name: Betsy Stovall
+  title: NSF Postdoctoral Fellow
+  years: 2009–2012
+- name: David Renfrew
+  title: RTG Assistant Adjunct Professor
+  years: 2012–2015
+- name: László Miklós Lovász
+  title: NSF Postdoctoral Fellow
+  years: 2017–2018
+- name: Laura Cladek
+  title: NSF Postdoctoral Fellow
+  years: 2018–2022
+- name: José Madrid Padilla
+  title: E. R. Hedrick Assistant Adjunct Professor
+  years: 2018–2022
+- name: Rachel Greenfeld
+  title: E. R. Hedrick Assistant Adjunct Professor
+  years: 2019–2022
+- name: Asgar Jamneshan
+  title: Visiting Assistant Adjunct Professor
+  years: 2019–2020
 lectures:
 - name: Zygmund–Calderón Lectures
   venue: University of Chicago

@@ -72,6 +72,12 @@
         "atc": { "type": "integer", "description": "Year advanced to candidacy (current students)." },
         "coadvisor": { "type": "string", "description": "Co-advisor, if jointly supervised." }
       } } },
+    "postdocs": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["name", "title", "years"],
+      "properties": {
+        "name": { "type": "string" }, "title": { "type": "string", "description": "Appointment title, e.g. Hedrick Assistant Professor or NSF Postdoctoral Fellow." },
+        "years": { "type": "string" }, "url": { "type": "string", "description": "Mentee's web page." }
+      } } },
     "lectures": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["name", "venue", "date"],
       "properties": {
