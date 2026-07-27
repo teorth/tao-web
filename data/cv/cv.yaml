@@ -977,6 +977,10 @@ service:
 - start: '2025'
   organization: Renaissance Philanthropy
   role: Senior Advisor
+consulting:
+- role: Advisor
+  organization: Hum Lab
+  years: 2026–
 patents:
 - inventors:
   - Emmanuel Candès

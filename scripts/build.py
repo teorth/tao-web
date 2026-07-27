@@ -754,6 +754,15 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
             rows.append((html.escape(l["date"]), dd))
         return _cv_rows(rows)
 
+    def consulting_block() -> str:
+        rows = []
+        for c in cv.get("consulting", []):
+            org = html.escape(c["organization"])
+            if c.get("url"):
+                org = f'<a href="{html.escape(c["url"])}">{org}</a>'
+            rows.append((html.escape(c["years"]), f'{html.escape(c["role"])} <span class="meta">&mdash; {org}</span>'))
+        return _cv_rows(rows)
+
     def patents_block() -> str:
         rows = []
         for p in cv.get("patents", []):
@@ -783,6 +792,8 @@ def build_cv(cv: dict, works: list, books: list, courses: list) -> tuple[list, l
         body.append(_cv_section("Professional service and editorial" + ("" if not short else " (selected)"),
                                 service_block(not short)))
         if not short:
+            if cv.get("consulting"):
+                body.append(_cv_section("Consulting activities", consulting_block()))
             body.append(_cv_section("Selected lectures", lectures_block()))
             body.append(_cv_section("Patents", patents_block()))
         body.append("</div>")

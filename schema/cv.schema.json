@@ -92,6 +92,12 @@
         "url": { "type": "string" }, "highlight": { "type": "boolean" },
         "editorial": { "type": "boolean", "description": "Journal editorial-board role (surfaced in the front-page Editorial roles dropdown)." }
       } } },
+    "consulting": { "type": "array", "items": {
+      "type": "object", "additionalProperties": false, "required": ["role", "organization", "years"],
+      "properties": {
+        "role": { "type": "string" }, "organization": { "type": "string" },
+        "years": { "type": "string" }, "url": { "type": "string" }
+      } } },
     "patents": { "type": "array", "items": {
       "type": "object", "additionalProperties": false, "required": ["title"],
       "properties": {
