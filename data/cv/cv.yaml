@@ -806,7 +806,7 @@ service:
   url: "https://www.ams.org/journals/jams/"
   highlight: true
 - start: '2007'
-  end: '2026'
+  end: '2025'
   organization: Analysis & PDE
   role: Editor
   editorial: true
@@ -822,7 +822,7 @@ service:
   organization: Episciences
   role: Epi-Math committee
 - start: '2015'
-  end: '2026'
+  end: '2025'
   organization: Discrete Analysis
   role: Editor
   editorial: true
