@@ -2071,6 +2071,9 @@ works:
     url: "http://arxiv.org/abs/1407.4897"
   - type: discussion
     url: "http://terrytao.wordpress.com/2014/07/20/variants-of-the-selberg-sieve-and-bounded-intervals-containing-many-primes/"
+  - type: reference
+    url: "papers/polymath8b/"
+    label: "reference material & source files"
 - id: large-gaps-between-consecutive-prime-numbers
   kind: paper
   title: Large gaps between consecutive prime numbers

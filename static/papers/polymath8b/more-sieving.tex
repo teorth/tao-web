@@ -1,0 +1,308 @@
+\section{Reduction to a variational problem}\label{variational-sec}
+
+Now that we have proven Theorems \ref{prime-asym} and \ref{nonprime-asym}, we can now establish Theorems \ref{maynard-thm}, \ref{maynard-trunc}, \ref{epsilon-trick}, \ref{epsilon-beyond}.  The main technical difficulty is to take the multidimensional measurable functions $F$ appearing in these functions and approximate them by tensor products of smooth functions, for which Theorems \ref{prime-asym} and \ref{nonprime-asym} may be applied.
+
+\subsection{Proof of Theorem \ref{maynard-thm}}\label{may-sec}
+
+We now prove Theorem \ref{maynard-thm}.  Let $k, m, \vartheta$ obey the hypotheses of that theorem, thus we may find a fixed square-integrable function $F: [0,+\infty)^k \to \R$ supported on the simplex
+$$ {\mathcal R}_k := \{ (t_1,\dots,t_k) \in [0,+\infty)^k: t_1+\dots+t_k \leq 1 \}$$
+and not identically zero and with
+\begin{equation}\label{jbig}
+ \frac{\sum_{i=1}^k J_i(F)}{I(F)} > \frac{2m}{\vartheta}.
+\end{equation}
+We now perform a number of technical steps to further improve the structure of $F$.  Our arguments here will be somewhat convoluted, and are not the most efficient way to prove Theorem \ref{maynard-thm} (which in any event was already established in \cite{maynard-new}), but they will motivate the similar arguments given below to prove the more difficult results in Theorems \ref{maynard-trunc}, \ref{epsilon-trick}, \ref{epsilon-beyond}.  In particular, we will use regularisation techniques which are compatible with the vanishing marginal condition \eqref{vanishing-marginal} that is a key hypothesis in Theorem \ref{epsilon-beyond}.
+
+We first need to rescale and retreat a little bit from the slanted boundary of the simplex ${\mathcal R}_k$.
+Let $\delta_1 > 0$ be a sufficiently small fixed quantity, and write $F_1: [0,+\infty)^k \to \R$ to be the rescaled function
+$$ F_1(t_1,\dots,t_k) := F( \frac{t_1}{\vartheta/2-\delta_1}, \dots, \frac{t_k}{\vartheta/2-\delta_1} ).$$
+Thus $F_1$ is a fixed square-integrable measurable function supported on the rescaled simplex
+$$ (\vartheta/2-\delta_1) \cdot {\mathcal R}_k = \{ (t_1,\dots,t_k) \in [0,+\infty)^k: t_1+\dots+t_k \leq \vartheta/2-\delta_1 \}.$$
+From \eqref{jbig}, we see that if $\delta_1$ is small enough, then $F_1$ is not identically zero and
+\begin{equation}\label{jbig-2}
+ \frac{\sum_{i=1}^k J_i(F_1)}{I(F_1)} > m.
+\end{equation}
+
+Let $\delta_1$ and $F_1$ be as above. Next, let $\delta_2 > 0$ be a sufficiently small fixed quantity (smaller than $\delta_1$), and write $F_2: [0,+\infty)^k \to \R$ to be the shifted function, defined by setting
+$$ F_2(t_1,\dots,t_k) := F_1( t_1-\delta_2, \dots, t_k-\delta_2 )$$
+when $t_1,\dots,t_k \geq \delta_2$, and $F_2(t_1,\dots,t_k)=0$ otherwise.
+As $F_1$ was square-integrable, compactly supported, and not identically zero, and because spatial translation is continuous in the strong operator topology on $L^2$, it is easy to see that we will have $F_2$ not identically zero and that
+\begin{equation}\label{jbig-3}
+ \frac{\sum_{i=1}^k J_i(F_2)}{I(F_2)} > m
+\end{equation}
+for $\delta_2$ small enough (after restricting $F_2$ back to $[0,+\infty)^k$, of course).  For $\delta_2$ small enough, this function will be supported on the region
+$$
+\{ (t_1,\dots,t_k) \in \R^k: t_1 \dots + t_k \leq \vartheta/2-\delta_2; t_1,\dots,t_k \geq \delta_2 \},$$
+thus $F_2$ stays away from all the boundary faces of ${\mathcal R}_k$.
+
+By convolving $F_2$ with a smooth approximation to the identity that is supported sufficiently close to the origin, one may then find a \emph{smooth} function $F_3: [0,+\infty)^k \to \R$, supported on
+$$
+\{ (t_1,\dots,t_k) \in \R^k: t_1 \dots + t_k \leq \vartheta/2-\delta_2/2; t_1,\dots,t_k \geq \delta_2/2 \},$$
+which is not identically zero, and such that
+\begin{equation}\label{jbig-4}
+ \frac{\sum_{i=1}^k J_i(F_3)}{I(F_3)} > m.
+\end{equation}
+
+We extend $F_3$ by zero to all of $\R^k$, and then define the function $f_3: \R^k \to \R$ by
+$$ f_3(t_1,\dots,t_k) := \int_{s_1 \geq t_1, \dots, s_k \geq t_k} F_3(s_1,\dots,s_k)\ ds_1 \dots ds_k,$$
+thus $f_3$ is smooth, not identically zero and supported on the region
+\begin{equation}\label{ftj-set}
+ \{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/2) \leq \vartheta/2 - \delta_2/2 \}.
+\end{equation}
+From the fundamental theorem of calculus we have
+\begin{equation}\label{ftj}
+ F_3(t_1,\dots,t_k) := \frac{\partial^k}{\partial t_1 \dots \partial t_k} f_3(t_1,\dots,t_k),
+\end{equation}
+and so $I(F_3) = \tilde I(f_3)$ and $J_i(F_3) = \tilde J_i(f_3)$ for $i=1,\dots,k$, where
+\begin{equation}\label{tidef}
+ \tilde I(f_3) := \int_{[0,+\infty)^k} \left|\frac{\partial^k}{\partial t_1 \dots \partial t_k} f_3(t_1,\dots,t_k)\right|^2\ dt_1 \dots dt_k
+\end{equation}
+and
+\begin{equation}\label{tjdef}
+ \tilde J_i(f_3) := \int_{[0,+\infty)^{k-1}} \left|\frac{\partial^{k-1}}{\partial t_1 \dots \partial t_{i-1} \partial t_{i+1} \dots \partial t_k} f_3(t_1,\dots,t_{i-1}, 0, t_{i+1}, \dots, t_k)\right|^2\ dt_1 \dots dt_{i-1} dt_{i+1} \dots dt_k.
+\end{equation}
+In particular, 
+\begin{equation}\label{jbig-5}
+ \frac{\sum_{i=1}^k \tilde J_i(f_3)}{\tilde I(f_3)} > m.
+\end{equation}
+
+Now we approximate $f_3$ by linear combinations of tensor products.  By the Stone-Weierstrass theorem, we may express $f_3$ as the uniform limit of functions
+of the form
+\begin{equation}\label{cff}
+ (t_1,\dots,t_k) \mapsto \sum_{j=1}^J c_j f_{1,j}(t_1) \dots f_{k,j}(t_k)
+\end{equation}
+where $c_1,\dots,c_J$ are real scalars, and $f_{i,j}: \R \to \R$ are smooth compactly supported functions.  Since $f_3$ is supported in \eqref{ftj}, we can ensure that all the components $f_{1,j}(t_1) \dots f_{k,j}(t_k)$ are supported in the slightly larger region
+$$ \{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/4) \leq \vartheta/2 - \delta_2/4 \}.$$
+Observe that if one convolves a function of the form \eqref{cff} by a smooth approximation to the identity which is of tensor product form $(t_1,\dots,t_k) \mapsto \varphi_1(t_1) \dots \varphi_1(t_k)$, one obtains another function of this form.  Such a convolution converts a uniformly convergent sequence of functions to a \emph{uniformly smoothly} convergent sequence of functions (that is to say, all derivatives of the functions converge uniformly).  From this, we conclude that $f_3$ can be expressed as the \emph{smooth} limit of functions of the form \eqref{cff}, with each component $f_{1,j}(t_1) \dots f_{k,j}(t_k)$ supported in the region
+$$ \{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/8) \leq \vartheta/2 - \delta_2/8 \}.$$
+Thus, we may find such a linear combination
+\begin{equation}\label{f4}
+ f_4(t_1,\dots,t_k) = \sum_{j=1}^J c_j f_{1,j}(t_1) \dots f_{k,j}(t_k)
+\end{equation}
+with $J$, $c_j$, $f_{i,j}$ fixed and $f_4$ not identically zero, with
+\begin{equation}\label{jbig-6}
+ \frac{\sum_{i=1}^k \tilde J_i(f_4)}{\tilde I(f_4)} > m.
+\end{equation}
+Furthermore, by construction we have
+\begin{equation}\label{sfg}
+S(f_{1,j}) + \dots + S(f_{k,j}) < \frac{\vartheta}{2} \leq \frac{1}{2}
+\end{equation}
+for all $j=1,\dots,J$, where $S()$ was defined in \eqref{S-def}.
+
+Now we construct the sieve weight $\nu: \N \to \R$ by the formula
+\begin{equation}\label{nu-def}
+ \nu(n) := \left( \sum_{j=1}^J c_j \lambda_{f_{1,j}}(n+h_1) \dots \lambda_{f_{k,j}}(n+h_k) \right)^2,
+\end{equation}
+where the divisor sums $\lambda_f$ were defined in \eqref{lambdaf-def}.
+
+Clearly $\nu$ is non-negative.  Expanding out the square and using Theorem \ref{nonprime-asym}(i) and \eqref{sfg}, we see that
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) = (\alpha + o(1)) B^{-k} \frac{x}{\log x}$$
+where
+$$ \alpha := \sum_{j=1}^J \sum_{j'=1}^J c_j c_{j'} \prod_{i=1}^k \int_0^\infty f'_{i,j}(t_i) f'_{i,j'}(t_i)\ dt_i$$
+which factorizes using \eqref{f4}, \eqref{tidef} as
+\begin{align*}
+\alpha &= \int_{[0,+\infty)^k} \left|\frac{\partial^k}{\partial t_1 \dots \partial t_k} f_4(t_1,\dots,t_k)\right|^2\ dt_1 \dots dt_k \\
+&= \tilde I(f_4).
+\end{align*}
+Now consider the sum
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_k).$$
+By \eqref{lambdan-prime}, one has
+$$ \lambda_{f_{k,j}}(n+h_k) = f_{k,j}(0)$$
+whenever $n$ gives a non-zero contribution to the above sum.  Expanding out the square in \eqref{nu-def} again and using Theorem \ref{prime-asym}(i) and \eqref{sfg} (and the hypothesis $\EH[\vartheta]$), we thus see that
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_k) = (\beta_k + o(1)) B^{1-k} \frac{x}{\phi(W)}$$
+where
+$$ \beta_k := \sum_{j=1}^J \sum_{j'=1}^J c_j c_{j'} f_{i,j}(0) f_{i,j'}(0) \prod_{i=1}^{k-1} \int_0^\infty f'_{i,j}(t_i) f'_{i,j'}(t_i)\ dt_i$$
+which factorizes using \eqref{f4}, \eqref{tjdef} as
+\begin{align*}
+\beta_k &= \int_{[0,+\infty)^k} \left|\frac{\partial^k}{\partial t_1 \dots \partial t_{k-1}} f_4(t_1,\dots,t_{k-1},0)\right|^2\ dt_1 \dots dt_{k-1} \\
+&= \tilde J_k(f_4).
+\end{align*}
+More generally, we see that
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_k) = (\beta_i + o(1)) B^{1-k} \frac{x}{\phi(W)}$$
+for $i=1,\dots,k$, with $\beta_i := \tilde J_i(f_4)$.  Applying Lemma \ref{crit} and \eqref{jbig-4}, we obtain $\DHL[k,m+1]$ as required.
+
+\subsection{Proof of Theorem \ref{maynard-trunc}}\label{trunc-sec}
+
+Now we prove Theorem \ref{maynard-trunc}, which uses a very similar argument to that of the previous section.  Let $k, m, \varpi, \delta, F$ be as in Theorem \ref{maynard-trunc}.  By performing the same rescaling as in the previous section (but with $1/2 + 2\varpi$ playing the role of $\vartheta$), we see that we can find
+a fixed square-integrable measurable function $F_1$ supported on the rescaled truncated simplex
+$$ \{ (t_1,\dots,t_k) \in [0,+\infty)^k: t_1+\dots+t_k \leq \frac{1}{4} + \varpi - \delta_1; t_1,\dots,t_k < \delta - \delta_1 \}$$
+for some sufficiently small fixed $\delta_1>0$, such that \eqref{jbig-2} holds.  By repeating the arguments of the previous section we may eventually arrive at a smooth function $f_4: \R^k \to \R$ of the form \eqref{f4}, which is not identically zero and obeys \eqref{jbig-6}, and such that each component $f_{1,j}(t_1) \dots f_{k,j}(t_k)$ is supported in the region
+$$ \{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/8) \leq \frac{1}{4}+\varpi - \delta_2/8; t_1,\dots,t_k < \delta - \delta_2/8 \}$$
+for some sufficiently small $\delta_2>0$.  In particular, one has
+$$
+S(f_{1,j}) + \dots + S(f_{k,j}) < \frac{1}{4}+\varpi \leq \frac{1}{2}$$
+and
+$$ S(f_{1,j}),\dots,S(f_{k,j}) < \delta$$
+for all $j=1,\dots,J$.   If we then define $\nu$ by \eqref{nu-def} as before, and repeat all of the above arguments (but use Theorem \ref{prime-asym}(ii) and $\MPZ[\varpi,\delta]$ in place of Theorem \ref{prime-asym}(i) and $\EH[\vartheta]$), we obtain the claim; we leave the details to the interested reader.
+
+\subsection{Proof of Theorem \ref{epsilon-trick}}\label{trick-sec}
+
+Now we prove Theorem \ref{epsilon-trick}. Let $k, m, \eps, \vartheta$ be as in that theorem.  Then one may find a square-integrable function $F: [0,+\infty)^k \to \R$ supported on $(1+\eps) \cdot {\mathcal R}_k$ which is not identically zero, and with
+$$\frac{\sum_{i=1}^k J_{i,1-\eps}(F)}{I(F)} > \frac{2m}{\vartheta}.$$
+By truncating and rescaling as in Section \ref{may-sec}, we may find a fixed bounded measurable function $F_1: [0,+\infty)^k \to \R$ on the simplex $(1+\eps) (\frac{\vartheta}{2}-\delta_1) \cdot {\mathcal R}_k$ such that 
+$$\frac{\sum_{i=1}^k J_{i,(1-\eps) \frac{\vartheta}{2}}(F_1)}{I(F_1)} > m.$$
+
+By repeating the arguments in Section \ref{may-sec}, we may eventually arrive at a smooth function $f_4: \R^k \to \R$ of the form \eqref{f4}, which is not identically zero and obeys 
+\begin{equation}\label{f4-ratio}
+\frac{\sum_{i=1}^k \tilde J_{i,(1-\eps) \frac{\vartheta}{2}}(f_4)}{\tilde I(f_4)} > m
+\end{equation}
+with
+\begin{align*}
+ \tilde J_{i, (1-\eps) \frac{\vartheta}{2}}(f_4) &:= \int_{(1-\eps) \frac{\vartheta}{2} \cdot {\mathcal R}_{k-1}} \left|\frac{\partial^{k-1}}{\partial t_1 \dots \partial t_{i-1} \partial t_{i+1} \dots \partial t_k} f_4(t_1,\dots,t_{i-1}, 0, t_{i+1}, \dots, t_k)\right|^2\\
+&\quad \ dt_1 \dots dt_{i-1} dt_{i+1} \dots dt_k,
+\end{align*}
+and such that each component $f_{1,j}(t_1) \dots f_{k,j}(t_k)$ is supported in the region
+$$ \left\{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/8) \leq (1+\eps) \frac{\vartheta}{2} - \frac{\delta_2}{8}\right\}$$
+for some sufficiently small $\delta_2>0$.  In particular, we have
+\begin{equation}\label{sff}
+S(f_{1,j}) + \dots + S(f_{k,j}) \leq (1+\eps) \frac{\vartheta}{2} - \frac{\delta_2}{8}
+\end{equation}
+for all $1 \leq j \leq J$.  
+
+Let $\delta_3 > 0$ be a sufficiently small fixed quantity (smaller than $\delta_1$ or $\delta_2$).  By a smooth partitioning, we may assume that all of the $f_{i,j}$ are supported in intervals of length at most $\delta_3$, while keeping the sum
+\begin{equation}\label{abs-sum}
+\sum_{j=1}^J |c_j| |f_{1,j}(t_1)| \dots |f_{k,j}(t_k)|
+\end{equation}
+bounded uniformly in $t_1,\dots,t_k$ and in $\delta_3$.
+
+Now let $\nu$ be as in \eqref{nu-def}, and consider the expression
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n).$$
+This expression expands as a linear combination of the expressions
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \prod_{i=1}^k \lambda_{f_{i,j}}(n+h_i) \lambda_{f_{i,j'}}(n+h_i)$$
+for various $1 \leq j,j' \leq J$.  We claim that this sum is equal to
+$$ \left(\prod_{i=1}^k \int_0^1 f'_{i,j}(t_i) f'_{i,j'}(t_i)\ dt_i + o(1)\right) B^{-k} \frac{x}{W}.$$
+To see this, we divide into two cases.  First suppose that hypothesis (i) from Theorem \ref{epsilon-trick} holds, then from \eqref{sff} we have
+$$ \sum_{i=1}^k S(f_{i,j}) + S(f_{i,j'}) < (1+\eps) \vartheta < 1$$
+and the claim follows from Theorem \ref{nonprime-asym}(i).  Now suppose instead that hypothesis (ii) from Theorem \ref{epsilon-trick} holds, then from \eqref{sff} one has
+$$ \sum_{i=1}^k S(f_{i,j}) + S(f_{i,j'}) < (1+\eps) \vartheta < \frac{k}{k-1} \vartheta,$$
+and so from the pigeonhole principle we have
+$$ \sum_{1 \leq i \leq k: i \neq i_0} S(f_{i,j}) + S(f_{i,j'}) < \vartheta$$
+for some $i_0 = 1,\ldots,k$.  The claim now follows from Theorem \ref{nonprime-asym}(ii).
+
+Putting this together as in Section \ref{may-sec}, we conclude that
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) = (\alpha + o(1)) B^{-k} \frac{x}{W}$$
+where 
+$$ \alpha := \tilde I(f_4).$$
+
+Now we consider the sum
+\begin{equation}\label{theta-sum}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_k).
+\end{equation}
+From Proposition \ref{geh-eh} we see that we have $\EH[\vartheta]$ as a consequence of the hypotheses of Theorem \ref{epsilon-trick}.  However, this and Theorem \ref{prime-asym} is not strong enough to obtain an asymptotic for the sum \eqref{theta-sum}, as there is an epsilon loss in \eqref{sff}.  But observe that Lemma \ref{crit} only requires a \emph{lower} bound on the sum \eqref{theta-sum}, rather than an asymptotic. 
+
+To obtain this lower bound, we partition $\{1,\dots,J\}$ into ${\mathcal J}_1 \cup {\mathcal J}_2$, where ${\mathcal J}_1$ consists of those indices $j \in \{1,\dots,J\}$ with
+\begin{equation}\label{sff-minus}
+S(f_{1,j}) + \dots + S(f_{k-1,j}) < (1-\eps) \frac{\vartheta}{2}
+\end{equation}
+and ${\mathcal J}_2$ is the complement.  From the elementary inequality
+$$ (x_1 + x_2)^2 = x_1^2 + 2x_1 x_2 + x_2^2 \geq (x_1+2x_2) x_1 $$
+we obtain the pointwise lower bound
+$$ \nu(n) \geq 
+\left( (\sum_{j \in {\mathcal J}_1} + 2 \sum_{j \in {\mathcal J}_2}) c_j \lambda_{f_{1,j}}(n+h_1) \dots \lambda_{f_{k,j}}(n+h_k) \right)
+\left( \sum_{j' \in {\mathcal J}_1} c_{j'} \lambda_{f_{1,j'}}(n+h_1) \dots \lambda_{f_{k,j'}}(n+h_k) \right).$$
+The point of performing this lower bound is that if $j \in {\mathcal J}_1 \cup {\mathcal J}_2$ and $j' \in {\mathcal J}_1$, then from \eqref{sff}, \eqref{sff-minus} one has
+$$ \sum_{i=1}^{k-1} S(f_{i,j}) + S(f_{i,j'}) < \vartheta$$
+which makes Theorem \ref{prime-asym}(i) available for use.  Indeed, for any $j \in \{1,\dots,J\}$ and $i=1,\dots,k$, we have from \eqref{sff} that
+$$ S(f_{i,j}) \leq (1+\eps) \frac{\vartheta}{2} < \vartheta < 1$$
+and so by \eqref{lambdan-prime} we have
+\begin{equation}\label{nutheta}
+\begin{split}
+ \nu(n) \theta(n+h_k) &\geq 
+\left( (\sum_{j \in {\mathcal J}_1} + 2 \sum_{j \in {\mathcal J}_2}) c_j \lambda_{f_{1,j}}(n+h_1) \dots \lambda_{f_{k-1,j}}(n+h_{k-1}) f_{k,j}(0) \right)\\
+&\quad \times \left( \sum_{j' \in {\mathcal J}_1} c_{j'} \lambda_{f_{1,j'}}(n+h_1) \dots \lambda_{f_{k-1,j'}}(n+h_{k-1}) f_{k,j'}(0) \right) \theta(n+h_k)
+\end{split}
+\end{equation}
+for $x \leq n \leq 2x$.  If we then apply Theorem \ref{prime-asym}(i) and the hypothesis $\EH[\vartheta]$, we obtain the lower bound
+$$ 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_k) \geq (\beta_k - o(1)) B^{1-k} \frac{x}{\phi(W)}$$
+with
+$$ \beta_k :=
+(\sum_{j \in {\mathcal J}_1} + 2 \sum_{j \in {\mathcal J}_2}) \sum_{j' \in {\mathcal J}_1} c_j c_{j'} f_{k,j}(0) f_{k,j'}(0)
+\prod_{i=1}^{k-1} \int_0^\infty f'_{i,j}(t_i) f'_{i,j'}(t_i)\ dt_i $$
+which we can rearrange as
+\begin{align*}
+\beta_k &= \int_{[0,+\infty)^{k-1}} \left(\frac{\partial^{k-1}}{\partial t_1 \dots \partial t_{k-1}} f_{4,1}(t_1,\dots,t_{k-1},0) + 2\frac{\partial^{k-1}}{\partial t_1 \dots \partial t_{k-1}} f_{4,2}(t_1,\dots,t_{k-1},0)\right)\\
+&\quad\quad  \frac{\partial^{k-1}}{\partial t_1 \dots \partial t_{k-1}} f_{4,1}(t_1,\dots,t_{k-1},0)\ dt_1 \dots dt_{k-1} 
+\end{align*}
+where
+$$ f_{4,l}(t_1,\dots,t_k) :=\sum_{j \in {\mathcal J}_l} c_j f_{1,j}(t_1) \dots f_{k,j}(t_k)$$
+for $l=1,2$.  Note that $f_{4,1}, f_{4,2}$ are both bounded pointwise by \eqref{abs-sum}, and their supports only overlap on a set of measure $O( \delta_3 )$.  We conclude that
+$$ \beta_k = \tilde J_k( f_{4,1} ) + O(\delta_3)$$
+with the implied constant independent of $\delta_3$, and thus
+$$ \beta_k = \tilde J_{k, (1-\eps) \frac{\vartheta}{2}}( f_4 ) + O(\delta_3).$$
+A similar argument gives
+$$ 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_i) \geq (\beta_i - o(1)) B^{1-k} \frac{x}{\phi(W)}$$
+for $i=1,\dots,k$ with
+$$ \beta_i = \tilde J_{i, (1-\eps) \frac{\vartheta}{2}}( f_4 ) + O(\delta_3).$$
+If we choose $\delta_3$ small enough, then the claim $\DHL[k,m+1]$ now follows from Lemma \ref{crit} and \eqref{f4-ratio}.
+
+\subsection{Proof of Theorem \ref{epsilon-beyond}}\label{beyond-sec}
+
+Finally, we prove Theorem \ref{epsilon-beyond}. Let $k, m, \eps, F$ be as in that theorem.  By rescaling as in previous sections, we may find
+a square-integrable function $F_1: [0,+\infty)^k \to \R$ supported on 
+$(\frac{k}{k-1} \frac{\vartheta}{2}-\delta_1) \cdot {\mathcal R}_k$ for some sufficiently small fixed $\delta_1 > 0$, which is not identically zero, which obeys the bound
+$$
+\frac{\sum_{i=1}^k J_{i,(1-\eps) \frac{\vartheta}{2}}(F_1)}{I(F_1)} > m
+$$
+and also obeys the vanishing marginal condition \eqref{vanishing-marginal} whenever $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$ are such that
+$$ t_1+\dots+t_{i-1}+t_{i+1}+\dots+t_k > (1+\eps) \frac{\vartheta}{2} - \delta_1.$$
+
+As before, we pass from $F_1$ to $F_2$ by a spatial translation, and from $F_2$ to $F_3$ by a regularisation; crucially, we note that both of these operations interact well with the vanishing marginal condition \eqref{vanishing-marginal}, with the end product being that we obtain a smooth function $F_3: [0,+\infty)^k \to \R$, supported on the region
+$$
+\{ (t_1,\dots,t_k) \in \R^k: t_1 \dots + t_k \leq \frac{k}{k-1} \frac{\vartheta}{2}-\frac{\delta_2}{2}; t_1,\dots,t_k \geq \frac{\delta_2}{2} \}$$
+for some sufficiently small $\delta_2>0$, which is not identically zero, obeying the bound
+$$
+\frac{\sum_{i=1}^k J_{i,(1-\eps) \frac{\vartheta}{2}}(F_3)}{I(F_3)} > m
+$$
+and also obeying the vanishing marginal condition \eqref{vanishing-marginal} whenever
+$t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$ are such that
+$$ t_1+\dots+t_{i-1}+t_{i+1}+\dots+t_k > (1+\eps) \frac{\vartheta}{2} - \frac{\delta_2}{2}.$$
+
+As before, we now define the function $f_3: \R^k \to \R$ by
+$$ f_3(t_1,\dots,t_k) := \int_{s_1 \geq t_1, \dots, s_k \geq t_k} F_3(s_1,\dots,s_k)\ ds_1 \dots ds_k,$$
+thus $f_3$ is smooth, not identically zero and supported on the region
+$$ \left\{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/2) \leq \frac{k}{k-1} \frac{\vartheta}{2} - \frac{\delta_2}{2} \right\}.$$
+Furthermore, from the vanishing marginal condition we see that we also have
+$$ f_3(t_1,\dots,t_k) =0 $$
+whenever we have some $1 \leq i \leq k$ for which $t_i \leq \delta_2/2$ and
+$$ t_1 + \dots + t_{i-1} + t_{i+1} + \dots + t_k \geq (1+\eps) \frac{\vartheta}{2} - \frac{\delta_2}{2}.$$
+
+From the fundamental theorem of calculus as before, we have
+$$
+\frac{\sum_{i=1}^k \tilde J_{i,(1-\eps) \frac{\vartheta}{2}}(f_3)}{\tilde I(f_3)} > m.
+$$
+Using the Stone-Weierstrass theorem as before, we can then find a function $f_4$ of the form
+\begin{equation}\label{cff-again}
+ (t_1,\dots,t_k) \mapsto \sum_{j=1}^J c_j f_{1,j}(t_1) \dots f_{k,j}(t_k)
+\end{equation}
+where $c_1,\dots,c_J$ are real scalars, and $f_{i,j}: \R \to \R$ are smooth functions supported of intervals of length at most $\delta_3>0$ for some sufficiently small $\delta_3>0$, with the support of each component
+$f_{1,j}(t_1) \dots f_{k,j}(t_k)$ supported in the region
+$$ \left\{ (t_1,\dots,t_k) \in \R^k: \sum_{i=1}^k \max(t_i, \delta_2/8) \leq \frac{k}{k-1} \frac{\vartheta}{2} - \delta_2/8 \right\}$$
+and avoiding the regions
+$$ \left\{ (t_1,\dots,t_k) \in \R^k: t_i \leq \delta_2/8; \quad  t_1 + \dots + t_{i-1} + t_{i+1} + \dots + t_k \geq (1+\eps) \frac{\vartheta}{2} - \delta_2/8 \right\}$$
+for each $i=1,\dots,k$, and such that
+$$
+\frac{\sum_{i=1}^k \tilde J_{i,(1-\eps) \frac{\vartheta}{2}}(f_4)}{\tilde I(f_4)} > m.
+$$
+In particular, for any $j=1,\dots,J$ we have
+\begin{equation}\label{sfk-sum}
+S(f_{1,j}) + \dots + S(f_{k,j}) < \frac{k}{k-1} \frac{\vartheta}{2} < \frac{1}{2} \frac{k}{k-1} \leq 1
+\end{equation}
+and for any $i=1,\dots,k$ with $f_{k,i}$ not vanishing at zero, we have
+\begin{equation}\label{sfk-sum-2} 
+S(f_{1,j}) + \dots + S(f_{k,i-1}) + S(f_{k,i+1}) + \dots + S(f_{k,j}) < (1+\eps) \frac{\vartheta}{2}.
+\end{equation}
+
+Let $\nu$ be defined by \eqref{nu-def}.
+From \eqref{sfk-sum}, the hypothesis $\GEH[\vartheta]$, and the argument from the previous section used to prove Theorem \ref{epsilon-trick}(ii), we have
+$$ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) = (\alpha + o(1)) B^{-k} \frac{x}{W}$$
+where 
+$$ \alpha := \tilde I(f_4).$$
+
+Similarly, from \eqref{sfk-sum-2} (and the upper bound $S(f_{i,j}) < 1$ from \eqref{sfk-sum}), the hypothesis $\EH[\vartheta]$ (which is available by Proposition \ref{geh-eh}), and the argument from the previous section we have
+$$ 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_i) \geq (\beta_i - o(1)) B^{1-k} \frac{x}{\phi(W)}$$
+for $i=1,\dots,k$ with
+$$ \beta_i = \tilde J_{i, (1-\eps) \frac{\vartheta}{2}}( f_4 ) + O(\delta_3).$$
+
+Setting $\delta_3$ small enough, the claim $\DHL[k,m+1]$ now follows from Lemma \ref{crit}.

@@ -47,7 +47,7 @@
               "additionalProperties": false,
               "required": ["type", "url"],
               "properties": {
-                "type": { "type": "string", "enum": ["arxiv", "journal", "discussion", "slides", "pdf", "note", "blog", "applet", "repository", "diagram"] },
+                "type": { "type": "string", "enum": ["arxiv", "journal", "discussion", "slides", "pdf", "note", "blog", "applet", "repository", "diagram", "reference"] },
                 "url": { "type": "string", "minLength": 1 },
                 "label": { "type": "string", "minLength": 1, "description": "Optional display text overriding the type's default label (e.g. to distinguish two 'applet' links)." }
               }

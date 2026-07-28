@@ -1,0 +1,350 @@
+\pdfoutput=1
+\documentclass[12pt,a4paper,reqno]{amsart}
+\usepackage{amssymb}
+
+\usepackage{amscd}
+\usepackage{enumerate}
+%\usepackage{psfig}
+\usepackage{graphicx}
+%\usepackage{showkeys}  
+\usepackage{siunitx}
+\usepackage{tikz-cd}
+\usepackage{color}
+\usetikzlibrary{arrows}
+% uncomment this when editing cross-references
+\numberwithin{equation}{section}
+
+\usepackage{mathabx}
+
+
+\usepackage{mathtools}%                  http://www.ctan.org/pkg/mathtools
+\usepackage[tableposition=top]{caption}% http://www.ctan.org/pkg/caption
+\usepackage{booktabs,dcolumn}%           http://www.ctan.org/pkg/dcolumn + http://www.ctan.org/pkg/booktabs
+
+% Lighter notation.
+\newcommand*\mc[1]{\multicolumn{1}{c}{#1}}
+\newcommand*\tupref[2]{\href{http://math.mit.edu/~primegaps/tuples/admissible_#1_#2.txt}{\num{#2}}}
+
+% Operators; uses ``mathtools''.
+\DeclareMathOperator*\EH{EH}
+\DeclareMathOperator*\MPZ{MPZ}
+\DeclareMathOperator*\DHL{DHL}
+\DeclareMathOperator*\rad{rad}
+
+%%\newcommand{\rad}[1]{{#1}^{\flat}}
+
+%\DeclareMathOperator*\Kl{Kl} (commented because yield bad display for  \Kl_q %replaced with \newcommand... )
+%\DeclareMathOperator*\FT{FT} (commented because yield bad display for \FT_q
+%replaced with \newcommand...)
+
+\DeclareMathOperator\swan{swan}
+\DeclareMathOperator*\cond{cond}
+\DeclareMathOperator*\Gal{Gal}
+
+\newcommand{\FT}{\mathrm{FT}} 
+\DeclareMathOperator{\hypk}{Kl}
+\newcommand{\Kl}{\mathcal{K}\ell}
+% Setup for ``caption''.
+\DeclareCaptionLabelSeparator{separation}{:\quad}
+\captionsetup{
+  font=small,
+  labelfont=sc,
+  labelsep=separation,
+  width=0.8\textwidth
+}
+
+\DeclareFontFamily{OT1}{rsfs}{}
+\DeclareFontShape{OT1}{rsfs}{n}{it}{<-> rsfs10}{}
+\DeclareMathAlphabet{\mathscr}{OT1}{rsfs}{n}{it}
+
+\addtolength{\textwidth}{3 truecm}
+\addtolength{\textheight}{1 truecm}
+\setlength{\voffset}{-.6 truecm}
+\setlength{\hoffset}{-1.3 truecm}
+     
+\theoremstyle{plain}
+
+\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{theorem}[theorem]{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{principle}[theorem]{Principle}
+\newtheorem{claim}[theorem]{Claim}
+
+\theoremstyle{definition}
+
+%\newtheorem{roughdef}[subsection]{Rough Definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{remarks}[theorem]{Remarks}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{examples}[theorem]{Examples}
+%\newtheorem{problem}[subsection]{Problem}
+%\newtheorem{question}[subsection]{Question}
+
+\newcommand\F{\mathbb{F}}
+\newcommand\E{\mathbb{E}}
+\newcommand\R{\mathbb{R}}
+\newcommand\Z{\mathbb{Z}}
+\newcommand\N{\mathbb{N}}
+\newcommand\C{\mathbb{C}}
+\newcommand\Q{\mathbb{Q}}
+\newcommand\eps{\varepsilon}
+\newcommand\B{\operatorname{B}}
+\newcommand\Scal{\mathcal{S}}
+\newcommand\Dcal[2]{\mathcal{D}^{({#1})}({#2})}
+\newcommand\Dcone[1]{\mathcal{D}({#1})}
+%%EK
+\newcommand{\DI}[3]{\mathcal{D}_{{#1}}^{({#2})}({#3})}
+\newcommand{\DIone}[2]{\mathcal{D}_{{#1}}({#2})}
+\newcommand{\emt}{\mathrm{EMT}}
+\newcommand{\uple}[1]{\text{\boldmath${#1}$}}
+%%
+%\newcommand\DHL{\operatorname{DHL}}
+%\newcommand\EH{\operatorname{EH}}
+%\newcommand\MPZ{\operatorname{MPZ}}
+\newcommand{\opt}[1]{\textsf{{#1}}}
+\newcommand{\algo}[1]{\textsf{{#1}}}
+
+\newcommand\TypeI{\operatorname{Type}_{\operatorname{I}}}
+\newcommand\TypeII{\operatorname{Type}_{\operatorname{II}}}
+\newcommand\TypeIII{\operatorname{Type}_{\operatorname{III}}}
+\renewcommand\P{\mathbb{P}}
+
+\newcommand\rk{\mathrm{rk}}
+\newcommand\Fr{\mathrm{Fr}}
+\newcommand\tr{\mathrm{tr}}
+
+\newcommand\ov{\overline}
+\newcommand\wcheck{\widecheck}
+%\newcommand\cond{\mathrm{cond}}
+%\newcommand\Gal{\mathrm{Gal}}
+%\newcommand\Kl{\mathrm{Kl}}
+%\newcommand\swan{\mathrm{swan}}
+%\newcommand\FT{\mathrm{FT}}
+\newcommand\mcF{\mathcal{F}}
+\newcommand\mcG{\mathcal{G}}
+\newcommand\mcK{\mathcal{K}}
+\newcommand\mcC{\mathcal{C}}
+\newcommand\mcL{\mathcal{L}}
+\newcommand\Gm{\mathbb{G}_m}
+\newcommand\Af{\mathbb{A}^1}
+\newcommand\Pl{\mathbb{P}^1}
+\newcommand\Aa{\mathbb{A}}
+\DeclareMathOperator{\Tr}{Tr}
+\newcommand\Fp{\F_{p}}
+\newcommand\Fpt{\F_{p}^{\times}}
+\newcommand\Fq{\F_{q}}
+\def\stacksum#1#2{{\stackrel{{\scriptstyle #1}}
+{{\scriptstyle #2}}}}
+\newcommand{\mods}[1]{\,(\mathrm{mod}\,{#1})}
+\newcommand{\piar}{\pi_1}
+\newcommand{\pige}{\pi_1^{g}}
+\newcommand\sumsum{\mathop{\sum\sum}\limits}
+\newcommand\multsum{\mathop{\sum\cdots\sum}\limits}
+\newcommand\trpsum{\mathop{\sum\sum\sum}\limits}
+%\newcommand\E{\mathbb{E}}
+\newcommand\Rr{\mathbb{R}}
+\newcommand\Zz{\mathbb{Z}}
+\newcommand\Nn{\mathbb{N}}
+\newcommand\Cc{\mathbb{C}}
+\newcommand\Qq{\mathbb{Q}}
+\newcommand{\what}{\widehat}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\GL}{\mathrm{GL}}
+
+%%%%%%%%%%%%%% EK %%%%%%%%%%%%%%
+\newcommand{\ftd}{\mathcal{I}}
+\renewcommand{\sim}{\asymp} 
+
+%% This is more standard (for analytic number theorists) 
+%% than \sim for A << B << A
+\renewcommand{\lessapprox}{\llcurly}
+\renewcommand{\gtrapprox}{\ggcurly}
+%% I find this typographically better than \lessapprox
+%% This symbol is from the mathabx package.
+\renewcommand{\phi}{\varphi}
+%% I think this form of phi is more standard for the Euler function
+%% I think it is only used in improvements.tex for something else
+\newcommand{\onef}{\mathbf{1}}
+%% This is for characteristic functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\alert}[1]{{\bf \color{red} TODO: #1}}
+
+%% Try normal paragraph indent
+%%\parindent 0mm
+%% Try to see what happens without enlarging the paragraph skip
+%%\parskip   5mm 
+
+%PhM use this for navigating the pdf when editing with texpad (comment if you prefer)
+% (Ah, figured out why my LaTeX was not liking hyperref - there were old aux files that didn't use hyperref. -TT)
+\usepackage{hyperref}
+
+% for optimize.tex
+\usepackage{algorithm, algorithmic}
+
+\begin{document}
+
+\title{Some notes on a variational problem}
+
+\author{D.H.J. Polymath}
+\address{http://michaelnielsen.org/polymath1/index.php}
+%\email{}
+
+\subjclass[2010]{11P32}
+
+\maketitle
+%\today
+
+Let $1/4 \leq \eps \leq 1/2$.  All variables $x,y,z$ are assumed to be non-negative by default.
+
+Let $M = \hat M''_{3,\eps,1}$ be the best constant for which one has the inequality
+\begin{equation}\label{bing}
+3 \int\int_{x+y \leq 1-\eps} (\int F(x,y,z)\ dz)^2\ dx dy \leq M \int_R F(x,y,z)^2\ dx dy dz
+\end{equation}
+whenever $F$ is supported on $R := \{ (x,y,z): x+y+z \leq 3/2\}$, is symmetric, and obeys the vanishing marginal condition
+\begin{equation}\label{vanmarsh}
+\int F(x,y,z)\ dz = 0 \hbox{ whenever } x+y \geq 1+\eps.
+\end{equation}
+
+\begin{proposition}[Adjoint formulation]  $M$ is also the best constant for which one has the inequality
+\begin{equation}\label{bong}
+\int_R (G(x,y)+G(y,z)+G(x,z))^2\ dx dy dz \leq 3M \int\int_{x+y \leq 1-\eps} G(x,y)^2\ dx dy
+\end{equation}
+whenever $G$ is symmetric, supported on $\{ (x,y): x+y \leq 1-\eps\} \cup \{ (x,y): 1+\eps \leq x+y \leq 3/2\}$, and the function $F(x,y,z) := G(x,y) + G(y,z) + G(x,z)$ obeys the vanishing marginal condition \eqref{vanmarsh}.
+\end{proposition}
+
+\begin{proof} Let us first show that if $M$ is such that \eqref{bing} holds, then \eqref{bong} also holds.  Let $G$ be as in \eqref{bong}, and set $F(x,y,z) := G(x,y)+G(y,z) + G(x,z)$.  Then by symmetry, Fubini, \eqref{vanmarsh}, the support of $G$, Cauchy-Schwarz, and \eqref{bing}, one has
+\begin{align*}
+\int_R (G(x,y)+&G(y,z)+G(x,z))^2\ dx dy dz  \\
+&= \int_R (G(x,y)+G(y,z)+G(x,z)) F(x,y,z)\ dx dy dz  \\
+&= 3 \int_R G(x,y) F(x,y,z)\ dx dy dz \\
+&= 3 \int_{x+y \leq 3/2} G(x,y) (\int F(x,y,z)\ dz) dx dy \\
+&= 3 \int_{x+y \leq 1+\eps} G(x,y) (\int F(x,y,z)\ dz) dx dy \\
+&= 3 \int_{x+y \leq 1-\eps} G(x,y) (\int F(x,y,z)\ dz) dx dy \\
+&\leq (3 \int_{x+y \leq 1-\eps} G(x,y)^2\ dx dy)^{1/2} (3 \int_{x+y \leq 1-\eps} (\int F(x,y,z)\ dz)^2\ dx dy)^{1/2} \\
+&\leq (3 \int_{x+y \leq 1-\eps} G(x,y)^2\ dx dy)^{1/2} (M \int_R F(x,y,z)^2\ dx dy dz)^{1/2} \\
+&= (3 \int_{x+y \leq 1-\eps} G(x,y)^2\ dx dy)^{1/2} (M \int_R (G(x,y)+G(y,z)+G(x,z))^2\ dx dy dz)^{1/2},
+\end{align*}
+and \eqref{bong} follows.
+
+Conversely, suppose that $M$ is such that \eqref{bong} holds; we now show \eqref{bing}. Let $F$ be as in \eqref{bing}, and let $G_0$ be defined by setting $G_0(x,y) := \int F(x,y,z)\ dz$ when $x+y \leq 1-\eps$, and $G_0(x,y)=0$ otherwise. Let $G_1$ be a symmetric function supported on $\{ 1+\eps \leq x+y \leq 3/2\}$ to be chosen later, and set $G := G_0+G_1$ and $\tilde F(x,y,z) := G(x,y) + G(y,z) + G(x,z)$.  We can choose $G_1$ so that the function $\tilde F$ obeys the vanishing marginal condition \eqref{vanmarsh}; indeed, in the symmetric functions in $L^2(R)$, one may verify that the class of $F$ obeying \eqref{vanmarsh} is nothing other than the orthogonal complement of the functions of the form $G_1(x,y)+G_1(y,z)+G_1(x,z)$ with $G_1$ symmetric and supported on $\{ 1+\eps \leq x+y \leq 3/2\}$.
+By \eqref{vanmarsh}, symmetry, Cauchy-Schwarz, and \eqref{bong} one has
+\begin{align*}
+3 \int\int_{x+y \leq 1-\eps} &(\int F(x,y,z)\ dz)^2\ dx dy \\
+&=
+3 \int\int_{x+y \leq 1-\eps} (\int F(x,y,z)\ dz) G_0(x,y)\ dx dy \\
+&= 3 \int_R F(x,y,z) G_0(x,y)\ dx dy dz\\
+&= 3 \int_R F(x,y,z) G(x,y)\ dx dy dz\\
+&= \int_R F(x,y,z) (G(x,y)+G(y,z)+G(x,z))\ dx dy dz\\
+&\leq (\int_R F(x,y,z)^2\ dx dy dz)^{1/2} (\int_R (G(x,y)+G(y,z)+G(x,z)^2\ dx dy dz)^{1/2}\\
+&\leq (\int_R F(x,y,z)^2\ dx dy dz)^{1/2} (3M \int_{x+y \leq 1-\eps} G(x,y)^2\ dx dy)^{1/2}\\
+&= (\int_R F(x,y,z)^2\ dx dy dz)^{1/2} (3M \int_{x+y \leq 1-\eps} (\int F(x,y,z)\ dz)^2\ dx dy)^{1/2}
+\end{align*}
+and \eqref{bing} follows.
+\end{proof}
+
+We can simplify the left-hand side of \eqref{bong} further, using the vanishing marginal condition \eqref{vanmarsh}.  Introduce the inner product
+$$ \langle G, G' \rangle := \int_R (G(x,y)+G(y,z)+G(x,z)) (G'(x,y) + G'(y,z) + G'(x,z))\ dx dy dz$$
+then the left-hand side of \eqref{bong} is
+\begin{align*}
+\langle G,G \rangle &= \langle G, G_1 \rangle + \langle G,G_0 \rangle.
+\end{align*}
+On the other hand, the vanishing marginal condition \eqref{vanmarsh} tells us that $\langle G, G_1 \rangle = 0$.  Thus
+$$
+\langle G, G \rangle = \langle G, G_0 \rangle.$$
+We thus see that 
+$$ M = \sup \frac{ \langle G, G_0 \rangle}{ 3 \int\int G_0^2\ dx dy }$$
+whenever $G_0, G_1$ are symmetric and supported on $\{ x+y \leq 1-\eps\}$ and $\{ 1+\eps \leq x+y \leq 3/2\}$ respectively, and the function
+$$ F(x,y,z) = G(x,y) + G(y,z) + G(x,z)$$
+with $G=G_0+G_1$ obeys \eqref{vanmarsh}.
+
+We simplify things further.  Observe that
+\begin{align*}
+\langle G, G_0 \rangle &= \int_R (G(x,y)+G(y,z)+G(x,z)) (G_0(x,y)+G_0(y,z)+G_0(x,z))\ dx dy dz \\
+&= 3 \int_R (G(x,y)+G(y,z)+G(x,z)) G_0(x,y)\ dx dy dz \\
+&= 3 \int_R G_0(x,y)^2\ dx dy dz + 6 \int_R G(x,z) G_0(x,y)\ dx dy dz \\
+&= 3 \int_{x+y \leq 1-\eps} G_0(x,y)^2 (3/2-x-y)\ dx dy + 6 \int_{x+y \leq 1-\eps} G_0(x,y) (\int_0^{3/2-x-y} G(x,z)\ dz) dx dy \\
+&= 3 \int_{x+y \leq 1-\eps} G_0(x,y)^2 (3/2-x-y)\ dx dy + 6 \int_{x+y \leq 1-\eps} G_0(x,y) (\int_0^{1-\eps-x} G_0(x,z)\ dz) dx dy \\
+&\quad + 6 \int_{x+y \leq 1-\eps; y \leq 1/2-\eps} G_0(x,y) (\int_{1+\eps-x}^{3/2-x-y} G_1(z,x)\ dz) dx dy\\
+&= 3 \int_{x+y \leq 1-\eps} G_0(x,y)^2 (3/2-x-y)\ dx dy + 6 \int_{x \leq 1-\eps} (\int_0^{1-\eps-x} G_0(x,y)\ dy)^2 dx  \\
+&\quad + 6 \int_{1+\eps \leq x+z \leq 3/2} G_1(x,z) (\int_{y \leq 3/2-x-z} G_0(x,y)\ dy)\ dx dz.\\
+\end{align*}
+Here we use that $\eps \geq 1/4$ to ensure that $1-\eps-x \leq 3/2-x-y$ whenever $x+y \leq 1-\eps$.  Thus 
+$$ M = \sup \frac{ J }{ I }$$
+where
+\begin{align*}
+J &:= \int_{x+y \leq 1-\eps} G_0(x,y)^2 (3/2-x-y)\ dx dy + 2 \int_{x \leq 1-\eps} (\int_0^{1-\eps-x} G_0(x,y)\ dy)^2 dx \\
+&\quad + 2 \int_{1+\eps \leq x+z \leq 3/2} G_1(x,z) (\int_{y \leq 3/2-x-z} G_0(x,y)\ dy)\ dx dz
+\end{align*}
+and
+$$ I := \int\int G_0^2\ dx dy.$$
+Now we work on $G_1$.  From \eqref{vanmarsh} we see that
+$$ \int_0^{3/2-x-y} G(x,y) + G(z,y) + G(x,z)\ dz = 0 $$
+whenever $x+y \geq 1+\eps$, thus
+\begin{equation}\label{hamog}
+ G_1(x,y) (3/2-x-y) + \int_0^{3/2-x-y} G(z,y)\ dz + \int_0^{3/2-x-y} G(x,z)\ dz = 0.
+\end{equation}
+
+At this point, we set $\eps=1/4$, and introduce the large triangular region
+$$ A := \{ x+y \leq 3/4\}$$
+(that $G_0$ is supported on), and the smaller triangular and trapezoidal regions
+\begin{align*}
+B &:= \{ x+y \leq 3/2; y \geq 5/4 \}\\
+C &:= \{ x+y \geq 5/4; y \leq 5/4; x \leq 1/4 \}\\
+D &:= \{ 5/4 \leq x+y \leq 3/2; x \geq 1/4; y \geq 3/4 \}\\
+E &:= \{ x+y \geq 5/4; x,y \leq 3/4 \}
+\end{align*}
+which cover a bit more than half of the support of $G_1$.  Let $G_{1,B}, G_{1,C}, G_{1,D}, G_{1,E}$ be the restrictions of $G_1$ to $B,C,D,E$ respectively; we assume these to be polynomial, as we do with $G_0$.  We also introduce the average
+\begin{equation}\label{haxw} 
+H(x,w) := \frac{1}{w} \int_0^w G_0(x,y)\ dy
+\end{equation}
+of $G_0$; note that $H$ is still a polynomial on $A$ if $G_0$ is, although $H$ is no longer symmetric.  The vanishing moment condition \eqref{hamog} then becomes
+\begin{equation}\label{gwb}
+ (3/2-x-y) G_{1,B}(x,y) + \int_0^{3/2-x-y} G_{1,B}(z,y)\ dz + (3/2-x-y) H(x,3/2-x-y) = 0
+\end{equation}
+on $B$,
+\begin{equation}\label{gwc}
+ (3/2-x-y) G_{1,C}(x,y) + \int_{5/4-y}^{3/2-x-y} G_{1,C}(z,y)\ dz + (3/2-x-y) H(x,3/2-x-y) = 0
+\end{equation}
+on $C$,
+\begin{equation}\label{gwd}
+ (3/2-x-y) G_{1,D}(x,y) + 0  + (3/2-x-y) H(x,3/2-x-y) = 0
+\end{equation}
+on $D$, and
+\begin{equation}\label{gwe}
+ (3/2-x-y) G_{1,E}(x,y) + (3/2-x-y) H(y,3/4-y) + (3/2-x-y) H(x,3/4-x) = 0
+\end{equation}
+on $E$.  Thus we have exact formulae
+\begin{equation}\label{gwd-1}
+G_{1,D}(x,y) = - H(x,3/2-x-y) 
+\end{equation}
+and
+\begin{equation}\label{gwe-1}
+G_{1,E}(x,y) = - H(y,3/4-y) - H(x,3/4-x)
+\end{equation}
+on $D,E$ respectively, and linear constraints connecting the coefficients of $G_{1,B}$, $G_{1,C}$ with the coefficients of $H$ (which are defined in terms of $G_0$).
+
+We then have
+\begin{align*} 
+J &= \int_{x+y \leq 3/4} G_0(x,y)^2 (3/2-x-y)\ dx dy \\
+&\quad + 2 \int_{x \leq 3/4} (\int_0^{3/4-x} G_0(x,y)\ dy)^2 dx \\
+&\quad + 2 \int_B G_{1,B}(x,z) (3/2-x-z) H(x,3/2-x-z)\ dx dz \\
+&\quad + 2 \int_C G_{1,C}(x,z) (3/2-x-z) H(x,3/2-x-z)\ dx dz \\
+&\quad + 2 \int_D G_{1,D}(x,z) (3/2-x-z) H(x,3/2-x-z)\ dx dz \\
+&\quad + 2 \int_E G_{1,E}(x,z) (3/4-x) H(x,3/4-x)\ dx dz
+\end{align*}
+and
+$$ I = \int_{x+y \leq 3/4} G_0(x,y)^2\ dx dy.$$
+We thus have
+$$ M = \sup\frac{J}{I}$$
+where $G_0, G_{1,B}, G_{1,C}$ range over all polynomials of two variables obeying the constraints \eqref{gwb}, \eqref{gwc}, where $H, G_{1,D}, G_{1,E}$ are defined by \eqref{haxw}, \eqref{gwd-1}, \eqref{gwe-1}, with $G_0$ symmetric.  If we make $G_0,G_{1,B}, G_{1,C}$ be of degree up to $D$, then there are about $5D^2/2$ degrees of freedom with $2D^2$ constraints.
+
+
+
+\end{document}

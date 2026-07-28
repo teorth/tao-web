@@ -1,0 +1,249 @@
+\section{Narrow admissible tuples}\label{tuples-sec}
+
+In this appendix we outline the methods used to obtain the numerical bounds on $H(k)$ given by Theorem~\ref{hk-bound}, which are reproduced below:
+\smallskip
+
+\begin{enumerate}
+\item $H(3) = 6$,
+\item $H(50) = 246$,
+\item $H(51) = 252$,
+\item $H(54) = 270$,
+\item $H(\num{5511}) \leq \num{52116}$,
+\item $H(\num{35410}) \leq \num{398130}$,
+\item $H(\num{41588}) \leq \num{474266}$,
+\item $H(\num{309661}) \leq \num{4137854}$,
+\item $H(\num{1649821}) \leq \num{24797814}$,
+\item $H(\num{75845707}) \leq \num{1431556072}$,
+\item $H(\num{3473955908}) \leq \num{80550202480}$.
+\end{enumerate}
+\smallskip
+
+\subsection{\texorpdfstring{$H(k)$}{H(k)} values for small \texorpdfstring{$k$}{k}}
+
+The equalities in the first four bounds (1)-(4) were previously known.
+The case $H(3)=6$ is obvious: the admissible 3-tuples $(0,2,6)$ and $(0,4,6)$ have diameter $6$ and no $3$-tuple of smaller diameter is admissible.
+The cases $H(50)=246$, $H(51)=252$, and $H(54)=270$ follow from results of Clark and Jarvis~\cite{clark}.
+They define $\varrho^*(x)$ to be the largest integer $k$ for which there exists an admissible $k$-tuple that lies in a half-open interval $(y,y+x]$ of length~$x$.
+For each integer $k>1$, the largest $x$ for which $\varrho^*(x)=k$ is precisely $H(k+1)$.
+Table~1 of \cite{clark} lists these largest $x$ values for $2\le k\le 170$, and we find that $H(50)=246$, $H(51)=252$, and $H(54)=270$.
+Admissible tuples that realize these bounds are shown in Figures~\ref{k50tup}, ~\ref{k51tup} and~\ref{k54tup}.
+
+\begin{figure}
+\begin{align*}
+&0,4,6,16,30,34,36,46,48,58,60,64,70,78,84,88,90,94,100,106,\\
+&108,114,118,126,130,136,144,148,150,156,160,168,174,178,184,\\
+&190,196,198,204,210,214,216,220,226,228,234,238,240,244,246.
+\end{align*}
+\caption{Admissibile $50$-tuple realizing $H(50)=246$.}\label{k50tup}
+\end{figure}
+
+
+\begin{figure}
+\begin{align*}
+&0,6,10,12,22,36,40,42,52,54,64,66,70,76,84,90,94,96,100,106,\\
+&112,114,120,124,132,136,142,150,154,156,162,166,174,180,184,\\
+&190,196,202,204,210,216,220,222,226,232,234,240,244,246,250,252.
+\end{align*}
+\caption{Admissibile $51$-tuple realizing $H(51)=252$.}\label{k51tup}
+\end{figure}
+\begin{figure}
+
+\begin{align*}
+&0,4,10,18,24,28,30,40,54,58,60,70,72,82,84,88,94,102,108,112,114,\\
+&118,124,130,132,138,142,150,154,160,168,172,174,180,184,192,198,202,\\
+&208,214,220,222,228,234,238,240,244,250,252,258,262,264,268,270.
+\end{align*}
+\caption{Admissibile $54$-tuple realizing $H(54)=270$.}\label{k54tup}
+\end{figure}
+
+\subsection{\texorpdfstring{$H(k)$}{H(k)} bounds for mid-range \texorpdfstring{$k$}{k}}\label{secmidk}
+
+As previously noted, exact values for $H(k)$ are known only for $k\le 342$.
+The upper bounds on $H(k)$ for the five cases (5)-(9) were obtained by constructing admissible $k$-tuples using techniques developed during the first part of the Polymath8 project.
+These are described in detail in Section~3 of \cite{polymath8a-unabridged}, but for the sake of completeness we summarize the most relevant methods here.
+
+\subsubsection{Fast admissibility testing}
+A key component of all our constructions is the ability to efficiently determine whether a given $k$-tuple $\mathcal{H}=(h_1,\ldots, h_k)$ is admissible.  We say that $\mathcal{H}$ is \emph{admissible modulo} $p$ if its elements do not form a complete set of residues modulo $p$.
+Any $k$-tuple $\mathcal{H}$ is automatically admissible modulo all primes $p > k$, since a $k$-tuple cannot occupy more than $k$ residue classes; thus we only need to test admissibility modulo primes $p < k$.
+
+A simple way to test admissibility modulo $p$ is to  enumerate the elements of $\mathcal{H}$ modulo $p$ and keep track of which residue classes have been encountered in a table with $p$ boolean-valued entries.
+Assuming the elements of $\mathcal{H}$ have absolute value bounded by $O(k\log k)$ (true of all the tuples we consider), this approach yields a total bit-complexity of $O(k^2/\log k\ \textsf{M}(\log k))$, where $\textsf{M}(n)$ denotes the complexity of multiplying two $n$-bit integers, which, up to a constant factor, also bounds the complexity of division with remainder.
+Applying the Sch\"onhage-Strassen bound $\textsf{M}(n)=O(n\log n\log\log n)$ from~\cite{schonhage}, this is $O(k^2\log\log k\log\log\log k)$, essentially quadratic in $k$.
+
+This approach can be improved by observing that for most of the primes $p < k$ there are likely to be many unoccupied residue classes modulo $p$.  In order to verify admissibility at $p$ it is enough to find one of them, and we typically do not need to check them all in order to do so.  Using a heuristic model that assumes the elements of $\mathcal{H}$ are approximately equidistributed modulo $p$, one can determine a bound $m < p$ such that $k$ random elements of $\Z/p\Z$ are unlikely to occupy all of the residue classes in $[0,m]$.  By representing the $k$-tuple $\mathcal{H}$ as a boolean vector $\mathcal{B}=(b_0,\ldots,b_{h_k-h_1})$ in which $b_i=1$ if and only if $i=h_j-h_1$ for some $h_j\in \mathcal{H}$, we can efficiently test whether $\mathcal{H}$ occupies every residue class in $[0,m]$ by examining the the entries
+\[
+b_0,\ldots,b_m,b_p,\ldots,b_{p+m},b_{2p},\ldots,b_{2p+m},\ldots
+\]
+of $\mathcal{B}$.
+The key point is that when $p<k$ is large, say $p > (1+\epsilon)k/\log k$, we can choose~$m$ so that we only need to examine a small subset of the entries in $\mathcal{B}$.
+Indeed, for primes $p > k/c$ (for any constant $c$), we can take $m=O(1)$ and only need to examine $O(\log k)$ elements of $\mathcal{B}$ (assuming its total size is $O(k\log k)$, which applies to all the tuples we consider here).
+
+Of course it may happen that $\mathcal{H}$ occupies every residue class in $[0,m]$ modulo $p$.
+In this case we revert to our original approach of enumerating the elements of $\mathcal{H}$ modulo $p$, but we expect this to happen for only a small proportion of the primes $p < k$.
+Heuristically, this reduces the complexity of admissibility testing by a factor of $O(\log k)$, making it sub-quadratic.  In practice we find this approach to be much more efficient than the straight-forward method when $k$ is large.  See \cite[\S 3.1]{polymath8a} for further details.
+
+\subsubsection{Sieving methods}
+
+Our techniques for constructing admissible $k$-tuples all involve sieving an integer interval $[s,t]$ of residue classes modulo primes $p < k$ and then selecting an admissible $k$-tuple from the survivors.  There are various approaches one can take, depending on the choice of interval and the residue classes to sieve.
+We list four of these below, starting with the classical sieve of Eratosthenes and proceeding to more modern variations.
+
+\begin{itemize}
+\item\textbf{Sieve of Eratosthenes}.
+We sieve an interval $[2,x]$ to obtain admissible $k$-tuples
+\[
+p_{m+1},\ldots,p_{m+k}.
+\]
+with $m$ as small as possible.
+If we sieve the the residue class $0(p)$ for all primes $p\le k$ we have $m=\pi(k)$ and $p_{m+1}>k$. In this case no admissibility testing is required, since the residue class $0(p)$ is unoccupied for all $p \le k$.
+Applying the Prime Number Theorem in the forms
+\begin{align*}
+p_k &=k \log k+ k \log \log k - k +O\Bigl(k \frac{ \log \log k}{\log k} \Bigr),\\
+\pi(x)&=\frac{x}{\log x}+O\Bigl(\frac{x}{\log^2 x}\Bigr),
+\end{align*}
+this construction yields the upper bound
+\begin{equation}\label{hk-eratosthenes}
+H(k)\le k\log k + k\log\log k  - k + o(k).
+\end{equation}
+As an optimization, rather than sieving modulo every prime $p \le k$ we instead sieve modulo increasing primes $p$ and stop as soon as the first $k$ survivors form an admissible tuple.
+This will typically happen for for some $p_m < k$.
+\smallbreak
+
+\item\textbf{Hensley-Richards sieve}.
+The bound in \eqref{hk-eratosthenes} was improved by Hensley and Richards~\cite{hensley,
+  hensley-2, richards}, who observed that rather than sieving $[2,x]$ it is better to sieve the interval $[-x/2,x/2]$ to obtain admissible $k$-tuples of the form
+\[
+-p_{m+\lfloor k/2\rfloor-1},\ldots,p_{m+1},\ldots,-1,1,\ldots,p_{m+1},\ldots,p_{m+\lfloor(k+1)/2\rfloor-1},
+\]
+where we again wish to make $m$ as small as possible.
+It follows from Lemma 5 of \cite{hensley-2} that one can take $m=o(k/\log k)$, leading to the improved upper bound
+\begin{equation}\label{hk-hensely-richards}
+H(k)\le k\log k + k\log\log k -(1+\log 2)k + o(k).
+\end{equation}
+\smallbreak
+
+%\item\textbf{Shifted Hensley-Richards sieve}: we consider admissible $k$-tuples of the form
+%\[
+%-p_{m+\lfloor k/2\rfloor-1-i},\ldots,-p_{m+1},\ldots,-1,1,p_{m+1},\ldots,p_{m+\lfloor(k+1)/2\rfloor-1+i},
+%\]
+%with $m$ and $i$ chosen to minimize the diameter.
+%\smallbreak
+
+\item\textbf{Shifted Schinzel sieve}.
+As noted by Schinzel in \cite{schinzel}, in the Hensley-Richards sieve it is slightly better to sieve $1(2)$ rather than $0(2)$; this leaves unsieved powers of~$2$ near the center of the interval $[-x/2,x/2]$ that would otherwise be removed (more generally, one can sieve $1(p)$ for many small primes $p$, but we did not).
+Additionally, we find that shifting the interval $[-x/2,x/2]$ can yield significant improvements (one can also view this as changing the choices of residue classes).
+
+This leads to the following approach: we sieve an interval $[s,s+x]$ of odd integers and multiples of odd primes $p\le p_m$, where $x$ is large enough to ensure at least $k$ survivors, and $m$ is large enough to ensure that the survivors form an admissible tuple, with $x$ and $m$ minimal subject to these constraints.  A tuple of exactly~$k$ survivors is then chosen to minimize the diameter.  By varying $s$ and comparing the results, we can choose a starting point $s\in [-x/2,x/2]$ that yields the smallest final diameter.
+For large $k$ we typically find $s\approx k$ is optimal, as opposed to $s\approx -(k/2)\log k$ in the Hensley-Richards sieve.
+\smallbreak
+
+\item\textbf{Shifted greedy sieve}.
+As a further optimization, we can allow greater freedom in the choice of residue class to sieve.
+We begin as in the shifted Schinzel sieve, but for primes $p \le p_m$ that exceed $2\sqrt{k\log k}$, rather than sieving $0(p)$ we choose a minimally occupied residue class $a(p)$.
+As above we sieve the interval $[s,s+x]$ for varying values of $s\in [-x/2,x/2]$ and select the best result, but unlike the shifted Schinzel sieve, for large $k$ we typically choose $s\approx -(k/\log k - k)/2$.
+
+We remark that while one might suppose that it would be better to choose a minimally occupied residue class at all primes, not just the larger ones, we find that this is generally not the case.  Fixing a structured choice of residue classes for the small primes avoids the erratic behavior that can result from making greedy choices to soon (see \cite[Fig. 1]{gordon} for an illustration of this).
+
+\end{itemize}
+\smallbreak
+
+Table~\ref{kmidtable} lists the bounds obtained by applying each of these techniques (in the online version of this paper, each table entry includes a link to the constructed tuple).
+To the admissible tuples obtained using the shifted greedy sieve we additionally applied various local optimizations that are detailed in \cite[\S 3.6]{polymath8a}.
+As can be seen in the table, the additional improvement due to these local optimizations is quite small compared to that gained by using better sieving algorithms, especially when $k$ is large.
+
+Table~\ref{kmidtable} also lists the value $\lfloor k\log k+k\rfloor$ that we conjecture as an upper bound on $H(k)$ for all sufficiently large $k$.
+
+\begin{table}
+\centering
+\setlength{\extrarowheight}{2pt}
+\caption{Upper bounds on $H(k)$ for selected values of $k$.}\label{kmidtable}
+\begin{tabular}{lrrrrr}
+\toprule
+$k$                 & \num{5511}         & \num{35410}          & \num{41588}           & \num{309661}           & \num{1649821}\\
+\midrule
+$k$ primes past $k$ & \tupref{5511}{56538} & \tupref{35410}{433992} & \tupref{41588}{516586} & \tupref{309661}{4505700} & \tupref{1649821}{26916060} \\
+Eratosthenes        & \tupref{5511}{55160} & \tupref{35410}{424636} & \tupref{41588}{505734} & \tupref{309661}{4430212} & \tupref{1649821}{26540720} \\
+Hensley-Richards           & \tupref{5511}{54480} & \tupref{35410}{415642} & \tupref{41588}{494866} & \tupref{309661}{4312612} & \tupref{1649821}{25841884} \\
+%Shifted H-R         & \tupref{5511}{53884} & \tupref{35410}{414152} & \tupref{41588}{492170} & \tupref{309661}{4309770} & \tupref{1649821}{25825242} \\
+Shifted Schinzel    & \tupref{5511}{53774} & \tupref{35410}{411060} & \tupref{41588}{489056} & \tupref{309661}{4261858} & \tupref{1649821}{25541910} \\
+Shifted greedy      & \tupref{5511}{52296} & \tupref{35410}{399936} & \tupref{41588}{476028} & \tupref{309661}{4142780} & \tupref{1649821}{24798306} \\
+Best result          & \tupref{5511}{52116} & \tupref{35410}{398130} & \tupref{41588}{474266} & \tupref{309661}{4137854} & \tupref{1649821}{24797814} \\
+\midrule
+$\lfloor k\log k + k \rfloor$       & \num{52985}         & \num{406320}          & \num{483899}          & \num{4224777}           & \num{25268951} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{\texorpdfstring{$H(k)$}{H(k)} bounds for large \texorpdfstring{$k$}{k}}.
+The upper bounds on $H(k)$ for the last two cases (10) and (11) were obtained using modified versions of the techniques described above that are better suited to handling very large values of $k$.
+These entail three types of optimizations that are summarized in the subsections below.
+
+\subsubsection{Improved time complexity}
+As noted above, the complexity of admissibility testing is quasi-quadratic in $k$.  Each of the techniques listed in \S\ref{secmidk} involves optimizing over a parameter space whose size is at least quasi-linear in $k$, leading to an overall quasi-cubic time complexity for constructing a narrow admissible $k$-tuple; this makes it impractical to handle $k > 10^9$.
+We can reduce this complexity in a number of ways.
+
+First, we can combine parameter optimization and admissibility testing.
+In both the sieve of Eratosthenes and Hensley-Richards sieves, taking $m=k$ guarantees an admissible $k$-tuple.
+For $m<k$, if the corresponding $k$-tuple is inadmissible, it is typically because it is inadmissible modulo the smallest prime $p_{m+1}$ that appears in the tuple.
+This suggests a heuristic approach in which we start with $m=k$, and then iteratively reduce~$m$, testing the admissibility of each $k$-tuple modulo $p_{m+1}$ as we go, until we can proceed no further.
+We then verify that the last $k$-tuple that was admissible modulo $p_{m+1}$ is also admissible modulo all primes $p > p_{m+1}$ (we know it is admissible at all primes $p \le p_m$ because we have sieved a residue class for each of these primes).  We expect this to be the case, but if not we can increase $m$ as required.
+Heuristically this yields a quasi-quadratic running time, and in practice it takes less time to find the minimal $m$ than it does to verify the admissibility of the resulting $k$-tuple.
+
+Second, we can avoid a complete search of the parameter space.
+In the case of the shifted Schinzel sieve, for example, we find empirically that taking $s=k$ typically yields an admissible $k$-tuple whose diameter is not much larger than that achieved by an optimal choice of $s$; we can then simply focus on optimizing~$m$ using the strategy described above.
+Similar comments apply to the shifted greedy sieve.
+
+\subsubsection{Improved space complexity}
+We expect a narrow admissible $k$-tuple to have diameter $d=(1+o(1))k\log k$.
+Whether we encode this tuple as a sequence of $k$ integers, or as a bitmap of $d+1$ bits, as in the fast admissibility testing algorithm, we will need approximately $k\log k$ bits.  For $k > 10^9$ this may be too large to conveniently fit in memory.  We can reduce the space to $O(k\log\log k)$ bits by encoding the $k$-tuple as a sequence of $k-1$ gaps; the average gap between consecutive entries has size $\log k$ and can be encoded in $O(\log\log k)$ bits.
+In practical terms, for the sequences we constructed almost all gaps can be encoded using a single 8-bit byte for each gap.
+
+One can further reduce space by partitioning the sieving interval into windows.
+For the construction of our largest tuples, we used windows of size $O(\sqrt{d})$ and converted to a gap-sequence representation only after sieving at all primes up to an $O(\sqrt{d})$ bound.
+
+\subsubsection{Parallelization}
+With the exception of the greedy sieve, all the techniques described above are easily parallelized.
+The greedy sieve is more difficult to parallelize because the choice of a minimally occupied residue class modulo $p$ depends on the set of survivors obtained after sieving modulo primes less than $p$.
+To address this issue we modified the greedy approach to work with batches of consecutive primes of size $n$, where $n$ is a multiple of the number of parallel threads of execution.  After sieving fixed residue classes modulo all small primes $p < 2\sqrt{k\log k}$, we determine minimally occupied residue classes for the next $n$ primes in parallel, sieve these residue classes, and then proceed to the next batch of $n$ primes.
+
+In addition to the techniques described above, we also considered a modified Schinzel sieve in which we check admissibility modulo each successive prime $p$ before sieving multiples of $p$, in order to verify that sieving modulo $p$ is actually necessary.  For values of $p$ close to but slightly less than $p_m$ it will often be the case that the set of survivors is already admissibility modulo $p$, even though it does contain multiples of $p$ (because some other residue class is unoccupied).
+As with the greedy sieve, when using this approach we sieve residue classes in batches of size $n$ to facilitate parallelization.
+
+\subsubsection{Results for large \texorpdfstring{$k$}{k}}
+
+Table~\ref{klargetable} lists the bounds obtained for the two largest values of $k$.
+For $k=\num{75845707}$ the best results were obtained with a shifted greedy sieve that was modified for parallel execution as described above, using the fixed shift parameter $s=-(k\log k-k)/2$.
+A list of the sieved residue classes is available at
+\begin{center}
+ \url{math.mit.edu/~drew/greedy_75845707_1431556072.txt}.
+\end{center}
+This file contains values of $k$, $s$, $d$, and $m$, along with a list of prime indices $n_i> m$ and residue classes $r_i$ such that sieving the interval $[s,s+d]$ of odd integers, multiples of $p_n$ for $1<n \le m$, and at $r_i$ modulo $p_{n_i}$ yields an admissible $k$-tuple.
+
+For $k=\num{3473955908}$ we did not attempt any form of greedy sieving due to practical limits on the time and computational resources available. The best results were obtained using a modified Schinzel sieve that avoids unnecessary sieving, as described above, using the fixed shift parameter $s=k0$.
+A list of the sieved residue classes is available at
+\begin{center}
+ \url{math.mit.edu/~drew/schinzel_3473955908_80550202480.txt}.
+\end{center}
+This file contains values of $k$, $s$, $d$, and $m$, along with a list of prime indices $n_i> m$such that sieving the interval $[s,s+d]$ of odd integers, multiples of $p_n$ for $1<n \le m$, and multiples of $p_{n_i}$ yields an admissible $k$-tuple.
+
+Source code for our implementation is available at \url{math.mit.edu/~drew/ompadm_v0.5.tar}; this code can be used to verify the admissibility of both the tuples listed above.
+
+\begin{table}
+\centering
+\setlength{\extrarowheight}{2pt}
+\caption{Upper bounds on $H(k)$ for selected values of $k$.}\label{klargetable}
+\begin{tabular}{lrr}
+\toprule
+$k$                 & \num{75845707}   & \num{3473955908}  \\
+\midrule
+$k$ primes past $k$ & \num{1541858666} & \num{84449123072} \\
+Eratosthenes        & \num{1526698470} & \num{83833839848} \\
+Hensley-Richards    & \num{1488227220} & \num{81912638914} \\
+Shifted Schinzel    & \num{1467584468} & \num{80761835464} \\
+Shifted Greedy      & \num{1431556072} & not available\\
+Best result         & \num{1431556072} & \num{80550202480} \\
+\midrule
+$\lfloor k\log k + k \rfloor$       & \num{1452006268}         & \num{79791764059} \\
+\bottomrule
+\end{tabular}
+\end{table}
+

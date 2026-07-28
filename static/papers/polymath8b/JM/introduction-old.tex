@@ -1,0 +1,241 @@
+
+\section{Introduction}
+
+For any natural number $m$, let $H_m$ denote the quantity
+$$ H_m := \liminf_{n \to \infty} (p_{n+m} - p_n),$$
+where $p_n$ denotes the $n^{\operatorname{th}}$ prime.  Thus for instance the twin prime conjecture asserts that $H_1=2$.  Until very recently, it was not known of the $H_m$ were finite, even in the easiest case $m=1$.  In the breakthrough work of Goldston, Pintz, and Y{\i}ld{\i}r{\i}m \cite{gpy}, several results in this direction were established, including the following conditional result assuming the Elliott-Halberstam conjecture $\EH[\vartheta]$ (see Claim \ref{eh-def} below) concerning the distribution of the prime numbers in arithmetic progressions:
+
+\begin{theorem}[GPY theorem]\label{gpy-thm}  Assume the Elliott-Halberstam conjecture $\EH[\vartheta]$ for all $0 < \vartheta < 1$.  Then $H_1 \leq 16$.
+\end{theorem}
+
+Furthermore, it was shown in \cite{gpy} that any result of the form $\EH[\frac{1}{2} + 2\varpi]$ for some fixed $0 < \varpi < 1/4$ would imply an explicit finite upper bound on $H_1$ (with this bound equal to $16$ for $\varpi > 0.229855$).  Unfortunately, the only results of the type $\EH[\vartheta]$ that are known come from the Bombieri-Vinogradov theorem (Theorem \ref{bv-thm}), which only establishes $\EH[\vartheta]$ for $0 < \vartheta < 1/2$.
+
+The first unconditional bound on $H_1$ was established  in a breakthrough work of Zhang \cite{zhang}:
+
+\begin{theorem}[Zhang's theorem]  $H_1 \leq \num{70000000}$.
+\end{theorem}
+
+Zhang's argument followed the general strategy from \cite{gpy} on finding small gaps between primes, with the major new ingredient being a proof of a weaker version of $\EH[\frac{1}{2}+2\varpi]$, which we call $\MPZ[\varpi,\delta]$; see Claim \ref{mpz-claim} below.  It was quickly realized that Zhang's numerical bound on $H_1$ could be improved.  By optimizing many of the components in Zhang's argument, we were able \cite{polymath8a} to improve Zhang's bound to
+$$ H_1 \leq \num{4680}.$$
+
+Very shortly afterwards, a further breakthrough was obtained by Maynard \cite{maynard-new} (with related work obtained independently in unpublished work of Tao), who developed a more flexible ``multidimensional'' version of the Selberg sieve to obtain stronger bounds on $H_m$, even without using any equidistribution results on primes beyond the Bombieri-Vinogradov theorem, which among other things was able to establish finiteness of $H_m$ for all $m$, not just for $m=1$.  More precisely, Maynard established the following results.
+
+\begin{theorem}[Maynard's theorem]  Unconditionally, we have the following bounds:
+\begin{itemize}
+\item[(i)] $H_1 \leq 600$.
+\item[(ii)] $H_m \leq C m^3 e^{4m}$ for all $m \geq 1$ and an absolute constant $C$.
+\end{itemize}
+Assuming the Elliott-Halberstam conjecture, we have the following improvements:
+\begin{itemize}
+\item[(iii)] $H_1 \leq 12$.
+\item[(iv)] $H_2 \leq 600$.
+\item[(v)] $H_m \leq C m^3 e^{2m}$ for all $m \geq 1$ and an absolute constant $C$.
+\end{itemize}
+\end{theorem}
+
+Strictly speaking, conclusion (v) of the above theorem does not appear explicitly in \cite{maynard-new}, but follows easily from the methods of that paper.  For a survey of these recent developments, see \cite{granville}.
+
+In this paper, we refine Maynard's methods to obtain the following further improvements.
+
+\begin{theorem}\label{main} Unconditionally, we have the following bounds:
+\begin{itemize}
+\item[(i)] $H_1 \leq 246$.   
+\item[(ii)] $H_2 \leq \num{395106}$. 
+\item[(iii)] $H_3 \leq \num{24462654}$. 
+\item[(iv)] $H_4 \leq \num{1497901734}$.  
+\item[(v)] $H_5 \leq \num{82575303678}$. 
+\item[(vi)] $H_m \leq C m \exp( (4 - \frac{52}{283}) m )$ for all $m \geq 1$ and an absolute constant $C$.
+\end{itemize}
+Assume the Elliott-Halberstam conjecture $\EH[\vartheta]$ for all $0 < \vartheta < 1$.  Then we have the following improvements:
+\begin{itemize}
+\item[(vii)] $H_2 \leq 270$.
+\item[(viii)] $H_3 \leq \num{52116}$.
+\item[(ix)] $H_4 \leq \num{474266}$.
+\item[(x)] $H_5 \leq \num{4137854}$.
+\item[(xi)] $H_m \leq Cme^{2m}$ for all $m \geq 1$ and an absolute constant $C$.
+\end{itemize}
+Finally, assume the generalized Elliott-Halberstam conjecture $\GEH[\vartheta]$ (see Claim \ref{geh-def} below) for all $0 < \vartheta < 1$.  Then
+\begin{itemize}
+\item[(xii)] $H_1 \leq 6$.
+\end{itemize}
+\end{theorem}
+
+As with Theorem \ref{gpy-thm}, the results in (vii)-(xii) do not require $\EH[\vartheta]$ or $\GEH[\vartheta]$ for all $0 < \vartheta < 1$, but only for a single explicitly computable $\vartheta$ that is sufficiently close to $1$.
+
+Of these results, the bound in (xii) is perhaps the most interesting, as the parity problem \cite{selberg} prohibits one from achieving any better bound on $H_1$ than $6$ from purely sieve-theoretic methods; we review this obstruction in Section \ref{parity-sec}.
+
+The bounds (ii)-(vi) rely on the equidistribution results on primes established in our previous paper \cite{polymath8a}.  However, the bound (i) uses only the Bombieri-Vinogradov theorem, and the remaining bounds (vii)-(xii) of course use either the Elliott-Halberstam conjecture or a generalization thereof.
+
+A variant of the proof of Theorem \ref{main}(xii), which we give in Section \ref{remarks-sec}, also gives the following conditional ``near miss'' to (a disjunction of) the twin prime conjecture and the even Goldbach conjecture:
+
+\begin{theorem}[Disjunction]\label{disj} Assume the generalized Elliott-Halberstam conjecture $\GEH[\vartheta]$ for all $0 < \vartheta < 1$.  Then at least one of the following statements is true:
+\begin{itemize}
+\item[(a)]  (Twin prime conjecture) $H_1=2$.
+\item[(b)]  (near-miss to even Goldbach conjecture)  If $n$ is a sufficiently large multiple of six, then at least one of $n$ and $n-2$ is expressible as the sum of two primes.  Similarly with $n-2$ replaced by $n+2$.
+\end{itemize}
+\end{theorem}
+
+There are two main technical innovations in this paper.  The first is a further generalization of the multidimensional Selberg sieve introduced by Maynard and Tao, in which the support of a certain cutoff function $F$ is permitted to extend into a larger domain than was previously permitted (particularly under the assumption of the generalized Elliott-Halberstam conjecture).  As in \cite{maynard}, this largely reduces the task of bounding $H_m$ to that of efficiently solving a certain multidimensional variational problem involving the cutoff function $F$.  Our second main technical innovation is to obtain efficient numerical methods for solving this variational problem for small values of the dimension $k$, as well as sharpened asymptotics in the case of large values of $k$.
+
+\subsection{Acknowledgments}
+
+...
+
+\subsection{Notation}
+
+{\bf copied from Polymath8a; could do with some pruning}
+
+We use $|E|$ to denote the cardinality of a finite set $E$, and $\onef_E$ to denote the indicator function of a set $E$, thus $\onef_E(n)=1$ when $n \in E$ and $\onef_E(n)=0$ otherwise.  
+
+All sums and products will be over the natural numbers $\N := \{1,2,3,\ldots\}$ unless otherwise specified, with the exceptions of sums and products over the variable $p$, which will be understood to be over primes.
+
+The following important asymptotic notation will be in use throughout the paper:
+
+\begin{definition}[Asymptotic notation]\label{asym}  We use $x$ to denote a large real parameter, which one should think of as going off to infinity; in particular, we will implicitly assume that it is larger than any specified fixed constant. Some mathematical objects will be independent of $x$ and referred to as \emph{fixed}; but unless otherwise specified we allow all mathematical objects under consideration to depend on $x$ (or to vary within a range that depends on $x$, e.g. the summation parameter $n$ in the sum $\sum_{x \leq n \leq 2x} f(n)$).  If $X$ and $Y$ are two quantities depending on $x$, we say that $X = O(Y)$ or $X \ll Y$ if one has $|X| \leq CY$ for some fixed $C$ (which we refer to as the \emph{implied constant}), and $X = o(Y)$ if one has $|X| \leq c(x) Y$ for some function $c(x)$ of $x$ (and of any fixed parameters present) that goes to zero as $x \to \infty$ (for each choice of fixed parameters).  We use $X \lessapprox Y$ to denote the estimate $X \leq x^{o(1)} Y$, $X \sim Y$ to denote the estimate $Y \ll X \ll Y$, and $X \approx Y$ to denote the estimate $Y \lessapprox X \lessapprox Y$.  Finally, we say that a quantity $n$ is of \emph{polynomial size} if one has $n = O(x^{O(1)})$.
+
+If asymptotic notation such as $O()$ or $\lessapprox$ appears on the left-hand side of a statement, this means that the assertion holds true for any specific interpretation of that notation.  For instance, the assertion $\sum_{n=O(N)} |\alpha(n)| \lessapprox N$ means that for each fixed constant $C>0$, one has $\sum_{|n| \leq CN} |\alpha(n)|\lessapprox N$.
+\end{definition}
+
+If $q$ and $a$ are integers, we write $a|q$ if $a$ divides $q$.
+If $q$ is a natural number and $a \in \Z$, we use $a\ (q)$ to denote
+the congruence class
+$$ a\ (q) := \{ a+nq: n \in \Z \}$$
+and let $\Z/q\Z$ denote the ring of all such congruence classes $a\
+(q)$. The notation $b=a\ (q)$ is synonymous to $b \in \, a \ (q)$. We
+use $(a,q)$ to denote the greatest common divisor of $a$ and $q$, and
+$[a,q]$ to denote the least common
+multiple.\footnote{When $a,b$ are real numbers, we will also
+  need to use $(a,b)$ and $[a,b]$ to denote the open and closed
+  intervals respectively with endpoints $a,b$.  Unfortunately, this
+  notation conflicts with the notation given above, but it should be
+  clear from the context which notation is in use.}
+We also let
+$$ (\Z/q\Z)^\times := \{ a\ (q): (a,q)=1 \}$$
+denote the primitive congruence classes of $\Z/q\Z$.  
+
+We use the following standard arithmetic functions:
+\begin{itemize}
+\item[(i)] $\phi(q) := |(\Z/q\Z)^\times|$ denotes the Euler totient function of $q$.
+\item[(ii)] $\tau(q) := \sum_{d|q} 1$ denotes the divisor function of $q$.
+\item[(iii)] $\Lambda(q)$ denotes the von Mangoldt function of $q$, thus $\Lambda(q)=\log p$ if $q$ is a power of a prime $p$, and $\Lambda(q)=0$ otherwise.
+\item[(iv)] $\theta(q)$ is defined to equal $\log q$ when $q$ is a prime, and $\theta(q)=0$ otherwise.
+\item[(v)] $\mu(q)$ denotes the M\"obius function of $q$, thus $\mu(q) = (-1)^k$ if $q$ is the product of $k$ distinct primes for some $k \geq 0$, and $\mu(q)=0$ otherwise.
+\item[(vi)] $\Omega(q)$ denotes the number of prime factors of $q$ (counting multiplicity).
+\end{itemize}
+
+We recall the elementary \emph{divisor bound}
+\begin{equation}\label{divisor-bound}
+\tau(n) \lessapprox 1
+\end{equation}
+whenever $n \ll x^{O(1)}$, as well as the related estimate
+\begin{equation}\label{divisor-2}
+\sum_{n \ll x} \frac{\tau(n)^C}{n} \lesssim \log^{O(1)} x
+\end{equation}
+for any fixed $C>0$; see e.g. \cite[Lemma 1.5]{polymath8a}.
+
+The \emph{Dirichlet convolution} $\alpha \star \beta \colon \N \to \C$
+of two arithmetic functions $\alpha,\beta \colon \N \to \C$ is defined
+in the usual fashion as
+$$ \alpha\star\beta(n) := \sum_{d|n} \alpha(d)
+\beta\left(\frac{n}{d}\right) =\sum_{ab=n}{\alpha(a)\beta(b)}.$$
+
+\section{Distribution estimates on arithmetic functions}
+
+As mentioned in the introduction, a key ingredient in the Goldston-Pintz-Y{\i}ld{\i}r{\i}m approach to small gaps between primes comes from distributional estimates on the primes, or more precisely on the von Mangoldt function $\Lambda$, which serves as a proxy for the primes.  In this work, we will also need to consider distributional estimates on more general arithmetic functions.  More precisely, we will need averaged information on the following quantity:
+
+\begin{definition}[Discrepancy]
+For any function $\alpha \colon \N \to \C$ with finite support (that is, $\alpha$ is non-zero only on a finite set) and any
+primitive congruence class $a\ (q)$, we define the (signed)
+\emph{discrepancy} $\Delta(\alpha; a\ (q))$ to be the quantity
+\begin{equation}\label{disc-def}
+  \Delta(\alpha; a\ (q)) := \sum_{n = a\ (q)} \alpha(n) - 
+  \frac{1}{\phi(q)} \sum_{(n,q)=1} \alpha(n).
+\end{equation}
+\end{definition}
+
+For any fixed $0 < \vartheta < 1$, let $\EH[\vartheta]$ denote the following claim:
+
+\begin{claim}[Elliott-Halberstam conjecture, {$\EH[\vartheta]$}]\label{eh-def}  If $Q \lessapprox x^\vartheta$ and $A \geq 1$ is fixed, then
+\begin{equation}\label{qq}
+ \sum_{q \leq Q} \sup_{a \in (\Z/q\Z)^\times} |\Delta(\Lambda \onef_{[x,2x]}; a\ (q))| \ll x \log^{-A} x.
+\end{equation} 
+\end{claim}
+
+In \cite{elliott} it was conjectured that $\EH[\vartheta]$ held for all $0 < \vartheta < 1$.  (The conjecture fails at the endpoint case $\vartheta=1$; see \cite{fg}, \cite{fghm} for a more precise statement.)  The following classical result of Bombieri \cite{bombieri} and Vinogradov \cite{vinogradov} remains the best partial result of the form $\EH[\vartheta]$:
+
+\begin{theorem}[Bombieri-Vinogradov theorem]\label{bv-thm}\cite{bombieri,vinogradov}  $\EH[\vartheta]$ holds for every fixed $0 < \vartheta < 1/2$.
+\end{theorem}
+
+In \cite{gpy} it was shown that any estimate of the form $\EH[\vartheta]$ with some fixed $\vartheta > 1/2$ would imply the finiteness of $H_1$.  While such a claim remains open, it was observed by Motohashi-Pintz \cite{mp} and by Zhang \cite{zhang} that a certain weakened version of $\EH[\vartheta]$ would still suffice for this purpose.  More precisely, let $\varpi,\delta > 0$ be fixed, and let $\MPZ[\varpi,\delta]$ be the following claim:
+
+\begin{claim}[Motohashi-Pintz-Zhang estimate,
+  {$\MPZ[\varpi,\delta]$}]\label{mpz-claim} Let $I \subset
+  [1,x^\delta]$ and $Q \lessapprox x^{1/2+2\varpi}$.  Let $P_I$ denote the product of all the primes in $I$, and let $\Scal_I$ denote the square-free natural numbers whose prime factors lie in $I$.  If $a\ (P_I)$ is
+  a primitive residue class, which may depend on $x$, and $A \geq 1$
+  is fixed, then
+\begin{equation}\label{qq-mpz}
+  \sum_{\substack{q \leq Q\\q \in \Scal_I}} |\Delta(\Lambda \onef_{[x,2x]}; a\ (q))| \ll x \log^{-A} x,
+\end{equation}
+where the implied constant depends only on the fixed quantities $(A,\varpi,\delta)$, but
+not on $a$.
+\end{claim}
+
+It is clear that $\EH[\frac{1}{2}+2\varpi]$ implies $\MPZ[\varpi,\delta]$ whenever $\varpi,\delta \geq 0$.  The first non-trivial estimate of the form $\MPZ[\varpi,\delta]$ was established by Zhang \cite{zhang}, who obtained $\MPZ[\varpi,\delta]$ whenever $0 \leq \varpi, \delta < \frac{1}{1168}$.
+In \cite[Theorem 2.17]{polymath8a}, we improved this result to the following.
+
+\begin{theorem}\label{mpz-poly}  $\MPZ[\varpi,\delta]$ holds for every fixed $\varpi,\delta \geq 0$ with $600 \varpi + 180 \delta < 7$.
+\end{theorem}
+
+In fact, a stronger result was established in \cite{polymath8a}, in which the moduli $q$ were assumed to be \emph{densely divisible} rather than smooth, but we will not exploit such improvements here.  For our application, the important thing is to get $\varpi$ as large as possible; in particular, Theorem \ref{mpz-poly} allows one to get $\varpi$ arbitrarily close to $\frac{7}{600} \approx 0.01167$. In Appendix \ref{dist-app} to this paper, we obtain the following improvement to Theorem \ref{mpz-poly}:
+
+\begin{theorem}\label{mpz-poly-improv}  $\MPZ[\varpi,\delta]$ holds for every fixed $\varpi,\delta \geq 0$ with $1080 \varpi + 330 \delta < 13$.
+\end{theorem}
+
+This theorem allows one to raise $\varpi$ arbitrarily close to $\frac{13}{1080} \approx 0.01204$.
+
+
+In this paper, we will also study the following generalization of the Elliott-Halberstam conjecture:
+
+\begin{claim}[Generalized Elliott-Halberstam conjecture, {$\GEH[\vartheta]$}]\label{geh-def}  Let $\eps > 0$ and $A \geq 1$ be fixed.  Let $N,M$ be quantities such that
+$x^\eps \lessapprox N,M \lessapprox x^{1-\eps}$ with $NM \sim x$, and let $\alpha, \beta: \N \to \R$ be sequences supported on $[N,2N]$ and $[M,2M]$ respectively, such that one has the pointwise bound
+\begin{equation}\label{ab-div}
+ |\alpha(n)| \lesssim \tau(n)^{O(1)} \log^{O(1)} x; \quad |\beta(m)| \lesssim \tau(m)^{O(1)} \log^{O(1)} x
+\end{equation}
+for all natural numbers $n,m$.  Suppose also that $\beta$ obeys the Siegel-Walfisz type bound
+\begin{equation}\label{sig}
+| \Delta(\beta \onef_{(\cdot,r)=1}; a\ (q)) | \ll \tau(qr)^{O(1)} M \log^{-A} x 
+\end{equation}
+for any $q,r \geq 1$, any fixed $A$, and any primitive residue class $a\ (q)$.  Then for any $Q \lessapprox x^\vartheta$, we have
+\begin{equation}\label{qq-gen}
+ \sum_{q \leq Q} \sup_{a \in (\Z/q\Z)^\times} |\Delta(\alpha \ast \beta; a\ (q))| \ll x \log^{-A} x.
+\end{equation} 
+\end{claim}
+
+In \cite[Conjecture 0]{bfi} it was essentially conjectured\footnote{Actually, there are some differences between Conjecture 0 of \cite{bfi} and the claim here.  Firstly, we need an estimate that is uniform for all $a$, whereas in \cite{bfi} only the case of a fixed modulus $a$ was asserted.  On the other hand, $\alpha,\beta$ were assumed to be controlled in $\ell^2$ instead of via the pointwise bounds \eqref{ab-div}, and $Q$ was allowed to be as large as $x \log^{-C} x$ for some fixed $C$ (although, in view of the negative results in \cite{fg}, \cite{fghm}, this latter strengthening may be too ambitious).} that $\GEH[\vartheta]$ was true for all $0 < \vartheta < 1$.   This is stronger than the Elliott-Halberstam conjecture:
+
+\begin{proposition}\label{geh-eh}  For any fixed $0 < \vartheta < 1$, $\GEH[\vartheta]$ implies $\EH[\vartheta]$.
+\end{proposition}
+
+\begin{proof} (Sketch)  As this argument is standard, we give only a brief sketch.
+Let $A > 0$ be fixed.  For $n \in [x,2x]$, we have Vaughan's identity\footnote{One could also use the Heath-Brown identity \cite{hb-ident} here if desired.} \cite{vaughan}
+$$ \Lambda(n) = \mu_< \star  L(n) - \mu_< \star  \Lambda_< \star  1(n) + \mu_\geq \star  \Lambda_\geq \star  1(n),$$
+where
+\begin{gather}
+\Lambda_\geq(n) := \Lambda(n) \onef_{n \geq x^{1/3}},\quad\quad 
+\Lambda_<(n) := \Lambda(n) \onef_{n < x^{1/3}}\\
+\mu_\geq(n) := \mu(n) \onef_{n \geq x^{1/3}},\quad\quad \mu_<(n) := \mu(n)
+\onef_{n < x^{1/3}}.
+\end{gather}
+By decomposing each of the functions $\mu_<$, $\mu_\geq$, $1$, $\Lambda_<$, $\Lambda_{\geq}$ into $O(\log^{A+1} x)$ functions supported on intervals of the form $[N, (1+\log^{-A} x) N]$, and discarding those contributions which meet the boundary of $[x,2x]$ (cf. \cite{fouvry}, \cite{fi-2}, \cite{bfi}, \cite{zhang}), and using $\GEH[\vartheta]$ (with $A$ replaced by a much larger fixed constant $A'$) to control all remaining contributions, we obtain the claim (using the Siegel-Walfisz theorem, see e.g. \cite[Satz 4]{siebert}
+  or~\cite[Th. 5.29]{ik}).
+\end{proof}
+
+By modifying the proof of the Bombieri-Vinogradov theorem, Motohashi \cite{motohashi} established the following generalization of that theorem:
+
+\begin{theorem}[Generalized Bombieri-Vinogradov theorem]\label{gbv-thm}\cite{motohashi}  $\GEH[\vartheta]$ holds for every fixed $0 < \vartheta < 1/2$.
+\end{theorem}
+
+One could similarly describe a generalization of the Motohashi-Pintz-Zhang estimate $\MPZ[\varpi,\delta]$, but unfortunately the arguments in \cite{zhang} or Theorem \ref{mpz-poly} do not extend to this setting unless one is in the ``Type I/Type II'' case in which $N,M$ are constrained to be somewhat close to $x^{1/2}$, or if one has ``Type III'' structure to the convolution $\alpha \ast \beta$, in the sense that it can refactored as a convolution involving several ``smooth'' sequences.  In any event, our analysis would not be able to make much use of such incremental improvements to $\GEH[\vartheta]$, as they can only use this hypothesis effectively in the case when $\vartheta$ is very close to $1$.  In any event, we will not directly use Theorem \ref{gbv-thm} in our analysis, as the additional numerical improvements afforded by $\GEH[\theta]$ over $\EH[\theta]$ are only present when $\theta$ is very close to $1$.
+
+
+

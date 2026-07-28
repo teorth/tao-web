@@ -1,0 +1,381 @@
+% !TEX root = ./newergap.tex
+
+\section{Outline of the key ingredients}\label{subclaim-sec}
+
+In this section we describe the key subtheorems used in the proof of Theorem \ref{main}, with the proofs of these subtheorems mostly being deferred to later sections.
+
+We begin with a weak version of the Dickson-Hardy-Littlewood prime tuples conjecture \cite{hardy}, which (following Pintz \cite{pintz-polignac}) we refer to as $\DHL[k,j]$.  Recall that for any $k \in \mathbb{N}$, an \emph{admissible $k$-tuple} is a tuple ${\mathcal H} = (h_1,\ldots,h_{k})$ of $k$ increasing integers $h_1 < \ldots < h_{k}$ which avoids at least one residue class $a_p\ (p) := \{ a_p + np: n \in \Z \}$ for every $p$.  For instance, $(0,2,6)$ is an admissible $3$-tuple, but $(0,2,4)$ is not.
+
+For any $k \geq j \geq 2$, we let $\DHL[k,j]$ denote the following claim:
+
+\begin{claim}[Weak Dickson-Hardy-Littlewood conjecture,
+  {$\DHL[k,j]$}] For any admissible $k$-tuple ${\mathcal
+    H}=(h_1,\ldots,h_{k})$ there
+  exist infinitely many translates $n + {\mathcal H} =
+  (n+h_1,\ldots,n+h_{k})$ of ${\mathcal H}$ which contain at least $j$
+  primes.
+\end{claim}
+
+The full Dickson-Hardy-Littlewood conjecture is then the assertion that $\DHL[k,k]$ holds for all $k \ge 2$.  In our analysis we will focus on the case when $j$ is much smaller than $k$, in fact $j$ will be of the order of $\log k$.
+
+For any $k$, let $H(k)$ denote the minimal diameter $h_k-h_1$ of an admissible $k$-tuple; thus for instance $H(3)=6$.  It is clear that for any natural numbers $m \geq 1$ and $k \geq m+1$, the claim $\DHL[k,m+1]$ implies that $H_m \leq H(k)$ (and the claim $\DHL[k,k]$ would imply that $H_{k-1} = H(k)$).  We will therefore deduce Theorem \ref{main} from a number of claims of the form $\DHL[k,j]$.  More precisely, we have:
+
+\begin{theorem}\label{main-dhl} Unconditionally, we have the following claims:
+\begin{itemize}
+\item[(i)] $\DHL[50,2]$.
+%\item[(ii)] $\DHL[\num{35146},3]$.
+%\item[(iii)] $\DHL[\num{1628943},4]$.
+%\item[(iv)] $\DHL[\num{74487363},5]$.
+%\item[(v)] $\DHL[\num{3400000000},6]$.
+\item[(ii)] $\DHL[\num{35410},3]$.
+\item[(iii)] $\DHL[\num{1649821},4]$.
+\item[(iv)] $\DHL[\num{75845707},5]$.
+\item[(v)] $\DHL[\num{3473955908},6]$.
+\item[(vi)] $\DHL[k,m+1]$ whenever $m \geq 1$ and $k \geq C\exp( (4 - \frac{24}{181}) m )$ for some sufficiently large absolute (and effective) constant $C$.
+\end{itemize}
+Assume the Elliott-Halberstam conjecture $\EH[\theta]$ for all $0 < \theta < 1$.  Then we have the following improvements:
+\begin{itemize}
+\item[(vii)] $\DHL[54,3]$.
+\item[(viii)] $\DHL[\num{5511},4]$.
+\item[(ix)] $\DHL[\num{41588},5]$.
+\item[(x)] $\DHL[\num{309661},6]$.
+\item[(xi)] $\DHL[k,m+1]$ whenever $m \geq 1$ and $k \geq C\exp( 2 m )$ for some sufficiently large absolute (and effective) constant $C$.
+\end{itemize}
+Assume the generalized Elliott-Halberstam conjecture $\GEH[\theta]$ for all $0 < \theta < 1$.  Then
+\begin{itemize}
+\item[(xii)] $\DHL[3,2]$.
+\item[(xiii)] $\DHL[51,3]$.
+\end{itemize}
+\end{theorem}
+
+Theorem \ref{main} then follows from Theorem \ref{main-dhl} and the following bounds on $H(k)$:
+
+\begin{theorem}[Bounds on $H(k)$]\label{hk-bound}\
+\begin{itemize}
+\item[(xii)] $H(3)=6$.
+\item[(i)] $H(50) = 246$.
+\item[(xiii)] $H(51) = 252$.
+\item[(vii)] $H(54) = 270$.
+\item[(viii)] $H(\num{5511}) \leq \num{52116}$.
+%\item[(ii)] $H(\num{35146}) \leq \num{395106}$.
+\item[(ii)] $H(\num{35410}) \leq \num{398130}$.
+\item[(ix)] $H(\num{41588}) \leq \num{474266}$.
+\item[(x)] $H(\num{309661}) \leq \num{4137854}$.
+%\item[(iii)] $H(\num{1628943}) \leq \num{24462654}$.
+\item[(iii)] $H(\num{1649821}) \leq \num{24797814}$.
+%\item[(iv)] $H(\num{74487363}) \leq \num{1497901734}$.
+\item[(iv)] $H(\num{75845707}) \leq \num{1431556072}$.
+%\item[(v)] $H(\num{3400000000}) \leq \num{82575303678}$.
+\item[(v)] $H(\num{3473955908}) \leq \num{80550202480}$.
+\item[(vi), (xi)] In the asymptotic limit $k \to \infty$, one has $H(k) \leq k \log k + k \log\log k - k + o(k)$, with the bounds on the decay rate $o(k)$ being effective.
+\end{itemize}
+\end{theorem}
+
+We prove Theorem \ref{main-dhl} in Appendix \ref{tuples-sec}.  In the opposite direction, an application of the Brun-Titchmarsh theorem gives $H(k) \geq (\frac{1}{2} + o(1)) k \log k$ as $k \to \infty$; see \cite[\S 3.9]{polymath8a-unabridged} for this bound, as well as with some slight refinements.
+
+\begin{table}
+\centering
+\setlength{\extrarowheight}{2pt}
+\caption{Results used to prove various components of Theorem \ref{main-dhl}. Note that Theorems \ref{maynard-thm}, \ref{maynard-trunc}, \ref{epsilon-trick}, \ref{epsilon-beyond} are in turn proven using Theorems \ref{prime-asym}, \ref{nonprime-asym}.}\label{ingredients}
+\begin{tabular}{lr}
+\toprule
+Theorem \ref{main-dhl}                 & Results used \\
+\midrule
+(i) & Lemma \ref{crit}, Theorems \ref{bv-thm}, \ref{epsilon-trick}, \ref{mke-lower} \\
+(ii)-(vi) & Lemma \ref{crit}, Theorems \ref{mpz-poly}, \ref{maynard-trunc}, \ref{mlower-var} \\
+(vii)-(xi) & Lemma \ref{crit}, Theorems \ref{maynard-thm}, \ref{maynard-trunc} \\
+(xii) & Lemma \ref{crit}, Theorems \ref{epsilon-beyond}, \ref{piece} \\
+(xiii) & Lemma \ref{crit}, Theorems \ref{epsilon-trick}, \ref{mke-lower} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The proof of Theorem \ref{main-dhl} follows the Goldston-Pintz-Y{\i}ld{\i}r{\i}m strategy that was also used in all previous progress on this problem (e.g. \cite{gpy}, \cite{mp}, \cite{zhang}, \cite{polymath8a}, \cite{maynard-new}), namely that of constructing a sieve function adapted to an admissible $k$-tuple with good properties.  More precisely, we set
+$$ w := \log \log \log x$$
+and 
+$$ W := \prod_{p \leq w} p,$$
+and observe the crude bound
+\begin{equation}\label{W-bound}
+ W \ll \log \log^{O(1)} x.
+\end{equation}
+We have the following simple ``pigeonhole principle'' criterion for $\DHL[k,m+1]$ (cf. \cite[Lemma 4.1]{polymath8a}, though the normalization here is slightly different):
+
+\begin{lemma}[Criterion for $\DHL$]\label{crit} Let $k \geq 2$ and $m \geq 1$ be fixed integers, and define the normalization constant
+\begin{equation}\label{bnorm}
+ B := \frac{\phi(W)}{W} \log x.
+\end{equation}
+Suppose that for each fixed admissible $k$-tuple $(h_1,\dots,h_k)$
+  and each residue class $b\ (W)$ such that $b+h_i$ is coprime to $W$ for all $i=1,\dots,k$, one can find a non-negative weight
+  function $\nu \colon \N \to \R^+$ and fixed quantities $\alpha > 0$ and $\beta_1,\dots,\beta_k \geq
+  0$, such that one has the
+  asymptotic upper bound
+\begin{equation}\label{s1}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \leq (\alpha+o(1)) B^{-k} \frac{x}{W},
+ \end{equation}
+the asymptotic lower bound
+\begin{equation}\label{s2}
+  \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \nu(n) \theta(n+h_i) \geq (\beta_i-o(1)) B^{1-k} \frac{x}{\phi(W)}
+\end{equation}
+for all $i=1,\dots,k$, and the key inequality
+\begin{equation}\label{key}
+\frac{\beta_1 + \dots + \beta_k}{\alpha} > m.
+\end{equation}
+Then $\DHL[k,m+1]$ holds.
+\end{lemma}
+
+\begin{proof}
+Let $(h_1,\ldots,h_{k})$ be a fixed
+  admissible $k$-tuple.  Since it is admissible, there is at least
+  one residue class $b\ (W)$ such that $(b+h_i,W)=1$ for all $h_i
+  \in {\mathcal H}$.  For an arithmetic function $\nu$ as in the
+  lemma, we consider the quantity
+$$
+N:=\sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}}
+ \nu(n) \left(\sum_{i=1}^{k} \theta(n+h_i) - m\log 3x\right).
+$$
+Combining \eqref{s1} and \eqref{s2}, we obtain the lower bound
+$$
+N\geq (\beta_1+\dots+\beta_k-o(1)) B^{1-k} \frac{x}{\phi(W)} - (m\alpha+o(1)) B^{-k} \frac{x}{W} \log 3x.
+$$
+From \eqref{bnorm} and the crucial condition \eqref{key}, it follows that
+$N>0$ if $x$ is sufficiently large.
+\par
+On the other hand, the sum
+$$
+\sum_{i=1}^{k} \theta(n+h_i) - m\log 3x
+$$
+can  be positive only if $n+h_i$ is prime for \emph{at least} $m+1$
+indices $i=1, \ldots, k$.  We conclude that, for all sufficiently
+large $x$, there exists some integer $n \in [x,2x]$ such that $n+h_i$
+is prime for at least $m+1$ values of $i=1,\ldots,k$.
+\par
+Since $(h_1,\dots,h_k)$ is an arbitrary admissible $k$-tuple,
+$\DHL[k,m+1]$ follows.
+\end{proof}
+
+The objective is then to construct non-negative weights $\nu$ whose associated ratio $\frac{\beta_1+\dots+\beta_k}{\alpha}$ has provable lower bounds that are as large as possible.   Our sieve majorants will be a variant of the multidimensional Selberg sieves used in \cite{maynard-new}.  As with all Selberg sieves, the $\nu$ are constructed as the square of certain (signed) divisor sums.  The divisor sums we will use will be finite linear combinations of products of ``one-dimensional'' divisor sums.  More precisely, for any fixed smooth compactly supported function $F: [0,+\infty) \to \R$, define the divisor sum $\lambda_F: \Z \to \R$ by the formula
+\begin{equation}\label{lambdaf-def}
+\lambda_F(n) := \sum_{d|n} \mu(d) F( \log_x d )
+\end{equation}
+where $\log_x$ denotes the base $x$ logarithm
+\begin{equation}\label{logx-def}
+\log_x n:= \frac{\log n}{\log x}.
+\end{equation}
+One should think of $\lambda_F$ as a smoothed out version of the indicator function to numbers $n$ which are ``almost prime'' in the sense that they have no prime factors less than $x^\eps$ for some small fixed $\eps>0$; see Proposition \ref{almostprime} for a more rigorous version of this heuristic.
+
+The functions $\nu$ we will use will take the form
+\begin{equation}\label{nuform}
+ \nu(n) = \left( \sum_{j=1}^J c_j \lambda_{F_{j,1}}(n+h_1) \dots \lambda_{F_{j,k}}(n+h_k) \right)^2 
+\end{equation}
+for some fixed natural number $J$, fixed coefficients $c_1,\dots,c_J \in \R$ and fixed smooth compactly supported functions $F_{j,i}: [0,+\infty) \to \R$ with $j=1,\dots,J$ and $i=1,\dots,k$.  (One can of course absorb the constant $c_j$ into one of the $F_{j,i}$ if one wishes.)   Informally, $\nu$ is a smooth restriction to those $n$ for which $n+h_1,\dots,n+h_k$ are all almost prime.
+
+Clearly, $\nu$ is a (positive-definite) linear combination of functions of the form
+$$ n \mapsto \prod_{i=1}^k \lambda_{F_i}(n+h_i) \lambda_{G_i}(n+h_i)$$
+for various smooth functions $F_1,\dots,F_k,G_1,\dots,G_k: [0,+\infty) \to \R$.  The sum appearing in \eqref{s1} can thus be decomposed into linear combinations of sums of the form
+\begin{equation}\label{sfg-1}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \prod_{i=1}^k \lambda_{F_i}(n+h_i) \lambda_{G_i}(n+h_i).
+\end{equation}
+Also, since from \eqref{lambdaf-def} we clearly have
+\begin{equation}\label{lambdan-prime}
+\lambda_F(n) = F(0)
+\end{equation}
+when $n$ is prime and $F$ is supported on $[0,1]$, the sum appearing in \eqref{s2} can be similarly decomposed into linear combinations of sums of the form
+\begin{equation}\label{sfg-2}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \theta(n+h_i) \prod_{1 \leq i' \leq k; i \neq i'} \lambda_{F_{i'}}(n+h_{i'}) \lambda_{G_{i'}}(n+h_{i'}).
+\end{equation}
+
+To estimate the sums \eqref{sfg-2}, we use the following asymptotic, proven in Section \ref{sieving-sec}.  For each compactly supported $F: [0,+\infty) \to \R$, let
+\begin{equation}\label{S-def}
+S(F) \coloneqq \sup \{ x \geq 0: F(x) \neq 0\}
+\end{equation}
+ denote the upper range of the support of $F$ (with the convention that $S(0)=0$).
+
+\begin{theorem}[Asymptotic for prime sums]\label{prime-asym}  Let $k \geq 2$ be fixed, let $(h_1,\dots,h_k)$ be a fixed admissible $k$-tuple, and let $b\ (W)$ be such that $b+h_i$ is coprime to $W$ for each $i=1,\dots,k$.  Let $1 \leq i_0 \leq k$ be fixed, and for each $1 \leq i \leq k$ distinct from $i_0$, let $F_{i}, G_{i}: [0,+\infty) \to \R$ be fixed smooth compactly supported functions.  Assume one of the following hypotheses:
+\begin{itemize}
+\item[(i)]  (Elliott-Halberstam) There exists a fixed $0 < \vartheta < 1$ such that $\EH[\vartheta]$ holds, and such that
+\begin{equation}\label{fg-upper}
+\sum_{1 \leq i \leq k; i \neq i_0} ( S(F_{i}) + S(G_{i}) ) < \vartheta.
+\end{equation}
+\item[(ii)]  (Motohashi-Pintz-Zhang) There exists fixed $0 \leq \varpi < 1/4$ and $\delta > 0$ such that $\MPZ[\varpi,\delta]$ holds, and such that
+\begin{equation}\label{fg-upper-alt}
+\sum_{1 \leq i \leq k; i \neq i_0} ( S(F_{i}) + S(G_{i}) ) < \frac{1}{2} + 2 \varpi
+\end{equation}
+and
+\begin{equation}
+\max_{1 \leq i \leq k; i \neq i_0} \Bigl\{S(F_{i}), S(G_{i}) \Bigr\}< \delta.
+\end{equation}
+\end{itemize}
+Then we have
+\begin{equation}\label{theta-oo}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \theta(n+h_i) \prod_{1 \leq i \leq k; i \neq i_0} \lambda_{F_{i}}(n+h_{i}) \lambda_{G_{i}}(n+h_{i}) =
+(c+o(1)) B^{1-k} \frac{x}{\phi(W)}
+\end{equation}
+where
+$$ c := \prod_{1 \leq i \leq k; i \neq i_0} \left(\int_0^1 F'_i(t_{i}) G'_{i}(t_{i})\ dt_{i}\right).$$
+Here of course $F'$ denotes the derivative of $F$.
+\end{theorem}
+
+To estimate the sums \eqref{sfg-1}, we use the following asymptotic, also proven in Section \ref{sieving-sec}.
+
+\begin{theorem}[Asymptotic for non-prime sums]\label{nonprime-asym}  Let $k \geq 1$ be fixed, let $(h_1,\dots,h_k)$ be a fixed admissible $k$-tuple, and let $b\ (W)$ be such that $b+h_i$ is coprime to $W$ for each $i=1,\dots,k$.  For each fixed $1 \leq i \leq k$, let $F_{i}, G_{i}: [0,+\infty) \to \R$ be fixed smooth compactly supported functions.  Assume one of the following hypotheses:
+\begin{itemize}
+\item[(i)]  (Trivial case)  One has
+\begin{equation}\label{easy-upper}
+\sum_{i=1}^k ( S(F_i) + S(G_i) ) < 1.
+\end{equation}
+\item[(ii)]  (Generalized Elliott-Halberstam) There exists a fixed $0 < \vartheta < 1$ and $i_0 \in \{1,\dots,k\}$ such that $\GEH[\vartheta]$ holds, and
+\begin{equation}\label{eh-upper}
+\sum_{1 \leq i \leq k; i \neq i_0} ( S(F_{i}) + S(G_{i}) ) < \vartheta.
+\end{equation}
+\end{itemize}
+Then we have
+\begin{equation}\label{lflg}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \prod_{i=1}^k \lambda_{F_{i}}(n+h_{i}) \lambda_{G_{i}}(n+h_{i}) =
+(c+o(1)) B^{-k} \frac{x}{W},
+\end{equation}
+where
+\begin{equation}\label{c-def}
+ c := \prod_{i=1}^k \left(\int_0^1 F'_i(t_i) G'_i(t_i)\ dt_i\right).
+\end{equation}
+\end{theorem}
+
+A key point in (ii) is that no upper bound on $S(F_{i_0})$ or $S(G_{i_0})$ is required (although, as we will see in Section \ref{geh-case}, the result is a little easier to prove when one has $S(F_{i_0})+S(G_{i_0}) < 1$).  This flexibility in the $F_{i_0}, G_{i_0}$ functions will be particularly crucial to obtain part (xii) of Theorem \ref{main-dhl} and Theorem \ref{main}.
+
+\begin{remark}  Theorems \ref{prime-asym}, \ref{nonprime-asym} can be viewed as probabilistic assertions of the following form: if $n$ is chosen uniformly at random from the set $\{ x \leq n \leq 2x: n = b\ (W)\}$, then the random variables $\theta(n+h_i)$ and $\lambda_{F_j}(n+h_j) \lambda_{G_j}(n+h_j)$ for $i,j=1,\dots,k$ have mean $(1+o(1)) \frac{W}{\phi(W)}$ and $(\int_0^1 F'_j(t) G'_j(t)\ dt + o(1)) B^{-1}$ respectively, and furthermore these random variables enjoy a limited amount of independence, except for the fact (as can be seen from \eqref{lambdan-prime}) that $\theta(n+h_i)$ and $\lambda_{F_i}(n+h_i) \lambda_{G_i}(n+h_i)$ are highly correlated.  Note though that we do not have asymptotics for any sum which involves two or more factors of $\theta$, as such estimates are of a difficulty at least as great as that of the twin prime conjecture (which is equivalent to the divergence of the sum $\sum_n \theta(n) \theta(n+2)$).
+\end{remark}
+
+
+
+Theorems \ref{prime-asym}, \ref{nonprime-asym} may be combined with Lemma \ref{crit} to reduce the task of establishing estimates of the form $\DHL[k,m+1]$ to that of establishing certain variational problems.  For instance, in Section \ref{may-sec} we reprove the following result of Maynard \cite[Proposition 4.2]{maynard-new}:
+
+\begin{theorem}[Sieving on the standard simplex]\label{maynard-thm}  Let $k \geq 2$ and $m \geq 1$ be fixed integers. For any fixed compactly supported square-integrable function $F: [0,+\infty)^k \to \R$, define the functionals
+\begin{equation}\label{i-def}
+I(F) := \int_{[0,+\infty)^k} F(t_1,\dots,t_k)^2\ dt_1 \dots t_k
+\end{equation}
+and
+\begin{equation}\label{ji-def}
+ J_i(F) := \int_{[0,+\infty)^{k-1}} \left(\int_0^\infty F(t_1,\dots,t_k)\ dt_i\right)^2 dt_1 \dots dt_{i-1} dt_{i+1} \dots dt_k
+\end{equation}
+for $i=1,\dots,k$, and let $M_k$ be the supremum
+\begin{equation}\label{mk4}
+ M_k := \sup \frac{\sum_{i=1}^k J_i(F)}{I(F)}
+\end{equation}
+over all square integrable functions $F$ that are supported on the simplex
+$$ {\mathcal R}_k := \{ (t_1,\dots,t_k) \in [0,+\infty)^k: t_1+\dots+t_k \leq 1 \}$$
+and are not identically zero (up to almost everywhere equivalence, of course).  Suppose that there is a fixed $0 < \vartheta < 1$ such that $\EH[\vartheta]$ holds, and such that
+$$ M_k > \frac{2m}{\vartheta}.$$
+Then $\DHL[k,m+1]$ holds.
+\end{theorem}
+
+Parts (vii)-(xi) of Theorem \ref{main-dhl} (and hence Theorem \ref{main}) are then immediate from the following results, proven in Section \ref{asymptotics-sec}:
+
+\begin{theorem}[Lower bounds on $M_k$]\label{mlower}\
+\begin{itemize}
+%\item[(vii)] $M_{54} > 4.00223$.
+\item[(vii)] $M_{54} > 4.00238$.
+\item[(viii)] $M_{5511} > 6$.
+\item[(ix)] $M_{41588} > 8$.
+\item[(x)] $M_{309661} > 10$.
+\item[(xi)] One has $M_k \geq \log k - C$ for all $k \geq C$, where $C$ is an absolute (and effective) constant.
+\end{itemize}
+\end{theorem}
+
+For sake of comparison, in \cite[Proposition 4.3]{maynard-new} it was shown that $M_5 > 2$, $M_{105} > 4$, and $M_k \geq \log k - 2\log\log k - 2$ for all sufficiently large $k$.  As remarked in that paper, the sieves used on the bounded gap problem prior to the work in \cite{maynard-new} would essentially correspond, in this notation, to the choice of functions $F$ of the special form $F(t_1,\dots,t_k) := f(t_1+\dots+t_k)$, which severely limits the size of the ratio in
+\eqref{mk4} (in particular, the analogue of $M_k$ in this special case cannot exceed $4$, as shown in \cite{sound}).
+
+In the converse direction, in Corollary \ref{mk-upper} we will also show the upper bound $M_k \leq \frac{k}{k-1} \log k$ for all $k \geq 2$, which shows in particular that the bounds in (vii) and (xi) of the above theorem cannot be significantly improved.  We  remark that Theorem \ref{mlower}(vii) and the Bombieri-Vinogradov theorem also gives a weaker version $\DHL[54,2]$ of Theorem \ref{main-dhl}(i).
+
+We also have a variant of Theorem \ref{maynard-thm} which can accept inputs of the form $\MPZ[\varpi,\delta]$:
+
+\begin{theorem}[Sieving on a truncated simplex]\label{maynard-trunc}  Let $k \geq 2$ and $m \geq 1$ be fixed integers. Let $0<\varpi<1/4$ and $0 <\delta < 1/2$ be such that $\MPZ[\varpi,\delta]$ holds.  For any $\alpha>0$, let $M_k^{[\alpha]}$ be the defined as in \eqref{mk4}, but where the supremum now ranges over all square-integrable $F$ supported in the \emph{truncated} simplex
+\begin{equation}\label{ttk}
+ \{ (t_1,\dots,t_k) \in [0,\alpha]^k: t_1+\dots+t_k \leq 1 \}
+\end{equation}
+and are not identically zero.  If
+$$ M_k^{[\frac{\delta}{1/4+\varpi}]} > \frac{m}{1/4+\varpi},$$
+then $\DHL[k,m+1]$ holds.
+\end{theorem}
+
+In Section \ref{asymptotics-sec} we will establish the following variant of Theorem \ref{mlower}, which when combined with Theorem \ref{mpz-poly}, allows one to use Theorem \ref{maynard-trunc} to establish parts (ii)-(vi) of Theorem \ref{main-dhl} (and hence Theorem \ref{main}):
+% mpz-poly instead of mpz-poly-improv
+
+\begin{theorem}[Lower bounds on $M_k^{[\alpha]}$]\label{mlower-var}\
+\begin{itemize}
+\item[(ii)] There exist $\delta,\varpi>0$ with $600 \varpi + 180 \delta < 7$ and $M_{\num{35410}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{2}{1/4+\varpi}$.
+\item[(iii)] There exist $\delta,\varpi>0$ with $600 \varpi + 180 \delta < 7$ and $M_{\num{1649821}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{3}{1/4+\varpi}$.
+\item[(iv)] There exist $\delta,\varpi>0$ with $600 \varpi + 180 \delta < 7$ and $M_{\num{75845707}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{4}{1/4+\varpi}$.
+\item[(v)] There exist $\delta,\varpi>0$ with $600 \varpi + 180 \delta < 7$ and $M_{\num{3473955908}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{5}{1/4+\varpi}$.
+\item[(vi)] For all $k \geq C$, there exist $\delta,\varpi>0$ with $600 \varpi + 180 \delta < 7$, $\varpi \geq \frac{7}{600} - \frac{C}{\log k}$, and $M_k^{[\frac{\delta}{1/4+\varpi}]} \geq \log k - C$ for some absolute (and effective) constant $C$.
+%\item[(ii)] There exist $\delta,\varpi>0$ with $1080 \varpi + 330 \delta < 13$ and $M_{\num{35146}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{2}{1/4+\varpi}$.
+%\item[(iii)] There exist $\delta,\varpi>0$ with $1080 \varpi + 330 \delta < 13$ and $M_{\num{1628943}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{3}{1/4+\varpi}$.
+%\item[(iv)] There exist $\delta,\varpi>0$ with $1080 \varpi + 330 \delta < 13$ and $M_{\num{74487363}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{4}{1/4+\varpi}$.
+%\item[(v)] There exist $\delta,\varpi>0$ with $1080 \varpi + 330 \delta < 13$ and $M_{\num{3400000000}}^{[\frac{\delta}{1/4+\varpi}]} > \frac{5}{1/4+\varpi}$.
+%\item[(vi)] For all $k \geq C$, there exist $\delta,\varpi>0$ with $1080 \varpi + 330 \delta < 13$, $\varpi \geq \frac{13}{1080} - \frac{C}{\log k}$, and $M_k^{[\frac{\delta}{1/4+\varpi}]} \geq \log k - C$ for some absolute (and effective) constant $C$.
+\end{itemize}
+\end{theorem}
+
+The implication is clear for (ii)-(v).  For (vi), observe that from Theorem \ref{mlower-var}(vi), Theorem \ref{mpz-poly}, and Theorem \ref{maynard-trunc}, we see that $\DHL[k,m+1]$ holds whenever $k$ is sufficiently large and
+%$$ m \leq (\log k - C) (\frac{1}{4} + \frac{13}{1080} - \frac{C}{\log k})$$
+$$ m \leq (\log k - C) \left(\frac{1}{4} + \frac{6}{700} - \frac{C}{\log k}\right)$$
+which is in particular implied by
+%$$ m \leq \frac{\log k}{4 - \frac{52}{283}} - C'$$
+$$ m \leq \frac{\log k}{4 - \frac{24}{181}} - C'$$
+for some absolute constant $C'$, giving Theorem \ref{main-dhl}(vi).
+% mpz-poly instead of mpz-poly-improv
+
+Now we give a more flexible variant of Theorem \ref{maynard-thm}, in which the support of $F$ is enlarged, at the cost of reducing the range of integration of the $J_i$.
+
+\begin{theorem}[Sieving on an epsilon-enlarged simplex]\label{epsilon-trick}  Let $k \geq 2$ and $m \geq 1$ be fixed integers, and let $0 < \eps < 1$ be fixed also. For any fixed compactly supported square-integrable function $F: [0,+\infty)^k \to \R$, define the functionals
+$$ J_{i,1-\eps}(F) := \int_{(1-\eps) \cdot {\mathcal R}_{k-1}} \left(\int_0^\infty F(t_1,\dots,t_k)\ dt_i\right)^2 dt_1 \dots dt_{i-1} dt_{i+1} \dots dt_k$$
+for $i=1,\dots,k$, and let $M_{k,\eps}$ be the supremum
+$$ M_{k,\eps} := \sup \frac{\sum_{i=1}^k J_{i,1-\eps}(F)}{I(F)}$$
+over all square integrable functions $F$ that are supported on the simplex
+$$ (1+\eps) \cdot {\mathcal R}_k = \{ (t_1,\dots,t_k) \in [0,+\infty)^k: t_1+\dots+t_k \leq 1+\eps \}$$
+and are not identically zero.  Suppose that there is a fixed $0 < \vartheta < 1$, such that one of the following two hypotheses hold:
+\begin{itemize}
+\item[(i)]  $\EH[\vartheta]$ holds, and $1+\eps < \frac{1}{\vartheta}$.
+\item[(ii)] $\GEH[\vartheta]$ holds, and $\eps < \frac{1}{k-1}$.
+\end{itemize}
+If
+$$ M_{k,\eps} > \frac{2m}{\vartheta}$$
+then $\DHL[k,m+1]$ holds.
+\end{theorem}
+
+We prove this theorem in Section \ref{trick-sec}.  Parts (i), (xiii) of Theorem \ref{main-dhl}, and a weaker version $\DHL[4,2]$ of part (xii), then follow\footnote{Strictly speaking, one needs to subtract an infinitesimal amount from $1/50$ in Theorem \ref{mke-lower}(xiii) in order for Theorem \ref{epsilon-trick} to apply.} from Theorem \ref{bv-thm} and the following computations, proven in Sections \ref{mkeps-sec}, \ref{4d}:
+
+\begin{theorem}[Lower bounds on $M_{k,\eps}$]\label{mke-lower}\
+\begin{itemize}
+\item[(i)] $M_{50,1/25} > 4.0043$.
+\item[(xii')] $M_{4,0.168} > 2.00558$.
+\item[(xiii)] $M_{51,1/50} > 4.00156$.
+\end{itemize}
+\end{theorem}
+
+We remark that computations in the proof of Theorem \ref{mke-lower}(xii') are simple enough that the bound may be checked by hand, without use of a computer.  The computations used to establish the full strength of Theorem \ref{main-dhl}(xii) are however significantly more complicated.  
+%Very recently, our result in Theorem \ref{mke-lower}(i) was applied in \cite{banks} to study the limit points of the sequence $\frac{p_{n+1}-p_n}{\log p_n}$.
+
+In fact, we may enlarge the support of $F$ further.  We give a version corresponding to part (ii) of Theorem \ref{epsilon-trick}; there is also a version corresponding to part (i) also, but we will not give it here as we will not have any use for it.
+
+\begin{theorem}[Going beyond the epsilon enlargement]\label{epsilon-beyond}  Let $k \geq 2$ and $m \geq 1$ be fixed integers, let $0 <\vartheta < 1$ be a fixed quantity such that $\GEH[\vartheta]$ holds, and let $0 < \eps < \frac{1}{k-1}$ be fixed also. Suppose that there is a fixed non-zero square-integrable function $F: [0,+\infty)^k \to \R$ supported in $\frac{k}{k-1} \cdot {\mathcal R}_k$, such that for $i=1,\dots,k$ one has the vanishing marginal condition
+\begin{equation}\label{vanishing-marginal}
+\int_0^\infty F(t_1,\dots,t_k)\ dt_i = 0
+\end{equation}
+ whenever $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$ are such that
+$$ t_1+\dots+t_{i-1}+t_{i+1}+\dots+t_k > 1+\eps.$$
+Suppose that we also have the inequality
+$$ \frac{\sum_{i=1}^k J_{i,\eps}(F)}{I(F)} > \frac{2m}{\vartheta}.$$
+Then $\DHL[k,m+1]$ holds.
+\end{theorem}
+
+This theorem is proven in Section \ref{beyond-sec}.  Theorem \ref{main-dhl}(xii) is then an immediate consequence of Theorem \ref{epsilon-beyond} and the following numerical fact, established in Section \ref{3d}.
+
+\begin{theorem}[A piecewise polynomial cutoff]\label{piece}  Set $\eps := \frac{1}{4}$.  Then there exists a piecewise polynomial function $F: [0,+\infty)^3 \to \R$ supported on the simplex
+$$ \frac{3}{2} \cdot {\mathcal R}_3 = \left\{ (t_1,t_2,t_3) \in [0,+\infty)^3: t_1+t_2+t_3 \leq \frac{3}{2}\right\}$$
+and symmetric in the $t_1,t_2,t_3$ variables, such that $F$ is not identically zero and obeys the vanishing marginal condition
+$$
+\int_0^\infty F(t_1,t_2,t_3)\ dt_3 = 0$$
+whenever $t_1,t_2 \geq 0$ with $t_1+t_2 > 1+\eps$, and such that
+$$ \frac{3 \int_{t_1+t_2 \leq 1-\eps} (\int_0^\infty F(t_1,t_2,t_3)\ dt_3)^2\ dt_1 dt_2}{\int_{[0,\infty)^3} F(t_1,t_2,t_3)^2\ dt_1 dt_2 dt_3} > 2.$$
+\end{theorem}
+
+There are several other ways to combine Theorems \ref{prime-asym}, \ref{nonprime-asym} with equidistribution theorems on the primes to obtain results of the form $\DHL[k,m+1]$, but all of our attempts to do so either did not improve the numerology, or else were numerically infeasible to implement. 

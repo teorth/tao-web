@@ -1,0 +1,149 @@
+\section{A new distribution estimate for the primes}\label{dist-app}
+
+In this appendix we outline the proof of Theorem \ref{mpz-poly-improv}, using the exponential sum estimates in Section \ref{exponential-sec} and relying heavily on the material in \cite{polymath8a}.  In particular, this appendix will not be self-contained.
+
+We will in fact prove a stronger statement than $\MPZ[\varpi,\delta]$, namely the statement $\MPZ^{(4)}[\varpi,\delta]$ (see \cite[Claim 2.5]{polymath8a}) for a definition.  Following \cite{zhang}, \cite{polymath8a}, this bound in turn will be established from Type I, Type II, and Type III estimates, of which only the Type I estimate is new.  More precisely, we will show
+
+\begin{theorem}[Type I estimate]\label{typei} We have $\TypeI^{(4)}[\varpi,\delta,\sigma]$ whenever $\varpi,\delta,\sigma > 0$ are fixed quantities with $\sigma < 1/10$ and $48 \varpi+ \frac{44}{3}\delta + \frac{38}{9} \sigma < 1$, where the estimate $\TypeI^{(i)}[\varpi,\delta,\sigma]$ is defined in \cite[Definition 2.21]{polymath8a}. {\bf some other condition may also be needed here}
+\end{theorem}
+
+Assuming this theorem, we may apply \cite[Lemma 2.22]{polymath8a} and \cite[Theorem 2.23(iv),(v)]{polymath8a} and deduce $\MPZ^{(4)}[\varpi,\delta]$ whenever $0 < \varpi < \frac{1}{4}$, $0 < \delta < \frac{1}{4}+\varpi$, and $\frac{1}{10} < \sigma < 1/2$ are fixed quantities such that
+\begin{align*}
+48 \varpi+ \frac{44}{3}\delta + \frac{38}{9} \sigma &< 1 \\
+68\varpi + 14 \delta &< 1 \\
+\sigma &> \frac{1}{18} + \frac{28}{9} \varpi + \frac{2}{9} \delta \\
+\varpi &< \frac{1}{12}.
+\end{align*}
+But simple arithmetic shows that if $\varpi,\delta > 0$ are fixed quantities with $\frac{1080}{13} \varpi + \frac{330}{13} \delta < 1$, then by choosing $\sigma$ to be sufficiently close to (but slightly larger than) $\frac{1}{10}$, we can ensure that all of these criteria hold, giving Theorem \ref{mpz-poly-improv}.
+
+It remains to prove Theorem \ref{typei}.  We perform all the dispersion method reductions from \cite[\S 7]{polymath8a}, which were used to reduce \cite[Theorem 7.1]{polymath8a} to \cite[Theorem 7.8]{polymath8a}.  When this is done (and selecting $(j,k) = (1,2)$ for the argument in \cite[\S 7]{polymath8a}), Theorem \ref{typei} will then follow from the following statement:
+
+\begin{theorem}[Exponential sum estimate]\label{exp-sum}  Let $\varpi,\sigma,\delta > 0$ be fixed quantities such that $\sigma < 1/10$ and
+\begin{equation}\label{vd}
+ 48 \varpi+ \frac{44}{3}\delta + \frac{38}{9} \sigma < 1.
+\end{equation}
+{\bf maybe another condition needed here.}
+Let $I$ be a bounded subset of $\R$, let $a\ (P_I), b_1\ (P_I), b_2\ (P_I)$ be primitive congruence classes, and let $M,N \gg 1$ be quantities obeying the estimates
+\begin{align}
+MN &\sim x\label{mn-prod}\\
+x^{1/2-\sigma} \lessapprox N &\lessapprox x^{1/2-2\varpi-c}\label{n-range}
+\end{align}
+for some fixed $c>0$.  Let $\eps>0$ be a sufficiently small fixed quantity, and let $Q, R$ be quantities obeying the bounds
+\begin{align*}
+x^{-3\eps-\delta} N \lessapprox R &\lessapprox x^{-3\eps} N \\
+x^{1/2} \lessapprox QR \lessapprox x^{1/2+2\varpi}.
+\end{align*}
+Let $\beta$ be a coefficient sequence located at scale $N$ (see \cite[Definition 2.20]{polymath8a} for a definition of this term).  For any $\mathbf{p} = (h,n,r,q_0,q_1,q_2)$, define the phase function
+$$ \Phi_\ell(\mathbf{p}) \coloneqq e_r( \frac{ah}{nq_0q_1q_2}) e_{q_0q_1}( \frac{b_1 h}{nrq_2} ) e_{q_2}( \frac{b_2 h}{(n+\ell r) r q_0 q_1} )$$
+with $e_q(a) \coloneqq e^{2\pi i a/q}$, and let $C()$ be the cutoff function
+$$ C(n) \coloneqq \onef_{\frac{b_1}{n} = \frac{b_2}{n+\ell r}\ (q_0)}.$$
+Let $\ell$ be an integer with $1 \leq |\ell| \ll N/R$, and let $\Upsilon_{\ell,r}(b_1,b_2;q_0)$ denote the quantity
+\begin{multline}\label{eq-upsilon}
+  \Upsilon_{\ell,r}(b_1,b_2;q_0)\coloneqq \sumsum_{\substack{q_1,q_2\sim
+      Q/q_0\\(q_1,q_2)=1}} \onef_{\substack{q_0q_1,q_0q_2
+      \in\DIone{I}{x^{\delta+o(1)}} \\ q_0q_1 r,q_0q_2 r \in
+      \DIone{I}{x^\delta} }}\\
+  \sum_{1\leq |h|\ll \tfrac{x^{\eps}RQ^2}{q_0M}} \Bigl|\sum_{n} C(n)
+  \beta(n)\overline{\beta(n+\ell r)}
+  \Phi_{\ell}(h,n,r,q_0,q_1,q_2)\Bigr|
+\end{multline}
+where $\DIone{I}{y}$ is defined in \cite[Definition 2.14]{polymath8a}.  Then we have
+$$ \sum_{1 \leq |\ell| \ll N/R} \sum_r \Upsilon_{\ell,r}(b_1,b_2;q_0) \lessapprox x^{-\eps} Q^2 N R (q_0,\ell) q_0^{-2},$$
+for all $q_0 \geq 1$ coprime to $P_I$,
+where the $r$ summation is restricted to $\DI{I}{2}{x^{\delta+o(1)}} \cap [R,2R]$.
+\end{theorem}
+
+It remains to prove Theorem \ref{exp-sum}.  Recall from \cite[(7.41)]{polymath8a} that we have the exponential sums
+$$ T_{\ell,r} \coloneqq \sum_n C(n) \psi_N(n) \Phi_\ell(h_1,n,r,q_0,u_1v_1,q_2) \overline{\Phi_\ell(h_2,n,r,q_0,u_1v_2,q_2)}$$
+where $\psi_N$ is a coefficient sequence that is smooth at scale $N$ (see \cite[Definition 2.20]{polymath8a} for a definition).  By repeating the arguments in \cite[\S 10.1]{polymath8a} verbatim, we reduce to establishing the following claim:
+
+\begin{theorem}  Let the notation and hypotheses be as in Theorem \ref{exp-sum}.  Let $U, V$ be quantities such that
+\begin{align*}
+q_0^{-1} x^{-\delta-2\eps} Q/H \lessapprox U &\lessapprox x^{-2\eps} Q/H \\
+q_0^{-1} x^{2\eps} H \lessapprox V &\lessapprox x^{\delta+2\eps} H \\
+UV &\sim Q/q_0
+\end{align*}
+and set
+$$ H \coloneqq x^\eps RQ^2 M^{-1} q_0$$
+and
+$$ D \coloneqq x^{-5\eps} \frac{N}{H^4}.$$
+Then there exists a parameter
+$$ 1 \lessapprox D \lessapprox x^\delta R$$
+with the property that for any $\Delta$ with
+$$ \max(1,x^{-\delta} D) \lessapprox \Delta \lessapprox D$$
+and any $r_1,u_1,q_2$ with
+$$ r_1 \sim R/\Delta; \quad u_1 \sim U; \quad q_2 \sim Q/q_0$$
+with $r_1 q_0 u_1 q_2$ squarefree and the integers $r_1, q_0u_1 v_1, q_0 u_1 v_2, q_0 q_2$ $x^{\delta+o(1)}$-densely divisible (see \cite[Definition 2.14]{polymath8a}, we have
+\begin{equation}\label{tl-dr}
+\Upsilon_4(h_1,v_1,h_2,v_2) \lessapprox 
+x^{-2\eps} (q_0,\ell) \Delta
+N H^{-2}q_0 \ \left(h_1v_2-h_2v_1,m\right)
+\end{equation}
+for any integers $h_1,v_1,h_2,v_2$, where
+$$ m \coloneqq q_0q_2r_1u_1[v_1,v_2]$$
+and
+$$ \Upsilon_4(h_1,v_1,h_2,v_2) \coloneqq \sum_{\substack{d\sim \Delta\\(d,r_1)=1}} |T_{\ell,dr_1}(h_1,h_2,u_1,v_1,v_2,q_2)|.$$
+\end{theorem}
+
+We remark that a routine modification of the computations at the start of \cite[\S 10.2]{polymath8a} ensure that $1 \lessapprox D \lessapprox x^\delta R$.
+
+We now consider a single choice of parameters $(r_1,u_1,q_2,h_1,v_1,h_2,v_2)$, so that we may write
+$$ \Upsilon_4 = \sum_{\substack{d\sim \Delta\\(d,r_1)=1}} |\sum_n \psi_N(n) C(n) \Psi(d,n)| $$
+with
+$$ \Psi(d,n) \coloneqq \Phi_\ell(h_1,n,dr_1,q_0,u_1v_1,q_2) \overline{\Phi_\ell(h_2,n,dr_1,q_0,u_1v_2,q_2)}.$$
+
+As in \cite[\S 10]{polymath8a}, the next step is to apply the van der Corput method in the $n$ variable, but this time we will be a bit more careful with the summation in the shift parameter $l$, as we will now exploit averaging in this parameter (in contrast to the arguments in \cite{polymath8a}, in which we estimated sums for individual values of $l$ and then summed using the triangle inequality). We set
+\begin{equation}\label{L-def}
+L \coloneqq x^{-\eps} \lfloor \frac{N}{\Delta} \rfloor
+\end{equation}
+and observe from the change of variables $n' \coloneqq n+dl$ that
+$$ |\Upsilon_4| \ll \frac{1}{L} \sum_{\substack{d\sim \Delta\\(d,r_1)=1}} \sum_n |\sum_l \psi_N(n+dl) \psi_L(l) C(n+dl) \Psi(d,n+dl)|$$
+for some smooth real-valued coefficient sequence $\psi_L$ at scale $L$.  By the Cauchy-Schwarz inequality as in \cite[\S 10]{polymath8a}, we have
+$$ |\Upsilon_4|^2 \ll \frac{N \Delta}{L^2} q_0 (q_0,\ell) \sup_{n_0,d_0} |\Upsilon_5(n_0,d_0)|$$
+where $n_0,d_0$ ranges over residue classes in $\Z/q\Z$ and
+$$ \Upsilon_5(n_0,d_0) \coloneqq \sum_{\substack{d\sim \Delta\\(d,r_1)=1; d = d_0\ (q_0)}} \sum_{n = n_0\ (q_0)} |\sum_l \psi_L(l) C(n+dl) \Psi(d,n+dl)|^2.$$
+ Thus it will suffice to show that
+$$
+\Upsilon_5(n_0,d_0) \lessapprox 
+x^{-4\eps} (q_0,\ell) L^2 \Delta
+N H^{-2}q_0 \ \left(h_1v_2-h_2v_1,m\right)^2$$
+for all such $n_0,d_0$.
+
+Applying \cite[Lemma 10.3]{polymath8a}, we may write
+$$ \Psi(d,n+dl) = \xi(n,d) e_m\left( \frac{\alpha}{d(n+(\beta+l)d)} \right)$$
+with $|\xi(n,d)| \leq 1$ and some residue classes $\alpha, \beta\ (m)$ with $(\alpha,m) = (h_1v_2-h_2v_1,m)$.  Expanding out the square as in \cite[\S 10]{polymath8a}, we conclude that
+\begin{multline}\label{eq-bound-up5}
+  |\Upsilon_5(n_0,d_0)|\leq \sum_{l_1} \psi_L(l_1) \Upsilon_6( n_0, d_0, l_1 )
+\end{multline}
+where
+\begin{multline}\label{eq-upsilon-6}
+  \Upsilon_6(n_0,d_0,l_1)\coloneqq \sum_l \psi_L(l+l_1) \sum_{d=d_0\ (q_0)} \psi_{\Delta}(d)
+  \sum_{n=n_0+d_0l_1\ (q_0)} \psi_N(n)\\
+  \psi_N(n+dl)e_m\left(\frac{\alpha l}{(n+\beta d)(n+(\beta+l)d)}
+  \right)
+\end{multline}
+and $\psi_D$ is a smooth coefficient sequence at scale $D$.
+Thus it will suffice to show that
+$$
+\Upsilon_6(n_0,d_0, l_1) \lessapprox 
+x^{-4\eps} (q_0,\ell) L \Delta
+N H^{-2}q_0 \ \left(\alpha,m\right)^2$$
+for all $l_1$.
+
+By using Taylor series as in \cite[\S 10]{polymath8a}, we may express $\Upsilon_6$ as a sum of finitely many sums of the form
+$$  \Upsilon'_6 \coloneqq \sum_l \psi_L(l) \sum_{d=d_0\ (q_0)} \psi_{\Delta}(d)
+  \sum_{n=n_1\ (q_0)} \psi_N(n)\\
+  e_m\left(\frac{\alpha l}{(n+\beta d)(n+(\beta+l)d)}
+  \right)
+$$
+where $n_1 \coloneqq n_0 + d_0 l_1$, and $\psi_L, \psi_\Delta, \psi_N$ are shifted smooth coefficient sequences at scales $L, \Delta, N$ respectively, which may differ from the previous such sequences.  Our task is now to show that
+$$
+\Upsilon'_6 \lessapprox 
+x^{-4\eps} (q_0,\ell) L \Delta
+N H^{-2}q_0 \ \left(\alpha,m\right)^2.$$
+
+
+
+...
+
+

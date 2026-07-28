@@ -1,0 +1,491 @@
+\section{Multidimensional Selberg sieves}\label{sieving-sec}
+
+In this section we prove Theorems \ref{prime-asym} and \ref{nonprime-asym}.  A key asymptotic used in both theorems is the following:
+
+\begin{lemma}[Asymptotic]\label{mul-asym}  Let $k \geq 1$ be a fixed integer, and let $F_1,\dots,F_k,G_1,\dots,G_k: [0,+\infty)\to \R$ be smooth compactly supported functions.  Then
+\begin{equation}\label{multisum}
+ \sum_{d_1,\dots,d_k,d'_1,\dots,d'_k: [d_1,d'_1],\dots,[d_k,d'_k], W \hbox{ coprime}} \prod_{j=1}^k \frac{\mu(d_j) \mu(d'_j) F_j( \log_x d_j ) G_j( \log_x d'_j)}{[d_j,d'_j]} = (c+o(1)) B^{-k}
+\end{equation}
+where $B$ was defined in \eqref{bnorm}, and
+$$ c := \prod_{j=1}^k \int_0^\infty F'_j(t_j) G'_j(t_j)\ dt_j.$$
+
+The same claim holds if the denominators $[d_j,d'_j]$ are replaced by $\phi([d_j,d'_j])$.
+\end{lemma}
+
+Such asymptotics are standard in the literature; see e.g. \cite{gy} for some similar computations.  In older literature, it is common to establish these asymptotics via contour integration (e.g. via Perron's formula), but we will use the Fourier-analytic approach here.  Of course, both approaches ultimately use the same input, namely the simple pole of the Riemann zeta function at $s=1$.  {\bf it may be possible to use some of the GPY literature to prove this lemma by citation rather than by direct computation.}
+
+\begin{proof}  We begin with the first claim.
+For $j=1,\dots,k$, the functions $t \mapsto e^t F_j(t)$, $t \mapsto e^t G_j(t)$ may be extended to smooth compactly supported functions on all of $\R$, and so we have Fourier expansions
+\begin{equation}\label{etf}
+ e^t F_j(t) = \int_\R e^{-it\xi} f_j(\xi)\ d\xi
+\end{equation}
+and
+$$ e^t G_j(t) = \int_\R e^{-it\xi} g_j(\xi)\ d\xi$$
+for some fixed functions $f_j, g_j: \R \to \C$ that are smooth and rapidly decreasing, thus $f_j(\xi), g_j(\xi) = O( (1+|\xi|)^{-A} )$ for any fixed $A>0$ and all $\xi \in \R$.  We may thus write
+$$ F_j( \log_x d_j ) = \int_\R \frac{1}{d_j^{\frac{1+i\xi}{\log x}}} f_j(\xi)\ d\xi$$
+and
+$$ G_j( \log_x d_j ) = \int_\R \frac{1}{d_j^{\frac{1+i\xi}{\log x}}} g_j(\xi)\ d\xi$$
+By Fubini's theorem, the left-hand side of \eqref{multisum} can thus be rewritten as
+\begin{equation}\label{fg-int}
+ \int_\R \dots \int_\R K(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k)\ \prod_{j=1}^k f_j(\xi_j) g_j(\xi'_j) d\xi_j d\xi'_j
+\end{equation}
+where
+$$ K(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) := 
+\sum_{d_1,\dots,d_k,d'_1,\dots,d'_k: [d_1,d'_1],\dots,[d_k,d'_k],W \hbox{ coprime}} \prod_{j=1}^k \frac{\mu(d_j) \mu(d'_j)}{[d_j,d'_j] d_j^{\frac{1+i\xi_j}{\log x}} (d'_j)^{\frac{1+i\xi'_j}{\log x}}}.$$
+This latter expression factorizes as an Euler product 
+$$ K = \prod_{p: p>w} K_p$$
+where the local factors $K_p$ are given by
+\begin{equation}\label{kp}
+ K_p(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) = 1 + \frac{1}{p}
+\sum_{d_1,\dots,d_k,d'_1,\dots,d'_k: [d_1 \dots d_k d'_1 \dots d'_k]=p; [d_1,d'_1],\dots,[d_k,d'_k] \hbox{ coprime}} \prod_{j=1}^k \frac{\mu(d_j) \mu(d'_j)}{d_j^{\frac{1+i\xi_j}{\log x}} (d'_j)^{\frac{1+i\xi'_j}{\log x}}}.
+\end{equation}
+We can estimate each Euler factor as
+\begin{equation}\label{kp-est}
+ K_p(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) = (1+O(\frac{1}{p^2}) \prod_{j=1}^k \frac{(1 - \frac{1}{p^{1+\frac{1+i\xi_j}{\log x}}})}{(1 - \frac{1}{p^{1+\frac{1+i\xi'_j}{\log x}}})}{1 - \frac{1}{p^{1+\frac{2+i\xi_j+i\xi'_j}{\log x}}}};
+\end{equation}
+since 
+$$ 
+\prod_{p: p>w} (1 + O(\frac{1}{p^2})) = 1 + o(1),$$
+we thus have
+$$
+ K(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) = (1+o(1)) \prod_{j=1}^k \frac{ \zeta_w( 1 + \frac{2+i\xi_j+i\xi'_j}{\log x}) }{ \zeta_w(1 + \frac{1+i\xi_j}{\log x}) \zeta_w(1 + \frac{1+i\xi'_j}{\log x}) } $$
+where
+$$ \zeta_w(s) := \prod_{p: p>w} \left(1-\frac{1}{p^s}\right)^{-1}$$
+for $\Re(s) > 1$.  
+
+Using the crude bounds
+\begin{align*}
+ |\zeta_w(s)|, |\zeta_w(s)|^{-1} &\leq \prod_p \left(1 + \frac{1}{p^{1+1/\log x}} + O\left(\frac{1}{p^2}\right)\right)\\
+&\ll \exp\left( \sum_p \frac{1}{p^{1+1/\log x}} \right) \\
+&\leq \exp( \log\log x + O(1) ) \\
+&\ll \log x
+\end{align*}
+for $\Re(s) \geq 1 + \frac{1}{\log x}$, we see that
+$$
+ K_p(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) = O( \log^{3k} x );$$
+combining this with the rapid decrease of $f_j, g_j$, we see that the contribution to \eqref{fg-int} outside of the cube $\max(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) \leq \sqrt{\log x}$ (say) is negligible.  Thus it will suffice to show that
+$$
+ \int_{-\sqrt{\log x}}^{\sqrt{\log x}} \dots \int_{-\sqrt{\log x}}^{\sqrt{\log x}} K(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k)\ \prod_{j=1}^k f_j(\xi_j) g_j(\xi'_j) d\xi_j d\xi'_j.
+$$
+When $|\xi_j| \leq \sqrt{\log x}$, we see from the simple pole of the Riemann zeta function $\zeta(s) = \prod_p (1-\frac{1}{p^s})^{-1}$ at $s=1$ that
+$$ \zeta\left(1 + \frac{1+i\xi_j}{\log x}\right) = (1+o(1)) \frac{\log x}{1+i\xi_j}$$
+and from definition of $w$ and $W$, we also have
+$$ \prod_{p \leq w} (1 - \frac{1}{p^{1+\frac{1+i\xi_j}{\log x}}}) = (1+o(1)) \frac{\phi(W)}{W}$$
+and thus
+$$ \zeta_w(1 + \frac{1+i\xi_j}{\log x}) = \frac{(1+o(1)) B}{1 + i\xi_j}.$$
+Similarly with $1+i\xi_j$ replaced by $1+i\xi'_j$ or $2+i\xi_j+i\xi'_j$.  We conclude that
+\begin{equation}\label{kt}
+ K(\xi_1,\dots,\xi_k,\xi'_1,\dots,\xi'_k) = (1+o(1)) B^{-k} \prod_{j=1}^k \frac{(1+i\xi_j) (1+i\xi'_j)}{2+i\xi_j+i\xi'_j} 
+\end{equation}
+and so it will suffice to show that
+$$
+ \int_\R \dots \int_\R \prod_{j=1}^k \prod_{j=1}^k \frac{(1+i\xi_j) (1+i\xi'_j)}{2+i\xi_j+i\xi'_j}  f_j(\xi_j) g_j(\xi'_j) d\xi_j d\xi'_j
+= c$$
+since the errors caused by the $1+o(1)$ multiplicative factor in \eqref{kt} or the truncation $|\xi_j|, |\xi'_j| \leq \sqrt{\log x}$ can be seen to be negligible using the rapid decay of $f_j,g_j$.  By Fubini's theorem, it suffices to show that
+$$ 
+\int_\R \int_\R \frac{(1+i\xi) (1+i\xi')}{2+i\xi+i\xi'} f_j(\xi) g_j(\xi')\ d\xi d\xi' = \int_0^{+\infty} F'(t) G'(t)\ dt.$$
+But from dividing \eqref{etf} by $e^t$ and differentiating under the integral sign, we have
+$$F'_j(t) = - \int_\R (1+i\xi) e^{-t(1+i\xi)} f_j(\xi)\ d\xi,$$
+and the claim then follows from Fubini's theorem.
+
+Finally, suppose that we replace $[d_j,d'_j]$ with $\phi([d_j,d'_j])$.  An inspection of the above argument shows that the only change that occurs is that the $\frac{1}{p}$ term in \eqref{kp} is replaced by $\frac{1}{p-1}$; but this modification may be absorbed into the $1+O(\frac{1}{p^2})$ factor in \eqref{kp-est}, and the rest of the argument continues as before.
+\end{proof}
+
+\subsection{The trivial case}\label{triv-sec}
+
+We can now prove the easiest case of the two theorems, namely case (i) of Theorem \ref{nonprime-asym} (a closely related estimate also appears in \cite[Lemma 6.2]{maynard-new}.  By \eqref{lambdaf-def}, the left-hand side of \eqref{lflg} may be expanded as
+\begin{equation}\label{lflg-expand}
+ \sum_{d_1,\dots,d_k,d'_1,\dots,d'_k} \left(\prod_{i=1}^k \mu(d_i) \mu(d'_i) F_i(\log_x d_i) G_i(\log_x d'_i)\right) S(d_1,\dots,d_k,d'_1,\dots,d'_k)
+\end{equation}
+where
+$$ S(d_1,\dots,d_k,d'_1,\dots,d'_k) := 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W) \\ n + h_i = 0\ ([d_i,d'_i])\ \forall i\\}} 1.
+$$
+By hypothesis, $b+h_i$ is coprime to $W$ for all $i=1,\dots,k$, and $|h_i-h_j| < w$ for all distinct $i,j$.  Thus, $S(d_1,\dots,d_k,d'_1,\dots,d'_k)$ vanishes unless the $[d_i,d'_i]$ are coprime to each other and to $W$.  In this case, $S(d_1,\dots,d_k,d'_1,\dots,d'_k)$ is summing the constant function $1$ over an arithmetic progression in $[x,2x]$ of spacing $W [d_1,d'_1] \dots [d_k,d'_k]$, and so  
+$$ S(d_1,\dots,d_k,d'_1,\dots,d'_k) = \frac{x}{W [d_1,d'_1] \dots [d_k,d'_k]} + O(1).$$
+By Lemma \ref{mul-asym}, the contribution of the main term
+$\frac{x}{W [d_1,d'_1] \dots [d_k,d'_k]}$ to \eqref{lflg} is $(c+o(1)) B^{-k} \frac{x}{W}$; note that the restriction of the integrals in \eqref{c-def} to $[0,1]$ instead of $[0,+\infty)$ is harmless since $S(F_i), S(G_i) < 1$ for all $i$.  Meanwhile, the contribution of the $O(1)$ error is then bounded by
+$$
+O( \sum_{d_1,\dots,d_k,d'_1,\dots,d'_k} (\prod_{i=1}^k |F_i(\log_x d_i)| |G_i(\log_x d'_i)|)).$$
+By the hypothesis in Theorem \ref{nonprime-asym}(i), we see that for $d_1,\dots,d_k,d'_1,\dots,d'_k$ contributing a non-zero term here, one has
+$$
+[d_1,d'_1] \dots [d_k,d'_k] \lessapprox x^{1-\eps}.$$
+From the divisor bound \eqref{divisor-bound} we see that each choice of $[d_1,d'_1] \dots [d_k,d'_k]$ arises from $\lessapprox 1$ choices of $d_1,\dots,d_k,d'_1,\dots,d'_k$.  We conclude that the net contribution of the $O(1)$ error to \eqref{lflg} is $\lessapprox x^{1-\eps}$, and the claim follows.
+
+\subsection{The Elliott-Halberstam case}\label{eh-case}
+
+Now we show case (i) of Theorem \ref{prime-asym}.  For sake of notation we take $i_0=k$, as the other cases are similar.  We use \eqref{lambdaf-def} to rewrite the left-hand side of \eqref{theta-oo} as
+\begin{equation}\label{theta-oo2}
+ \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^{k-1} \mu(d_i) \mu(d'_i) F_i(\log_x d_i) G_i(\log_x d'_i)) \tilde S(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1})
+\end{equation}
+where
+$$ \tilde S(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) := 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W) \\ n + h_i = 0\ ([d_i,d'_i])\ \forall i\\}} \theta(n+h_k).
+$$
+As in the previous case, $\tilde S(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1})$ vanishes unless the $[d_i,d'_i]$ are coprime to each other and to $W$, and so the summand in \eqref{theta-oo2} vanishes unless the modulus $q_{W,d_1,\dots,d'_{k-1}}$ defined by
+\begin{equation}\label{q-def}
+q_{W,d_1,\dots,d'_{k-1}} := W [d_1,d'_1] \dots [d_{k-1},d'_{k-1}]
+\end{equation}
+is squarefree.  In that case, we may use the Chinese remainder theorem to concatenate the congruence conditions into a single primitive congruence condition on 
+$$n+h_k = a_{W,d_1,\dots,d'_{k-1}} \ (q_{W,d_1,\dots,d'_{k-1}})$$
+for some $a_{W,d_1,\dots,d'_{k-1}}$ depending on $W, d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}$, and conclude using \eqref{disc-def} that
+\begin{equation}\label{ts}
+\begin{split}
+ \tilde S(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) &= \frac{1}{\phi(q_{W,d_1,\dots,d'_{k-1}})} \sum_{x+h_k \leq n \leq 2x+h_k} \theta(n)\\
+&\quad + \Delta( 1_{[x+h_k,2x+h_k]} \theta;  a_{W,d_1,\dots,d'_{k-1}}\ (q_{W,d_1,\dots,d'_{k-1}})).
+\end{split}
+\end{equation}
+From the prime number theorem we have
+$$ \sum_{x+h_k \leq n \leq 2x+h_k} \theta(n) = (1+o(1)) x$$
+and so by Lemma \ref{mul-asym}, the contribution of the main term in \eqref{ts} is $(c+o(1)) B^{1-k} \frac{x}{\phi(W)}$.  By \eqref{W-bound} and \eqref{bnorm}, it thus suffices to show that
+\begin{equation}\label{sosmall}
+ \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^{k-1} |F_i(\log_x d_i)| |G_i(\log_x d'_i)|) 
+|\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a_{W,d_1,\dots,d'_{k-1}}\ (q_{W,d_1,\dots,d'_{k-1}}))| \ll x \log^{-A} x
+\end{equation}
+for any fixed $A$.  For future reference we note that we may restrict the summation here to those $d_1,\dots,d'_{k-1}$ for which $q_{W,d_1,\dots,d'_{k-1}}$ is square-free.
+
+From the hypotheses of Theorem \ref{prime-asym}(i), we have
+$$ q_{W,d_1,\dots,d'_{k-1}} \lessapprox x^\vartheta$$
+whenever the summand in \eqref{theta-oo2} is non-zero, and each choice $q$ of $q_{W,d_1,\dots,d'_{k-1}}$ is associated to $O( \tau(q)^{O(1)} )$ choices of $d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}$.  Thus we may bound this contribution by
+$$
+\lesssim \sum_{q \lessapprox x^\vartheta} \tau(q)^{O(1)} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \theta; a\ (q) )|.$$
+Using the crude bound
+$$ |\Delta( 1_{[x+h_k,2x+h_k]} \theta; a\ (q) )| \lesssim \frac{x}{q} \log^{O(1)} x$$
+and \eqref{divisor-2}, we have
+$$ \sum_{q \lessapprox x^\vartheta} \tau(q)^C \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \theta; a\ (q) )| \lessapprox x \log^{O(1)} x$$
+for any fixed $C>0$, so by the Cauchy-Schwarz inequality it suffices to show that
+$$ \sum_{q \lessapprox x^\vartheta} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \theta; a\ (q) )| \lessapprox x \log^{-A} x$$
+for any fixed $A>0$.  However, since $\theta$ only differs from $\Lambda$ on powers $p^j$ of primes with $j>1$, it is not difficult to show that
+$$  |\Delta( 1_{[x+h_k,2x+h_k]} \theta; a\ (q) ) -  \Delta( 1_{[x+h_k,2x+h_k]} \Lambda; a\ (q) )| \lessapprox \sqrt{\frac{x}{q}}$$
+so the net error in replacing $\theta$ here by $\Lambda$ is $\lessapprox x^{1 - (1-\vartheta)/2}$, which is certainly acceptable.  The claim now follows from the hypothesis $\EH[\vartheta]$, thanks to Claim \ref{eh-def}.
+
+
+\subsection{The Motohashi-Pintz-Zhang case}
+
+Now we show case (ii) of Theorem \ref{prime-asym}.  We repeat the arguments from Section \ref{eh-case}, with the only difference being in the derivation of \eqref{sosmall}.  As observed previously, we may restrict $q_{W,d_1,\dots,d'_{k-1}}$ to be squarefree.  From the hypotheses in Theorem \ref{prime-asym}(ii), we also see that
+$$ q_{W,d_1,\dots,d'_{k-1}} \lessapprox x^\vartheta$$
+and that all the prime factors of $q_{W,d_1,\dots,d'_{k-1}}$ are at most $x^\delta$.  Thus, if we set $I := [1,x^\delta]$, we see (using the notation from Claim \ref{mpz-claim}) that $q_{W,d_1,\dots,d'_{k-1}}$ lies in $\Scal_I$, and is thus a factor of $P_I$.  If we then let ${\mathcal A} \subset \Z/P_I\Z$ denote all the primitive congruence classes $a\ (P_I)$ with the property that $a = b\ (W)$, and such that for each prime $w < p \leq x^\delta$, one has $a + h_i = 0\ (p)$ for some $i=1,\dots,k$, then we see that $a_{W,d_1,\dots,d'_{k-1}}$ lies in the projection of ${\mathcal A}$ to $\Z/q_{W,d_1,\dots,d'_{k-1}}\Z$.  Each $q \in \Scal_I$ is equal to $q_{W,d_1,\dots,d'_{k-1}}$ for $O(\tau(q)^{O(1)})$ choices of $d_1,\dots,d'_{k-1}$.  Thus we may upper bound the left-hand side of \eqref{sosmall} by
+$$ \lesssim \sum_{q \in \Scal_I: q \lessapprox x^\vartheta} \tau(q)^{O(1)} \sup_{a \in {\mathcal A}}
+|\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a\ (q))|.$$
+Note from the Chinese remainder theorem that for any given $q$, if one lets $a$ range uniformly in ${\mathcal A}$, then $a\ (q)$ is uniformly distributed among $O( \tau(q)^{O(1)})$ different moduli.  Thus we have
+$$
+\sup_{a \in {\mathcal A}}
+|\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a\ (q))| \leq \frac{\tau(q)^{O(1)}}{|{\mathcal A}|} \sum_{a \in {\mathcal A}} |\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a\ (q))| $$
+and so it suffices to show that
+$$
+\sum_{q \in \Scal_I: q \lessapprox x^\vartheta} \frac{1}{\tau(q)^{O(1)}}{|{\mathcal A}|} \sum_{a \in {\mathcal A}}
+|\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a\ (q))|\lesssim x \log^{-A} x$$
+for any fixed $A>0$.  By the triangle inequality, it suffices to show that
+$$
+\sum_{q \in \Scal_I: q \lessapprox x^\vartheta} \tau(q)^{O(1)}
+|\Delta( 1_{[x+h_k,2x+h_k]} \theta;  a\ (q))|\lesssim x \log^{-A} x$$
+for any given $a \in {\mathcal A}$.  But this follows from the hypothesis $MPZ[\varpi,\delta]$ by repeating the arguments of Section \ref{eh-case}.
+
+\subsection{Crude estimates on divisor sums}
+
+To proceed further, we will need some further information on the divisor sums $\lambda_F$, namely that these sums are concentrated on ``almost primes''; results of this type have also appeared in \cite{pintz-szemeredi}.
+
+\begin{proposition}[Almost primality]\label{almostprime} Let $k \geq 1$ be fixed, let $(h_1,\dots,h_k)$ be a fixed admissible $k$-tuple, and let $b\ (W)$ be such that $b+h_i$ is coprime to $W$ for each $i=1,\dots,k$.  Let $F_1,\dots,F_k: [0,+\infty) \to \R$ be fixed smooth compactly supported functions, and let $m_1,\dots,m_k \geq 0$ and $a_1,\dots,a_k \geq 1$ be fixed natural numbers.  Then
+\begin{equation}\label{lambdatau}
+\sum_{x \leq n \leq 2x: n = b\ (W)} \prod_{j=1}^k (|\lambda_{F_j}(n+h_j)|^{a_j} \tau(n+h_j)^{m_j}) \ll B^{-k} \frac{x}{W}.
+\end{equation}
+Furthermore, if $1 \leq j_0 \leq k$ is fixed and $p_0$ is a prime with $p_0 \leq x^{\frac{1}{10k}}$, then we have the variant
+\begin{equation}\label{lambdatau-fix}
+\sum_{x \leq n \leq 2x: n = b\ (W)} \prod_{i=1}^k (|\lambda_{F_j}(n+h_i)|^{a_j} \tau(n+h_j)^{m_j}) 1_{p|n+h_{j_0}} \ll \frac{\log_x p_0}{p_0} B^{-k} \frac{x}{W}.
+\end{equation}
+As a consequence, we have
+\begin{equation}\label{lambdatau-fix2}
+\sum_{x \leq n \leq 2x: n = b\ (W)} \prod_{i=1}^k (|\lambda_{F_j}(n+h_i)|^{a_j} \tau(n+h_j)^{m_j}) 1_{p(n+h_{j_0}) \leq x^\eps} \ll \eps \frac{\log_x p_0}{p_0} B^{-k} \frac{x}{W},
+\end{equation}
+for any $\eps > 0$, where $p(n)$ denotes the least prime factor of $n$.
+\end{proposition}
+
+The exponent $\frac{1}{10k}$ can certainly be improved here, but for our purposes any fixed positive exponent depending only on $k$ will suffice.
+
+\begin{proof}  The strategy is to estimate the alternating divisor sums $\lambda_{F_j}(n+h_j)$ by non-negative expressions involving prime factors of $n+h_j$, which can then be bounded combinatorially using standard tools such as the large sieve.
+
+We first prove \eqref{lambdatau}.
+As in the proof of Proposition \ref{mul-asym}, we can use Fourier expansion to write
+$$ F_j( \log_x d ) = \int_\R \frac{1}{d^{\frac{1+i\xi}{\log x}}} f_j(\xi)\ d\xi$$
+for some rapidly decreasing $f_j: \R \to \C$ and all natural numbers $d$.  Thus
+$$ \lambda_{F_j}(n) = \int_\R (\sum_{d|n} \mu(d) \frac{1}{d^{\frac{1+i\xi}{\log x}}}) f_j(\xi)\ d\xi$$
+which factorizes using Euler products as
+$$ \lambda_{F_j}(n) = \int_\R \prod_{p|n} (1 - \frac{1}{p^{\frac{1+i\xi}{\log x}}}) f_j(\xi)\ d\xi.$$
+The function $s \mapsto \frac{1}{p^{\frac{s}{\log x}}}$ has a magnitude of $O(1)$ and a derivative of $O( \log_x p )$ when $\Re(s) > 1$, and thus
+$$ 1 - \frac{1}{p^{\frac{1+i\xi}{\log x}}} = O( \min( (1+|\xi|) \log_x p, 1) ).$$
+From the rapid decrease of $f_j$, we conclude that
+$$ |\lambda_{F_j}(n)| \lesssim \int_\R (\prod_{p|n} O( \min( (1+|\xi|) \log_x p, 1))) \frac{d\xi}{(1+|\xi|)^A}$$
+for any fixed $A > 0$, and so
+$$ |\lambda_{F_j}(n)|^{a_j} \lesssim \int_\R \dots \int_\R (\prod_{p|n} O( \prod_{l=1}^{a_j} \min( (1+|\xi_l|) \log_x p, 1))) \frac{d\xi_1 \dots d\xi_{a_j}}{(1+|\xi_1|)^A \dots (1+|\xi_{a_j}|)^A}.$$
+However, we have
+$$ \min( (1+|\xi_1|) \log_x p, 1)) \dots \min( (1+|\xi_{a_j}|) \log_x p, 1) \ll \min( (1+|\xi_1|+\dots+|\xi_{a_j}|) \log_x p, 1 )$$
+and so
+$$ |\lambda_{F_j}(n)|^{a_j} \lesssim \int_\R \dots \int_\R (\prod_{p|n} O( \min( (1+|\xi_1|+\dots+|\xi_{a_j}|) \log_x p, 1))) \frac{d\xi_1 \dots d \xi_{a_j}}{(1+|\xi_1|+\dots+|\xi_{a_j}|)^A};$$
+making the change of variables $\sigma := 1+|\xi_1|+\dots+|\xi_{a_j}|$, and noting that $\prod_{p|n} O(1) \ll \tau(n)^{O(1)}$, we thus have
+$$ |\lambda_{F_j}(n)|^{a_j} \lesssim \tau(n)^{O(1)} \int_1^\infty (\prod_{p|n} \min(\sigma \log_x p, 1)) \frac{d\sigma}{\sigma^A}$$
+for any fixed $A>0$.  In view of this bound and the Fubini-Tonelli theorem, it suffices to show that
+$$
+\sum_{x \leq n \leq 2x: n = b\ (W)} \prod_{j=1}^k (\tau(n+h_j)^{O(1)} \prod_{p|n} \min(\sigma_j \log_x p,1)) \ll B^{-k} \frac{x}{W} (\sigma_1+\dots+\sigma_k)^{O(1)}$$
+for all $\sigma_1,\dots,\sigma_k \geq 1$; by setting $\sigma := \sigma_1+\dots+\sigma_k$, it suffices to show that
+\begin{equation}\label{xnx}
+\sum_{x \leq n \leq 2x: n = b\ (W)} \prod_{j=1}^k (\tau(n+h_j)^{O(1)} \prod_{p|n+h_j} \min(\sigma \log_x p,1)) \ll B^{-k} \frac{x}{W} \sigma^{O(1)}
+\end{equation}
+for any $\sigma \geq 1$.
+
+To proceed further, we factorize $n+h_j$ as a product
+$$ n+h_j = p_1 \dots p_r$$
+of primes $p_1 \leq \dots \leq p_r$ in increasing order, and then write 
+$$ n+h_j = d_j m_j$$
+where $d_j := p_1 \dots p_{i_j}$ and $i_j$ is the largest index for which $p_1 \dots p_{i_j} < x^{\frac{1}{10k}}$, and $m_j := p_{i_j+1} \dots p_r$.  By construction, we see that $0 \leq i_j < r$, $d_j \leq x^{\frac{1}{10k}}$.  Also, we have
+$$ p_{i_j+1} \geq (p_1 \dots p_{i_j+1})^{\frac{1}{i_j+1}} \geq x^{\frac{1}{10k(i_j+1)}}$$
+which, since $n \leq 2x$, implies that
+$$ r = O( i_j + 1 )$$
+and hence
+$$ \tau(n+h_j) \leq 2^{O(1+\Omega(d_j))},$$
+where we recall that $\Omega(d_j) = i_j$ denotes the number of prime factors of $d_j$, counting multiplicity; we also see that
+$$ p(m_j) \geq x^{\frac{1}{10k(1+\Omega(d_j))}}.$$
+Finally, we have
+$$ \prod_{p|n+h_j} \min(\sigma \log_x p,1) \leq \prod_{p|d_j} \min( \sigma \log_x p, 1 ).$$
+Finally, the $d_1,\dots,d_k,W$ are coprime.  We may thus estimate the left-hand side of \eqref{xnx} by
+$$ 
+\ll \sum_* (\prod_{j=1}^k 2^{O(1+\Omega(d_j)} \prod_{p|d_j} \min( \sigma \log_x p, 1 )) \sum_{**} 1$$
+where the outer sum $\sum_*$ is over $d_1,\dots,d_k \leq x^{\frac{1}{10k}}$ with $d_1,\dots,d_k,W$ coprime, and the inner sum $\sum_{**}$ is over $x \leq n \leq 2x$ with $n = b\ (W)$ and $n + h_j = 0\ (d_j)$ for each $j$, with $p( \frac{n+h_j}{d_j}) \geq x^{\frac{1}{10k(1+\Omega(d_j))}}$ for each $j$, where $p(n)$ denotes the least prime factor of $n$.
+
+To compute the inner sum $\sum_{**} 1$ we use the large sieve inequality, which asserts that $Q \geq 1$ is a parameter, and if one deletes $0 \leq \omega(p) < p$ residue classes modulo $p$ for each prime $p$ from an interval $\{M,\dots,M+N-1\}$, then the remaining set $Z$ has size bounded by
+$$ |Z| \leq \frac{N + Q^2}{\sum_{q \leq Q}^\flat h(q)}$$
+for any $Q > 0$, where the sum is over square-free $q$, and
+$$ h(q) := \prod_{p|q} \frac{\omega(p)}{p-\omega(p)};$$
+see e.g. \cite[Theorem 7.14]{ik}.  In our current situation, with the Chinese remainder theorem we may write (for fixed $d_1,\dots,d_k$) the congruence conditions $n = b\ (W)$ and $n + h_i = 0\ (d_j)$ as a single congruence condition
+$$ n = a\ (W d_1 \dots d_k),$$
+so if we write $n = W d_1 \dots d_k m + a$ then $m$ is constrained to an interval of length $N = O( \frac{x}{W d_1 \dots d_k} )$.  In this interval, we remove $k$ residue classes modulo $p$ for all $w < p \leq x^{\frac{1}{10k(1+\Omega(d_1\dots d_k))}}$ coprime to $d_1,\dots,d_k$.  If we then set $Q := x^{\frac{1}{10k(1+\Omega(d_1\dots d_k))}}$, then
+$$ N + Q^2 \ll \frac{x}{W d_1 \dots d_k} $$
+since $d_1,\dots,d_k \leq x^{1/10k}$, and
+$$ h(q) = \prod_{p > w: (p,d_1\dots d_k)=1} \frac{k}{p-k}.$$
+By Rankin's trick (see \cite[Theorem A.3]{opera}) we thus have
+$$ \sum_{q \leq Q}^\flat h(q) \gg \prod_{w < p \leq Q; (p,d_1,\dots,d_k)=1} (1 + \frac{k}{p-k}) $$
+and thus by Mertens' theorems
+\begin{align*}
+ \sum_{q \leq Q}^\flat h(q) &\gg 2^{-O(\Omega(d_1 \dots d_k))} (\frac{\phi}{W} \log Q)^k \\
+&\gg 2^{-O(\Omega(d_1 \dots d_k))} B^k
+\end{align*}
+and so
+$$ \sum_{**} 1 \ll 2^{O(\Omega(d_1 \dots d_k))} B^{-k} \frac{x}{W d_1 \dots d_k}.$$
+The bound \eqref{xnx} thus reduces to
+\begin{equation}\label{xnx-2}
+\sum_* (\prod_{j=1}^k \frac{2^{O(1+\Omega(d_j))}}{d_j} \prod_{p|d_j} \min( \sigma \log_x p, 1 )) \ll \sigma^{O(1)}.
+\end{equation}
+Ignoring the coprimality conditions on the $d_j$, it thus suffices to show that
+$$ \sum_{d \leq x} \frac{2^{O(1+\Omega(d))}}{d} \prod_{p|d} \min( \sigma \log_x p, 1 ) \ll \sigma^{O(1)}.$$
+If we let $d^\flat$ denote the square-free part of $d$, then an easy Euler product computation shows that
+$$ \sum_{d: d^\flat = d'} \frac{2^{O(1+\Omega(d))}}{d} \lessapprox \frac{2^{O(1+\Omega(d'))}}{d'}$$
+and so it suffices to establish the claim for squarefree $d$:
+\begin{equation}\label{dxx}
+ \sum_{d \leq x}^\flat \frac{2^{O(1+\Omega(d))}}{d} \prod_{p|d} \min( \sigma \log_x p, 1 ) \ll \sigma^{O(1)}.
+\end{equation}
+Writing $d = p_1 \dots p_r$ for $p_1 < \dots < p_r \leq x$, we may estimate the left-hand side by
+$$ \sum_{r=0}^\infty \frac{2^{O(r)}}{r!} (\sum_{p \leq x} \frac{\min(\sigma \log_x p, 1)}{p} )^r,$$
+which by Taylor series is bounded by
+$$ \exp( O( \sum_{p \leq x} \frac{\min(\sigma \log_x p, 1)}{p} ) ).$$
+But from Mertens' theorem we have
+$$ \sum_{p \leq x} \frac{\min(\sigma \log_x p, 1)}{p} = O( \log \frac{1}{\sigma} ),$$
+and the claim \eqref{lambdatau} follows.
+
+The proof of \eqref{lambdatau-fix} is a minor modification of the argument above used to prove \eqref{lambdatau}.  Namely, the variable $d_{j_0}$ is now constrained to be a multiple of $p_0$, which upon factoring out $p_0$ has the effect of multiplying the upper bound for \eqref{dxx} by $O( \frac{\sigma \log_x p_0}{p_0})$ (at the negligible cost of deleting the prime $p_0$ from the sum $\sum_{p \leq x}$), giving the claim; we omit the details.
+
+Finally, \eqref{lambdatau-fix2} follows immediately from \eqref{lambdatau} when $\eps > \frac{1}{10k}$, and from \eqref{lambdatau-fix} and Mertens' theorem when $\eps \leq \frac{1}{10k}$.
+\end{proof}
+
+
+\subsection{The generalized Elliott-Halberstam case}\label{geh-case}
+
+Now we show case (ii) of Theorem \ref{nonprime-asym}.  For sake of notation we shall take $i_0=k$, as the other cases are similar; thus we have
+\begin{equation}\label{ik1}
+\sum_{i=1}^{k-1} S(F_{i}) + S(G_{i}) < \theta.
+\end{equation}
+
+The basic idea is to view the sum \eqref{lflg} as a variant of \eqref{theta-oo}, with the role of the function $\theta$ now being played by the product divisor sum $\lambda_{F_k} \lambda_{G_k}$, and to repeat the arguments in Section \ref{eh-case}.  To do this we rely on Proposition \ref{almostprime} to restrict $n+h_i$ to the almost primes.
+
+We turn to the details.  Let $\eps > 0$ be an arbitrary fixed quantity.  From \eqref{lambdatau-fix2} and Cauchy-Schwarz one has
+$$
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \prod_{i=1}^k \lambda_{F_{i}}(n+h_{i}) \lambda_{G_{i}}(n+h_{i}) 1_{p(n+h_k) \leq x^\eps} = O( \eps B^{-k} \frac{x}{W} )
+$$
+with the implied constant uniform in $\eps$,
+so by the triangle inequality and a limiting argument as $\eps \to 0$ it suffices to show that
+\begin{equation}\label{lltrunc}
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W)}} \prod_{i=1}^k \lambda_{F_{i}}(n+h_{i}) \lambda_{G_{i}}(n+h_{i}) 1_{p(n+h_k) > x^\eps} = (c_\eps + o(1)) B^{-k} \frac{x}{W} 
+\end{equation}
+where $c_\eps$ is a quantity depending on $\eps$ but not on $x$, such that
+$$ \lim_{\eps \to 0} c_\eps = \prod_{i=1}^k \int_0^1 F'_i(t) G'_i(t)\ dt.$$
+
+We use \eqref{lambdaf-def} to expand out $\lambda_{F_{i}}, \lambda_{G_{i}}$ for $i=1,\dots,k-1$, but \emph{not} for $i=k$, so that the left-hand side of \eqref{lflg} becomes
+\begin{equation}\label{ddd}
+ \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^k \mu(d_{i}) \mu(d'_{i}) F_{i}(\log_x d_{i}) G_{i}(\log_x d'_{i})) S'(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1})
+\end{equation}
+where
+$$ S'(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) := 
+ \sum_{\substack{x \leq n \leq 2x\\ n = b\ (W) \\ n + h_{i} = 0\ ([d_{i},d'_{i}])\ \forall i=1,\dots,k-1}} \lambda_{F_k}(n+h_k) \lambda_{G_k}(n+h_k) 1_{p(n+h_k) 
+> x^\eps}.
+$$
+As before, the summand in \eqref{ddd} vanishes unless the modulus\footnote{In the $k=1$ case, we of course just have $q_{W,d_1,\dots,d'_{k-1}} = W$.}
+$q_{W,d_1,\dots,d'_{k-1}}$ defined in \eqref{q-def} is squarefree, in which case we have the analogue
+\begin{equation}\label{tsp}
+ S'(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) = \frac{1}{\phi(q_{W,d_1,\dots,d'_{k-1}})} \sum_{x+h_k \leq n \leq 2x+h_k; (n,q_{W,d_1,\dots,d'_{k-1}})=1} \lambda_{F_k}(n) \lambda_{G_k}(n) 1_{p(n)>x^\eps}
++ \Delta( 1_{[x+h_k,2x+h_k]} \lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps};  a_{W,d_1,\dots,d'_{k-1}}\ (q_{W,d_1,\dots,d'_{k-1}}))
+\end{equation}
+of \eqref{ts}.  We thus split
+$$ S' = S'_1 - S'_2 + S'_3$$
+where
+\begin{align}
+ S'_1(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) &= \frac{1}{\phi(q_{W,d_1,\dots,d'_{k-1}})} \sum_{x+h_k \leq n \leq 2x+h_k} \lambda_{F_k}(n) \lambda_{G_k}(n) 1_{p(n)>x^\eps} \label{sp1-def}\\
+ S'_2(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) &= \frac{1}{\phi(q_{W,d_1,\dots,d'_{k-1}})} \sum_{x+h_k \leq n \leq 2x+h_k; (n,q_{W,d_1,\dots,d'_{k-1}}) > 1} \lambda_{F_k}(n) \lambda_{G_k}(n) 1_{p(n)>x^\eps} \label{sp2-def}\\
+ S'_3(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) &= \Delta( 1_{[x+h_k,2x+h_k]} \lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps};  a_{W,d_1,\dots,d'_{k-1}}\ (q_{W,d_1,\dots,d'_{k-1}}))\label{sp3-def}
+\end{align}
+when $q_{W,d_1,\dots,d'_{k-1}}$ is squarefree, with $S'_1=S'_2=S'_3=0$ otherwise. To show \eqref{lltrunc}, it thus suffices to show the main term estimate
+\begin{equation}\label{ll-main}
+ \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^k \mu(d_{i}) \mu(d'_{i}) F_{i}(\log_x d_{i}) G_{i}(\log_x d'_{i})) S'_1(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}) = (c_\eps + o(1)) B^{-k} \frac{x}{W},
+\end{equation}
+the first error term estimate
+\begin{equation}\label{ll-error1}
+ |\sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^k \mu(d_{i}) \mu(d'_{i}) F_{i}(\log_x d_{i}) G_{i}(\log_x d'_{i})) S'_2(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1})| \lessapprox x^{1-\eps},
+\end{equation}
+and the second error term estimate
+\begin{equation}\label{ll-error2}
+ |\sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}} (\prod_{i=1}^k \mu(d_{i}) \mu(d'_{i}) F_{i}(\log_x d_{i}) G_{i}(\log_x d'_{i})) S'_3(d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1})| \ll x \log^{-A} x
+\end{equation}
+for any fixed $A>0$.
+
+We begin with \eqref{ll-error1}.  Observe that if $p(n) > x^\eps$, then the only way that $(n,q_{W,d_1,\dots,d'_{k-1}})$ can exceed $1$ is if there is a prime $x^\eps < p \ll x$ which divides both $n$ and one of $d_1,\dots,d'_{k-1}$; in particular, this case can only occur when $k > 1$.  For sake of notation we will just consider the contribution when there is a prime that divides $p$ and $d_1$, as the other $2k-3$ cases are similar.  By \eqref{sp2-def}, this contribution to the left-hand side of \eqref{ll-error1} can then be crudely bounded (using \eqref{divisor-bound}) by
+\begin{align*}
+ &\lessapprox \sum_{x^\eps < p \ll x} \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1} \leq x; p|d_1} \frac{1}{[d_1,d'_1] \dots [d_{k-1},d'_{k-1}]} \sum_{n \ll x: p|n} 1 \\
+&\lessapprox \sum_{x^\eps < p \ll x} \frac{x}{p} (\sum_{e \leq x^2; p|e_1} \frac{1}{e_1}) \prod_{i=2}^{k-1} (\sum_{e_i \leq x^2} \frac{1}{e_i})^{k-1} \\
+&\lessapprox \sum_{x^\eps < p \ll x} \frac{x}{p^2} \\
+&\lessapprox x^{1-\eps}
+\end{align*}
+as required, where we have made the change of variables $e_i := [d_i,d'_i]$, using the divisor bound to control the multiplicity.  
+
+Now we show \eqref{ll-error2}.  From the hypothesis \eqref{eh-upper} we have $q_{W,d_1,\dots,d'_{k-1}} \lessapprox x^\theta$ whenever the summand in \eqref{ll-error2} is non-zero.  From the divisor bound, for each $q \lessapprox x^\theta$ there are $O( \tau(q)^{O(1)})$ choices of $d_1,\dots,d'_{k-1}$ with $q_{W,d_1,\dots,d'_{k-1}} = q$.  Thus by \eqref{sp3-def}, we may bound the left-hand side of \eqref{ll-error2} by
+$$
+\sum_{q \lessapprox x^\theta} \tau(q)^{O(1)} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps};  a\ (q))|.
+$$
+From \eqref{divisor-2} we easily obtain the bound
+$$
+\sum_{q \lessapprox x^\theta} \tau(q)^{O(1)} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps};  a\ (q))| \ll x \log^{O(1)} x
+$$
+so by Cauchy-Schwarz it suffices to show that
+\begin{equation}\label{local}
+\sum_{q \lessapprox x^\theta} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{[x+h_k,2x+h_k]} \lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps};  a\ (q))| \ll x \log^{-A+O(1)} x
+\end{equation}
+for any fixed $A>0$, where the implied constant in the $O(1)$ notation does not depend on $A$.
+
+If we had the additional hypothesis $S(F_k) + S(G_k) < 1$, then this would follow easily from the hypothesis $\GEH[\vartheta]$ thanks to Claim \ref{geh-def}, since one can write $\lambda_{F_k} \lambda_{G_k} 1_{p(\cdot) > x^\eps} = \alpha \ast \beta$ with
+$$ \alpha(n) := 1_{p(n) > x^\eps} \sum_{d,d': [d,d'] = n} \mu(d) F_k(\log_x d) \mu(d') G_k(\log_x d')$$
+and
+$$ \beta(n) := 1_{p(n) > x^\eps}.$$
+But even in the absence of the hypothesis $S(F_k) + S(G_k) < 1$, we can still invoke $\GEH[\vartheta]$ after appealing to the fundamental theorem of arithmetic.  Indeed, if $n \in [x+h_k,2x+h_k]$ with $p(\cdot) > \eps$, then we have
+$$ n = p_1 \dots p_r$$
+for some primes $x^\eps < p_1 \leq \dots \leq p_r \leq 2x+h_k$, which forces $r \leq \frac{1}{\eps}+1$.  If we then partition $[x^\eps,2x+h_k]$ by $O( \log^{A+1} x )$ intervals $I_1,\dots,I_m$, with each $I_j$ contained in an interval of the form $[N, (1+\log^{-A} x) N]$, then we have $p_i \in I_{j_i}$ for some $1 \leq j_1 \leq \dots \leq j_r \leq m$, with the product interval $I_{j_1} \cdot \dots \cdot I_{j_r}$ intersecting $[x+h_k, 2x+h_k]$.  For fixed $r$, there are $O( \log^{Ar+O(1)} x)$ such tuples $(j_1,\dots,j_r)$, and a simple application of the prime number theorem with classical error term (and crude estimates on the discrepancy $\Delta$) shows that each tuple contributes $O( x \log^{-Ar+O(1)} x)$ to \eqref{local}. In particular, those tuples $(j_1,\dots,j_r)$ with one repeated $j_i$, or for which the interval $I_{j_1} \cdot \dots \cdot I_{j_r}$ meets the boundary of $[x+h_k, 2x+h_k]$, contributes an acceptable error to \eqref{local} and may be removed.  Thus it suffices to show that 
+$$
+\sum_{q \lessapprox x^\theta} \sup_{a \in (\Z/q\Z)^\times} |\Delta( \lambda_{F_k} \lambda_{G_k} 1_{A_{j_1,\dots,j_r}};  a\ (q))| \ll x \log^{-A(r+1)+O(1)} x
+$$
+for any $1 \leq r \leq \frac{1}{\eps}+1$ and $1 \leq j_1 < \dots < j_r \leq m$ with $I_{j_1} \cdot \dots \cdot I_{j_r}$ contained in $[x+h_k,x+2h_k]$, where $A_{j_1,\dots,j_r}$ is the set of all products $p_1 \dots p_r$ with $p_i \in I_{j_i}$ for $i=1,\dots,r$, and where we allow implied constants in the $\ll$ notation to depend on $\eps$.  But for $n$ in $A_{j_1,\dots,j_r}$, the $2^r$ factors of $n$ are just the products of subsets of $\{p_1,\dots,p_r\}$, and from the smoothness of $F_k,G_k$ we see that $\lambda_{F_k}(n)$ is equal to some bounded constant (depending on $j_1,\dots,j_r$, but independent of $p_1,\dots,p_r$), plus an error of $O(\log^{-A} x)$.  As before, the contribution of this error is $O( \log^{A(r+1)+O(1)} x)$, so it suffices to show that
+$$
+\sum_{q \lessapprox x^\theta} \sup_{a \in (\Z/q\Z)^\times} |\Delta( 1_{A_{j_1,\dots,j_r}};  a\ (q))| \ll x \log^{-A(r+1)+O(1)} x.
+$$
+But one can write $1_{A_{j_1,\dots,j_r}}$ as a convolution $1_{A_{j_1}} \ast \dots \ast 1_{A_{j_r}}$, where $A_{j_i}$ denotes the primes in $I_{j_i}$; assigning $A_{j_r}$ (for instance) to be $\beta$ and the remaining portion of the convolution to be $\alpha$, the claim now follows from the hypothesis $\GEH[\vartheta]$, thanks to the Siegel-Walfisz theorem (see e.g. \cite[Satz 4]{siebert} or~\cite[Th. 5.29]{ik}).
+
+Finally, we show \eqref{ll-main}.  By Lemma \ref{mul-asym} we have
+$$
+ \sum_{d_1,\dots,d_{k-1},d'_1,\dots,d'_{k-1}: [d_1,d'_1],\dots,[d_{k-1},d'_{k-1}], W \hbox{ coprime}} (\prod_{i=1}^k \mu(d_{i}) \mu(d'_{i}) F_{i}(\log_x d_{i}) G_{i}(\log_x d'_{i})) \frac{1}{\phi(q_{W,d_1,\dots,d'_{k-1}})} = \frac{1}{\phi(W)} (c'+o(1)) B^{-k+1}$$
+where
+$$ c' := \prod_{i=1}^{k-1} \int_0^1 F'_i(t) G'_i(t)\ dt$$
+(note that $F_i, G_i$ are supported on $[0,1]$ by hypothesis), so by \eqref{sp1-def} it suffices to show that
+\begin{equation}\label{cpeps}
+\sum_{x+h_k \leq n \leq 2x+h_k} \lambda_{F_k}(n) \lambda_{G_k}(n) 1_{p(n)>x^\eps} = (c''_\eps + o(1)) \frac{x}{\log x},
+\end{equation}
+where $c''_{\eps}$ is a quantity depending on $\eps$ but not on $x$ such that
+$$ \lim_{\eps \to 0} c''_{\eps} = \int_0^1 F'_k(t) G'_k(t).$$
+In the case $S(F_k)+S(G_k) < 1$, this would follow easily from (the $k=1$ case of) Theorem \ref{nonprime-asym}(i) and Proposition \ref{almostprime}.  In the general case, we may appeal once more to the fundamental theorem of arithmetic.  As before, we may factor $n = p_1 \dots p_r$ for some $x^\eps \leq p_1 \leq \dots \leq p_r \leq 2x+h_k$ and $r \leq \frac{1}{\eps}+1$.  The contribution of those $n$ with a repeated prime factor $p_i = p_{i+1}$ can easily be shown to be $\lessapprox x^{1-\eps}$, so we may restrict attention to the square-free $n$, for which the $p_i$ are strictly increasing.  In that case, one can write
+$$ \lambda_{F_k}(n) = (-1)^r \partial_{(\log_x p_1)} \dots \partial_{(\log_x p_r)} F_k(0)$$
+and
+$$ \lambda_{G_k}(n) = (-1)^r \partial_{(\log_x p_1)} \dots \partial_{(\log_x p_r)} G_k(0)$$
+where $\partial_{(h)} F(x) := F(x+h)-F(x)$.  On the other hand, a standard application of Mertens' theorem and the prime number theorem (and an induction on $r$) shows that for any fixed $r \geq 1$ and any fixed continuous function $f: \R^r \to \R$, we have
+$$ \sum_{x^\eps \leq p_1 < \dots < p_r: x+h_k \leq p_1 \leq \dots p_r \leq 2x+h_k} f(\log_x p_1,\dots, \log_x p_r) = (c_f + o(1)) \frac{x}{\log x} $$
+where
+$$ c_f := \int_{\eps \leq t_1 < \dots < t_r: t_1 + \dots + t_r = 1} f( t_1,\dots,t_r)\ \frac{dt_1 \dots dt_{r-1}}{t_1 \dots t_r}.$$
+
+Putting all this together, we see that we obtain an asymptotic \eqref{cpeps} with
+$$ c''_\eps := \sum_{1 \leq r \leq \frac{1}{\eps}+1} 
+\int_{\eps \leq t_1 < \dots < t_r: t_1 + \dots + t_r = 1} \partial_{(t_1)} \dots \partial_{(t_r)} F_k(0)
+\partial_{(t_1)} \dots \partial_{(t_r)} G_k(0)\ \frac{dt_1 \dots dt_{r-1}}{t_1 \dots t_r}.$$
+From the dominated convergence theorem, we see that to finish the proof of Theorem \ref{nonprime-asym}(ii), it thus suffices to show the absolute convergence
+\begin{equation}\label{absconv}
+ \sum_{r>0} \int_{0 < t_1 < \dots < t_r: t_1 + \dots + t_r = 1} |\partial_{t_1} \dots \partial_{t_r} F_k(0)|
+|\partial_{t_1} \dots \partial_{t_r} G_k(0)|\ \frac{dt_1 \dots dt_{r-1}}{t_1 \dots t_r} < \infty
+\end{equation}
+and the identity
+\begin{equation}\label{condconv}
+ \sum_{r>0} \int_{0 < t_1 < \dots < t_r: t_1 + \dots + t_r = 1} \partial_{t_1} \dots \partial_{t_r} F_k(0)
+\partial_{t_1} \dots \partial_{t_r} G_k(0)\ \frac{dt_1 \dots dt_{r-1}}{t_1 \dots t_r} = \int_0^1 F'_k(t) G'_k(t)\ dt.
+\end{equation}
+It will suffice to show the identity
+\begin{equation}\label{depol}
+ \sum_{r>0} \int_{0 < t_1 < \dots < t_r: t_1 + \dots + t_r = 1} |\partial_{t_1} \dots \partial_{t_r} F(0)|^2\ \frac{dt_1 \dots dt_{r-1}}{t_1 \dots t_r} = \int_0^1 |F'(t)|^2\ dt
+\end{equation}
+for any smooth $F: [0,+\infty) \to \R$, since \eqref{absconv} then follows from the Cauchy-Schwarz inequality, and \eqref{condconv} follows by replacing $F$ with $F_k+G_k$ and $F_k-G_k$ and then subtracting.
+
+At this point we use the following identity:
+
+\begin{lemma}  For any positive reals $t_1,\dots,t_r$ with $r \geq 1$, we have
+\begin{equation}\label{star}
+ \frac{1}{t_1 \dots t_r} = \sum_{\sigma \in S_r} \frac{1}{\prod_{i=1}^r (\sum_{j=i}^r t_{\sigma(j)})}.
+\end{equation}
+Thus, for instance, when $r=2$ we have
+$$ \frac{1}{t_1 t_2} = \frac{1}{(t_1+t_2) t_1} + \frac{1}{(t_1+t_2)t_2}.$$
+\end{lemma}
+
+\begin{proof}  If the right-hand side of \eqref{star} is denoted $f_r( t_1,\dots,t_r )$, then one easily verifies the identity
+$$ f_r(t_1,\dots,t_r) = \frac{1}{t_1+\dots+t_r} \sum_{i=1}^r f_{r-1}(t_1,\dots,t_{i-1},t_{i+1},\dots,t_r)$$
+for any $r > 1$; but the left-hand side of \eqref{star} also obeys this identity, and the claim then follows from induction.
+\end{proof}
+
+From this lemma and symmetrisation, we may rewrite the left-hand side of \eqref{depol} as
+$$
+ \sum_{r>0} \int_{t_1,\dots,t_r \geq 0: t_1+\dots+t_r =1} |\partial_{(t_1)} \dots \partial_{(t_r)} F(0)|^2\ \frac{dt_1 \dots dt_{r-1}}{(t_1+\dots+t_r) \dots t_r}$$
+$$ I_a(F) := \int_0^a F'(t)^2\ dt$$
+and
+$$ J_a(F) := (\partial_{(a)} F(0))^2,$$
+one can then rewrite \eqref{depol} as the identity
+\begin{equation}\label{depol-2}
+ I_1(F) = \sum_{r=1}^\infty K_{1,r}(F)
+\end{equation}
+where
+$$ K_{a,r}(F) := \int_{t_1,\dots,t_r \geq 0: t_1+\dots+t_r =a} J_{t_r}( \partial_{(t_1)} \dots \partial_{(t_{r-1})} F) \frac{dt_1 \dots dt_{r-1}}{a(a-t_1) \dots (a-t_1-\dots-t_{r-1})}.$$
+To prove this, we first observe the identity
+$$ I_a(F) = \frac{1}{a} J_a(F) + \int_{0 \leq t \leq a} I_{a-t}( \partial_{(t)} F ) \frac{dt}{a}$$
+for any $a>0$; indeed, we have
+\begin{align*}
+\int_{0 \leq t \leq a} I_{a-t}( \partial_{(t)} F ) \frac{dt}{a} &=
+\int_{0 \leq t \leq a; 0 \leq u \leq a-t} |F'(t+u) - F'(t)|^2\ \frac{du dt}{a} \\
+&= \int_{0 \leq t \leq s \leq a} |F'(s) - F'(t)|^2\ \frac{ds dt}{a} \\
+&= \frac{1}{2} \int_0^a \int_0^a |F'(s) - F'(t)|^2\ \frac{ds dt}{a} \\
+&= \int_0^a |F'(s)|^2\ ds - \frac{1}{a} (\int_0^a F'(s)\ ds) (\int_0^a F'(t)\ dt) \\
+&= I_a(F) - \frac{1}{a} J_a(F)
+\end{align*}
+and the claim follows.  Iterating this identity $k$ times, we see that
+\begin{equation}\label{iak}
+I_a(F) = \sum_{r=1}^k K_{a,r}(F) + L_{a,k}(F)
+\end{equation}
+for any $k \geq 1$, where
+$$ L_{a,k}(F) := \int_{t_1,\dots,t_k \geq 0: t_1+\dots+t_k \leq a} I_{1-t_1-\dots-t_k}( \partial_{(t_1)} \dots \partial_{(t_k)} F) \frac{dt_1 \dots dt_k}{a(a-t_1) \dots (a-t_1-\dots-t_{k-1})}.$$
+In particular, dropping the $L_{a,k}(F)$ term and sending $k \to \infty$ yields the lower bound
+\begin{equation}\label{krsum}
+\sum_{r=1}^\infty K_{a,r}(F) \leq I_a(F).
+\end{equation}
+On the other hand, we can expand $L_{a,k}(F)$ as
+$$ \int_{t_1,\dots,t_k,t \geq 0: t_1+\dots+t_k+t \leq a} |\partial_{(t_1)} \dots \partial_{(t_k)} F'(t)|^2 \frac{dt_1 \dots dt_k dt}{a(a-t_1) \dots (a-t_1-\dots-t_{k-1})}.$$
+Writing $s := t_1 + \dots + t_k$, we obtain the upper bound
+$$ L_{a,k}(F) \leq \int_{s,t \geq 0: s+t \leq a} K_{a-t,k}( F_t )\ dt,$$
+where $F_t(x) := F(x+t)$.  Summing this and using \eqref{krsum} and the monotone convergence theorem, we conclude that
+$$ \sum_{k=1}^\infty L_{a,k}(F) \leq \int_{s,t \geq 0: s+t \leq a} I_{a-t}( F_t )\ dt < \infty,$$
+and in particular $L_{a,k}(F) \to 0$ as $k \to \infty$.  Sending $k \to \infty$ in \eqref{iak}, we obtain \eqref{depol-2} as desired.
+

@@ -1,0 +1,228 @@
+\pdfoutput=1
+\documentclass[12pt,a4paper,reqno]{amsart}
+\usepackage{amssymb}
+
+\usepackage{amscd}
+\usepackage{enumerate}
+%\usepackage{psfig}
+\usepackage{graphicx}
+%\usepackage{showkeys}  
+\usepackage{siunitx}
+\usepackage{tikz-cd}
+\usepackage{color}
+\usetikzlibrary{arrows}
+% uncomment this when editing cross-references
+\numberwithin{equation}{section}
+
+\usepackage{mathabx}
+
+
+\usepackage{mathtools}%                  http://www.ctan.org/pkg/mathtools
+\usepackage[tableposition=top]{caption}% http://www.ctan.org/pkg/caption
+\usepackage{booktabs,dcolumn}%           http://www.ctan.org/pkg/dcolumn + http://www.ctan.org/pkg/booktabs
+
+% Lighter notation.
+\newcommand*\mc[1]{\multicolumn{1}{c}{#1}}
+\newcommand*\tupref[2]{\href{http://math.mit.edu/~primegaps/tuples/admissible_#1_#2.txt}{\num{#2}}}
+
+% Operators; uses ``mathtools''.
+\DeclareMathOperator*\EH{EH}
+\DeclareMathOperator*\GEH{GEH}
+\DeclareMathOperator*\MPZ{MPZ}
+\DeclareMathOperator*\DHL{DHL}
+\DeclareMathOperator*\rad{rad}
+
+%%\newcommand{\rad}[1]{{#1}^{\flat}}
+
+%\DeclareMathOperator*\Kl{Kl} (commented because yield bad display for  \Kl_q %replaced with \newcommand... )
+%\DeclareMathOperator*\FT{FT} (commented because yield bad display for \FT_q
+%replaced with \newcommand...)
+
+\DeclareMathOperator\swan{swan}
+\DeclareMathOperator*\cond{cond}
+\DeclareMathOperator*\Gal{Gal}
+
+\newcommand{\FT}{\mathrm{FT}} 
+\DeclareMathOperator{\hypk}{Kl}
+\newcommand{\Kl}{\mathcal{K}\ell}
+% Setup for ``caption''.
+\DeclareCaptionLabelSeparator{separation}{:\quad}
+\captionsetup{
+  font=small,
+  labelfont=sc,
+  labelsep=separation,
+  width=0.8\textwidth
+}
+
+\DeclareFontFamily{OT1}{rsfs}{}
+\DeclareFontShape{OT1}{rsfs}{n}{it}{<-> rsfs10}{}
+\DeclareMathAlphabet{\mathscr}{OT1}{rsfs}{n}{it}
+
+\addtolength{\textwidth}{3 truecm}
+\addtolength{\textheight}{1 truecm}
+\setlength{\voffset}{-.6 truecm}
+\setlength{\hoffset}{-1.3 truecm}
+     
+\theoremstyle{plain}
+
+\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{theorem}[theorem]{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{principle}[theorem]{Principle}
+\newtheorem{claim}[theorem]{Claim}
+
+\theoremstyle{definition}
+
+%\newtheorem{roughdef}[subsection]{Rough Definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{remarks}[theorem]{Remarks}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{examples}[theorem]{Examples}
+%\newtheorem{problem}[subsection]{Problem}
+%\newtheorem{question}[subsection]{Question}
+
+\newcommand\F{\mathbb{F}}
+\newcommand\E{\mathbb{E}}
+\newcommand\R{\mathbb{R}}
+\newcommand\Z{\mathbb{Z}}
+\newcommand\N{\mathbb{N}}
+\newcommand\C{\mathbb{C}}
+\newcommand\Q{\mathbb{Q}}
+\newcommand\eps{\varepsilon}
+\newcommand\B{\operatorname{B}}
+\renewcommand\Re{\operatorname{Re}}
+
+\newcommand\Scal{\mathcal{S}}
+\newcommand\Dcal[2]{\mathcal{D}^{({#1})}({#2})}
+\newcommand\Dcone[1]{\mathcal{D}({#1})}
+%%EK
+\newcommand{\DI}[3]{\mathcal{D}_{{#1}}^{({#2})}({#3})}
+\newcommand{\DIone}[2]{\mathcal{D}_{{#1}}({#2})}
+\newcommand{\emt}{\mathrm{EMT}}
+\newcommand{\uple}[1]{\text{\boldmath${#1}$}}
+%%
+%\newcommand\DHL{\operatorname{DHL}}
+%\newcommand\EH{\operatorname{EH}}
+%\newcommand\MPZ{\operatorname{MPZ}}
+\newcommand{\opt}[1]{\textsf{{#1}}}
+\newcommand{\algo}[1]{\textsf{{#1}}}
+
+\newcommand\TypeI{\operatorname{Type}_{\operatorname{I}}}
+\newcommand\TypeII{\operatorname{Type}_{\operatorname{II}}}
+\newcommand\TypeIII{\operatorname{Type}_{\operatorname{III}}}
+\renewcommand\P{\mathbb{P}}
+
+\newcommand\rk{\mathrm{rk}}
+\newcommand\Fr{\mathrm{Fr}}
+\newcommand\tr{\mathrm{tr}}
+
+\newcommand\ov{\overline}
+\newcommand\wcheck{\widecheck}
+%\newcommand\cond{\mathrm{cond}}
+%\newcommand\Gal{\mathrm{Gal}}
+%\newcommand\Kl{\mathrm{Kl}}
+%\newcommand\swan{\mathrm{swan}}
+%\newcommand\FT{\mathrm{FT}}
+\newcommand\mcF{\mathcal{F}}
+\newcommand\mcG{\mathcal{G}}
+\newcommand\mcK{\mathcal{K}}
+\newcommand\mcC{\mathcal{C}}
+\newcommand\mcL{\mathcal{L}}
+\newcommand\Gm{\mathbb{G}_m}
+\newcommand\Af{\mathbb{A}^1}
+\newcommand\Pl{\mathbb{P}^1}
+\newcommand\Aa{\mathbb{A}}
+\DeclareMathOperator{\Tr}{Tr}
+\newcommand\Fp{\F_{p}}
+\newcommand\Fpt{\F_{p}^{\times}}
+\newcommand\Fq{\F_{q}}
+\def\stacksum#1#2{{\stackrel{{\scriptstyle #1}}
+{{\scriptstyle #2}}}}
+\newcommand{\mods}[1]{\,(\mathrm{mod}\,{#1})}
+\newcommand{\piar}{\pi_1}
+\newcommand{\pige}{\pi_1^{g}}
+\newcommand\sumsum{\mathop{\sum\sum}\limits}
+\newcommand\multsum{\mathop{\sum\cdots\sum}\limits}
+\newcommand\trpsum{\mathop{\sum\sum\sum}\limits}
+%\newcommand\E{\mathbb{E}}
+\newcommand\Rr{\mathbb{R}}
+\newcommand\Zz{\mathbb{Z}}
+\newcommand\Nn{\mathbb{N}}
+\newcommand\Cc{\mathbb{C}}
+\newcommand\Qq{\mathbb{Q}}
+\newcommand{\what}{\widehat}
+\newcommand{\ra}{\rightarrow}
+
+\newcommand{\GL}{\mathrm{GL}}
+
+%%%%%%%%%%%%%% EK %%%%%%%%%%%%%%
+\newcommand{\ftd}{\mathcal{I}}
+\renewcommand{\sim}{\asymp} 
+
+%% This is more standard (for analytic number theorists) 
+%% than \sim for A << B << A
+\renewcommand{\lessapprox}{\llcurly}
+\renewcommand{\gtrapprox}{\ggcurly}
+%% I find this typographically better than \lessapprox
+%% This symbol is from the mathabx package.
+\renewcommand{\phi}{\varphi}
+%% I think this form of phi is more standard for the Euler function
+%% I think it is only used in improvements.tex for something else
+\newcommand{\onef}{\mathbf{1}}
+%% This is for characteristic functions
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\newcommand{\alert}[1]{{\bf \color{red} TODO: #1}}
+
+%% Try normal paragraph indent
+%%\parindent 0mm
+%% Try to see what happens without enlarging the paragraph skip
+%%\parskip   5mm 
+
+%PhM use this for navigating the pdf when editing with texpad (comment if you prefer)
+% (Ah, figured out why my LaTeX was not liking hyperref - there were old aux files that didn't use hyperref. -TT)
+\usepackage{hyperref}
+
+% for optimize.tex
+\usepackage{algorithm, algorithmic}
+
+\begin{document}
+
+\title[Bounded intervals with many primes]{Variants of the Selberg sieve, and bounded intervals containing many primes}
+
+\author{D.H.J. Polymath}
+\address{http://michaelnielsen.org/polymath1/index.php}
+%\email{}
+
+\begin{abstract}  For any $m \geq 1$, let $H_m$ denote the quantity $\liminf_{n \to \infty} (p_{n+m}-p_n)$, where $p_n$ denotes the $n^{\operatorname{th}}$ prime.  A celebrated recent result of Zhang showed the finiteness of $H_1$, with the explicit bound $H_1 \leq \num{70000000}$, by combining a truncated version of the Selberg-type sieve of Goldston, Pintz, and Y{\i}ld{\i}r{\i}m with a new distributional estimate on primes.  This was then improved by us (the Polymath8 project) to $H_1 \leq \num{4680}$, and then by Maynard to $H_1 \leq \num{600}$, who also established for the first time a finiteness result for $H_m$ for $m \geq 2$, and specifically that $H_m \ll m^3 e^{4m}$.  Remarkably, these results of Maynard do not use any distributional results on the primes beyond the Bombieri-Vinogradov theorem, relying instead on a multidimensional version of the Selberg sieve.  If one also assumes the Elliott-Halberstam conjecture, Maynard obtained the bound $H_1 \leq 12$, improving upon the previous bound $H_1 \leq 16$ of Goldston, Pintz, and Y{\i}ld{\i}r{\i}m, as well as the bound $H_m \ll m^3 e^{2m}$.
+
+In this paper, we extend the methods of Maynard by generalizing the Selberg sieve further, and by performing more extensive numerical calculations.  As a consequence, we can obtain the bound $H_1 \leq \num{246}$ unconditionally, and $H_1 \leq 6$ under the assumption of the generalized Elliott-Halberstam conjecture.  Indeed, under the latter conjecture we show the stronger statement that for any admissible triple $(h_1,h_2,h_3)$, there are infinitely many $n$ for which at least two of $n+h_1,n+h_2,n+h_3$ are prime.  We modify the ``parity problem'' argument of Selberg to show that the this result is the best possible that one can obtain one can obtain from purely sieve-theoretic considerations; in particular, no further improvement to the bound $H_1 \leq 6$ can be obtained by these methods.  For larger $m$, we use the distributional results obtained previously by our project to obtain the unconditional asymptotic bound $H_m \ll m e^{(4-\frac{24}{181})m}$, or $H_m \ll m e^{2m}$ under the assumption of the Elliott-Halberstam conjecture.  We also obtain explicit upper bounds for $H_m$ when $m=2,3,4,5$.
+\end{abstract}
+
+\subjclass[2010]{11P32}
+
+\maketitle
+%\today
+
+\input introduction
+\input subtheorems
+\input sieving
+\input more-sieving
+\input asymptotics
+\input h1-new
+\input parity
+\input remarks
+
+\appendix
+\input tuples
+%\input exponential
+%\input distribution
+\input biblio
+
+
+\end{document}

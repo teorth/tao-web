@@ -423,9 +423,10 @@ def build_links_page(doc: dict) -> tuple[str, str]:
 _LINK_LABEL = {"arxiv": "arXiv", "journal": "journal", "discussion": "discussion",
                "slides": "slides", "pdf": "pdf", "note": "link", "blog": "blog",
                "applet": "interactive tool", "repository": "code repository",
-               "diagram": "dependency diagram"}
+               "diagram": "dependency diagram", "reference": "reference material"}
 _LINK_PRIO = {"journal": 0, "arxiv": 1, "repository": 1.5, "pdf": 2, "note": 3,
-              "discussion": 4, "slides": 5, "blog": 6, "applet": 7, "diagram": 7.5}
+              "reference": 3.5, "discussion": 4, "slides": 5, "blog": 6,
+              "applet": 7, "diagram": 7.5}
 
 _PAPERS_JS = """
 <script>

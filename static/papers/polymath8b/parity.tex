@@ -1,0 +1,81 @@
+\section{The parity problem}\label{parity-sec}
+
+In this section we argue why the ``parity barrier'' of Selberg \cite{selberg} prohibits sieve-theoretic methods, such as the ones in this paper, from obtaining any bound on $H_1$ that is stronger than $H_1 \leq 6$, even on the assumption of strong distributional conjectures such as the generalized Elliott-Halberstam conjecture $\GEH[\vartheta]$, and even if one uses sieves other than the Selberg sieve.  Our discussion will be somewhat informal and heuristic in nature.
+
+We begin by briefly recalling how the bound $H_1 \leq 6$ on GEH (i.e., Theorem \ref{main}(xii)) was proven.  This was deduced from the claim $\DHL[3,2]$, or more specifically from the claim that the set
+\begin{equation}\label{A-def}
+A := \{ n \in \N: \hbox{ at least two of } n, n+2, n+6 \hbox{ are prime} \}
+\end{equation}
+was infinite.
+
+To do this, we (implicitly) established a lower bound
+$$ \sum_n \nu(n) 1_A(n) > 0$$
+for some non-negative weight $\nu: \N \to \R^+$ supported on $[x,2x]$ for a sufficiently large $x$.  This bound was in turn established (after a lengthy sieve-theoretic analysis, and with a carefully chosen weight $\nu$) from upper bounds on various discrepancies.  More precisely, one required good upper bounds (on average) for the expressions
+\begin{equation}\label{flip}
+ \left|\sum_{x \leq n \leq 2x: x = a\ (q)} f(n+h) - \frac{1}{\phi(q)} \sum_{x \leq n \leq 2x: (n+h,q)=1} f(n+h)\right|
+\end{equation}
+for all $h \in \{0,2,6\}$ and various residue classes $a\ (q)$ with $q \leq x^{1-\eps}$ and arithmetic functions $f$, such as the constant function $f=1$, the von Mangoldt function $f = \Lambda$, or Dirichlet convolutions $f = \alpha \ast \beta$ of the type considered in Claim \ref{geh-def}.  (In the presentation of this argument in previous sections, the shift by $h$ was eliminated using the change of variables $n' = n+h$, but for the current discussion it is important that we do not use this shift.)  One also required good asymptotic control on the main terms
+\begin{equation}\label{flop}
+\sum_{x \leq n \leq 2x: (n+h,q)=1} f(n+h).
+\end{equation}
+
+An inspection of these arguments (which no longer exploit change of variables such as $n' = n+h$ in the $n$ variable) shows that they would be equally valid if one inserted a further non-negative weight $\omega: \N \to \R^+$ in the summation over $n$.  More precisely, the above sieve-theoretic argument would also deduce the lower bound
+$$ \sum_n \nu(n) 1_A(n) \omega(n) > 0$$
+if one had control on the weighted discrepancies
+\begin{equation}\label{flip-weight}
+ \left|\sum_{x \leq n \leq 2x: x = a\ (q)} f(n+h) \omega(n) - \frac{1}{\phi(q)} \sum_{x \leq n \leq 2x: (n+h,q)=1} f(n+h) \omega(n)\right|
+\end{equation}
+and on the weighted main terms
+\begin{equation}\label{flop-weight}
+\sum_{x \leq n \leq 2x: (n+h,q)=1} f(n+h) \omega(n)
+\end{equation}
+that were of the same form as in the unweighted case $\omega=1$.
+
+Now suppose for instance that one was trying to prove the bound $H_1 \leq 4$.  A natural way to proceed here would be to replace the set $A$ in \eqref{A-def} with the smaller set
+\begin{equation}\label{app}
+ A' := \{ n \in \N: n, n+2 \hbox{ are both prime} \} \cup \{ n \in \N: n+2, n+6 \hbox{ are both prime} \}
+\end{equation}
+and hope to establish a bound of the form
+$$ \sum_n \nu(n) 1_{A'}(n) > 0$$
+for a well-chosen function $\nu: \N \to \R^+$ supported on $[x,2x]$, by deriving this bound from suitable (averaged) upper bounds on the discrepancies \eqref{flip} and control on the main terms \eqref{flop}.  If the arguments were sieve-theoretic in nature, then (as in the $H_1 \leq 6$ case), one could then also deduce the lower bound
+\begin{equation}\label{ap-lower}
+ \sum_n \nu(n) 1_{A'}(n) \omega(n) > 0
+\end{equation}
+for any non-negative weight $\omega: \N \to \R^+$, provided that one had the same control on the weighted discrepancies \eqref{flip-weight} and weighted main terms \eqref{flop-weight} that one did on \eqref{flip}, \eqref{flop}.
+
+We apply this observation to the weight
+\begin{align*}
+\omega(n) &:= (1 - \lambda(n) \lambda(n+2)) (1 - \lambda(n+2) \lambda(n+6)) \\
+&=  1 - \lambda(n)\lambda(n+2) - \lambda(n+2)\lambda(n+6) + \lambda(n) \lambda(n+6)
+\end{align*}
+where $\lambda(n) := (-1)^{\Omega(n)}$ is the Liouville function.  Observe that $\omega$ vanishes for any $n\in A'$, and hence
+\begin{equation}\label{ap-none}
+\sum_n \nu(n) 1_{A'}(n) \omega(n) = 0
+\end{equation}
+for any $\nu$.  On the other hand, the ``M\"obius randomness law'' (see e.g. \cite{ik}) predicts a significant amount of cancellation for any non-trivial sum involving the M\"obius function $\mu$, or the closely related Liouville function $\lambda$.  For instance, the expression
+$$ \sum_{x \leq n \leq 2x: n = a\ (q)} \lambda(n+h)$$
+is expected to be very small (of size\footnote{Indeed, one might be even more ambitious and conjecture a square-root cancellation $\lessapprox \sqrt{x/q}$ for such sums (see \cite{mont} for some similar conjectures), although such stronger cancellations generally do not play an essential role in sieve-theoretic computations.} $O( \frac{x}{q} \log^{-A} x)$ for any fixed $A$) for any residue class $a\ (q)$ with $q \leq x^{1-\eps}$, and any $h \in \{0,2,6\}$; similarly for more complicated expressions such as
+$$ \sum_{x \leq n \leq 2x: n = a\ (q)} \lambda(n+2) \lambda(n+6)$$
+or
+$$ \sum_{x \leq n \leq 2x: n = a\ (q)} \Lambda(n) \lambda(n+2) \lambda(n+6)$$
+or more generally
+$$ \sum_{x \leq n \leq 2x: n = a\ (q)} f(n) \lambda(n+2) \lambda(n+6)$$
+where $f$ is a Dirichlet convolution $\alpha \ast \beta$ of the form considered in Claim \ref{geh-def}.  Similarly for expressions such as
+$$ \sum_{x \leq n \leq 2x: n = a\ (q)} f(n) \lambda(n) \lambda(n+2);$$
+note from the complete multiplicativity of $\lambda$ that $(\alpha \ast \beta) \lambda = (\alpha \lambda) \ast (\beta \lambda)$, so if $f$ is of the form in Claim \ref{geh-def}, then $f\lambda$ is also.  In view of these observations (and similar observations arising from permutations of $\{0,2,6\}$), we conclude (heuristically, at least) that all the bounds that are believed to hold for \eqref{flip}, \eqref{flop} should also hold (up to minor changes in the implied constants) for \eqref{flip-weight}, \eqref{flop-weight}.  Thus, if the bound $H_1 \leq 4$ could be proven in a sieve-theoretic fashion, one should be able to conclude the bound \eqref{ap-lower}, which is in direct contradiction to \eqref{ap-none}.
+
+\begin{remark}  Similar arguments work for any set of the form
+$$ A_H := \{ n \in \N: \exists n \leq p_1 < p_2 \leq n+H; p_1,p_2 \hbox{ both prime}, p_2 - p_1 \leq 4 \}$$
+and any fixed $H > 0$, to prohibit any non-trivial lower bound on $\sum_n \nu(n) 1_{A_H}(n)$ from sieve-theoretic methods. Indeed, one uses the weight
+$$ \omega(n) := \prod_{0 \leq i \leq i' \leq H; (n+i,3) = (n+i',3) = 1; i'-i \leq 4} (1 - \lambda(n+i) \lambda(n+i'));$$
+we leave the details to the interested reader.  This seems to block any attempt to use any argument based only on the distribution of the prime numbers and related expressions in arithmetic progressions to prove $H_1 \leq 4$.
+\end{remark}
+
+The same arguments of course also prohibit a sieve-theoretic proof of the twin prime conjecture $H_1 = 2$.   In this case one can use the simpler weight $\omega(n) = 1 - \lambda(n) \lambda(n+2)$ to rule out such a proof, and the argument is essentially due to Selberg \cite{selberg}.
+
+Of course, the parity barrier could be circumvented if one were able to introduce stronger sieve-theoretic axioms than the ``linear'' axioms currently available (which only control sums of the form \eqref{flip} or \eqref{flop}).  For instance, if one were able to obtain non-trivial bounds for ``bilinear'' expressions such as
+$$ \sum_{x \leq n \leq 2x} f(n) \Lambda(n+2) = \sum_d \sum_m \alpha(d) \beta(m) 1_{[x,2x]}(dm) \Lambda(dm+2)$$
+for functions $f = \alpha \ast \beta$ of the form in Claim \ref{geh-def}, then (by a modification of the proof of Proposition \ref{geh-eh}) one would very likely obtain non-trivial bounds on
+$$ \sum_{x \leq n \leq 2x} \Lambda(n) \Lambda(n+2)$$
+which would soon lead to a proof of the twin prime conjecture.  Unfortunately, we do not know of any plausible way to control such bilinear expressions.  (Note however that there are some other situations in which bilinear sieve axioms may be established, for instance in the argument of Friedlander and Iwaniec \cite{fi} establishing an infinitude of primes of the form $a^2+b^4$.)
+

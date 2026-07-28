@@ -1,0 +1,410 @@
+\section{Asymptotic analysis}\label{asymptotics-sec}
+
+We now establish upper and lower bounds on the quantity $M_k$ defined in \eqref{mk4}, as well as for the related quantities appearing in Theorem \ref{maynard-trunc}.
+
+To obtain an upper bound on $M_k$, we use the following consequence of the Cauchy-Schwarz inequality.
+
+\begin{lemma}[Cauchy-Schwarz]\label{cs}  Let $k \geq 2$, and suppose that there exist positive measurable functions $G_i: {\mathcal R}_k \to (0,+\infty)$ for $i=1,\dots,k$ such that
+\begin{equation}\label{gi}
+ \int_0^\infty G_i(t_1,\dots,t_k)\ dt_i \leq 1
+\end{equation}
+for all $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$, where we extend $G_i$ by zero to all of $[0,+\infty)^k$.  Then we have
+\begin{equation}\label{mk-bound}
+M_k \leq \sup_{(t_1,\dots,t_k) \in {\mathcal R}_k} \sum_{i=1}^k \frac{1}{G_i(t_1,\dots,t_k)}.
+\end{equation}
+\end{lemma}
+
+\begin{proof}  Let $F: [0,+\infty)^k \to \R$ be a square-integrable function supported on ${\mathcal R}_k$.  From the Cauchy-Schwarz inequality and \eqref{gi}, we have
+$$ \left(\int_0^\infty F(t_1,\dots,t_k)\ dt_i\right)^2 \leq \int_0^\infty \frac{1}{G_i(t_1,\dots,t_k)} F(t_1,\dots,t_k)^2\ dt_i$$
+for any $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$. Inserting this into \eqref{ji-def} and integrating, we conclude that
+$$ J_i(F) \leq \int_{{\mathcal R}_k} F(t_1,\dots,t_k)^2 \frac{1}{G_i(t_1,\dots,t_k)}\ dt_1\dots dt_k.$$
+Summing in $i$ and using \eqref{i-def}, \eqref{mk4}, \eqref{mk-bound} we obtain the claim.
+\end{proof}
+
+As a corollary, we can compute $M_k$ exactly if we can locate a positive eigenfunction:
+
+\begin{corollary}\label{ef}  Let $k \geq 2$, and suppose that there exists a positive function $F: {\mathcal R}_k \to (0,+\infty)$ obeying the eigenfunction equation
+\begin{equation}\label{lf}
+ \lambda F(t_1,\dots,t_k) = \sum_{i=1}^k \int_0^\infty F(t_1,\dots,t_{i-1},t'_i, t_{i+1},\dots,t_k)\ dt'_i
+\end{equation}
+for some $\lambda > 0$ and all $(t_1,\dots,t_k) \in {\mathcal R}_k$, where we extend $F$ by zero to all of $[0,+\infty)^k$.  Then $\lambda = M_k$.
+\end{corollary}
+
+\begin{proof}  On the one hand, if we integrate \eqref{lf} against $F$ and use \eqref{i-def}, \eqref{ji-def} we see that
+$$ \lambda I(F) = \sum_{i=1}^k J_i(F)$$
+and thus by \eqref{mk4} we see that $M_k \geq \lambda$.  On the other hand, if we apply Lemma \ref{cs} with
+$$ G_i(t_1,\dots,t_k) \coloneqq \frac{F(t_1,\dots,t_k)}{\int_0^\infty F(t_1,\dots,t_{i-1},t'_i, t_{i+1},\dots,t_k)\ dt'_i}$$
+we see that $M_k \leq \lambda$, and the claim follows.
+\end{proof}
+
+This allows for an exact calculation of $M_2$:
+
+\begin{corollary}[Computation of $M_2$]\label{m2-comp}
+We have 
+$$M_2 = \frac{1}{1 - W(1/e)} = 1.38593\dots$$
+where the Lambert $W$-function $W(x)$ is defined for positive $x$ as the unique positive solution to $x = W(x) e^{W(x)}$.
+\end{corollary}
+
+\begin{proof}  If we set $\lambda \coloneqq \frac{1}{1-W(1/e)} = 1.38593\dots$, then a brief calculation shows that
+\begin{equation}\label{ll1}
+ 2\lambda - 1 = \lambda \log \lambda - \lambda \log(\lambda-1).
+\end{equation}
+Now if we define the function $f: [0,1] \to [0,+\infty)$ by the formula
+$$ f(x) \coloneqq \frac{1}{\lambda-1+x} + \frac{1}{2\lambda-1} \log \frac{\lambda-x}{\lambda-1+x}$$
+then a further brief calculation shows that
+$$ \int_0^{1-x} f(y)\ dy = \frac{\lambda-1+x}{2\lambda-1} \log \frac{\lambda-x}{\lambda-1+x} + \frac{\lambda \log \lambda - \lambda \log(\lambda-1)}{2\lambda-1}$$
+for any $0 \leq x \leq 1$, and hence by \eqref{ll1} that
+$$ \int_0^{1-x} f(y)\ dy = (\lambda-1+x) f(x).$$
+If we then define the function $F: {\mathcal R}_2 \to (0,+\infty)$ by $F(x,y) \coloneqq f(x) + f(y)$, we conclude that
+$$ \int_0^{1-x} F(x',y)\ dx' + \int_0^{1-y} F(x,y')\ dy' = \lambda F(x,y)$$
+for all $(x,y) \in {\mathcal R}_2$, and the claim now follows from Corollary \ref{ef}.
+\end{proof}
+
+Unfortunately, we were unable to compute explicit eigenfunctions for any $k \geq 3$, although we conjecture that such eigenfunctions exist for all $k$.  Nevertheless, Lemma \ref{cs} still gives us a general upper bound:
+
+\begin{corollary}\label{mk-upper}  We have $M_k \leq \frac{k}{k-1} \log k$ for any $k \geq 2$.
+\end{corollary}
+
+Thus for instance one has $M_2 \leq 2 \log 2 = 1.38629\dots$, which compares well with Corollary \ref{m2-comp}.  On the other hand, Corollary \ref{mk-upper} also gives
+$$ M_4 \leq \frac{4}{3} \log 4 = 1.8454\dots, $$
+so that one cannot hope to establish $\DHL[4,2]$ (or $\DHL[3,2]$) solely through Theorem \ref{maynard-thm} even when assuming GEH, and must rely instead on more sophisticated criteria for $\DHL[k,m]$ such as Theorem \ref{epsilon-trick} or Theorem \ref{epsilon-beyond}. 
+
+\begin{proof}  If we set $G_i: {\mathcal R}^k \to (0,+\infty)$ for $i=1,\dots,k$ to be the functions
+$$ G_i(t_1,\dots,t_k) \coloneqq \frac{k-1}{\log k} \frac{1}{1-t_1-\dots-t_k + kt_i} $$
+then direct calculation shows that
+$$ \int_0^\infty G_i(t_1,\dots,t_k)\ dt_i \leq 1$$
+for all $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k \geq 0$, where we extend $G_i$ by zero to all of $[0,+\infty)^k$.  On the other hand, we have
+$$ \sum_{i=1}^k \frac{1}{G_i(t_1,\dots,t_k)} = \frac{k}{k-1} \log k$$
+for all $(t_1,\dots,t_k) \in {\mathcal R}_k$.  The claim now follows from Lemma \ref{cs}.
+\end{proof}
+
+The upper bound arguments for $M_k$ can be extended to other quantities such as $M_{k,\eps}$, although the bounds do not appear to be as sharp in that case.  For instance, we have the following variant of Lemma \ref{mk-upper}, which shows that the improvement in constants when moving from $M_k$ to $M_{k,\eps}$ is asymptotically modest:
+
+\begin{proposition}\label{mkeps}  For any $k \geq 2$ and $\eps \geq 0$ we have
+$$ M_{k,\eps} \leq \frac{k}{k-1} \log(2k-1).$$
+\end{proposition}
+
+\begin{proof}  
+Let $F: [0,+\infty)^k \to \R$ be a square-integrable function supported on $(1+\eps) \cdot {\mathcal R}_k$.  If $i=1,\dots,k$ and $(t_1,\dots,t_{i-1},t_{i+1},\dots,t_k) \in (1-\eps) \cdot {\mathcal R}_k$, then if we write $s := 1-t_1-\dots-t_{i-1}-t_{i+1}-\dots-t_k$, then we have $s \geq \eps$ and hence
+\begin{align*}
+\int_0^{1-t_1-\dots-t_{i-1}-t_{i+1}-\dots-t_k+\eps} \frac{1}{1-t_1-\dots-t_k + kt_i}\ dt_i 
+&= \int_0^{s+\eps} \frac{1}{s+(k-1)t_i}\ dt_i \\
+&= \frac{1}{k-1} \log \frac{ks + (k-1)\eps}{s} \\
+&\leq \frac{1}{k-1} \log(2k-1).
+\end{align*}
+By Cauchy-Schwarz, we conclude that
+$$ \left(\int_0^\infty F(t_1,\dots,t_k)\ dt_i\right)^2 \leq \frac{1}{k-1} \log(2k-1) \int_0^\infty (1-t_1-\dots-t_{i-1}-t_{i+1}-\dots-t_k) F(t_1,\dots,t_k)^2\ dt_i.$$
+Integrating in $t_1,\dots,t_{i-1},t_{i+1},\dots,t_k$ and summing in $i$, we obtain the claim.
+\end{proof}
+
+\begin{remark} The same argument, using the weight $1 + a(-t_1-\dots-t_k + kt_i)$, gives the inequality
+$$ M_{k,\eps} \leq \frac{k}{a(k-1)} \log(k + \frac{(a(1+\eps)-1)(k-1)}{1-a(1-\eps)} )$$
+whenever $\frac{1}{1+\eps} < a < \frac{1}{1-\eps}$; the case $a=1$ is Proposition \ref{mkeps}, and the limiting case $a=\frac{1}{1+\eps}$ recovers Lemma \ref{mk-upper} when one sends $\eps$ to zero.
+\end{remark}
+
+
+Now we turn to lower bounds on $M_k$, which are of more relevance for the purpose of establishing results such as Theorem \ref{mlower}.  If one restricts attention to those functions $F: {\mathcal R}_k \to \R$ of the special form $F(t_1,\dots,t_k) = f(t_1+\dots+t_k)$ for some function $f: [0,1] \to \R$ then the resulting variational problem has been optimized in previous works \cite{revesz}, \cite{polymath8a} (and originally in unpublished work of Conrey), giving rise to the lower bound
+$$ M_k \geq \frac{4k(k-1)}{j_{k-2}^2}$$
+where $j_{k-2}$ is the first positive zero of the Bessel function $J_{k-2}$.  This lower bound is reasonably strong for small $k$; for instance, when $k=2$ it shows that
+$$ M_2 \geq 1.383\dots$$
+which compares well with Corollary \ref{m2-comp}, and also shows that $M_6 > 2$, recovering the result of Goldston, Pintz, and Y{\i}ld{\i}r{\i}m that $\DHL[6,2]$ (and hence $H_1 \leq 16$) was true on the Elliott-Halberstam conjecture.  However, one can show that $\frac{4k(k-1)}{j_{k-2}^2} < 4$ for all $k$ (see \cite{sound}), so this lower bound cannot be used to force $M_k$ to be larger than $4$.
+
+In \cite{maynard-new} the lower bound
+\begin{equation}\label{klog}
+ M_k \geq \log k - 2\log\log k - 2
+\end{equation}
+was established for all sufficiently large $k$.  In fact, the arguments in \cite{maynard-new} can be used to show this bound for all $k \geq 200$ (for $k<200$, the right-hand side of \eqref{klog} is either negative or undefined.  Indeed, if we use the bound \cite[(8.17)]{maynard-new} with $A$ chosen so that $A^2 e^A = k$, then $3 < A < \log k$ when $k \geq 200$, hence $e^A = k/A^2 > k / \log^2 k$ and so $A \geq \log k - 2 \log\log k$.  By using the bounds $\frac{A}{e^A-1} < \frac{1}{6}$ (since $A >3$) and $e^A/k = 1/A^2 < 1/9$, we see that the right-hand side of \cite[(8.17)]{maynard-new} exceeds $A - \frac{1}{(1-1/6 - 1/9)^2} \geq A-2$, which gives \eqref{klog}.
+
+We will remove the $\log\log k$ factor in \eqref{klog} via the following explicit estimate.
+
+\begin{theorem}  Let $k \geq 2$, and let $c,T,\tau > 0$ be parameters.  Define the function $g: [0,T] \to \R$ by
+\begin{equation}\label{g-def}
+ g(t) \coloneqq \frac{1}{c + (k-1) t}
+\end{equation}
+and the quantities
+\begin{align}
+m_2 &\coloneqq \int_0^T g(t)^2\ dt \label{m2-def}\\
+\mu &\coloneqq \frac{1}{m_2} \int_0^T t g(t)^2\ dt \label{mu-def}\\
+\sigma^2 &\coloneqq \frac{1}{m_2} \int_0^T t^2 g(t)^2\ dt - \mu^2.\label{sigma-def}
+\end{align}
+Assume the inequalities
+\begin{align}
+k\mu &\leq 1-\tau \label{tau-bound}\\
+k\mu &< 1-T \label{T-bound}\\
+k\sigma^2 &< (1+\tau-k\mu)^2. \label{ksb}
+\end{align}
+Then one has
+\begin{equation}\label{bigbound}
+ \frac{k}{k-1} \log k - M_k^{[T]} \leq \frac{k}{k-1} \frac{Z + Z_3 + WX + VU}{(1+\tau/2) (1 - \frac{k\sigma^2}{(1+\tau-k\mu)^2})}
+\end{equation}
+where $Z, Z_3, W, X, V, U$ are the explicitly computable quantities
+\begin{align}
+Z &\coloneqq \frac{1}{\tau} \int_1^{1+\tau}\left( r\left(\log\frac{r-k\mu}{T} + \frac{k\sigma^2}{4(r-k\mu)^2 \log \frac{r-k\mu}{T}} \right) + \frac{r^2}{4kT}\right)\ dr\label{z-def}\\
+Z_3 &\coloneqq \frac{1}{m_2} \int_0^T kt \log(1+\frac{t}{T}) g(t)^2\ dt \label{z3-def}\\
+W &\coloneqq \frac{1}{m_2} \int_0^T \log(1+\frac{\tau}{kt}) g(t)^2\ dt\label{W-def}\\
+X &\coloneqq \frac{\log k}{\tau} c^2 \label{X-def}\\
+V &\coloneqq \frac{c}{m_2} \int_0^T \frac{1}{2c + (k-1)t} g(t)^2\ dt \label{V-def} \\
+U &\coloneqq \frac{\log k}{c} \int_0^1 (1 + u\tau- (k-1)\mu- c)^2 + (k-1) \sigma^2\ du.\label{U-def}
+\end{align}
+Of course, since $M_k^{[T]} \leq M_k$, the bound \eqref{bigbound} also holds with $M_k^{[T]}$ replaced by $M_k$.
+\end{theorem}
+
+\begin{proof}  From \eqref{mk4} we have
+$$ \sum_{i=1}^k J_i(F) \leq M_k^{[T]} I(F)$$
+whenever $F: [0,+\infty)^k \to \R$ is square-integrable and supported on $[0,T]^k \cap {\mathcal R}_k$.  By rescaling, we conclude that
+$$ \sum_{i=1}^k J_i(F) \leq r M_k^{[T]} I(F)$$
+whenever $r>0$ and $F: [0,+\infty)^k \to \R$ is square-integrable and supported on $[0,rT]^k \cap r \cdot {\mathcal R}_k$.  We apply this inequality with the function
+$$ F(t_1,\dots,t_k) \coloneqq 1_{t_1+\dots+t_k \leq r} g(t_1) \dots g(t_k)$$
+where $r>1$ is a parameter which we will eventually average over.  We thus have
+$$ I(F) = m_2^k \int_0^\infty \dots \int_0^\infty 1_{t_1+\dots+t_k \leq r} \prod_{i=1}^k \frac{g(t_i)^2\ dt_i}{m_2}.$$
+We can interpret this probabilistically as
+$$ I(F) = m_2^k \P( X_1 + \dots + X_k \leq r )$$
+where $X_1,\dots,X_k$ are independent random variables taking values in $[0,T]$ with probability distribution $\frac{1}{m_2} g(t)^2\ dt$.  In a similar fashion, we have
+$$ J_k(F) = m_2^{k-1} \int_0^\infty \dots \int_0^\infty (\int_{[0,r-t_1-\dots-t_{k-1}]} g(t)\ dt)^2 \prod_{i=1}^{k-1} \frac{g(t_i)^2\ dt_i}{m_2},$$
+where we adopt the convention that $\int_{[a,b]}$ vanishes when $b<a$.  In probabilistic language, we thus have
+$$ J_k(F) = m_2^{k-1} \E (\int_{[0,r-X_1-\dots-X_{k-1}]} g(t)\ dt)^2.$$
+Also by symmetry we see that $J_i(F)=J_k(F)$ for all $i=1,\dots,k$.  Putting all this together, we conclude that
+$$\E \left(\int_0^{r-X_1-\dots-X_{k-1}} g(t)\ dt\right)^2 \leq \frac{m_2 M_k r}{k} \P( X_1 + \dots + X_k \geq r )$$
+for all $r>1$.  Writing $S_i \coloneqq X_1 + \dots + X_i$, we abbreviate this as
+\begin{equation}\label{rg1}
+\E \left(\int_{[0,r-S_{k-1}]} g(t)\ dt\right)^2 \leq \frac{m_2 M_k^{[T]} r}{k} \P( S_k \geq r ).
+\end{equation}
+Now we run a variant of the Cauchy-Schwarz argument used to prove Corollary \ref{mk-upper}.  If, for fixed $r>0$, we introduce the random function $h: (0,+\infty) \to \R$ by the formula
+\begin{equation}\label{hdef}
+ h(t) \coloneqq \frac{1}{r-S_{k-1}+(k-1)t} 1_{S_{k-1} \leq r}
+\end{equation}
+and observe that whenever $S_{k-1} \leq r$, we have
+\begin{equation}\label{h-int}
+ \int_{[0,r-S_{k-1}]} h(t)\ dt = \frac{\log k}{k-1}
+\end{equation}
+and thus by the Legendre identity we have
+$$ \left(\int_{[0,r-S_{k-1}]} g(t)\ dt\right)^2 = \frac{\log k}{k-1} \int_{[0,r-S_{k-1}]} \frac{g(t)^2}{h(t)}\ dt - \frac{1}{2} \int_{[0,r-S_{k-1}]} \int_{[0,r-S_{k-1}]} \frac{(g(s)h(t)-g(t)h(s))^2}{h(s)h(t)}\ ds dt$$
+for $S_{k-1} \leq r$; but the claim also holds when $r < S_{k-1}$ since all integrals vanish in that case.  On the other hand, we have
+\begin{align*}
+\E \int_{[0,r-S_{k-1}]} \frac{g(t)^2}{h(t)}\ dt &= m_2 \E (r - S_{k-1} + (k-1) X_k) 1_{X_k \leq S_{k-1} - r}\\
+&= m_2 \E (r - S_k + k X_k) 1_{S_k \leq r} \\
+&= m_2 \E r 1_{S_k \leq r} \\
+&= m_2 r \P( S_k \leq r)
+\end{align*}
+where we have used symmetry to get the second equality.  We conclude that
+$$ \E (\int_{[0,r-S_{k-1}]} g(t)\ dt)^2 = \frac{\log k}{k-1} m_2 r \P(S_k \leq r) - \frac{1}{2} \E \int_{[0,r-S_{k-1}]} \int_{[0,r-S_{k-1}]} \frac{(g(s)h(t)-g(t)h(s))^2}{h(s)h(t)}\ ds dt.$$
+Combining this with \eqref{rg1}, we conclude that
+$$
+\Delta r \P( S_k \leq r) \leq \frac{k}{2m_2}
+\E \int_{[0,r-S_{k-1}]} \int_{[0,r-S_{k-1}]} \frac{(g(s)h(t)-g(t)h(s))^2}{h(s)h(t)}\ ds dt
+$$
+where
+$$ \Delta \coloneqq \frac{k}{k-1} \log k - M_k^{[T]}.$$
+Splitting into regions where $s,t$ are less than $T$ or greater than $T$, and noting that $g(s)$ vanishes for $s > T$, we conclude that
+$$
+\Delta r \P( S_k \leq r) \leq Y_1(r) + Y_2(r)$$
+where 
+$$ Y_1(r) \coloneqq \frac{k}{m_2} \E \int_{[0,T]} \int_{[T,r-S_{k-1}]} \frac{g(t)^2}{h(t)} h(s)\ ds dt $$
+and
+$$ Y_2(r) \coloneqq \frac{k}{2m_2} \E \int_{[0,\min(T,r-S_{k-1})]} \int_{[0,\min(T,r-S_{k-1})]} \frac{(g(s)h(t)-g(t)h(s))^2}{h(s)h(t)}\ ds dt.$$
+We average this from $r=1$ to $r=1+\tau$, to conclude that
+$$
+\Delta (\frac{1}{\tau} \int_1^{1+\tau} r \P( S_k \leq r)\ dr) \leq \frac{1}{\tau} \int_1^{1+\tau} Y_1(r)\ dr + 
+\frac{1}{\tau} \int_1^{1+\tau} Y_2(r)\ dr.$$
+Thus to prove \eqref{bigbound}, it suffices to establish the bounds
+\begin{equation}\label{denom-bound}
+\frac{1}{\tau} \int_1^{1+\tau} r \P( S_k \leq r)\ dr \geq 
+(1+\tau/2) \left(1 - \frac{k\sigma^2}{(1+\tau-k\mu)^2}\right),
+\end{equation}
+\begin{equation}\label{y1-bound}
+Y_1(r) \leq Z + Z_3
+\end{equation}
+for all $1 < r \leq 1+\tau$, and
+\begin{equation}\label{y2-bound}
+\frac{1}{\tau} \int_1^{1+\tau} Y_2(r)\ dr \leq \frac{k}{k-1}( WX+VU ).
+\end{equation}
+
+We begin with \eqref{denom-bound}.  Since
+$$ \frac{1}{\tau} \int_1^{1+\tau} r\ dr = 1+\frac{\tau}{2}$$
+it suffices to show that
+$$
+\P( S_k < 1+\tau)\ dr \leq \frac{k\sigma^2}{(1+\tau-k\mu)^2}.
+$$
+But, from \eqref{mu-def}, \eqref{sigma-def}, we see that each $X_i$ has mean $\mu$ and variance $\sigma^2$, so $S_k$ has mean $k\mu$ and variance $k\sigma^2$.  The claim now follows from Chebyshev's inequality.
+
+Now we show \eqref{y1-bound}.  The quantity $Y_1(r)$ is vanishing unless $r-S_{k-1} \geq T$.  Using the crude bound $h(s) \leq \frac{1}{(k-1)s}$ from \eqref{hdef}, we see that
+$$ \int_{[T,r-S_{k-1}]} h(s)\ ds \leq \frac{1}{k-1} \log_+ \frac{r-S_{k-1}}{T}$$
+where $\log_+(x) \coloneqq \max(\log x, 0)$.  We conclude that
+$$ Y_1(r) \leq \frac{k}{k-1} \frac{1}{m_2} \E \int_{[0,T]} \frac{g(t)^2}{h(t)}\ dt \log_+ \frac{r-S_{k-1}}{T}.$$
+We can rewrite this as
+$$ Y_1(r) \leq \frac{k}{k-1} \E \frac{1_{S_k \leq r}}{h(X_k)} \log_+ \frac{r-S_{k-1}}{T}.$$
+By \eqref{hdef}, we have
+$$ \frac{1_{S_k \leq r}}{h(X_k)} = (r-S_k+kX_k) 1_{S_k \leq r}.$$
+Also, from the elementary bound $\log_+(x+y) \leq \log_+ x + \log(1+y)$ for any $x,y \geq 0$, we see that
+$$ \log_+ \frac{r-S_{k-1}}{T} \leq \log_+ \frac{r-S_{k}}{T} + \log\left(1+\frac{X_k}{T}\right).$$
+We conclude that
+\begin{align*}
+Y_1(r) &\leq \frac{k}{k-1} \E (r-S_k+kX_k) \left( \log_+ \frac{r-S_{k}}{T} + \log\left(1+\frac{X_k}{T}\right) \right) 1_{S_k \leq r}\\
+&\leq \frac{k}{k-1} \left( \E (r-S_k+kX_k) \log_+ \frac{r-S_{k}}{T} + (r-S_k)_+ \frac{X_k}{T} + k X_k \log\left(1+\frac{X_k}{T}\right) \right)
+\end{align*}
+using the elementary bound $\log(1+y) \leq y$.  Symmetrizing in the $X_1,\dots,X_k$, we conclude that
+\begin{equation}\label{y1r}
+ Y_1(r) \leq \frac{k}{k-1} (Z_1(r) + Z_2(r) + Z_3)
+\end{equation}
+where
+\begin{align*}
+Z_1(r) &\coloneqq \E r \log_+ \frac{r-S_k}{T} \\
+Z_2(r) &\coloneqq \E (r-S_k)_+ \frac{S_k}{kT} 
+\end{align*}
+and $Z_3$ was defined in \eqref{z3-def}.
+
+For the minor error term $Z_2$, we use the crude bound $(r-S_k)_+ S_k \leq \frac{r^2}{4}$, so
+\begin{equation}\label{z2r}
+Z_2(r) \leq \frac{r^2}{4kT}.
+\end{equation}
+For $Z_1$, we upper bound $\log_+ x$ by a quadratic expression in $x$.  More precisely, we observe the inequality
+$$ \log_+ x \leq \frac{(x-2a\log a-a)^2}{4a^2 \log a}$$
+for any $a > 1$ and $x \in \R$, since the left-hand side is concave in $x$ for $x \geq 1$, while the right-hand side is convex in $x$, non-negative, and tangent to the left-hand side at $x=a$.  We conclude that
+$$ \log_+ \frac{r-S_k}{T} \leq \frac{(r-S_k-2aT\log a-aT)^2}{4a^2 T^2 \log a}.$$
+On the other hand, from \eqref{mu-def}, \eqref{sigma-def}, we see that each $X_i$ has mean $\mu$ and variance $\sigma^2$, so $S_k$ has mean $k\mu$ and variance $k\sigma^2$.  We conclude that
+$$ Z_1(r) \leq r \frac{ (r-k\mu-2aT\log a-aT)^2 + k \sigma^2}{4a^2 T^2 \log a}$$
+for any $a \geq 1$.
+
+From \eqref{T-bound} and the assumption $r > 1$, we may choose $a \coloneqq \frac{r-k\mu}{T}$ here, leading to the simplified formula
+\begin{equation}\label{z1r}
+Z_1(r) \leq r ( \log \frac{r-k\mu}{T} + \frac{k\sigma^2}{4(r-k\mu)^2 \log \frac{r-k\mu}{T}}).
+\end{equation}
+From \eqref{y1r}, \eqref{z2r}, \eqref{z1r}, \eqref{z-def} we conclude \eqref{y1-bound}.
+
+Finally, we prove \eqref{y2-bound}.  Here, we finally use the specific form \eqref{g-def} of the function $g$.  Indeed, from \eqref{g-def}, \eqref{hdef} we observe the identity
+$$ g(t) - h(t) = (r - S_{k-1} - c) g(t) h(t)$$
+for $t \in [0, \min(r-S_{k-1},T)]$.  Thus
+\begin{align*}
+Y_2(r) &= \frac{k}{2 m_2} \E \int_{[0,\min(r-S_{k-1},T)]} \int_{[0,\min(r-S_{k-1},T)]} \frac{((g-h)(s) h(t)-(g-h)(t) h(s))^2}{h(s) h(t)}\ ds dt \\
+&= \frac{k}{2 m_2} \E (r - S_{k-1} - c)^2 \int_{[0,\min(r-S_{k-1},T)]} \int_{[0,\min(r-S_{k-1},T)]} (g(s)-g(t))^2 h(s) h(t)\ ds dt.
+\end{align*}
+Using the crude bound $(g(s)-g(t))^2 \leq g(s)^2+g(t)^2$ and using symmetry, we conclude
+$$Y_2(r) \leq \frac{k}{m_2} \E (r - S_{k-1} - c)^2 \int_{[0,\min(r-S_{k-1},T)]} \int_{[0,\min(r-S_{k-1},T)]} g(s)^2 h(s) h(t)\ ds dt.$$
+From \eqref{h-int}, \eqref{hdef} we conclude that
+$$ Y_2(r) \leq \frac{k}{k-1} Z_4(r)$$
+where
+$$ Z_4(r) \coloneqq \frac{\log k}{m_2} \E (r - S_{k-1} - c)^2 \int_{[0,\min(r-S_{k-1},T)]} \frac{g(s)^2}{r-S_{k-1}+(k-1)s}\ ds.$$
+To prove \eqref{y2-bound}, it thus suffices (after making the change of variables $r = 1 + u \tau$) to show that
+\begin{equation}\label{z4-bound}
+ \int_0^1 Z_4(1+u\tau)\ du \leq WX+VU.
+\end{equation}
+We will exploit the averaging in $u$ to deal with the singular nature of the factor $\frac{1}{r-S_{k-1}+(k-1)s}$.  By Fubini's theorem, the left-hand side of \eqref{z4-bound} may be written as
+$$ \frac{\log k}{m_2} \E \int_0^1 Q(u)\ du $$
+where $Q(u)$ is the random variable
+$$ Q(u) \coloneqq (1+u\tau - S_{k-1} - c)^2 \int_{[0,\min(1+u\tau-S_{k-1},T)]} \frac{g(s)^2}{1+u\tau-S_{k-1}+(k-1)s}.$$
+Note that $Q(u)$ vanishes unless $1+u\tau-S_{k-1} > 0$.  Consider first the contribution of those $Q(u)$ for which
+$$ 0 < 1+u\tau-S_{k-1} \leq 2c.$$
+In this regime we may bound
+$$ (1+u\tau-S_{k-1}-c)^2 \leq c^2,$$
+so this contribution to \eqref{z4-bound} may be bounded by
+$$ \frac{\log k}{m_2} c^2 \E \int_{[0,T]} g(s)^2 (\int_0^1 \frac{1_{1+a\tau-S_{k-1} \geq s}}{1+u\tau-S_{k-1}+(k-1)s}\ du)\ ds.$$
+Observe on making the change of variables $v \coloneqq 1 + u\tau - S_{k-1} + (k-1)s$ that 
+\begin{align*}
+\int_0^1 \frac{1_{1+u\tau-S_{k-1} \geq s}}{1+u\tau-S_{k-1}+(k-1)s}\ du &= \frac{1}{\tau} \int_{[\max(ks, 1-S_{k-1}+(k-1)s), 1-S_{k-1}+\tau+(k-1)s]} \frac{dv}{v} \\
+&\leq \frac{1}{\tau} \log \frac{ks+\tau}{ks}
+\end{align*}
+and so this contribution to \eqref{z4-bound} is bounded by $WX$, where $W,X$ are defined in \eqref{W-def}, \eqref{X-def}.
+
+Now we consider the contribution to \eqref{z4-bound} when
+$$ 1+u\tau-S_{k-1} > 2c.$$
+In this regime we bound
+$$ \frac{1}{1+u\tau-S_{k-1}+(k-1)s} \leq \frac{1}{2c+(k-1)t},$$ 
+and so this portion of $\int_0^1 Z_4[1+u\tau]\ du$ may be bounded by 
+$$\int_0^1 \frac{\log k}{c} \E (1 + u\tau - S_{k-1} - c)^2 V\ du = VU$$
+where $V, U$ are defined in \eqref{V-def}, \eqref{U-def}.  The proof of the theorem is now complete.
+\end{proof}
+
+We can now perform an asymptotic analysis in the limit $k \to \infty$ to establish Theorem \ref{mlower}(xi) and Theorem \ref{mlower-var}(vi).  For $k$ sufficiently large, we select the parameters
+\begin{align*}
+c &\coloneqq \frac{1}{\log k} + \frac{\alpha}{\log^2 k} \\
+T &\coloneqq \frac{\beta}{\log k} \\
+\tau &\coloneqq \frac{\gamma}{\log k}
+\end{align*}
+for some real parameters $\alpha \in \R$ and $\beta,\gamma > 0$ independent of $k$ to be optimized in later.  From \eqref{g-def}, \eqref{m2-def} we have
+\begin{align*}
+m_2 &= \frac{1}{k-1} ( \frac{1}{c} - \frac{1}{c+(k-1)T} ) \\
+&= \frac{\log k}{k} (1 - \frac{\alpha}{\log k} + o( \frac{1}{\log k} ) )
+\end{align*}
+where we use $o(f(k))$ to denote a function $g(k)$ of $k$ with $g(k)/f(k) \to 0$ as $k \to \infty$.  On the other hand, we have from \eqref{g-def}, \eqref{mu-def} that
+\begin{align*}
+m_2 (c + (k-1) \mu) &= \int_0^T (c+(k-1)t) g(t)^2\ dt \\
+&= \frac{1}{k-1} \log \frac{c+(k-1)T}{c} \\
+&= \frac{\log k}{k} (1 + \frac{\log \beta}{\log k} + o( \frac{1}{\log k} ) )
+\end{align*}
+and thus
+\begin{align*}
+ k\mu &= \frac{k}{k-1} (1 + \frac{\log \beta + \alpha}{\log k} + o(\frac{1}{\log k} ) ) - \frac{kc}{k-1} \\
+&= 1 + \frac{\log \beta + \alpha - 1}{\log k} + o( \frac{1}{\log k} ).
+\end{align*}
+Similarly, from \eqref{g-def}, \eqref{mu-def}, \eqref{sigma-def} we have
+\begin{align*}
+m_2 (c^2 + 2c(k-1)\mu + (k-1)^2 (\mu^2+\sigma^2)) &= \int_0^T (c+(k-1)t)^2 g(t)^2\ dt \\
+&= T
+\end{align*}
+and thus
+\begin{align*}
+k \sigma^2 &= \frac{k}{(k-1)^2} (\frac{T}{m_2} - c^2 - 2c(k-1)\mu) - k \mu^2 \\
+&= \frac{\beta}{\log^2 k} + o( \frac{1}{\log^2 k} ).
+\end{align*}
+
+We conclude that the hypotheses \eqref{tau-bound}, \eqref{T-bound}, \eqref{ksb} will be obeyed for sufficiently large $k$ if we have
+\begin{align*}
+\log \beta + \alpha + \gamma &< 1 \\
+\log \beta + \alpha + \beta &< 1 \\
+\beta &< (\log \beta + \alpha + \gamma)^2.
+\end{align*}
+These conditions can be simultaneously obeyed, for instance by setting $\beta=\gamma=1$ and $\alpha = -3$.
+
+Now we crudely estimate the quantities $Z,Z_3,W,X,V,U$ in \eqref{z-def}-\eqref{U-def}.  For $1 \leq r \leq 1+\tau$, we have $r-k\mu \sim 1/\log k$, and so
+$$ \frac{r-k\mu}{T} \sim 1; \quad \frac{k \sigma^2}{(r-k\mu)^2} \sim 1; \quad \frac{r^2}{4kT} = o(1)$$
+and so by \eqref{z-def} $Z = O(1)$.  Using the crude bound $\log(1+\frac{t}{T}) = O(1)$ for $0 \leq t \leq T$, we see from \eqref{z3-def}, \eqref{mu-def} that $Z_3 = O( k \mu ) = O(1)$.  It is clear that $X = O(1)$, and using the crude bound $\frac{1}{2c+(k-1)t} \leq \frac{1}{c}$ we see from \eqref{V-def}, \eqref{m2-def} that $V = O(1)$.  For $0 \leq u \leq 1$ we have $1 + u\tau - (k-1)\mu - c = O(1/\log k)$, so from \eqref{U-def} we have $U=O(1)$.  Finally, from \eqref{W-def} and the change of variables $t = \frac{s}{k \log k}$ we have
+\begin{align*}
+W &= \frac{\log k}{k m_2} \int_0^{kT\log k} \log\left(1 + \frac{\gamma}{s}\right) \frac{ds}{(1 + \frac{\alpha}{\log k} + \frac{k-1}{k} s)^2} \\
+&= O\left( \int_0^\infty \log\left(1+\frac{\gamma}{s}\right) \frac{ds}{(1+o(1))(1+s)^2} \right) \\
+&= O(1).
+\end{align*}
+Finally we have
+$$ 1 - \frac{k\sigma^2}{(1+\tau-k\mu)^2} \sim 1.$$
+Putting all this together, we see from \eqref{bigbound} that
+$$  M_k \geq M_k^{[T]} \geq \frac{k}{k-1} \log k -  O(1)$$
+giving Theorem \ref{mlower}(xi).  Furthermore, if we set
+$$ \varpi \coloneqq \frac{7}{600} - \frac{C}{\log k}$$
+and
+$$ \delta \coloneqq \left(\frac{1}{4} + \frac{7}{600}\right) \frac{\beta}{\log k}$$
+then we will have $600 \varpi + 180 \delta < 7$ for $C$ large enough, and Theorem \ref{mlower-var}(vi) also follows (as one can verify from inspection that all implied constants here are effective).
+
+%$$ \varpi \coloneqq \frac{13}{1080} - \frac{C}{\log k}$$
+%and
+%$$ \delta \coloneqq \left(\frac{1}{4} + \frac{13}{1080}\right) \frac{\beta}{\log k}$$
+%then we will have $1080 \varpi + 330 \delta < 13$ for $C$ large enough, and Theorem \ref{mlower-var}(vi) also follows (as one can verify from inspection that all implied constants here are effective).
+
+Finally, Theorem \ref{mlower}(viii), (ix), (x) follow by setting
+\begin{align*}
+c &:= \frac{\theta}{\log k} \\
+T &:= \frac{\beta}{\log k} \\
+\tau &= 1 - k\mu
+\end{align*}
+with $\theta,\beta$ given by Table \ref{narrow-table}, with \eqref{bigbound} then giving the bound $M_k^{[T]} > M$ with $M$ as given by the table.  Similarly, Theorem \ref{mlower-var} (ii), (iii), (iv), (v) follows with $\theta,\beta$ given by the same table, with $\varpi$ chosen so that
+$$ M = \frac{m}{\frac{1}{4}+\varpi} $$
+with $m=2,3,4,5$ for (ii), (iii), (iv), (v) respectively, and $\delta$ chosen by the formula
+$$ \delta := T (\frac{1}{4} + \varpi).$$
+
+\begin{table}
+\centering
+ \caption{Parameter choices for Theorem \ref{mlower}.}
+ \label{narrow-table}
+  \begin{tabular}{llll}
+	% D{.}{.}{4.0} D{.}{.}{8.0} D{.}{.}{8.0} D{.}{.}{9.0}}
+   \toprule
+     $k$    & $\theta$   & $\beta$          &M \\
+   \midrule
+           5511 & 0.965              & 0.973               & 6.000048609 \\ 
+          35410 & 0.99479            & 0.85213             & 7.829849259 \\ [0.5ex]
+          41588 & 0.97878  	         & 0.94319             & 8.000001401 \\
+         309661 & 0.98627            & 0.92091             & 10.00000032 \\ [0.5ex]
+				1649821 & 1.00422            & 0.80148             & 11.65752556 \\  
+       75845707 & 1.00712            & 0.77003             & 15.48125090 \\  [0.5ex]
+     3473955908 & 1.0079318          & 0.7490925           & 19.30374872 \\  
+   \bottomrule
+  \end{tabular}
+\end{table}
