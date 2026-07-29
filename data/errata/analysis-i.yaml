@@ -148,7 +148,7 @@ editions:
     text: "In Exercise 11.9.1, add “is $F$ differentiable from the left at $r$?”. In Exercise 11.9.3,\
       \ $x_0$ needs to lie in the interior interval $(a,b)$."
   - id: corrected-fourth-edition-0012
-    page: '366'
+    page: '336'
     text: "In Definition B.2.1, the sum $\\sum_{i=-\\infty}^n a_i \\times 10^i$ can be replaced with\
       \ $\\sum_{i=-n}^\\infty a_{-i} \\times 10^{-i}$ for compatibility with the one-sided definition of\
       \ infinite summation in Definition 7.2.1. A similar change can be made for Exercise B.2.1."
