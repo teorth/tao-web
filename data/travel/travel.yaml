@@ -3,29 +3,6 @@ title: Travel
 note: Due to a high workload and large volume of requests, I am currently declining almost all future invitations to travel.
 upcoming:
 - year: 2026
-  dates: Feb 21
-  place: Princeton
-- year: 2026
-  dates: May 11–15
-  place: Providence
-- year: 2026
-  dates: Jun 23–24
-  place: DC
-- year: 2026
-  dates: Jun 28 – Jul 3
-  place: Montreal
-  cancelled: true
-  note: very tentative
-- year: 2026
-  dates: Jun 29
-  place: UC Riverside
-- year: 2026
-  dates: Jul 20–21
-  place: Washington DC
-- year: 2026
-  dates: Jul 23–30
-  place: Philadelphia
-- year: 2026
   dates: Aug 8
   place: Stanford
 - year: 2026
@@ -1346,7 +1323,30 @@ past:
   dates: Sep 15–19
   place: Providence
 - year: 2026
+  dates: Feb 21
+  place: Princeton
+- year: 2026
   dates: May 1–2
   place: Stanford
   url: https://events.stanford.edu/event/future-of-mathematics-symposium
   note: Future of Mathematics symposium
+- year: 2026
+  dates: May 11–15
+  place: Providence
+- year: 2026
+  dates: Jun 23–24
+  place: DC
+- year: 2026
+  dates: Jun 28 – Jul 3
+  place: Montreal
+  cancelled: true
+  note: very tentative
+- year: 2026
+  dates: Jun 29
+  place: UC Riverside
+- year: 2026
+  dates: Jul 20–21
+  place: Washington DC
+- year: 2026
+  dates: Jul 23–30
+  place: Philadelphia
