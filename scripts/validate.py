@@ -84,11 +84,25 @@ def validate_papers() -> int:
             print(f"{path.name}: {loc}: {err.message}")
             problems += 1
         works = doc.get("works", [])
+        # Cross-field: work ids must be unique within a file (same guard as
+        # errata ids above). Truncated-slug collisions previously slipped past.
+        seen: dict = {}
+        for i, w in enumerate(works):
+            wid = w.get("id")
+            if wid is None:
+                continue
+            if wid in seen:
+                print(f"{path.name}: works/{i}: duplicate work id {wid!r} "
+                      f"(also at works/{seen[wid]})")
+                problems += 1
+            else:
+                seen[wid] = i
         kinds = {}
         for w in works:
             kinds[w.get("kind")] = kinds.get(w.get("kind"), 0) + 1
+        uniq_ok = len(seen) == sum(1 for w in works if w.get("id") is not None)
         print(f"  {path.name}: {len(works)} works {kinds} "
-              f"-> {'OK' if not errors else 'INVALID'}")
+              f"-> {'OK' if not errors and uniq_ok else 'INVALID'}")
     return problems
 
 
