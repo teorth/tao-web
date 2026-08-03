@@ -344,18 +344,20 @@ works:
     url: "https://terrytao.wordpress.com/2025/08/10/rough-numbers-between-consecutive-primes/"
 - id: growth-rates-of-sequences-governed-by-the-squarefree-propert
   kind: paper
-  title: Growth rates of sequences governed by the squarefree properties of its translates
+  title: Growth rates of sequences governed by the squarefree properties of their translates
   coauthors:
   - Wouter van Doorn
   year: 2025
-  status: to-appear
-  venue: To appear, Acta Arith.
+  status: published
+  venue: Acta Arith. 224 (2026), 173–195.
   arxiv: '2512.01087'
   tags:
   - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2512.01087"
+  - type: journal
+    url: "https://doi.org/10.4064/aa251207-28-5"
   - type: discussion
     url: "https://terrytao.wordpress.com/2025/12/01/growth-rates-of-sequences-governed-by-the-squarefree-properties-of-its-translates/"
 - id: quantitative-correlations-and-some-problems-on-prime-factors
