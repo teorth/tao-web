@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Bézout's-theorem visualizer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Bézout's-theorem visualizer</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="bezout.html">Bézout's-theorem visualizer</a>.</p>
+  </header>
+  <article>
+<p><em>A lightly edited transcript of the conversation that built the <a href="bezout.html">Bézout&#x27;s-theorem visualizer</a>, an interactive tool for watching two low-degree plane curves meet in exactly (deg × deg) points — once you count multiplicity, points at infinity, and complex points. The app was built in a single session.</em></p>
+<p><strong>How to read this.</strong> Terence Tao&#x27;s messages appear verbatim in the blockquotes; the assistant&#x27;s replies are summarised in italics between them. Routine &quot;looks good, continue&quot; replies are folded into the narration.</p>
+<h2>1. The concept, and one clarification</h2>
+<blockquote><p>Developing an app to visualize Bezout&#x27;s theorem in low degree. The app will take two polynomials as input with integer coefficients — I envisage a dropdown for linear, quadratic, cubic, etc., and then boxes for the coefficients [...]. The main pane would display both plane curves in a standard Cartesian grid (say −5,5 for both x and y axes), and indicate all intersections with their multiplicity, say as a filled in circle with some number of rings around it to indicate multiplicity [...] (this is why it is important to use integers rather than floating point here, as multiplicity requires exact arithmetic). I would also like to illustrate the intersections at infinity, which can be handled by arrows just outside of the Cartesian grid [...]. The test case I have in mind is <code>xy=1</code> and <code>xy^2=1</code> [...]. Do you understand the app concept? I&#x27;d like it to have a somewhat similar look and feel to some of the complex analysis or linear algebra applets.</p></blockquote>
+<p><em>The assistant confirmed the concept and, to prove the mathematics was aligned rather than merely paraphrase it, worked the test case by hand. Homogenizing <code>xy = 1</code> and <code>xy² = 1</code> to <code>XY = Z²</code> and <code>XY² = Z³</code>, it found the affine intersection (1,1) is transversal (multiplicity 1) and, working in charts at infinity, that the point <code>[1:0:0]</code> has multiplicity 3 and <code>[0:1:0]</code> has multiplicity 2 — so 1 + 3 + 2 = 6 = 2 × 3, exactly as Bézout requires. It flagged one slip: the six-coefficient example <code>ax²+bxy+cy²+dx+ey+f</code> is a conic (degree 2), not a cubic — a genuine cubic has ten coefficients — and proposed that the dropdown pick the total degree d, giving (d+1)(d+2)/2 boxes. It then laid out the plan: a DOM-free exact-arithmetic core (homogenize; find rational intersections via the resultant and the rational-root theorem; get each local multiplicity by Fulton&#x27;s algorithm) with node tests, and a canvas UI reusing the complex-analysis applets&#x27; plane stage.</em></p>
+<h2>2. Scope: degree three, colours, and the degenerate cases</h2>
+<blockquote><p>I&#x27;d be happy at stopping at degree three — so the most complex thing to demonstrate is that a cubic and another cubic meet at at most nine points. We can also compute a resultant to pick up the degenerate case where the two curves share a common component which should be indicated perhaps by a color scheme (e.g., first curve is blue, second is red, but common components (or intersection points) are purple). Complex intersections can be listed on some side panel but I don&#x27;t see a good way to visualize them inside the main panel. [...] One may also want to insert a guard against the degenerate case when attempts to set all the leading coefficients to zero and the polynomial is lower degree than requested.</p></blockquote>
+<p><em>Two scoping questions settled the rest: the app would cap at degree three, and it would compute exact multiplicities for rational points — affine and at infinity — while tallying the irrational/complex remainder so the Bézout count always closes. The colour scheme (blue, red, purple), the side-panel listing of complex intersections, the &quot;actual degree from the nonzero coefficients&quot; guard, and a possible future finite-field mode (kept for later, with the field arithmetic isolated so it can be swapped) all went onto the build list.</em></p>
+<h2>3. Getting the multiplicities exactly</h2>
+<p><em>The core came first, as a DOM-free module tested under node. It works over exact rationals (a <code>BigInt</code> numerator and denominator) and carries univariate and bivariate polynomial arithmetic; a Sylvester resultant <code>Res_y(f,g)</code> whose rational roots (via the rational-root theorem) give the x-coordinates of the rational affine intersections; a gcd computed in <code>ℚ(x)[y]</code> to draw any shared component; and Fulton&#x27;s recursive algorithm for the local intersection multiplicity — translating each point to the origin and reducing, using only polynomial arithmetic, which is exact for rational points. Points at infinity are handled by homogenizing and running the same machinery in an affine chart.</em></p>
+<p><em>Two bugs surfaced under the tests and were fixed. The first gcd attempt over-reported common components — it dropped the content, the purely-x common factor — so component detection was switched to the robust test &quot;<code>Res_y ≡ 0</code> or <code>Res_x ≡ 0</code>&quot;. And the rational-root finder missed roots whenever the constant term vanished (its divisor enumeration returns nothing for zero), fixed by factoring out the <code>x = 0</code> roots first. With those in, all the target cases passed: the flagship <code>xy=1</code> / <code>xy²=1</code>, a tangent line (multiplicity 2), a line meeting a cubic in three points, concentric circles (four intersections, all complex), and a shared component.</em></p>
+<h2>4. The picture</h2>
+<p><em>The interface mirrors the complex-analysis applets — the same shared plane stage and stylesheet — with a degree dropdown per curve, a coefficient grid ordered <code>x², xy, y², x, y, 1</code>, a live equation, and a menu of presets. Curve 1 is drawn blue and curve 2 red by marching squares; each intersection is a purple dot ringed by (multiplicity − 1) circles; and each rational point at infinity is drawn as arrows just outside the ±5 box in that projective direction, with the multiplicity marker at one end. A side panel gives the Bézout accounting — deg × deg equals the sum of the multiplicities shown, plus any irrational or complex intersections, which are listed but not drawn. A DOM-shim smoke test exercises the wiring without a browser.</em></p>
+<h2>5. Audit and ship</h2>
+<blockquote><p>Looks good! Let&#x27;s make a making-of file, audit, and push.</p></blockquote>
+<p><em>A short audit followed: dead code removed, the marching-squares saddle cells disambiguated with the cell centre so curves render cleanly, the coefficient inputs restricted to integers (no silent float truncation), and a diagonal-points-at-infinity case — two hyperbolas sharing asymptotes, meeting only at <code>[1:1:0]</code> and <code>[1:−1:0]</code> — added to both the tests and the presets. With the node tests and the smoke test green, the app joined the catalogue in the Algebraic geometry category.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>

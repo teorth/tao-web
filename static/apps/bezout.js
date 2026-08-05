@@ -264,8 +264,7 @@
   // rational points at infinity: common roots of the two leading binary forms on Z=0
   function infinityRationalIntersections(f, g) {
     var out = [];
-    var Ff = leadingBinary(f), Gg = leadingBinary(g);   // homogeneous forms in X,Y (as {deg->pairs}); use dehomogenized slope polys
-    // direction [1:t:0] (finite slope t): roots of f_d(1,t) and g_e(1,t)
+    // direction [1:t:0] (finite slope t): common rational roots of the leading forms f_d(1,t) and g_e(1,t)
     var ft = binaryAtX1(f), gt = binaryAtX1(g);         // UPoly in t
     var common = upGCD(ft, gt);
     var ts = upRationalRoots(common);
@@ -281,7 +280,6 @@
     }
     return out;
   }
-  function leadingBinary() { return null; }   // (kept for clarity; the slope polys below are what we use)
   function binaryAtX1(p) {   // f_d(1,t): substitute X=1,Y=t into the top-degree form -> UPoly in t
     var d = bpTotalDeg(p), u = [];
     bpEach(p, function (i, j, c) { if (i + j === d) { while (u.length <= j) u.push(R0); u[j] = rAdd(u[j], c); } });

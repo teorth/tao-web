@@ -235,6 +235,24 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/jacobian-making-of.html
+- name: Bézout's theorem visualizer
+  category: Algebraic geometry
+  status: original
+  date: "2026-08-05"
+  description: >-
+    An interactive illustration of Bézout's theorem: two plane curves of degree ≤ 3 with integer coefficients
+    meet in exactly (deg × deg) points, once you count multiplicity, points at infinity, and complex points.
+    Enter each curve with a degree dropdown and a grid of coefficient boxes (or load a preset — from a tangent
+    line to two hyperbolas that meet only at infinity), and exact rational arithmetic finds every rational
+    intersection, affine and at infinity, with its exact local multiplicity (Fulton's algorithm), drawing each
+    as a dot ringed by that many circles: curve 1 blue, curve 2 red, intersections and any shared component
+    purple. Points at infinity appear as arrows just outside the ±5 box; irrational or complex intersections
+    are listed in a side panel so the Bézout count always closes. Integers are used deliberately —
+    multiplicity is a discrete invariant that floating point cannot see.
+  url: apps/bezout.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/bezout-making-of.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
