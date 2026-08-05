@@ -259,14 +259,16 @@ works:
   - Timothy Trudgian
   - Andrew Yang
   year: 2025
-  status: to-appear
-  venue: To appear, Math. Comp.
+  status: published
+  venue: "Math. Comp. (2025). https://doi.org/10.1090/mcom/4138"
   arxiv: '2501.16779'
   tags:
   - additive-combinatorics-number-theory
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2501.16779"
+  - type: journal
+    url: "https://doi.org/10.1090/mcom/4138"
   - type: discussion
     url: "https://terrytao.wordpress.com/2025/01/28/new-exponent-pairs-zero-density-estimates-and-zero-additive-energy-estimates-a-systematic-approach/"
 - id: decomposing-a-factorial-into-large-factors
