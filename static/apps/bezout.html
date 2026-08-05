@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>Bézout's theorem visualizer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .curverow { display: flex; flex-wrap: wrap; gap: .6rem 1.1rem; align-items: center; margin: .1rem 0; }
+  .curvetag { font-family: var(--mono); font-weight: 600; min-width: 4.7rem; }
+  .curvetag.f { color: var(--cf); } .curvetag.g { color: var(--cg); }
+  .coeffs { display: flex; flex-wrap: wrap; gap: .35rem; align-items: center; }
+  .cbox { display: inline-flex; flex-direction: column; align-items: center; gap: .1rem; }
+  .cbox input { width: 3.1rem; text-align: center; font-family: var(--mono); padding: .2rem; }
+  .cbox label { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+  .eqn { font-family: var(--mono); color: var(--ink); margin: .15rem 0 .1rem; overflow-wrap: anywhere; }
+  .eqn .z { color: var(--muted); }
+  .stagewrap { margin-top: 1.1rem; }
+  .panel { display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem; align-items: start; }
+  @media (max-width: 620px) { .panel { grid-template-columns: 1fr; } }
+  .tally { font-family: var(--mono); font-size: .9rem; }
+  .tally h3 { font-family: var(--sans); font-size: .95rem; margin: .2rem 0 .4rem; }
+  .tally .big { font-size: 1.05rem; }
+  .tally ul { list-style: none; padding: 0; margin: .3rem 0; }
+  .tally li { margin: .15rem 0; }
+  .sw { display: inline-block; width: .7rem; height: .7rem; border-radius: 50%; vertical-align: middle; margin-right: .35rem; }
+  .note { color: var(--muted); font-size: .85rem; }
+  .warn { color: var(--danger); }
+  :root { --cf: #3b6fd4; --cg: #e5484d; --cx: #9333ea; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Bézout's theorem visualizer</h1>
+    <p class="lede">Two plane curves of degree <span class="math">m</span> and <span class="math">n</span>
+      meet in exactly <span class="math">mn</span> points — <em>if</em> you count multiplicity, points at
+      infinity, and complex points. Enter two integer-coefficient curves and watch the intersections, with
+      each multiplicity drawn as a dot ringed by that many circles. The arithmetic is <strong>exact</strong>
+      (multiplicity is a discrete invariant that floating point can't see).</p>
+    <p class="prov">An original interactive applet, part of tao-web.</p>
+  </header>
+
+  <div class="card">
+    <div class="curverow">
+      <label class="field" style="margin:0">Preset
+        <select id="preset"></select>
+      </label>
+    </div>
+    <div id="editor"></div>
+    <div class="stagewrap">
+      <div class="panel">
+        <div>
+          <canvas class="stage" id="cv"></canvas>
+        </div>
+        <div class="tally" id="tally"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>An original interactive applet, part of
+    <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="plane.js"></script>
+<script src="bezout.js"></script>
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var B = window.Bezout;
+  var CF = "#3b6fd4", CG = "#e5484d", CX = "#9333ea";   // f blue, g red, intersections/common purple
+  var VIEW = 5.8, BOX = 5;                                // panel half-width; the finite plane box is +-5
+
+  // ----- monomials of total degree <= d, ordered by descending degree then descending x-power -----
+  function monomials(d) { var m = []; for (var t = d; t >= 0; t--) for (var i = t; i >= 0; i--) m.push([i, t - i]); return m; }
+  function monLabel(i, j) {
+    if (i === 0 && j === 0) return "1";
+    var s = ""; if (i > 0) s += "x" + (i > 1 ? sup(i) : ""); if (j > 0) s += "y" + (j > 1 ? sup(j) : ""); return s;
+  }
+  function sup(n) { return String(n).replace(/[0-9]/g, function (c) { return "⁰¹²³⁴⁵⁶⁷⁸⁹"[+c]; }); }
+
+  // ----- state: two curves, each { deg, coeffs: {"i,j": intstring} } -----
+  var curves = [{ deg: 2, c: {} }, { deg: 3, c: {} }];
+
+  function buildEditor() {
+    var ed = $("editor"); ed.innerHTML = "";
+    curves.forEach(function (cur, ci) {
+      var row = document.createElement("div"); row.className = "curverow";
+      var tag = document.createElement("span"); tag.className = "curvetag " + (ci === 0 ? "f" : "g");
+      tag.textContent = (ci === 0 ? "Curve 1" : "Curve 2");
+      var degWrap = document.createElement("label"); degWrap.className = "field"; degWrap.style.margin = "0";
+      degWrap.appendChild(document.createTextNode("deg "));
+      var sel = document.createElement("select");
+      [1, 2, 3].forEach(function (d) { var o = document.createElement("option"); o.value = d; o.textContent = d; if (d === cur.deg) o.selected = true; sel.appendChild(o); });
+      sel.addEventListener("change", function () { cur.deg = +sel.value; pruneCoeffs(cur); buildEditor(); recompute(); });
+      degWrap.appendChild(sel);
+      var box = document.createElement("div"); box.className = "coeffs";
+      monomials(cur.deg).forEach(function (m) {
+        var key = m[0] + "," + m[1];
+        var wrap = document.createElement("div"); wrap.className = "cbox";
+        var inp = document.createElement("input"); inp.type = "text"; inp.inputMode = "numeric";
+        inp.value = cur.c[key] !== undefined ? cur.c[key] : "0";
+        inp.addEventListener("input", function () { cur.c[key] = inp.value.trim(); recompute(); });
+        var lab = document.createElement("label"); lab.innerHTML = monLabel(m[0], m[1]);
+        wrap.appendChild(inp); wrap.appendChild(lab); box.appendChild(wrap);
+      });
+      row.appendChild(tag); row.appendChild(degWrap); row.appendChild(box);
+      ed.appendChild(row);
+      var eq = document.createElement("div"); eq.className = "eqn"; eq.id = "eqn" + ci; ed.appendChild(eq);
+    });
+  }
+  function pruneCoeffs(cur) { var keep = {}; monomials(cur.deg).forEach(function (m) { keep[m[0] + "," + m[1]] = 1; }); for (var k in cur.c) if (!keep[k]) delete cur.c[k]; }
+
+  function termsOf(cur) {
+    var terms = [];
+    monomials(cur.deg).forEach(function (m) {
+      var v = parseInt(cur.c[m[0] + "," + m[1]], 10);
+      if (v && !isNaN(v)) terms.push([m[0], m[1], v]);
+    });
+    return terms;
+  }
+  function eqnString(cur) {
+    var parts = [], mons = monomials(cur.deg);
+    mons.forEach(function (m) {
+      var v = parseInt(cur.c[m[0] + "," + m[1]], 10); if (!v || isNaN(v)) return;
+      var lab = monLabel(m[0], m[1]), a = Math.abs(v), coef = (a === 1 && lab !== "1") ? "" : a;
+      parts.push({ sign: v < 0 ? "−" : "+", body: coef + (lab === "1" ? (a === 1 ? "1" : "") : lab) });
+    });
+    if (!parts.length) return "0 <span class=\"z\">= 0</span>";
+    var s = (parts[0].sign === "−" ? "−" : "") + parts[0].body;
+    for (var i = 1; i < parts.length; i++) s += " " + parts[i].sign + " " + parts[i].body;
+    return s + " <span class=\"z\">= 0</span>";
+  }
+
+  // ----- stage -----
+  var stage = new ComplexStage($("cv"), { planes: 1, view: VIEW });
+  var last = null;   // last analysis, for redraw on resize
+
+  function recompute() {
+    var fT = termsOf(curves[0]), gT = termsOf(curves[1]);
+    $("eqn0").innerHTML = eqnString(curves[0]); $("eqn1").innerHTML = eqnString(curves[1]);
+    last = { f: fT, g: gT, res: B.analyze(fT, gT) };
+    draw(); tally();
+  }
+
+  function draw() {
+    stage.resize(); stage.clear();
+    var p = stage.panels[0], ctx = stage.ctx;
+    // grid + axes + box, only within +-BOX
+    ctx.strokeStyle = ComplexStage.prototype.css("--grid"); ctx.lineWidth = 1; ctx.beginPath();
+    for (var i = -BOX; i <= BOX; i++) { line(ctx, p, -BOX, i, BOX, i); line(ctx, p, i, -BOX, i, BOX); }
+    ctx.stroke();
+    ctx.strokeStyle = ComplexStage.prototype.css("--axis"); ctx.lineWidth = 1.5; ctx.beginPath();
+    line(ctx, p, -BOX, 0, BOX, 0); line(ctx, p, 0, -BOX, 0, BOX); ctx.stroke();
+    ctx.strokeStyle = ComplexStage.prototype.css("--line"); ctx.lineWidth = 1; ctx.strokeRect(px(p, -BOX, BOX)[0], px(p, -BOX, BOX)[1], p.s * 2 * BOX, p.s * 2 * BOX);
+    if (!last) return;
+    var r = last.res;
+    // curves (clip to the box)
+    ctx.save(); var tl = px(p, -BOX, BOX); ctx.beginPath(); ctx.rect(tl[0], tl[1], p.s * 2 * BOX, p.s * 2 * BOX); ctx.clip();
+    var fBP = B.bpFromTerms(last.f), gBP = B.bpFromTerms(last.g);
+    if (r.commonComponent && r.gcd) {
+      contour(ctx, p, fBP, CF); contour(ctx, p, gBP, CG); contour(ctx, p, r.gcd, CX, 3);   // shared part on top, purple
+    } else { contour(ctx, p, fBP, CF); contour(ctx, p, gBP, CG); }
+    ctx.restore();
+    // affine intersection markers (purple, rings = multiplicity - 1)
+    (r.affine || []).forEach(function (pt) {
+      var x = B.rToNumber(pt.x), y = B.rToNumber(pt.y);
+      if (Math.abs(x) <= BOX + 1e-9 && Math.abs(y) <= BOX + 1e-9) marker(ctx, p, x, y, pt.mult);
+    });
+    // points at infinity: marker + outward arrows on both ends of the direction
+    (r.infinity || []).forEach(function (pt) {
+      var dx = B.rToNumber(pt.dir[0]), dy = B.rToNumber(pt.dir[1]), L = Math.hypot(dx, dy) || 1;
+      var ux = dx / L, uy = dy / L, M = Math.max(Math.abs(ux), Math.abs(uy));
+      var ex = BOX * ux / M, ey = BOX * uy / M;               // where the ray leaves the box
+      var mx = ex + 0.42 * ux, my = ey + 0.42 * uy;           // marker just outside
+      ctx.strokeStyle = CX; ctx.fillStyle = CX; ctx.lineWidth = 1.5;
+      arrow(ctx, p, ex * 0.86, ey * 0.86, mx, my);            // arrow toward the marker (+ end)
+      arrow(ctx, p, -ex * 0.86, -ey * 0.86, -ex - 0.28 * ux, -ey - 0.28 * uy);  // wrap-around arrow (- end)
+      marker(ctx, p, mx, my, pt.mult);
+    });
+  }
+  function line(ctx, p, x1, y1, x2, y2) { var a = px(p, x1, y1), b = px(p, x2, y2); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); }
+  function px(p, x, y) { return stage.px(p, x, y); }
+  function arrow(ctx, p, x0, y0, x1, y1) { stage.arrow(p, x0, y0, x1, y1, 8); }
+
+  function marker(ctx, p, x, y, mult) {
+    var q = px(p, x, y); ctx.fillStyle = CX; ctx.strokeStyle = CX; ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.arc(q[0], q[1], 4.5, 0, 7); ctx.fill();
+    for (var k = 1; k < mult; k++) { ctx.beginPath(); ctx.arc(q[0], q[1], 4.5 + 3.2 * k, 0, 7); ctx.stroke(); }
+  }
+
+  // marching squares for the implicit curve poly = 0, within +-BOX
+  function contour(ctx, p, poly, color, width) {
+    if (B.bpIsZero(poly)) return;
+    var N = Math.max(160, Math.min(360, Math.floor(p.w / 2.2))), lo = -BOX, step = (2 * BOX) / N;
+    var V = []; for (var ix = 0; ix <= N; ix++) { V[ix] = []; var X = lo + ix * step; for (var iy = 0; iy <= N; iy++) V[ix][iy] = B.bpEvalNum(poly, X, lo + iy * step); }
+    ctx.strokeStyle = color; ctx.lineWidth = width || 2; ctx.beginPath();
+    for (var ix = 0; ix < N; ix++) for (var iy = 0; iy < N; iy++) {
+      var x0 = lo + ix * step, y0 = lo + iy * step, x1 = x0 + step, y1 = y0 + step;
+      var a = V[ix][iy], b = V[ix + 1][iy], c = V[ix + 1][iy + 1], d = V[ix][iy + 1];
+      var pts = [];
+      if ((a > 0) !== (b > 0)) pts.push([lerp(x0, x1, a, b), y0]);
+      if ((b > 0) !== (c > 0)) pts.push([x1, lerp(y0, y1, b, c)]);
+      if ((d > 0) !== (c > 0)) pts.push([lerp(x0, x1, d, c), y1]);
+      if ((a > 0) !== (d > 0)) pts.push([x0, lerp(y0, y1, a, d)]);
+      if (pts.length === 2) seg(ctx, p, pts[0], pts[1]);
+      else if (pts.length === 4) { seg(ctx, p, pts[0], pts[1]); seg(ctx, p, pts[2], pts[3]); }
+    }
+    ctx.stroke();
+  }
+  function lerp(a, b, fa, fb) { return a + (b - a) * (0 - fa) / (fb - fa); }
+  function seg(ctx, p, P, Q) { var A = px(p, P[0], P[1]), Bp = px(p, Q[0], Q[1]); ctx.moveTo(A[0], A[1]); ctx.lineTo(Bp[0], Bp[1]); }
+
+  // ----- side panel -----
+  function fmtDir(d) {
+    var X = B.rToString(d[0]), Y = B.rToString(d[1]);
+    return "[" + X + " : " + Y + " : 0]";
+  }
+  function tally() {
+    var r = last.res, el = $("tally"), h = "";
+    if (r.zeroF || r.zeroG) { el.innerHTML = "<p class=\"warn\">Curve " + (r.zeroF ? "1" : "2") + " has no nonzero coefficients — that is not a curve.</p>"; return; }
+    h += "<h3>Bézout count</h3>";
+    if (r.commonComponent) {
+      h += "<p class=\"warn\">The two curves <strong>share a common component</strong> (drawn <span style=\"color:" + CX + "\">purple</span>), so they meet in <strong>infinitely many</strong> points.</p>";
+      h += "<p class=\"note\">Degrees " + r.degF + " and " + r.degG + ". Remove the shared factor to get a finite intersection.</p>";
+      el.innerHTML = h; return;
+    }
+    h += "<p class=\"big\"><b>" + r.degF + " × " + r.degG + " = " + r.total + "</b> intersections (with multiplicity).</p>";
+    h += "<ul>";
+    (r.affine || []).forEach(function (pt) { h += "<li><span class=\"sw\" style=\"background:" + CX + "\"></span>(" + B.rToString(pt.x) + ", " + B.rToString(pt.y) + ")" + multStr(pt.mult) + "</li>"; });
+    (r.infinity || []).forEach(function (pt) { h += "<li><span class=\"sw\" style=\"background:" + CX + "\"></span>at infinity " + fmtDir(pt.dir) + multStr(pt.mult) + "</li>"; });
+    h += "</ul>";
+    var acc = r.accounted, rem = r.remaining;
+    h += "<p class=\"note\">accounted here: <b>" + acc + "</b>";
+    if (rem > 0) h += " &nbsp;•&nbsp; <b>" + rem + "</b> further intersection" + (rem === 1 ? "" : "s") + " at irrational or complex coordinates (not shown on the real grid)";
+    h += ".</p>";
+    if (rem > 0) h += "<p class=\"note\">" + acc + " + " + rem + " = " + r.total + ", as Bézout requires.</p>";
+    el.innerHTML = h;
+  }
+  function multStr(m) { return m === 1 ? "" : " <b>&times;" + m + "</b> <span class=\"note\">(multiplicity " + m + ")</span>"; }
+
+  // ----- presets -----
+  var PRESETS = [
+    ["xy = 1 and xy² = 1  (a point at infinity of multiplicity 3)", { deg: 2, c: { "1,1": "1", "0,0": "-1" } }, { deg: 3, c: { "1,2": "1", "0,0": "-1" } }],
+    ["Line meets a circle (two points)", { deg: 1, c: { "0,1": "1", "0,0": "-1" } }, { deg: 2, c: { "2,0": "1", "0,2": "1", "0,0": "-4" } }],
+    ["A tangent line (multiplicity 2)", { deg: 1, c: { "0,1": "1" } }, { deg: 2, c: { "0,1": "1", "2,0": "-1" } }],
+    ["Line meets a cubic in three points", { deg: 1, c: { "0,1": "1" } }, { deg: 3, c: { "0,2": "1", "3,0": "-1", "1,0": "1" } }],
+    ["Two conics meeting in four points", { deg: 2, c: { "2,0": "1", "0,2": "1", "0,0": "-5" } }, { deg: 2, c: { "1,1": "1", "0,0": "-2" } }],
+    ["Nodal cubic and a line", { deg: 3, c: { "0,2": "1", "3,0": "-1", "2,0": "-1" } }, { deg: 1, c: { "0,1": "1", "1,0": "-1" } }],
+    ["Concentric circles (all four points complex)", { deg: 2, c: { "2,0": "1", "0,2": "1", "0,0": "-1" } }, { deg: 2, c: { "2,0": "1", "0,2": "1", "0,0": "-4" } }],
+    ["A shared component (degenerate)", { deg: 2, c: { "2,0": "1", "0,2": "-1" } }, { deg: 2, c: { "2,0": "1", "1,1": "-1" } }]
+  ];
+  function buildPresets() {
+    var sel = $("preset");
+    PRESETS.forEach(function (P, i) { var o = document.createElement("option"); o.value = i; o.textContent = P[0]; sel.appendChild(o); });
+    sel.addEventListener("change", function () { loadPreset(+sel.value); });
+  }
+  function loadPreset(i) {
+    var P = PRESETS[i];
+    curves = [{ deg: P[1].deg, c: Object.assign({}, P[1].c) }, { deg: P[2].deg, c: Object.assign({}, P[2].c) }];
+    buildEditor(); recompute();
+  }
+
+  // ----- boot -----
+  buildPresets(); buildEditor(); loadPreset(0);
+  window.addEventListener("resize", function () { draw(); });
+  window.__bezout = { curves: function () { return curves; }, analysis: function () { return last && last.res; }, loadPreset: loadPreset, recompute: recompute, termsOf: termsOf, monomials: monomials };
+})();
+</script>
+</body>
+</html>
