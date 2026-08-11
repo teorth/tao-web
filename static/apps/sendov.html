@@ -1,0 +1,398 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>Sendov infeasibility explorer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .controls { display: flex; flex-wrap: wrap; gap: .9rem 1.4rem; align-items: flex-end; }
+  .stepper { display: inline-flex; align-items: stretch; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .stepper button { border: none; background: var(--panel); color: var(--ink); font-size: 1.1rem; width: 2rem; cursor: pointer; font-family: var(--mono); }
+  .stepper button:hover { background: var(--accent-soft); }
+  .stepper .nval { min-width: 3.2rem; text-align: center; font-family: var(--mono); font-weight: 600; padding: .35rem .2rem; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .field label, .field .cap { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+  .field input { width: 4rem; text-align: center; font-family: var(--mono); padding: .3rem; }
+  .khint { color: var(--muted); font-size: .8rem; }
+  .btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: .38rem .7rem; cursor: pointer; font-size: .85rem; }
+  .btn:hover { background: var(--accent-soft); }
+  canvas.plot { display: block; width: 100%; max-width: 100%; height: auto; touch-action: none; }
+  .readout { font-family: var(--mono); font-size: .88rem; line-height: 1.5; }
+  .readout b { font-weight: 600; }
+  .badge { display: inline-block; padding: .05rem .45rem; border-radius: 999px; font-size: .78rem; font-family: var(--mono); }
+  .badge.ok { background: var(--accent-soft); color: var(--accent); }
+  .badge.warn { background: #fdecec; color: var(--danger); }
+  @media (prefers-color-scheme: dark) { .badge.warn { background: #3a2323; } }
+  .cols2 { display: grid; grid-template-columns: 1.55fr 1fr; gap: 1.1rem; align-items: start; }
+  @media (max-width: 680px) { .cols2 { grid-template-columns: 1fr; } }
+  .note { color: var(--muted); font-size: .85rem; }
+  .parity { font-family: var(--mono); }
+  .swatchrow { display: flex; align-items: center; gap: .3rem; font-size: .78rem; color: var(--muted); font-family: var(--mono); margin-top: .3rem; }
+  .grad { height: .55rem; flex: 1; border-radius: 3px; border: 1px solid var(--line); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>Sendov infeasibility explorer</h1>
+    <p class="lede">In the digestion of the proof of Sendov's conjecture, one step reduces to showing that an
+      inequality &mdash; call it <span class="math">(stat)</span> &mdash; is <em>infeasible</em> for every
+      integer degree <span class="math">n</span> in <span class="math">[5,200]</span> and every
+      <span class="math">&alpha;</span> in <span class="math">[0,17]</span> (with a side constraint). The
+      right-hand side <span class="math">R(n,&alpha;)</span> stays strictly below&nbsp;1. Step
+      <span class="math">n</span> with the <b>&uarr;/&darr; arrow keys</b> and watch the curve never touch
+      the threshold.</p>
+    <p class="prov">An original interactive applet, part of tao-web.</p>
+  </header>
+
+  <div class="card">
+    <div class="controls">
+      <div class="field">
+        <span class="cap">degree n</span>
+        <span class="stepper">
+          <button id="nDown" title="decrease n (Down arrow)">&minus;</button>
+          <span class="nval" id="nVal">50</span>
+          <button id="nUp" title="increase n (Up arrow)">+</button>
+        </span>
+      </div>
+      <div class="field">
+        <label for="aMin">&alpha; min</label>
+        <input id="aMin" type="text" inputmode="decimal" value="0">
+      </div>
+      <div class="field">
+        <label for="aMax">&alpha; max</label>
+        <input id="aMax" type="text" inputmode="decimal" value="17">
+      </div>
+      <button class="btn" id="fit" title="set the alpha window to the admissible interval for this n">fit to admissible</button>
+      <button class="btn" id="reset" title="reset alpha window to [0,17]">reset &alpha;</button>
+      <span class="khint">&uarr;/&darr; step n by 1 &middot; Shift+&uarr;/&darr; by 10 &middot; click the heatmap to jump to a degree</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cols2">
+      <div>
+        <canvas class="plot" id="curve" aria-label="Plot of R(n, alpha) versus alpha"></canvas>
+      </div>
+      <div class="readout" id="readout"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-size:1.05rem;margin:.1rem 0 .5rem">The whole region at a glance</h2>
+    <p class="note" style="margin-top:0">Heatmap of <span class="math">R(n,&alpha;)</span> over the entire
+      range. Every admissible cell is coloured by its value; none reaches&nbsp;1, so <span class="math">(stat)</span>
+      is infeasible throughout. Grey = outside the constraint <span class="math">c(&alpha;)^2 \le a^2</span>.
+      The vertical marker is the current degree; the bracket shows the &alpha; window above.</p>
+    <canvas class="plot" id="heat" aria-label="Heatmap of R over n and alpha"></canvas>
+    <div class="swatchrow">
+      <span>0</span><span class="grad" id="grad"></span><span>1 (threshold)</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="note" style="margin:0">The integral
+      <span class="math">I(n,&alpha;)=\int_0^1 t^3\,(1-2c\,t+a^2t^2)^{(n-4)/2}\,dt</span>
+      is evaluated by a fixed 64-node Gauss&ndash;Legendre rule (about 14-digit accuracy for every
+      <span class="math">n</span> here, regardless of parity). For <b>even</b> <span class="math">n</span> the
+      integrand is a polynomial, so <span class="math">I</span> also has an exact closed form; the readout
+      cross-checks the quadrature against that exact value computed in <b>BigInt rational arithmetic</b>. For
+      <b>odd</b> <span class="math">n</span> there is no obvious elementary closed form &mdash; but the
+      quadrature does not care.</p>
+  </div>
+
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>. Companion to Terence Tao's
+    digestion of the proof of Sendov's conjecture.</footer>
+</div>
+
+<script src="sendov.js"></script>
+<script>
+(function () {
+  "use strict";
+  var S = window.Sendov;
+  var state = { n: 50, aMin: 0, aMax: 17 };
+
+  var elCurve = document.getElementById('curve');
+  var elHeat = document.getElementById('heat');
+  var elReadout = document.getElementById('readout');
+  var elNVal = document.getElementById('nVal');
+  var elAMin = document.getElementById('aMin');
+  var elAMax = document.getElementById('aMax');
+
+  // ---- canvas / DPR helper -------------------------------------------------
+  function setup(canvas, cssH) {
+    var dpr = window.devicePixelRatio || 1;
+    var cssW = canvas.clientWidth || canvas.parentNode.clientWidth || 600;
+    canvas.width = Math.round(cssW * dpr);
+    canvas.height = Math.round(cssH * dpr);
+    canvas.style.height = cssH + 'px';
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: cssW, h: cssH };
+  }
+  function cssvar(name) { return getComputedStyle(document.body).getPropertyValue(name).trim() || '#888'; }
+
+  // ---- colour ramp for the heatmap (0 -> 1) --------------------------------
+  var STOPS = [
+    [0.00, [40, 58, 120]],   // deep blue
+    [0.45, [40, 150, 150]],  // teal
+    [0.70, [120, 175, 70]],  // green
+    [0.86, [224, 165, 40]],  // amber
+    [1.00, [209, 73, 91]]    // red (=1, never reached)
+  ];
+  function ramp(v) {
+    if (v <= 0) v = 0; if (v >= 1) v = 1;
+    for (var i = 1; i < STOPS.length; i++) {
+      if (v <= STOPS[i][0]) {
+        var a = STOPS[i - 1], b = STOPS[i];
+        var f = (v - a[0]) / (b[0] - a[0]);
+        return [Math.round(a[1][0] + f * (b[1][0] - a[1][0])),
+                Math.round(a[1][1] + f * (b[1][1] - a[1][1])),
+                Math.round(a[1][2] + f * (b[1][2] - a[1][2]))];
+      }
+    }
+    return STOPS[STOPS.length - 1][1];
+  }
+  (function fillGrad() {
+    var stops = STOPS.map(function (s) { var c = ramp(s[0]); return 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ') ' + Math.round(s[0] * 100) + '%'; });
+    document.getElementById('grad').style.background = 'linear-gradient(90deg,' + stops.join(',') + ')';
+  })();
+
+  // ---- heatmap (computed once, cached as an offscreen bitmap) ---------------
+  var heatCache = null;   // { off: canvas, hm: heatmapObj }
+  function buildHeat() {
+    var hm = S.heatmap({ nMin: 5, nMax: 200, aMin: 0, aMax: 17, cols: 196, rows: 170 });
+    var off = document.createElement('canvas');
+    off.width = hm.cols; off.height = hm.rows;
+    var octx = off.getContext('2d');
+    var img = octx.createImageData(hm.cols, hm.rows);
+    for (var ri = 0; ri < hm.rows; ri++) {
+      for (var ci = 0; ci < hm.cols; ci++) {
+        // image row 0 = top = alpha max, so flip vertically
+        var v = hm.data[ri * hm.cols + ci];
+        var p = ((hm.rows - 1 - ri) * hm.cols + ci) * 4;
+        if (isFinite(v)) {
+          var c = ramp(v / 1.0);
+          img.data[p] = c[0]; img.data[p + 1] = c[1]; img.data[p + 2] = c[2]; img.data[p + 3] = 255;
+        } else {
+          img.data[p] = 190; img.data[p + 1] = 192; img.data[p + 2] = 198; img.data[p + 3] = 70;
+        }
+      }
+    }
+    octx.putImageData(img, 0, 0);
+    heatCache = { off: off, hm: hm };
+  }
+
+  // ---- main curve plot ------------------------------------------------------
+  function drawCurve() {
+    var d = setup(elCurve, 300);
+    var ctx = d.ctx, W = d.w, H = d.h;
+    var padL = 48, padR = 14, padT = 14, padB = 34;
+    var x0 = padL, x1 = W - padR, y0 = H - padB, y1 = padT;
+    var aMin = state.aMin, aMax = state.aMax, yTop = 1.1;
+    ctx.clearRect(0, 0, W, H);
+    function ax(a) { return x0 + (x1 - x0) * (a - aMin) / (aMax - aMin || 1); }
+    function ay(v) { return y0 + (y1 - y0) * (v / yTop); }
+
+    // grid
+    ctx.strokeStyle = cssvar('--grid'); ctx.lineWidth = 1; ctx.fillStyle = cssvar('--muted');
+    ctx.font = '11px ' + cssvar('--mono'); ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    var aStep = niceStep(aMax - aMin);
+    for (var a = Math.ceil(aMin / aStep) * aStep; a <= aMax + 1e-9; a += aStep) {
+      var xx = ax(a); ctx.beginPath(); ctx.moveTo(xx, y1); ctx.lineTo(xx, y0); ctx.stroke();
+      ctx.fillText(fmt(a), xx, y0 + 5);
+    }
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    for (var v = 0; v <= yTop + 1e-9; v += 0.2) {
+      var yy = ay(v); ctx.strokeStyle = cssvar('--grid'); ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x1, yy); ctx.stroke();
+      ctx.fillStyle = cssvar('--muted'); ctx.fillText(v.toFixed(1), x0 - 6, yy);
+    }
+    // axes labels
+    ctx.fillStyle = cssvar('--muted'); ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+    ctx.fillText('α', (x0 + x1) / 2, H - 2);
+    ctx.save(); ctx.translate(12, (y0 + y1) / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = 'top'; ctx.fillText('R(n, α)', 0, 0); ctx.restore();
+
+    // admissible shading
+    var rng = S.admissibleRange(state.n);
+    if (rng) {
+      var sa = Math.max(rng.lo, aMin), sb = Math.min(rng.hi, aMax);
+      if (sb > sa) { ctx.fillStyle = cssvar('--accent-soft'); ctx.globalAlpha = 0.7; ctx.fillRect(ax(sa), y1, ax(sb) - ax(sa), y0 - y1); ctx.globalAlpha = 1; }
+    }
+
+    // threshold line R = 1
+    ctx.strokeStyle = cssvar('--danger'); ctx.lineWidth = 1.5; ctx.setLineDash([6, 4]);
+    ctx.beginPath(); ctx.moveTo(x0, ay(1)); ctx.lineTo(x1, ay(1)); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = cssvar('--danger'); ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+    ctx.fillText('infeasibility threshold  R = 1', x0 + 6, ay(1) - 3);
+
+    // the curve (solid where admissible, faint dashed where not)
+    var N = 480, prevAdm = null;
+    ctx.lineWidth = 2;
+    for (var seg = 0; seg < 2; seg++) {
+      ctx.beginPath(); var drawing = false;
+      for (var i = 0; i <= N; i++) {
+        var aa = aMin + (aMax - aMin) * i / N;
+        var adm = S.isAdmissible(state.n, aa);
+        if ((seg === 0) !== adm) { drawing = false; continue; }
+        var vv = S.rhs(state.n, aa);
+        if (!isFinite(vv)) { drawing = false; continue; }
+        var px = ax(aa), py = ay(Math.min(vv, yTop));
+        if (!drawing) { ctx.moveTo(px, py); drawing = true; } else ctx.lineTo(px, py);
+      }
+      if (seg === 0) { ctx.strokeStyle = cssvar('--accent'); ctx.setLineDash([]); }
+      else { ctx.strokeStyle = cssvar('--axis'); ctx.setLineDash([3, 4]); ctx.globalAlpha = 0.7; }
+      ctx.stroke(); ctx.globalAlpha = 1; ctx.setLineDash([]);
+    }
+
+    // max marker
+    var mx = S.maxOverAlpha(state.n);
+    if (mx && mx.alpha >= aMin && mx.alpha <= aMax) {
+      var px = ax(mx.alpha), py = ay(mx.R);
+      ctx.fillStyle = cssvar('--accent'); ctx.beginPath(); ctx.arc(px, py, 4, 0, 7); ctx.fill();
+      ctx.strokeStyle = cssvar('--accent'); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px, y0); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = cssvar('--ink'); ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+      ctx.fillText('max R = ' + mx.R.toFixed(4), px, py - 7);
+    }
+    return mx;
+  }
+
+  // ---- heatmap draw (bitmap + overlays) ------------------------------------
+  function drawHeat() {
+    if (!heatCache) buildHeat();
+    var d = setup(elHeat, 220);
+    var ctx = d.ctx, W = d.w, H = d.h;
+    var padL = 40, padR = 12, padT = 10, padB = 30;
+    var x0 = padL, x1 = W - padR, y0 = H - padB, y1 = padT;
+    var hm = heatCache.hm;
+    ctx.clearRect(0, 0, W, H);
+    // bitmap (nearest-neighbour scale)
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(heatCache.off, x0, y1, x1 - x0, y0 - y1);
+    // frame
+    ctx.strokeStyle = cssvar('--line'); ctx.strokeRect(x0, y1, x1 - x0, y0 - y1);
+    // axes ticks
+    ctx.fillStyle = cssvar('--muted'); ctx.font = '11px ' + cssvar('--mono');
+    ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    function nx(n) { return x0 + (x1 - x0) * (n - hm.nMin) / (hm.nMax - hm.nMin); }
+    function ay(a) { return y0 + (y1 - y0) * (a - hm.aMin) / (hm.aMax - hm.aMin); }
+    [5, 50, 100, 150, 200].forEach(function (n) { ctx.fillText(n, nx(n), y0 + 4); });
+    ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+    [0, 5, 10, 15].forEach(function (a) { ctx.fillText(a, x0 - 5, ay(a)); });
+    ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillStyle = cssvar('--muted');
+    ctx.fillText('degree n', (x0 + x1) / 2, H - 1);
+    ctx.save(); ctx.translate(11, (y0 + y1) / 2); ctx.rotate(-Math.PI / 2); ctx.textBaseline = 'top'; ctx.fillText('α', 0, 0); ctx.restore();
+    // current-n marker + alpha window bracket
+    var xm = nx(state.n);
+    ctx.strokeStyle = cssvar('--ink'); ctx.lineWidth = 1.5; ctx.globalAlpha = 0.85;
+    ctx.beginPath(); ctx.moveTo(xm, y1); ctx.lineTo(xm, y0); ctx.stroke(); ctx.globalAlpha = 1;
+    var wy0 = ay(Math.max(hm.aMin, state.aMin)), wy1 = ay(Math.min(hm.aMax, state.aMax));
+    ctx.strokeStyle = cssvar('--accent'); ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(xm, wy0); ctx.lineTo(xm, wy1); ctx.stroke();
+    ctx.fillStyle = cssvar('--ink'); ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.font = '11px ' + cssvar('--mono');
+    ctx.fillText('n = ' + state.n, xm, y1 - 1);
+    elHeat._map = { nx: nx, x0: x0, x1: x1, nMin: hm.nMin, nMax: hm.nMax };
+  }
+
+  // ---- readout panel --------------------------------------------------------
+  function fmtExp(v) {
+    if (!isFinite(v)) return '—';
+    if (v === 0) return '0';
+    if (Math.abs(v) >= 1e-3) return v.toPrecision(6);
+    return v.toExponential(5);
+  }
+  function drawReadout(mx) {
+    var n = state.n, even = (n % 2 === 0);
+    var rng = S.admissibleRange(n);
+    var html = '';
+    html += '<div><b>n = ' + n + '</b> <span class="parity note">(' + (even ? 'even' : 'odd') + ')</span></div>';
+    if (rng) html += '<div>admissible &alpha; &isin; [' + fmt(rng.lo) + ', ' + fmt(rng.hi) + ']</div>';
+    else html += '<div class="note">no admissible &alpha; at this n</div>';
+    if (mx) {
+      var margin = 1 - mx.R;
+      html += '<div style="margin-top:.4rem">worst case in-range:</div>';
+      html += '<div>&alpha;* = ' + fmt(mx.alpha) + '</div>';
+      html += '<div><b>max R = ' + mx.R.toFixed(5) + '</b></div>';
+      html += '<div>margin 1 &minus; R = <b>' + margin.toFixed(5) + '</b> ';
+      html += '<span class="badge ' + (mx.R < 1 ? 'ok' : 'warn') + '">' + (mx.R < 1 ? 'infeasible ✓' : 'FEASIBLE!') + '</span></div>';
+
+      // integral at alpha*
+      var Iq = S.integral(n, mx.alpha);
+      html += '<div style="margin-top:.5rem">at &alpha;*:</div>';
+      html += '<div>I(n,&alpha;*) = ' + fmtExp(Iq) + '</div>';
+      if (even) {
+        var ex = S.integralExactEven(n, mx.alpha);
+        var relErr = ex ? Math.abs(ex.value - Iq) / Math.max(1e-300, Math.abs(ex.value)) : NaN;
+        html += '<div>exact (BigInt) = ' + fmtExp(ex.value) + '</div>';
+        html += '<div><span class="badge ok">closed form &middot; agrees to ' + relErr.toExponential(1) + '</span></div>';
+      } else {
+        html += '<div><span class="badge ok">odd n &middot; no closed form &middot; GL-64 quadrature</span></div>';
+      }
+      // dominant term
+      var tm = S.terms(n, mx.alpha);
+      html += '<div style="margin-top:.5rem" class="note">terms: 1/6 + ' + tm.t1.toFixed(4) + ' + ' + tm.t2.toFixed(4)
+        + ' + ' + tm.t3.toFixed(5) + ' + <b>' + tm.t4.toFixed(5) + '</b> (integral term)</div>';
+    }
+    elReadout.innerHTML = html;
+  }
+
+  // ---- helpers --------------------------------------------------------------
+  function niceStep(range) {
+    var raw = range / 6, p = Math.pow(10, Math.floor(Math.log10(raw))), m = raw / p;
+    return (m < 1.5 ? 1 : m < 3 ? 2 : m < 7 ? 5 : 10) * p;
+  }
+  function fmt(x) { return (Math.abs(x - Math.round(x)) < 1e-9) ? String(Math.round(x)) : x.toFixed(2); }
+
+  function render() {
+    elNVal.textContent = state.n;
+    var mx = drawCurve();
+    drawHeat();
+    drawReadout(mx);
+    if (window.__sendov) window.__sendov.last = { n: state.n, aMin: state.aMin, aMax: state.aMax, max: mx };
+  }
+
+  // ---- interaction ----------------------------------------------------------
+  function setN(n) { state.n = Math.max(5, Math.min(200, n)); render(); }
+  document.getElementById('nUp').onclick = function () { setN(state.n + 1); };
+  document.getElementById('nDown').onclick = function () { setN(state.n - 1); };
+  document.getElementById('fit').onclick = function () {
+    var r = S.admissibleRange(state.n);
+    if (r) { state.aMin = 0; state.aMax = Math.max(0.5, Math.ceil(r.hi * 20) / 20); syncInputs(); render(); }
+  };
+  document.getElementById('reset').onclick = function () { state.aMin = 0; state.aMax = 17; syncInputs(); render(); };
+
+  function syncInputs() { elAMin.value = fmt(state.aMin); elAMax.value = fmt(state.aMax); }
+  function readInputs() {
+    var lo = parseFloat(elAMin.value), hi = parseFloat(elAMax.value);
+    if (isFinite(lo) && isFinite(hi) && hi > lo) { state.aMin = Math.max(0, lo); state.aMax = Math.min(17, hi); render(); }
+  }
+  elAMin.addEventListener('change', readInputs);
+  elAMax.addEventListener('change', readInputs);
+
+  document.addEventListener('keydown', function (e) {
+    var t = e.target.tagName;
+    if (t === 'INPUT' || t === 'SELECT' || t === 'TEXTAREA') return;
+    var d = e.shiftKey ? 10 : 1;
+    if (e.key === 'ArrowUp' || e.key === 'ArrowRight') { setN(state.n + d); e.preventDefault(); }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowLeft') { setN(state.n - d); e.preventDefault(); }
+  });
+
+  elHeat.addEventListener('click', function (e) {
+    var m = elHeat._map; if (!m) return;
+    var rect = elHeat.getBoundingClientRect();
+    var cx = e.clientX - rect.left;
+    var frac = (cx - m.x0) / (m.x1 - m.x0);
+    if (frac < 0 || frac > 1) return;
+    setN(Math.round(m.nMin + frac * (m.nMax - m.nMin)));
+  });
+
+  window.addEventListener('resize', render);
+  window.__sendov = { state: state, setN: setN, render: render };
+
+  syncInputs();
+  render();
+})();
+</script>
+</body>
+</html>
