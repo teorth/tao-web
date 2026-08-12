@@ -30,6 +30,12 @@
   .parity { font-family: var(--mono); }
   .swatchrow { display: flex; align-items: center; gap: .3rem; font-size: .78rem; color: var(--muted); font-family: var(--mono); margin-top: .3rem; }
   .grad { height: .55rem; flex: 1; border-radius: 3px; border: 1px solid var(--line); }
+  .doc h2 { font-size: 1.05rem; margin: .1rem 0 .5rem; }
+  .formula { font-family: var(--mono); font-size: .92rem; line-height: 1.6; background: var(--accent-soft); border-radius: 8px; padding: .7rem .85rem; margin: .55rem 0; overflow-x: auto; white-space: nowrap; }
+  .formula .lhs { color: var(--accent); font-weight: 600; }
+  .defs { font-family: var(--mono); font-size: .9rem; line-height: 1.75; margin: .5rem 0; }
+  .refs { margin: .3rem 0 0; padding-left: 1.15rem; }
+  .refs li { margin: .32rem 0; }
 </style>
 </head>
 <body>
@@ -84,7 +90,7 @@
     <h2 style="font-size:1.05rem;margin:.1rem 0 .5rem">The whole region at a glance</h2>
     <p class="note" style="margin-top:0">Heatmap of <span class="math">R(n,&alpha;)</span> over the entire
       range. Every admissible cell is coloured by its value; none reaches&nbsp;1, so <span class="math">(stat)</span>
-      is infeasible throughout. Grey = outside the constraint <span class="math">c(&alpha;)^2 \le a^2</span>.
+      is infeasible throughout. Grey = outside the constraint <span class="math">c(&alpha;)<sup>2</sup> &le; a<sup>2</sup></span>.
       The vertical marker is the current degree; the bracket shows the &alpha; window above.</p>
     <canvas class="plot" id="heat" aria-label="Heatmap of R over n and alpha"></canvas>
     <div class="swatchrow">
@@ -92,15 +98,60 @@
     </div>
   </div>
 
+  <div class="card doc">
+    <h2>The inequality (stat)</h2>
+    <p class="note" style="margin-top:0">Writing <span class="math">R(n, α)</span> for the right-hand side
+      below, the inequality <span class="math">(stat)</span> is the assertion
+      <span class="math">1 &le; R(n, α)</span>. This applet illustrates that it is <b>infeasible</b> &mdash;
+      that is, <span class="math">R(n, α) &lt; 1</span> &mdash; throughout the stated range.</p>
+    <div class="formula">
+      <span class="lhs">R(n, α)</span> = 1/6 + 1/(4(3+α)) + 1/(2(n&minus;1)) + 1/(4(n&minus;1)(3+α))
+      + [ a<sup>4</sup> n(n&minus;1)(n&minus;2) / (4(3+α)) ] &middot;
+      &int;<sub>0</sub><sup>1</sup> t<sup>3</sup>(1 &minus; 2c(α)t + a<sup>2</sup>t<sup>2</sup>)<sup>(n&minus;4)/2</sup> dt
+    </div>
+    <p class="defs">
+      a<sup>2</sup> = 1 &minus; 2α/(n&minus;1)<br>
+      c(α) = 1 &minus; α/(n&minus;1) &minus; α/(2(3+α))
+    </p>
+    <p class="note" style="margin-bottom:0">The range to be covered is all integer degrees
+      <span class="math">n</span> and reals <span class="math">α</span> with
+      <span class="math">5 &le; n &le; 200</span>, <span class="math">0 &le; α &le; 17</span>, and
+      <span class="math">c(α)<sup>2</sup> &le; a<sup>2</sup> = 1 &minus; 2α/(n&minus;1)</span>. (The last
+      constraint keeps <span class="math">α</span> away from its upper limit
+      <span class="math">(n&minus;1)/2</span>, and makes the quadratic
+      <span class="math">1 &minus; 2c(α)t + a<sup>2</sup>t<sup>2</sup></span> positive on
+      <span class="math">[0,1]</span>, so the integral is real.)</p>
+  </div>
+
   <div class="card">
     <p class="note" style="margin:0">The integral
-      <span class="math">I(n,&alpha;)=\int_0^1 t^3\,(1-2c\,t+a^2t^2)^{(n-4)/2}\,dt</span>
+      <span class="math">I(n,&alpha;)=&int;<sub>0</sub><sup>1</sup> t<sup>3</sup>(1&minus;2c t+a<sup>2</sup>t<sup>2</sup>)<sup>(n&minus;4)/2</sup> dt</span>
       is evaluated by a fixed 64-node Gauss&ndash;Legendre rule (about 14-digit accuracy for every
       <span class="math">n</span> here, regardless of parity). For <b>even</b> <span class="math">n</span> the
       integrand is a polynomial, so <span class="math">I</span> also has an exact closed form; the readout
       cross-checks the quadrature against that exact value computed in <b>BigInt rational arithmetic</b>. For
       <b>odd</b> <span class="math">n</span> there is no obvious elementary closed form &mdash; but the
       quadrature does not care.</p>
+  </div>
+
+  <div class="card doc">
+    <h2>Background and references</h2>
+    <p class="note" style="margin-top:0"><b>Sendov's conjecture</b> asserts that if a degree-<span class="math">n</span>
+      polynomial has all of its zeros in the closed unit disk, then within distance&nbsp;1 of every zero there
+      lies a critical point. It was recently resolved for all <span class="math">n &ge; 2</span> by
+      <b>Lech Mazur</b>, using an AI tool, with the resulting proof verified in Lean. Terence Tao then
+      <em>digested</em> that AI-generated proof &mdash; placing it in context with the earlier literature and
+      streamlining the argument &mdash; and in the course of the digestion reduced one step to showing that the
+      inequality <span class="math">(stat)</span> above is infeasible over the range shown. The full digestion
+      will appear as a forthcoming blog post; the entire <span class="math">n &ge; 5</span> argument, this
+      infeasibility bound included, has also been formalized in Lean.</p>
+    <ul class="refs">
+      <li>Lean formalization of the digested proof (including the <span class="math">(stat)</span> bound):
+        <a href="https://github.com/teorth/sendov">github.com/teorth/sendov</a>.</li>
+      <li>Lech Mazur's original AI-generated proof:
+        <a href="https://www.proofatlas.ai/papers/sendov-conjecture/SENDOV_CONJECTURE_PROOF_AUGUST_5_2026.pdf">proof (PDF)</a>
+        and its <a href="https://www.proofatlas.ai/formalizations/sendov-conjecture/">Lean verification</a>.</li>
+    </ul>
   </div>
 
   <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>. Companion to Terence Tao's
