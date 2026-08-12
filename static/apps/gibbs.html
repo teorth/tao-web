@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>The Gibbs phenomenon — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  canvas.plot { display: block; width: 100%; max-width: 100%; height: auto; }
+  .seg { display: inline-flex; flex-wrap: wrap; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .seg button { border: none; border-right: 1px solid var(--line); background: var(--panel); color: var(--ink); padding: .4rem .7rem; cursor: pointer; font-size: .85rem; }
+  .seg button:last-child { border-right: none; }
+  .seg button.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .seg button:hover:not(.on) { background: var(--accent-soft); }
+  .controls { display: flex; flex-wrap: wrap; gap: .9rem 1.5rem; align-items: flex-end; }
+  .field { display: flex; flex-direction: column; gap: .3rem; }
+  .field .cap { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+  .field input[type=range] { width: 11rem; }
+  .field .val { font-family: var(--mono); color: var(--ink); font-size: .8rem; }
+  .field.off { opacity: .38; }
+  .btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: .38rem .7rem; cursor: pointer; font-size: .84rem; }
+  .btn:hover { background: var(--accent-soft); } .btn.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .readout { font-family: var(--mono); font-size: .88rem; line-height: 1.55; }
+  .readout b { color: var(--ink); }
+  .cols2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1.1rem; align-items: start; }
+  @media (max-width: 680px) { .cols2 { grid-template-columns: 1fr; } }
+  .note { color: var(--muted); font-size: .85rem; }
+  .lbl { font-family: var(--mono); font-size: .72rem; color: var(--muted); margin: .1rem 0 .3rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header>
+    <h1>The Gibbs phenomenon</h1>
+    <p class="lede">Fourier partial sums of a function with a jump <em>overshoot</em> near the discontinuity by
+      about <b>9%</b> of the jump &mdash; and that overshoot never goes away, it only narrows. Pick a
+      1-periodic function and a way to sum its Fourier series: the sharp <b>Dirichlet</b> cutoff shows the
+      overshoot, while <b>Fej&eacute;r</b> and <b>Bochner&ndash;Riesz</b> smoothing tame it. The kernel panel
+      shows why: Fej&eacute;r&rsquo;s kernel is non-negative, Dirichlet&rsquo;s is not.</p>
+    <p class="prov">An original interactive applet, part of tao-web.</p>
+  </header>
+
+  <div class="card">
+    <div class="controls">
+      <div class="field">
+        <span class="cap">function</span>
+        <span class="seg" id="funcSeg">
+          <button data-v="square" class="on">square</button>
+          <button data-v="sawtooth">sawtooth</button>
+          <button data-v="triangle">triangle</button>
+          <button data-v="comb">Dirac comb</button>
+        </span>
+      </div>
+      <div class="field">
+        <span class="cap">summation</span>
+        <span class="seg" id="methodSeg">
+          <button data-v="dirichlet" class="on">Dirichlet</button>
+          <button data-v="fejer">Fej&eacute;r</button>
+          <button data-v="bochner">Bochner&ndash;Riesz</button>
+        </span>
+      </div>
+    </div>
+    <div class="controls" style="margin-top:.9rem">
+      <div class="field">
+        <span class="cap">harmonics N</span>
+        <input id="N" type="range" min="1" max="240" step="1" value="20">
+        <span class="val" id="NVal"></span>
+      </div>
+      <div class="field" id="deltaField">
+        <span class="cap">Bochner&ndash;Riesz order &delta;</span>
+        <input id="delta" type="range" min="0" max="3" step="0.05" value="1">
+        <span class="val" id="deltaVal"></span>
+      </div>
+      <button class="btn" id="animate">animate N</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="cols2">
+      <div>
+        <div class="lbl">approximation S<sub>N</sub>(x) vs the target f(x)</div>
+        <canvas class="plot" id="main" aria-label="Fourier partial sum vs target function"></canvas>
+      </div>
+      <div>
+        <div class="lbl">summation kernel K<sub>N</sub>(x) &nbsp;(negative part shaded)</div>
+        <canvas class="plot" id="kernel" aria-label="Summation kernel"></canvas>
+        <div class="readout" id="readout" style="margin-top:.6rem"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="note" style="margin-top:0">With real coefficients
+      <span class="math">f(x) = a<sub>0</sub>/2 + &sum; [a<sub>n</sub> cos 2&pi;nx + b<sub>n</sub> sin 2&pi;nx]</span>,
+      each summation method multiplies the <span class="math">n</span>-th term by
+      <span class="math">m(n/N)</span>: Dirichlet by <span class="math">1</span> (sharp cutoff), Fej&eacute;r by
+      <span class="math">1 &minus; |t|</span>, Bochner&ndash;Riesz by <span class="math">(1 &minus; t<sup>2</sup>)<sup>&delta;</sup></span>
+      (so <span class="math">&delta; = 0</span> is Dirichlet again). The <b>Dirac comb</b> has every
+      coefficient equal to <span class="math">1</span>, so its partial sum is literally the kernel
+      <span class="math">K<sub>N</sub></span>. The overshoot comes from the kernel&rsquo;s negative lobes; the
+      <b>triangle wave</b> is continuous, so its series converges uniformly with no overshoot at all.</p>
+    <p class="note" style="margin-bottom:0">Related: the <a href="kakeya.html">Kakeya</a> and other tao-web applets.</p>
+  </div>
+
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="gibbs.js"></script>
+<script>
+(function () {
+  "use strict";
+  var G = window.Gibbs;
+  var state = { func: 'square', method: 'dirichlet', N: 20, delta: 1, animating: false };
+  var mainCv = document.getElementById('main'), kerCv = document.getElementById('kernel');
+  var XMIN = -0.25, XMAX = 1.25;
+
+  function cssvar(n) { return getComputedStyle(document.body).getPropertyValue(n).trim() || '#888'; }
+  function setup(canvas, cssH) {
+    var dpr = window.devicePixelRatio || 1, cssW = canvas.clientWidth || canvas.parentNode.clientWidth || 480;
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+    canvas.style.height = cssH + 'px';
+    var ctx = canvas.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: cssW, h: cssH };
+  }
+
+  function yRange() {
+    if (state.func === 'square') return [-1.5, 1.5];
+    if (state.func === 'sawtooth') return [-0.95, 0.95];
+    if (state.func === 'triangle') return [-1.35, 1.35];
+    // comb: auto from the sampled kernel
+    var lo = 0, hi = 1;
+    for (var i = 0; i <= 200; i++) { var x = XMIN + (XMAX - XMIN) * i / 200, y = G.partialSum('comb', state.N, state.method, state.delta, x); if (y < lo) lo = y; if (y > hi) hi = y; }
+    var pad = 0.12 * (hi - lo);
+    return [lo - pad, hi + pad];
+  }
+
+  function axes(ctx, W, H, pad, xr, yr) {
+    var x0 = pad.l, x1 = W - pad.r, y0 = H - pad.b, y1 = pad.t;
+    var ax = function (x) { return x0 + (x1 - x0) * (x - xr[0]) / (xr[1] - xr[0]); };
+    var ay = function (y) { return y0 + (y1 - y0) * (y - yr[0]) / (yr[1] - yr[0]); };
+    ctx.strokeStyle = cssvar('--grid'); ctx.lineWidth = 1; ctx.fillStyle = cssvar('--muted');
+    ctx.font = '11px ' + cssvar('--mono'); ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    for (var xt = Math.ceil(xr[0] * 2) / 2; xt <= xr[1] + 1e-9; xt += 0.5) {
+      var xx = ax(xt); ctx.beginPath(); ctx.moveTo(xx, y1); ctx.lineTo(xx, y0); ctx.stroke();
+      ctx.fillText((Math.round(xt * 100) / 100), xx, y0 + 4);
+    }
+    // zero axis
+    ctx.strokeStyle = cssvar('--axis'); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, ay(0)); ctx.lineTo(x1, ay(0)); ctx.stroke();
+    return { ax: ax, ay: ay, x0: x0, x1: x1, y0: y0, y1: y1 };
+  }
+
+  function drawMain() {
+    var d = setup(mainCv, 320), ctx = d.ctx, W = d.w, H = d.h;
+    var pad = { l: 34, r: 10, t: 12, b: 24 }, xr = [XMIN, XMAX], yr = yRange();
+    ctx.clearRect(0, 0, W, H);
+    var A = axes(ctx, W, H, pad, xr, yr);
+
+    // discontinuity verticals
+    var f = G.FUNCS[state.func];
+    ctx.strokeStyle = cssvar('--line'); ctx.setLineDash([2, 3]);
+    for (var xt = Math.ceil(xr[0]); xt <= xr[1]; xt++) { var xx = A.ax(xt); ctx.beginPath(); ctx.moveTo(xx, A.y1); ctx.lineTo(xx, A.y0); ctx.stroke(); if (state.func === 'square') { var xh = A.ax(xt + 0.5); if (xh <= A.x1) { ctx.beginPath(); ctx.moveTo(xh, A.y1); ctx.lineTo(xh, A.y0); ctx.stroke(); } } }
+    ctx.setLineDash([]);
+
+    // target f
+    if (state.func === 'comb') {
+      // spikes at integers (unit masses, drawn schematically)
+      ctx.strokeStyle = cssvar('--muted'); ctx.fillStyle = cssvar('--muted'); ctx.lineWidth = 1.5;
+      for (var k = Math.ceil(xr[0]); k <= xr[1]; k++) {
+        var sx = A.ax(k), top = A.ay(yr[1] * 0.82), bot = A.ay(0);
+        ctx.beginPath(); ctx.moveTo(sx, bot); ctx.lineTo(sx, top); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(sx, top); ctx.lineTo(sx - 4, top + 8); ctx.lineTo(sx + 4, top + 8); ctx.closePath(); ctx.fill();
+      }
+    } else {
+      var segs = G.targetPolylines(state.func, xr[0], xr[1], 1400);
+      ctx.strokeStyle = cssvar('--muted'); ctx.lineWidth = 1.5; ctx.globalAlpha = 0.85;
+      for (var s = 0; s < segs.length; s++) { ctx.beginPath(); for (var i = 0; i < segs[s].length; i++) { var p = segs[s][i]; if (i === 0) ctx.moveTo(A.ax(p[0]), A.ay(p[1])); else ctx.lineTo(A.ax(p[0]), A.ay(p[1])); } ctx.stroke(); }
+      ctx.globalAlpha = 1;
+    }
+
+    // Gibbs guide lines (Dirichlet limit) + jump levels
+    var g = G.gibbs(state.func, state.N, state.method, state.delta);
+    if (g) {
+      ctx.strokeStyle = cssvar('--danger'); ctx.setLineDash([5, 4]); ctx.globalAlpha = 0.55; ctx.lineWidth = 1;
+      if (state.method === 'dirichlet') { line(ctx, A.x0, A.ay(g.theoryPeak), A.x1, A.ay(g.theoryPeak)); line(ctx, A.x0, A.ay(2 * (g.hi + g.lo) / 2 - g.theoryPeak), A.x1, A.ay(2 * (g.hi + g.lo) / 2 - g.theoryPeak)); }
+      ctx.setLineDash([]); ctx.globalAlpha = 1;
+    }
+
+    // approximation S_N
+    ctx.strokeStyle = cssvar('--accent'); ctx.lineWidth = 2; ctx.beginPath();
+    var Np = 1600;
+    for (var j = 0; j <= Np; j++) { var xx2 = xr[0] + (xr[1] - xr[0]) * j / Np, yy = G.partialSum(state.func, state.N, state.method, state.delta, xx2); var py = A.ay(yy); if (j === 0) ctx.moveTo(A.ax(xx2), py); else ctx.lineTo(A.ax(xx2), py); }
+    ctx.stroke();
+
+    // mark the measured overshoot peak
+    if (g && state.func !== 'comb') {
+      ctx.fillStyle = cssvar('--danger'); ctx.beginPath(); ctx.arc(A.ax(g.px), A.ay(g.peak), 3.5, 0, 7); ctx.fill();
+    }
+  }
+  function line(ctx, x0, y0, x1, y1) { ctx.beginPath(); ctx.moveTo(x0, y0); ctx.lineTo(x1, y1); ctx.stroke(); }
+
+  function drawKernel() {
+    var d = setup(kerCv, 190), ctx = d.ctx, W = d.w, H = d.h;
+    var pad = { l: 30, r: 8, t: 10, b: 20 }, xr = [-0.5, 0.5];
+    // sample kernel
+    var Np = 900, xs = [], ys = [], lo = 0, hi = 1;
+    for (var i = 0; i <= Np; i++) { var x = xr[0] + (xr[1] - xr[0]) * i / Np, y = G.kernel(state.N, state.method, state.delta, x); xs.push(x); ys.push(y); if (y < lo) lo = y; if (y > hi) hi = y; }
+    var yr = [lo - 0.08 * (hi - lo), hi + 0.08 * (hi - lo)];
+    ctx.clearRect(0, 0, W, H);
+    var A = axes(ctx, W, H, pad, xr, yr);
+    // shade negative area
+    var zeroY = A.ay(0);
+    ctx.fillStyle = 'rgba(178,59,59,0.28)';
+    ctx.beginPath(); ctx.moveTo(A.ax(xs[0]), zeroY);
+    for (var j = 0; j < xs.length; j++) { ctx.lineTo(A.ax(xs[j]), A.ay(Math.min(0, ys[j]))); }
+    ctx.lineTo(A.ax(xs[xs.length - 1]), zeroY); ctx.closePath(); ctx.fill();
+    // kernel curve
+    ctx.strokeStyle = cssvar('--accent'); ctx.lineWidth = 1.6; ctx.beginPath();
+    for (var k = 0; k < xs.length; k++) { if (k === 0) ctx.moveTo(A.ax(xs[k]), A.ay(ys[k])); else ctx.lineTo(A.ax(xs[k]), A.ay(ys[k])); }
+    ctx.stroke();
+  }
+
+  function updateReadout() {
+    var el = document.getElementById('readout');
+    var mLabel = state.method === 'dirichlet' ? 'Dirichlet' : state.method === 'fejer' ? 'Fejér' : ('Bochner–Riesz (δ = ' + state.delta.toFixed(2) + ')');
+    var html = '<div><b>' + G.FUNCS[state.func].name + '</b> &middot; ' + mLabel + ' &middot; N = ' + state.N + '</div>';
+    html += '<div class="note" style="margin:.15rem 0 .35rem">' + G.FUNCS[state.func].note + '</div>';
+    if (state.func === 'comb') {
+      html += '<div>the partial sum is exactly the ' + mLabel.split(' ')[0] + ' <b>kernel</b>.</div>';
+    } else if (G.FUNCS[state.func].continuous) {
+      html += '<div>continuous &rarr; the series converges <b>uniformly</b>; no overshoot.</div>';
+    } else {
+      var g = G.gibbs(state.func, state.N, state.method, state.delta);
+      var pct = (100 * g.overFrac).toFixed(2);
+      html += '<div>peak of S<sub>N</sub> near the jump: <b>' + g.peak.toFixed(4) + '</b></div>';
+      html += '<div>overshoot: <b>' + pct + '%</b> of the jump';
+      if (state.method === 'dirichlet') html += ' <span class="note">(Gibbs limit 8.95%)</span>';
+      html += '</div>';
+    }
+    el.innerHTML = html;
+  }
+
+  function render() { drawMain(); drawKernel(); updateReadout(); syncControls(); if (window.__gibbs) window.__gibbs.rendered = (window.__gibbs.rendered || 0) + 1; }
+
+  // ---- controls ----
+  function syncControls() {
+    document.getElementById('NVal').textContent = state.N;
+    document.getElementById('deltaVal').textContent = state.delta.toFixed(2) + (state.delta === 0 ? '  (= Dirichlet)' : '');
+    document.getElementById('deltaField').classList.toggle('off', state.method !== 'bochner');
+    document.getElementById('delta').disabled = (state.method !== 'bochner');
+    seg('funcSeg', state.func); seg('methodSeg', state.method);
+  }
+  function seg(id, v) { var g = document.getElementById(id); var bs = g.querySelectorAll ? g.querySelectorAll('button') : g.children; for (var i = 0; i < bs.length; i++) { var b = bs[i]; if (b.classList) b.classList.toggle('on', b.getAttribute('data-v') === v); } }
+
+  document.getElementById('funcSeg').addEventListener('click', function (e) { var v = e.target.getAttribute && e.target.getAttribute('data-v'); if (v) { state.func = v; render(); } });
+  document.getElementById('methodSeg').addEventListener('click', function (e) { var v = e.target.getAttribute && e.target.getAttribute('data-v'); if (v) { state.method = v; render(); } });
+  document.getElementById('N').addEventListener('input', function (e) { state.N = +e.target.value; render(); });
+  document.getElementById('delta').addEventListener('input', function (e) { state.delta = +e.target.value; render(); });
+
+  var animBtn = document.getElementById('animate'), animId = 0;
+  animBtn.onclick = function () {
+    state.animating = !state.animating; animBtn.classList.toggle('on', state.animating);
+    if (state.animating) tick(); else cancelAnimationFrame(animId);
+    function tick() { if (!state.animating) return; state.N = state.N >= 240 ? 1 : state.N + 1; document.getElementById('N').value = state.N; render(); animId = requestAnimationFrame(tick); }
+  };
+
+  window.addEventListener('resize', render);
+  window.__gibbs = { state: state, render: render, setFunc: function (f) { state.func = f; render(); }, setMethod: function (m) { state.method = m; render(); } };
+
+  render();
+})();
+</script>
+</body>
+</html>

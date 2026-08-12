@@ -268,6 +268,21 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/bezout-making-of.html
+# --- Harmonic analysis (original app, first published here) ---
+- name: The Gibbs phenomenon
+  category: Harmonic analysis
+  status: original
+  date: "2026-08-12"
+  description: >-
+    The Fourier partial sums of a function with a jump overshoot the jump by about 9% no matter how many terms
+    you take — the overshoot never disappears, it only narrows. Pick a 1-periodic function — a square wave, a
+    sawtooth, the Dirac comb, or a continuous triangle wave for contrast — and sum its Fourier series in three
+    ways: the sharp Dirichlet cutoff that produces the overshoot, the Fejér (Cesàro) mean that removes it, and
+    Bochner–Riesz means (1 − t²)^δ that interpolate between them (δ = 0 is Dirichlet again). A companion panel
+    plots the summation kernel with its negative part shaded, showing why Fejér never overshoots — its kernel
+    is non-negative — while Dirichlet's is not; the Dirac comb makes the point directly, since its partial sum
+    is exactly the kernel. A live readout measures the overshoot and compares it to the 8.95% Gibbs limit.
+  url: apps/gibbs.html
 # --- Algebra (Scratch games; still run) ---
 - name: Algebra game (demo)
   category: Algebra
