@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'">
+<title>Three-dimensional Kakeya set — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .stagewrap { position: relative; }
+  canvas.stage3d { display: block; width: 100%; max-width: 100%; height: auto; touch-action: none; cursor: grab; border-radius: 10px; background: var(--panel); border: 1px solid var(--line); }
+  canvas.stage3d:active { cursor: grabbing; }
+  .hud { position: absolute; top: .5rem; left: .6rem; font-family: var(--mono); font-size: .8rem; color: var(--muted); pointer-events: none; text-shadow: 0 0 3px var(--panel); }
+  .hud b { color: var(--ink); }
+  .controls { display: flex; flex-wrap: wrap; gap: .8rem 1.3rem; align-items: flex-end; margin-top: .1rem; }
+  .field { display: flex; flex-direction: column; gap: .25rem; }
+  .field label, .field .cap { font-size: .74rem; color: var(--muted); font-family: var(--mono); }
+  .field input[type=range] { width: 9.5rem; }
+  .field .val { font-family: var(--mono); color: var(--ink); font-size: .8rem; }
+  .btnrow { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; }
+  .btn { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 8px; padding: .35rem .7rem; cursor: pointer; font-size: .84rem; }
+  .btn:hover { background: var(--accent-soft); }
+  .btn.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+  .checks { display: flex; flex-wrap: wrap; gap: .5rem 1rem; font-size: .85rem; }
+  .checks label { display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; }
+  .khint { color: var(--muted); font-size: .8rem; }
+  .readout { font-family: var(--mono); font-size: .88rem; line-height: 1.55; }
+  .readout b { color: var(--ink); }
+  .cleanview .card.hideable { display: none; }
+  .note { color: var(--muted); font-size: .85rem; }
+</style>
+</head>
+<body>
+<div class="wrap" id="wrap">
+  <p class="back"><a href="../index.html">&larr; Home</a></p>
+  <header class="hideable card" style="border:none;background:none;padding:0;margin:0 0 1rem">
+    <h1>A three-dimensional Kakeya set</h1>
+    <p class="lede">A <b>Kakeya set</b> contains a unit line segment in every direction, yet can have
+      astonishingly small volume. Here is the three-dimensional analogue of the planar <em>Perron tree</em>,
+      built from <span class="math">1 &times; &delta; &times; &delta;</span> tubes (cylinders). The same
+      <span class="math">N<sup>2</sup></span> tubes are shown two ways: sharing a base they fan into a
+      <b>bush</b> of volume <span class="math">&asymp; 1/3</span>; translated apart in the Perron pattern they
+      overlap into a far smaller <b>tangle</b> &mdash; while every tube still points in its own direction. Drag
+      to rotate; use the <em>compress</em> slider to slide between the two.</p>
+    <p class="prov">An original interactive applet, part of tao-web.</p>
+  </header>
+
+  <div class="stagewrap">
+    <canvas class="stage3d" id="cv" aria-label="Rotatable 3D Kakeya set of tubes"></canvas>
+    <div class="hud" id="hud"></div>
+  </div>
+
+  <div class="card hideable">
+    <div class="controls">
+      <div class="field">
+        <span class="cap">tree depth p (N = 2<sup>p</sup>)</span>
+        <input id="p" type="range" min="2" max="6" step="1" value="4">
+        <span class="val" id="pVal"></span>
+      </div>
+      <div class="field">
+        <span class="cap">thickness &delta;</span>
+        <input id="delta" type="range" min="0.006" max="0.06" step="0.002" value="0.03">
+        <span class="val" id="deltaVal"></span>
+      </div>
+      <div class="field">
+        <span class="cap">compress (bush &rarr; Perron)</span>
+        <input id="compress" type="range" min="0" max="1" step="0.02" value="1">
+        <span class="val" id="compressVal"></span>
+      </div>
+      <div class="field">
+        <span class="cap">opacity</span>
+        <input id="alpha" type="range" min="0.12" max="1" step="0.02" value="0.55">
+        <span class="val" id="alphaVal"></span>
+      </div>
+    </div>
+    <div class="btnrow" style="margin-top:.7rem">
+      <button class="btn" id="animate">animate compress</button>
+      <button class="btn" id="vTop">top</button>
+      <button class="btn" id="vSide">side</button>
+      <button class="btn" id="vIso">iso</button>
+      <button class="btn" id="reset">reset view</button>
+      <span class="checks" style="margin-left:.4rem">
+        <label><input type="checkbox" id="cColor" checked> colour by direction</label>
+        <label><input type="checkbox" id="cBox"> bounding box</label>
+        <label><input type="checkbox" id="cAxes" checked> axes</label>
+        <label><input type="checkbox" id="cSolo"> show one tube</label>
+        <label><input type="checkbox" id="cClean"> clean view</label>
+      </span>
+    </div>
+    <p class="khint" style="margin:.6rem 0 0">Drag to rotate &middot; scroll to zoom &middot; the readout below reports the exact volume of the tube union.</p>
+  </div>
+
+  <div class="card hideable">
+    <div class="readout" id="readout"></div>
+  </div>
+
+  <div class="card hideable">
+    <p class="note" style="margin-top:0"><b>What you are seeing.</b> The directions form a two-parameter patch
+      <span class="math">d = (s, u, &minus;1)</span> with <span class="math">s, u</span> ranging over a grid of
+      <span class="math">N = 2<sup>p</sup></span> values each, so there are <span class="math">N<sup>2</sup></span>
+      tubes &mdash; the 3D analogue of the fan of directions in the planar Perron tree. Every tube keeps its
+      direction under translation, so the compressed tangle is still a Kakeya set for this patch of directions;
+      the full &ldquo;every direction in space&rdquo; set is a union of finitely many rotated copies. The volume
+      is computed exactly (the union&rsquo;s cross-section at each height is a product set), and you may notice it
+      is smallest at an <em>intermediate</em> compression, around <span class="math">0.7&ndash;0.8</span>, rather
+      than at the full Perron offset.</p>
+    <p class="note" style="margin-bottom:0">Companion to the two-dimensional
+      <a href="kakeya.html">Kakeya needle</a> applet.</p>
+  </div>
+
+  <footer class="hideable">Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+
+<script src="kakeya3d.js"></script>
+<script>
+(function () {
+  "use strict";
+  var K = window.Kakeya3D;
+  var cv = document.getElementById('cv'), hud = document.getElementById('hud');
+  var state = {
+    p: 4, delta: 0.03, compress: 1, alpha: 0.55,
+    az: 0.7, el: 0.45, zoom: 1,
+    colorByDir: true, box: false, axes: true, solo: false
+  };
+  var geom = null;      // { faces:[{v:[p0..p3], hue}], center, extent, box:[8 pts] }
+  var animating = false, animId = 0;
+
+  function cssvar(n) { return getComputedStyle(document.body).getPropertyValue(n).trim() || '#888'; }
+
+  function hslToRgb(h, s, l) {
+    h /= 360; var r, g, b;
+    function hue2(p, q, t) { if (t < 0) t += 1; if (t > 1) t -= 1; if (t < 1 / 6) return p + (q - p) * 6 * t; if (t < 1 / 2) return q; if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6; return p; }
+    if (s === 0) { r = g = b = l; }
+    else { var q = l < 0.5 ? l * (1 + s) : l + s - l * s, p = 2 * l - q; r = hue2(p, q, h + 1 / 3); g = hue2(p, q, h); b = hue2(p, q, h - 1 / 3); }
+    return [r * 255, g * 255, b * 255];
+  }
+
+  // ---- build the world-space face list (once per p / delta / compress change) ----
+  function rebuild() {
+    var tubes = K.buildTubes({ p: state.p, compress: state.compress });
+    var b = K.boundsOf(tubes), c = b.center;
+    var nSides = state.p <= 4 ? 10 : (state.p === 5 ? 7 : 5);
+    var faces = [];
+    for (var t = 0; t < tubes.length; t++) {
+      var tb = tubes[t], mesh = K.cylinderMesh(tb.base, tb.dir, state.delta / 2, nSides);
+      for (var f = 0; f < mesh.faces.length; f++) {
+        var idx = mesh.faces[f], v = [];
+        for (var k = 0; k < 4; k++) { var w = mesh.verts[idx[k]]; v.push([w[0] - c[0], w[1] - c[1], w[2] - c[2]]); }
+        faces.push({ v: v, hue: tb.hue, i: tb.i, j: tb.j, s: tb.s, u: tb.u });
+      }
+    }
+    var ext = Math.max(b.hi[0] - b.lo[0], b.hi[1] - b.lo[1], b.hi[2] - b.lo[2]) || 1;
+    // 8 corners of the bounding box (centered)
+    var box = [];
+    for (var xi = 0; xi < 2; xi++) for (var yi = 0; yi < 2; yi++) for (var zi = 0; zi < 2; zi++)
+      box.push([(xi ? b.hi[0] : b.lo[0]) - c[0], (yi ? b.hi[1] : b.lo[1]) - c[1], (zi ? b.hi[2] : b.lo[2]) - c[2]]);
+    geom = { faces: faces, extent: ext, box: box, nTubes: tubes.length, nSides: nSides };
+    updateReadout();
+  }
+
+  function setupCanvas(cssH) {
+    var dpr = window.devicePixelRatio || 1;
+    var cssW = cv.clientWidth || cv.parentNode.clientWidth || 640;
+    cv.width = Math.round(cssW * dpr); cv.height = Math.round(cssH * dpr);
+    cv.style.height = cssH + 'px';
+    var ctx = cv.getContext('2d'); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return { ctx: ctx, w: cssW, h: cssH };
+  }
+
+  function draw() {
+    if (!geom) rebuild();
+    var d = setupCanvas(Math.round((cv.clientWidth || 640) * 0.66));
+    var ctx = d.ctx, W = d.w, H = d.h;
+    ctx.clearRect(0, 0, W, H);
+    var scale = state.zoom * 0.82 * Math.min(W, H) / geom.extent;
+    var cx = W / 2, cy = H / 2;
+    var az = state.az, el = state.el;
+    // light direction in view space (front-top-right)
+    var light = K.normalize([0.35, -0.7, 0.55]);
+
+    function proj(pt) { var r = K.rotate(pt, az, el); return { x: cx + scale * r[0], y: cy - scale * r[2], depth: r[1] }; }
+
+    // faces -> screen, with depth + shading
+    var accent = cssvar('--accent');
+    var items = [];
+    var faces = geom.faces, solo = state.solo;
+    for (var f = 0; f < faces.length; f++) {
+      var fc = faces[f];
+      if (solo && !(fc.i === (1 << (state.p - 1)) && fc.j === (1 << (state.p - 1)))) continue;
+      var s0 = K.rotate(fc.v[0], az, el), s1 = K.rotate(fc.v[1], az, el), s2 = K.rotate(fc.v[2], az, el), s3 = K.rotate(fc.v[3], az, el);
+      var depth = (s0[1] + s1[1] + s2[1] + s3[1]) / 4;
+      // normal for shading
+      var e1 = [s1[0] - s0[0], s1[1] - s0[1], s1[2] - s0[2]], e2 = [s2[0] - s0[0], s2[1] - s0[1], s2[2] - s0[2]];
+      var nrm = K.normalize(K.cross(e1, e2));
+      var bright = 0.42 + 0.58 * Math.abs(K.dot(nrm, light));
+      items.push({ depth: depth, pts: [s0, s1, s2, s3], hue: fc.hue, bright: bright });
+    }
+    items.sort(function (a, b) { return a.depth - b.depth; });   // back (large y) ... front? draw far first
+
+    // draw far-to-near: larger depth (into screen, +y) is farther, draw first
+    for (var k = items.length - 1; k >= 0; k--) {
+      var it = items[k], rgb;
+      if (state.colorByDir && !solo) rgb = hslToRgb(it.hue, 0.62, 0.52);
+      else { var m = hexToRgb(accent); rgb = [m[0], m[1], m[2]]; }
+      var a = solo ? 0.95 : state.alpha;
+      ctx.fillStyle = 'rgba(' + Math.round(rgb[0] * it.bright) + ',' + Math.round(rgb[1] * it.bright) + ',' + Math.round(rgb[2] * it.bright) + ',' + a + ')';
+      ctx.beginPath();
+      ctx.moveTo(cx + scale * it.pts[0][0], cy - scale * it.pts[0][2]);
+      ctx.lineTo(cx + scale * it.pts[1][0], cy - scale * it.pts[1][2]);
+      ctx.lineTo(cx + scale * it.pts[2][0], cy - scale * it.pts[2][2]);
+      ctx.lineTo(cx + scale * it.pts[3][0], cy - scale * it.pts[3][2]);
+      ctx.closePath(); ctx.fill();
+      if (geom.nTubes <= 128 || solo) { ctx.strokeStyle = 'rgba(0,0,0,0.14)'; ctx.lineWidth = 0.5; ctx.stroke(); }
+    }
+
+    if (state.box) drawBox(ctx, proj);
+    if (state.axes) drawAxes(ctx, proj, scale, cx, cy);
+
+    hud.innerHTML = '<b>' + geom.nTubes + '</b> tubes &middot; drag to rotate';
+    if (window.__kakeya3d) window.__kakeya3d.lastDrawn = items.length;
+  }
+
+  function drawBox(ctx, proj) {
+    var e = [[0, 1], [0, 2], [0, 4], [1, 3], [1, 5], [2, 3], [2, 6], [3, 7], [4, 5], [4, 6], [5, 7], [6, 7]];
+    ctx.strokeStyle = cssvar('--axis'); ctx.lineWidth = 1; ctx.globalAlpha = 0.6;
+    for (var i = 0; i < e.length; i++) {
+      var a = proj(geom.box[e[i][0]]), b = proj(geom.box[e[i][1]]);
+      ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawAxes(ctx, proj, scale, cx, cy) {
+    var L = geom.extent * 0.5;
+    var O = proj([0, 0, 0]);
+    var cols = ['#d1495b', '#3a9a5c', '#3a5bd9'], lbl = ['x', 'y', 'z'];
+    var dirs = [[L, 0, 0], [0, L, 0], [0, 0, L]];
+    ctx.lineWidth = 1.5; ctx.font = '12px ' + cssvar('--mono');
+    for (var i = 0; i < 3; i++) {
+      var P = proj(dirs[i]);
+      ctx.strokeStyle = cols[i]; ctx.beginPath(); ctx.moveTo(O.x, O.y); ctx.lineTo(P.x, P.y); ctx.stroke();
+      ctx.fillStyle = cols[i]; ctx.fillText(lbl[i], P.x + 3, P.y - 2);
+    }
+  }
+
+  function hexToRgb(h) { h = h.replace('#', ''); if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2]; var n = parseInt(h, 16); return [(n >> 16) & 255, (n >> 8) & 255, n & 255]; }
+
+  function updateReadout() {
+    var vNow = K.volume({ p: state.p, delta: state.delta, compress: state.compress });
+    var vBush = K.volume({ p: state.p, delta: state.delta, compress: 0 });
+    var el = document.getElementById('readout');
+    var ratio = vBush / Math.max(vNow, 1e-9);
+    el.innerHTML =
+      '<div><b>' + ((1 << state.p) * (1 << state.p)) + '</b> tubes &nbsp; (N = ' + (1 << state.p) + ' directions per axis) &nbsp; &delta; = ' + state.delta.toFixed(3) + '</div>' +
+      '<div>bush volume &asymp; <b>' + vBush.toFixed(4) + '</b></div>' +
+      '<div>current volume &asymp; <b>' + vNow.toFixed(4) + '</b> &nbsp; (compress = ' + state.compress.toFixed(2) + ')</div>' +
+      '<div>compression: <b>' + ratio.toFixed(2) + '&times;</b> smaller than the bush</div>';
+  }
+
+  // ---- controls ----
+  function syncLabels() {
+    document.getElementById('pVal').textContent = state.p + '  (' + ((1 << state.p) * (1 << state.p)) + ' tubes)';
+    document.getElementById('deltaVal').textContent = state.delta.toFixed(3);
+    document.getElementById('compressVal').textContent = state.compress.toFixed(2);
+    document.getElementById('alphaVal').textContent = state.alpha.toFixed(2);
+  }
+  function onGeomChange() { rebuild(); syncLabels(); draw(); }
+
+  document.getElementById('p').addEventListener('input', function (e) { state.p = +e.target.value; onGeomChange(); });
+  document.getElementById('delta').addEventListener('input', function (e) { state.delta = +e.target.value; onGeomChange(); });
+  document.getElementById('compress').addEventListener('input', function (e) { state.compress = +e.target.value; onGeomChange(); });
+  document.getElementById('alpha').addEventListener('input', function (e) { state.alpha = +e.target.value; syncLabels(); draw(); });
+
+  document.getElementById('cColor').addEventListener('change', function (e) { state.colorByDir = e.target.checked; draw(); });
+  document.getElementById('cBox').addEventListener('change', function (e) { state.box = e.target.checked; draw(); });
+  document.getElementById('cAxes').addEventListener('change', function (e) { state.axes = e.target.checked; draw(); });
+  document.getElementById('cSolo').addEventListener('change', function (e) { state.solo = e.target.checked; draw(); });
+  document.getElementById('cClean').addEventListener('change', function (e) { document.getElementById('wrap').classList.toggle('cleanview', e.target.checked); setTimeout(draw, 0); });
+
+  function setView(az, el) { state.az = az; state.el = el; draw(); }
+  document.getElementById('vTop').onclick = function () { setView(0, Math.PI / 2 - 0.001); };
+  document.getElementById('vSide').onclick = function () { setView(0, 0); };
+  document.getElementById('vIso').onclick = function () { setView(0.7, 0.45); };
+  document.getElementById('reset').onclick = function () { state.zoom = 1; setView(0.7, 0.45); };
+
+  var animBtn = document.getElementById('animate');
+  animBtn.onclick = function () {
+    animating = !animating; animBtn.classList.toggle('on', animating);
+    if (animating) { var t0 = 0; step(); function step() { if (!animating) return; t0 += 0.012; state.compress = 0.5 - 0.5 * Math.cos(t0); document.getElementById('compress').value = state.compress; rebuild(); syncLabels(); draw(); animId = requestAnimationFrame(step); } }
+    else cancelAnimationFrame(animId);
+  };
+
+  // ---- pointer rotate + wheel zoom ----
+  var dragging = false, lx = 0, ly = 0;
+  cv.addEventListener('pointerdown', function (e) { dragging = true; lx = e.clientX; ly = e.clientY; if (cv.setPointerCapture) cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    state.az += (e.clientX - lx) * 0.008; state.el += (e.clientY - ly) * 0.008;
+    state.el = Math.max(-Math.PI / 2 + 0.02, Math.min(Math.PI / 2 - 0.02, state.el));
+    lx = e.clientX; ly = e.clientY; draw();
+  });
+  cv.addEventListener('pointerup', function () { dragging = false; });
+  cv.addEventListener('pointerleave', function () { dragging = false; });
+  cv.addEventListener('wheel', function (e) { e.preventDefault(); state.zoom *= Math.exp(-e.deltaY * 0.0011); state.zoom = Math.max(0.3, Math.min(4, state.zoom)); draw(); }, { passive: false });
+
+  window.addEventListener('resize', draw);
+  window.__kakeya3d = { state: state, rebuild: rebuild, draw: draw, setP: function (p) { state.p = p; onGeomChange(); } };
+
+  syncLabels(); rebuild(); draw();
+})();
+</script>
+</body>
+</html>
