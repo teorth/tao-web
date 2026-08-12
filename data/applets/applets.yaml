@@ -210,6 +210,21 @@ applets:
   writeup:
     label: "The making of this app: a conversation transcript"
     url: apps/kakeya-making-of.html
+- name: A three-dimensional Kakeya set
+  category: Geometry
+  status: original
+  date: "2026-08-12"
+  description: >-
+    The three-dimensional analogue of the Perron tree, built from 1 × δ × δ tubes (cylinders): a Kakeya set
+    contains a unit segment in every direction yet can have astonishingly small volume. Directions form a
+    two-parameter patch d = (s, u, −1) on an N × N grid (N = 2^p), giving N² tubes. A “compress” slider slides
+    the same tubes between a shared-base bush — a fanning cone of volume ≈ 1/3 — and the Perron-translated
+    tangle, where they overlap into a far smaller volume while every tube still points in its own direction.
+    Drag to rotate, scroll to zoom; colour the tubes by direction, isolate a single one, animate the
+    compression, or hide the controls for a clean figure. A self-contained software 3D renderer on a canvas
+    (no WebGL, no dependencies), and the volume shown is computed exactly. Companion to the two-dimensional
+    Kakeya needle applet above.
+  url: apps/kakeya3d.html
 - name: Besicovitch sets
   category: Geometry
   status: ported
