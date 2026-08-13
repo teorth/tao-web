@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of the Sendov infeasibility explorer — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  .prov { color: var(--muted); font-size: .9rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of the Sendov infeasibility explorer</h1>
+    <p class="prov">A lightly edited transcript of the conversation that built the
+      <a href="sendov.html">Sendov infeasibility explorer</a>.</p>
+  </header>
+  <article>
+<p><em>A lightly edited transcript of the conversation that built the <a href="sendov.html">Sendov infeasibility explorer</a>, an interactive companion to the digestion of the proof of Sendov&#x27;s conjecture. It visualizes that a certain inequality — labelled (stat) in the digestion — is infeasible for every degree 5 ≤ n ≤ 200 and every 0 ≤ α ≤ 17.</em></p>
+<p><strong>How to read this.</strong> Terence Tao&#x27;s messages appear verbatim in the blockquotes; the assistant&#x27;s replies are summarised in italics between them. Routine &quot;looks good, continue&quot; replies are folded into the narration.</p>
+<h2>1. The concept, and a worry about one integral</h2>
+<blockquote><p>I&#x27;m writing a blog post concerning a proof of Sendov&#x27;s conjecture. One of the steps is to show that a certain inequality, labeled &quot;stat&quot; in the blog post, is infeasible for a specific range of n and alpha. I&#x27;d like to design an app to illustrate this inequality for n and alpha in the indicated ranges. The one tricky thing is that it involves an integral which can be computed exactly for n even but does not have an obvious closed form as far as I can tell for n odd. Can you look at the post and assess the feasibility of making an app to visualize this inequality, perhaps with some arrow keys or other GUI to move n up and down, and perhaps also some way to select the range of alpha being plotted?</p></blockquote>
+<p><em>The assistant read the blog source and pinned down the object to plot. Writing R(n, α) for the right-hand side, (stat) is the assertion 1 ≤ R(n, α), where R is an explicit expression whose only non-elementary ingredient is the integral ∫₀¹ t³ (1 − 2c(α)t + a²t²)^((n−4)/2) dt, with a² = 1 − 2α/(n−1) and c(α) = 1 − α/(n−1) − α/(2(3+α)). &quot;Infeasible&quot; means R(n, α) &lt; 1 throughout the region 5 ≤ n ≤ 200, 0 ≤ α ≤ 17, c(α)² ≤ a².</em></p>
+<p><em>On the worry about odd n: for a numerical picture the parity turns out to be a non-issue. A single fixed 64-node Gauss–Legendre rule evaluates the integral to about 14 digits for every n in the range, both parities — checked against a 60-digit reference. The surprise ran the other way: the even-n closed form is the numerically dangerous one, since the naive binomial expansion of the integrand suffers catastrophic cancellation at large n (it returned a spurious value near 10³⁸ around n = 200 in double precision). So the plot should be driven by quadrature, with the closed form kept only as an exact cross-check in exact (BigInt) arithmetic. A quick scan also confirmed the inequality really does hold, with a margin large enough to be visible: R peaks at about 0.853 near (n, α) = (53, 17).</em></p>
+<h2>2. Two scope choices</h2>
+<p><em>The assistant asked whether to show only a single α-slice per degree or also a full two-dimensional picture, and whether to include the exact even-n cross-check. Tao chose both the one-dimensional slice and a two-dimensional heatmap, and opted to include the exact cross-check.</em></p>
+<p><em>So the app got two linked views: an R-vs-α curve for the current degree — the arrow keys step n up and down, and the α-window is selectable — drawn against the threshold R = 1, and a heatmap of R over the whole (n, α) rectangle with the admissible region outlined, the &quot;infeasible everywhere&quot; view. For even n the app also evaluates the integral exactly in BigInt rational arithmetic and shows how closely the 64-node quadrature agrees with it.</em></p>
+<h2>3. Getting the numbers exactly</h2>
+<p><em>The mathematics lives in a DOM-free core, tested under node. It carries the 64-node Gauss–Legendre rule for the integral, the admissibility test c(α)² ≤ a², the admissible α-interval and the worst-case α for each degree, and the exact even-n integral. That exact path is done in pure integer arithmetic — the dyadic coefficients are scaled up to integers, the quadratic is raised to its integer power, and the result is reduced only once at the very end — which sidesteps an early version that was hopelessly slow because it took gcds of thousand-digit numbers inside the inner loop. The tests check the integral and R against the 60-digit reference values, the exact-even path against the quadrature, and — the point of the whole exercise — that R &lt; 1 across a dense sweep of the entire region.</em></p>
+<h2>4. Documenting the inequality</h2>
+<blockquote><p>the blog post has been updated ... and a Lean formalization is underway at github.com/teorth/sendov. Can you update the documentation of the app page to state the precise form of {stat} and link to the repo ... One can also mention the original proof of Sendov&#x27;s conjecture by Mazur (mentioned in the blog post).</p></blockquote>
+<p><em>The page gained a precise statement of (stat) — rendered in plain HTML and Unicode, since the app&#x27;s content-security policy rules out a MathJax CDN — together with the definitions of a and c(α) and the exact range to be covered, plus a background section: Sendov&#x27;s conjecture, Lech Mazur&#x27;s AI-generated proof (verified in Lean), Tao&#x27;s digestion, and a link to the Lean formalization repository. The page went live at its own URL first, deliberately unlisted, so it could serve as a stable reference for the blog post before appearing on the applets index.</em></p>
+<h2>5. Publishing</h2>
+<blockquote><p>The Sendov blog post is up. Update the sendov app page, link to applet main page with making of, and push.</p></blockquote>
+<p><em>With the digestion now public, the app page links straight to it, and the applet joined the catalogue in the Complex analysis category — a recent original sitting alongside the legacy Java applets — with this making-of beside it.</em></p>
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>

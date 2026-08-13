@@ -9,7 +9,7 @@ description: >-
   ported.
 category_notes:
   Linear algebra: "All the linear algebra apps below were originally coded by Kim Chi Tran in 2002, in Java 1.0. [The porting of these legacy applets — a conversation transcript](apps/porting-legacy-applets.html)."
-  Complex analysis: "All the complex analysis apps below were originally written by Terence Tao in Java, mostly between 1998 and 2000. [The porting of these legacy applets — a conversation transcript](apps/porting-legacy-applets.html)."
+  Complex analysis: "Most of the complex-analysis apps below are Terence Tao's Java applets from 1998–2000 ([the porting of these legacy applets — a conversation transcript](apps/porting-legacy-applets.html)); the Sendov infeasibility explorer is a recent original written for this site."
 philosophy:
   - heading: "AI involvement is disclosed."
     body: >-
@@ -354,7 +354,25 @@ applets:
   description: Orthogonalise a set of vectors step by step — subtract projections and normalise, with a live inner-product table.
   url: apps/gram-schmidt.html
   source: https://www.math.ucla.edu/~tao/resource/general/115a.3.02f/GramSchmidt.html
-# --- Complex analysis (Java) ---
+# --- Complex analysis (a recent original + legacy Java ports) ---
+- name: Sendov infeasibility explorer
+  category: Complex analysis
+  status: original
+  date: "2026-08-12"
+  description: >-
+    An interactive companion to Terence Tao's digestion of the proof of Sendov's conjecture. One step of the
+    argument needs a certain inequality — labelled (stat) — to be infeasible for every integer degree n from 5
+    to 200 and every α in [0, 17] (subject to c(α)² ≤ a²); equivalently, its right-hand side R(n, α) never
+    reaches 1. Step the degree n up and down with the arrow keys and choose the α-window to watch the curve
+    stay below the threshold, or read the whole region off a heatmap in which no cell reaches 1. The one
+    delicate ingredient is an integral that is a polynomial (with an exact closed form) only when n is even; a
+    single 64-node Gauss–Legendre rule evaluates it to about 14 digits for both parities, and for even n an
+    exact closed-form value in BigInt rational arithmetic is shown alongside as a cross-check. The page states
+    (stat) precisely and links Tao's blog post, the Lean formalization, and Mazur's original proof.
+  url: apps/sendov.html
+  writeup:
+    label: "The making of this app: a conversation transcript"
+    url: apps/sendov-making-of.html
 - name: The complex plane
   category: Complex analysis
   status: ported
