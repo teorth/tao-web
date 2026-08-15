@@ -227,6 +227,13 @@ editions:
     text: "Remark 1.4.17: “so that $\\langle {\\mathcal F} \\rangle$” should be “so that $\\langle {\\\
       mathcal F}$ is the Borel $\\sigma$-algebra”. In Exercise 1.4.15, ${\\mathcal F}_{n-1}$ should be\
       \ ${\\mathcal F}_\\alpha$."
+  - id: errata-0126
+    page: '73'
+    text: "In Exercise 1.4.15(ii), “the union of an at most countable number of sets in ${\\mathcal F}_\\\
+      alpha$” should be “the union of an at most countable number of sets in ${\\mathcal F}_\\beta$”."
+    reported_by:
+    - Jeff Jia Cai
+    date: '2026-08-15'
   - id: errata-0044
     page: '74'
     text: "Section 1.4.3, l. 2: “a sigma-algebra a measurable space” should be “a measurable space”. In\
