@@ -235,6 +235,24 @@ works:
     url: "https://arxiv.org/abs/2603.21453"
   - type: discussion
     url: "https://terrytao.wordpress.com/2026/03/23/local-bernstein-theory-and-lower-bounds-for-lebesgue-constants/"
+- id: mathematics-in-the-age-of-ai
+  kind: paper
+  title: Mathematics in the age of AI
+  year: 2026
+  status: submitted
+  venue: Submitted, Proc. ICM 2026
+  arxiv: '2608.16753'
+  tags:
+  - machine-assisted
+  - misc
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2608.16753"
+  - type: slides
+    url: "slides/age-of-ai-icm-2026.pdf"
+  - type: note
+    url: "https://www.youtube.com/watch?v=M0--ZH1lOzg"
+    label: "lecture recording"
 - id: mathematical-methods-and-human-thought-in-the-age-of-ai
   kind: paper
   title: Mathematical methods and human thought in the age of AI
