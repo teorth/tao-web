@@ -980,6 +980,10 @@ service:
 - start: '2025'
   organization: Renaissance Philanthropy
   role: Senior Advisor
+- start: '2026'
+  organization: Palomar Registry
+  role: Scientific Advisory Board; technical maintainer and moderator
+  url: "https://palomar-registry.org/"
 consulting:
 - role: Advisor
   organization: Hum Lab
