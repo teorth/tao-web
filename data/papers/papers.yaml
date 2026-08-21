@@ -124,6 +124,40 @@ works:
     cross-references; a language model could go further, recovering dependencies stated only informally
     (“repeating the argument of Section 3”) and judging which results deserve a box. The main
     difficulties are informal proofs, implicit dependencies, and the subjective choice of what to include.
+- id: quantitative-bounds-for-sets-lacking-polynomial-progressions
+  kind: paper
+  title: Quantitative bounds for sets lacking polynomial progressions with shifted prime difference
+  coauthors:
+  - Ben Krause
+  - Hamed Mousavi
+  - Joni Teräväinen
+  year: 2026
+  status: preprint
+  venue: Preprint
+  arxiv: '2608.19525'
+  tags:
+  - additive-combinatorics-number-theory
+  - primes
+  - gowers-norms
+  - szemeredi
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2608.19525"
+  - type: discussion
+    url: "https://terrytao.wordpress.com/2026/08/20/quantitative-bounds-for-sets-lacking-polynomial-progressions-with-shifted-prime-difference/"
+  abstract: >-
+    Quantitative polynomial Szemerédi-type theorems for polynomial progressions whose shift parameter is
+    restricted to the shifted primes ℙ−1, covering distinct-degree progressions and progressions given by
+    integer multiples of a fixed polynomial. For nonlinear configurations of length at least three these
+    are the first quantitative versions of such theorems (previously known only via ergodic theory, after
+    Wooley–Ziegler); in the linear case they improve on earlier bounds of the last two authors. The
+    density bounds are strongest for distinct-degree polynomials, where they are polylogarithmic, of the
+    same shape as the integer-shift bounds of Shao and Wang. The proofs combine recent quantitative
+    results for polynomial configurations in the integers with quantitative Gowers uniformity bounds for
+    the primes: for multiples of a fixed polynomial, a comparison argument of Altman and Sawhney is
+    adapted to give uniformity over the polynomial families produced by the W-trick; for distinct-degree
+    progressions, a comparison between prime-weighted and unweighted polynomial counts is established
+    that is uniform throughout the density increment argument and accounts for a possible Siegel zero.
 - id: gilbreath-s-conjecture-a-cramer-random-model-and-a-determin
   kind: paper
   title: "Gilbreath's conjecture: a Cramér random model and a deterministic analysis"
