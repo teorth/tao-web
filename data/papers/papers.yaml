@@ -138,6 +138,12 @@ works:
   links:
   - type: arxiv
     url: "https://arxiv.org/abs/2608.22209"
+  - type: applet
+    url: "apps/kakeya.html"
+    label: "Kakeya needle applet"
+  - type: applet
+    url: "apps/kakeya3d.html"
+    label: "3D Kakeya-set applet"
   abstract: >-
     A non-technical exposition of the Kakeya conjecture, why it matters, and the road to the solution of
     this conjecture in three dimensions by Hong Wang and Joshua Zahl.
