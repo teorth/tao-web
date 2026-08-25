@@ -124,6 +124,23 @@ works:
     cross-references; a language model could go further, recovering dependencies stated only informally
     (“repeating the argument of Section 3”) and judging which results deserve a box. The main
     difficulties are informal proofs, implicit dependencies, and the subjective choice of what to include.
+- id: rotating-needles-in-space-the-road-to-the-kakeya-conjecture
+  kind: paper
+  title: "Rotating needles in space: the road to the Kakeya conjecture, and why it matters"
+  year: 2026
+  status: submitted
+  venue: Submitted, Proc. ICM 2026
+  arxiv: '2608.22209'
+  tags:
+  - kakeya
+  - kakeya-restriction
+  - harmonic-analysis
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2608.22209"
+  abstract: >-
+    A non-technical exposition of the Kakeya conjecture, why it matters, and the road to the solution of
+    this conjecture in three dimensions by Hong Wang and Joshua Zahl.
 - id: quantitative-bounds-for-sets-lacking-polynomial-progressions
   kind: paper
   title: Quantitative bounds for sets lacking polynomial progressions with shifted prime difference
