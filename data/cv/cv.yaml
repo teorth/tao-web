@@ -887,6 +887,11 @@ service:
   end: '2017'
   organization: MSRI
   role: Analytic Number Theory program organiser (chair)
+- start: '2015'
+  end: '2026'
+  organization: Breakthrough Prize
+  role: Breakthrough Prize in Mathematics Selection Committee
+  highlight: true
 - start: '2016'
   end: '2018'
   organization: International Mathematical Union
