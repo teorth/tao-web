@@ -12,6 +12,11 @@ projects:
   status: active
   url: https://teorth.github.io/optimizationproblems/
   repo: https://github.com/teorth/optimizationproblems
+- name: Integrated Explicit Analytic Number Theory Network (IEANTN)
+  description: A network of claims in explicit analytic number theory, each recorded with how rigorously it has been justified and how they connect; spun off from the Prime Number Theorem And… (PNT+) project.
+  launched: 2026
+  status: active
+  repo: https://github.com/teorth/IEANTN
 - name: Erdős problems
   description: A community database recording and tracking the status of the problems catalogued at erdosproblems.com.
   launched: 2025
