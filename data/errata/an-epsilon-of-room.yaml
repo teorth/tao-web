@@ -760,10 +760,12 @@ editions:
     text: "In Exercise 1.14.12(2), the additional hypothesis that $k \\leq l$ is missing."
   - id: volume-i-0150
     page: '242'
-    text: "Exercise 1.14.13 is incorrect and should be replaced by the following: “Let ${k \\geq 0}$ and\
-      \ ${0 \\leq \\alpha' Hint: To approximate a compactly supported ${C^{k,\\alpha}}$ function by a\
-      \ ${C^\\infty_c}$ one, convolve with a smooth, compactly supported approximation to the identity.)\
-      \ What happens in the endpoint case ${\\alpha=\\alpha'}$? “"
+    text: "Exercise 1.14.13 is incorrect and should be replaced by the following: “Let ${k \\geq 0}$ and ${0\
+      \ \\leq \\alpha' < \\alpha \\leq 1}$. Show that ${C^\\infty_c({\\bf R}^d)}$ is a dense subset of ${C^{k,\\\
+      alpha}_0({\\bf R}^d)}$ if one places the ${C^{k,\\alpha'}}$ topology on the latter space. (Hint: To\
+      \ approximate a compactly supported ${C^{k,\\alpha}}$ function by a ${C^\\infty_c}$ one, convolve with\
+      \ a smooth, compactly supported approximation to the identity.) What happens in the endpoint case ${\\\
+      alpha=\\alpha'}$? “"
   - id: volume-i-0151
     page: '242'
     text: "In Exercise 1.14.14, the signs are reversed in the formulae for $u(x)$ and for $\\frac{\\partial\
