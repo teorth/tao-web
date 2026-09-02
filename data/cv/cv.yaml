@@ -989,6 +989,11 @@ service:
   organization: Palomar Registry
   role: Scientific Advisory Board; technical maintainer and moderator
   url: "https://palomar-registry.org/"
+- start: '2026'
+  end: '2026'
+  organization: IPAM
+  role: Co-organizer, Foundations of Interpretability workshop
+  url: "https://www.ipam.ucla.edu/programs/workshops/foundations-of-interpretability/"
 consulting:
 - role: Advisor
   organization: Hum Lab
