@@ -994,6 +994,11 @@ service:
   organization: IPAM
   role: Co-organizer, Foundations of Interpretability workshop
   url: "https://www.ipam.ucla.edu/programs/workshops/foundations-of-interpretability/"
+- start: '2026'
+  end: '2026'
+  organization: IPAM
+  role: "Co-organizer, PDEs: Verification, Mathematics, and Algorithms in the Age of AI workshop"
+  url: "https://www.ipam.ucla.edu/programs/workshops/pdes-verification-mathematics-and-algorithms-in-the-age-of-ai/"
 consulting:
 - role: Advisor
   organization: Hum Lab
