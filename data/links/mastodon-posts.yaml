@@ -50,6 +50,7 @@ sections:
     \ (Mar 27, 2025)."
   - "[A short rule of thumb on when to use coordinates and concrete constructions, and when to use abstract,\
     \ coordinate-free formalisms](https://mathstodon.xyz/@tao/114456756661540097) (May 5, 2025)."
+  - "[Stadlmann improves the Polymath8b bound on bounded gaps between primes from 246 to 240, by adapting\n    \ Motohashi-Pintz-Zhang estimates to “partly smooth” divisors](https://mathstodon.xyz/@tao/117197525544971208)\n    \ (Sep 1, 2026)."
 - title: Metamathematical or philosophical musings
   entries:
   - "[On the role of speculation in mathematics](https://mathstodon.xyz/@tao/109399772089568488) (Nov\
@@ -236,6 +237,8 @@ sections:
   - "[A counterfactual timeline for bounded gaps between primes, had benchmark-focused AI companies existed\n    \ in 2005](https://mathstodon.xyz/@tao/117219548485446992) (Sep 5, 2026)"
   - "[A proposed competition for AI companies: be first to announce a new mathematical insight, rather than\n    \ first to announce a solution](https://mathstodon.xyz/@tao/117221032761877425) (Sep 5, 2026)"
   - "[The Equational Theories Project as a case study in the opportunity cost of solving too fast, and\n    \ prospecting for new sources of problems as a response](https://mathstodon.xyz/@tao/117230983266837293)\n    \ (Sep 7, 2026)"
+  - "[Alpöge and Buckmaster establish finite time blowup for 3D incompressible Euler and other fluid\n    \ equations, with significant AI input and a Lean formalization](https://mathstodon.xyz/@tao/117233527638291447)\n    \ (Sep 8, 2026)"
+  - "[Why open problems can be scarce even though infinitely many exist: a region can lack drinking water\n    \ while surrounded by ocean](https://mathstodon.xyz/@tao/117237320796901560) (Sep 8, 2026)"
 - title: Miscellaneous
   entries:
   - "[My experiences at an IPAM workshop on Machine Assisted Proof](https://mathstodon.xyz/@tao/109858184238417737)\
