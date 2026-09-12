@@ -3,13 +3,6 @@ title: Travel
 note: Due to a high workload and large volume of requests, I am currently declining almost all future invitations to travel.
 upcoming:
 - year: 2026
-  dates: Aug 8
-  place: Stanford
-- year: 2026
-  dates: Aug 28–30
-  place: Seattle
-  tentative: true
-- year: 2026
   dates: Oct 1–2
   place: NY
 - year: 2026
@@ -1350,3 +1343,10 @@ past:
 - year: 2026
   dates: Jul 23–30
   place: Philadelphia
+- year: 2026
+  dates: Aug 8
+  place: Stanford
+- year: 2026
+  dates: Aug 28–30
+  place: Seattle
+  tentative: true
