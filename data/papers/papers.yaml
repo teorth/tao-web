@@ -149,7 +149,7 @@ works:
     this conjecture in three dimensions by Hong Wang and Joshua Zahl.
 - id: quantitative-bounds-for-sets-lacking-polynomial-progressions
   kind: paper
-  title: Quantitative bounds for sets lacking polynomial progressions with shifted prime difference
+  title: Polynomial progressions with shifted prime difference
   coauthors:
   - Ben Krause
   - Hamed Mousavi
