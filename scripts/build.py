@@ -913,6 +913,12 @@ def build_projects(projects: dict) -> str:
         dd = f'{name} &mdash; {html.escape(p["description"])}'
         if p.get("url"):  # url is the project site; also surface the code repo
             dd += f' <span class="meta">[<a href="{html.escape(p["repo"])}">code</a>]</span>'
+        # Optional talks/writeups about the project, as a second muted line.
+        if p.get("links"):
+            refs = " &middot; ".join(
+                f'<a href="{html.escape(l["url"])}">{html.escape(l["title"])}</a>'
+                for l in p["links"])
+            dd += f'<br><span class="meta">{refs}</span>'
         return (str(p["launched"]), dd)
 
     items = projects.get("projects", [])

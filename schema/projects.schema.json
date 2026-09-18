@@ -5,27 +5,77 @@
   "description": "Online collaborative/formalization projects, rendered as a page grouped by status.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["projects"],
+  "required": [
+    "projects"
+  ],
   "properties": {
-    "title": { "type": "string" },
-    "description": { "type": "string", "description": "Intro prose for the page." },
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Intro prose for the page."
+    },
     "projects": {
       "type": "array",
       "minItems": 1,
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "description", "launched", "repo", "status"],
+        "required": [
+          "name",
+          "description",
+          "launched",
+          "repo",
+          "status"
+        ],
         "properties": {
-          "name": { "type": "string" },
-          "description": { "type": "string", "description": "One-sentence summary." },
-          "launched": { "type": "integer", "description": "Year the project was launched." },
-          "repo": { "type": "string", "description": "Source repository URL." },
-          "url": { "type": "string", "description": "Project site/blueprint (optional)." },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "description": "One-sentence summary."
+          },
+          "launched": {
+            "type": "integer",
+            "description": "Year the project was launched."
+          },
+          "repo": {
+            "type": "string",
+            "description": "Source repository URL."
+          },
+          "url": {
+            "type": "string",
+            "description": "Project site/blueprint (optional)."
+          },
           "status": {
             "type": "string",
-            "enum": ["active", "inactive"],
+            "enum": [
+              "active",
+              "inactive"
+            ],
             "description": "active, or inactive (completed/paused)."
+          },
+          "links": {
+            "type": "array",
+            "description": "Talks, writeups, or other material about the project (optional).",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "title",
+                "url"
+              ],
+              "properties": {
+                "title": {
+                  "type": "string"
+                },
+                "url": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       }

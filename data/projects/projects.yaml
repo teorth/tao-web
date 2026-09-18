@@ -17,6 +17,13 @@ projects:
   launched: 2026
   status: active
   repo: https://github.com/teorth/IEANTN
+  links:
+  - title: "Progress report (IPAM, September 2026)"
+    url: https://www.youtube.com/watch?v=Boo72U-9u3c
+  - title: slides
+    url: slides/ieantn-ipam-2026.pdf
+  - title: "Progress report (ICERM, May 2026)"
+    url: https://icerm.brown.edu/video_archive/4649
 - name: Erdős problems
   description: A community database recording and tracking the status of the problems catalogued at erdosproblems.com.
   launched: 2025
