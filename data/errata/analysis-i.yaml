@@ -168,6 +168,18 @@ editions:
     page: null
     text: "General: all instances of “supercede” should be “supersede”, and “maneuvre” should be “manoeuvre”.\
       \ Colons in maps should be spaced using the \\colon LaTeX macro."
+  - id: fourth-edition-0131
+    page: null
+    text: "When a period or comma follows an ellipsis, there should be as much space between it and the last ellipsis point as between the ellipsis points."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0132
+    page: viii
+    text: "“perservere” should be “persevere”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0002
     page: x
     text: “Chapter 5 (on Fourier Series)” should be “Chapter 5 of Analysis II (on Fourier Series)”.
@@ -211,6 +223,18 @@ editions:
     page: "?"
     text: In Proposition 2.1.16, “assign a unique natural number” can be rephrased as “uniquely assign
       a natural number” to reduce ambiguity.
+  - id: fourth-edition-0133
+    page: '28'
+    text: "“with sets and not with objects” should be “with sets and not with other objects”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0134
+    page: '29'
+    text: "“non-emptyness” should be “non-emptiness”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0015
     page: '29'
     text: "In Axiom 3.3, both versions of the emptyset should be $\\emptyset$. (This only affects some\
@@ -262,10 +286,34 @@ editions:
       leq i \\leq n++$ rather than $1 \\leq i \\leq n$, and the set after “from the set” should be $S_{n++}$\
       \ rather than $\\{ i \\in {\\mathbf N}: 1 \\leq i \\leq n++ \\}$. Also, two of the left parentheses\
       \ in this exercise need to be closed up with matching right parentheses."
+  - id: fourth-edition-0135
+    page: '63'
+    text: "“work around” should be “workaround”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0028
     page: '64'
     text: In footnote 1, “two applications of the axiom of replacement” should be “the axiom of replacement”,
       and “role” should be “rôle”.
+  - id: fourth-edition-0136
+    page: '67'
+    text: "In Remark 4.1.7, the closing parenthesis should come after the period (because the whole sentence is enclosed)."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0137
+    page: '69'
+    text: "“$-3//-4$” (note the spacing around the second minus sign) should be “$(-3)//(-4)$”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0138
+    page: 69, 70
+    text: "The asterisk should be replaced with a cross for multiplication."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0029
     page: '69'
     text: "In the paragraph before Definition 3.6.5, $N$ should be ${\\bf N}$."
@@ -284,6 +332,18 @@ editions:
     text: "In Proposition 4.3.7(b), add the following parenthetical: “Because of this equivalence, we\
       \ will also use “$x$ and $y$ are $\\varepsilon$-close” synonymously with either “$x$ is $\\varepsilon$-close\
       \ to $y$” or “$y$ is $\\varepsilon$-close to $x$“."
+  - id: fourth-edition-0139
+    page: '74'
+    text: "“$|-x|$” should be “$|{-x}|$”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0140
+    page: '84'
+    text: "In Example 5.1.7, the comma before the first opening parenthesis should be removed."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0033
     page: '79'
     text: Delete the last sentence of Exercise 4.4.3 (as the axiom of choice has not yet been formally
@@ -344,6 +404,12 @@ editions:
   - id: fourth-edition-0049
     page: '128'
     text: "After Definition 6.6.1, “for all $n \\in {\\bf N}$” should be “for all $n \\geq m'$“."
+  - id: fourth-edition-0141
+    page: '129'
+    text: "“obijective” should be “bijective”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0050
     page: '131'
     text: In the proof of Lemma 6.7.1, remove absolute values from second display for consistency.
@@ -397,10 +463,34 @@ editions:
   - id: fourth-edition-0065
     page: "?"
     text: "In Definition 8.2.1, = should be :=."
+  - id: fourth-edition-0142
+    page: '156'
+    text: "The period after the closing parenthesis following “why?” should be removed."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0143
+    page: '159'
+    text: "The comma before “is a bijection” should be removed."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0144
+    page: '162'
+    text: "In the proof of Corollary 8.1.11, “are countable” should be “is countable”. There also should be a period at the end of the proof."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0145
+    page: '162'
+    text: "“certain sets—including the real numbers $\mathbf R$ are” should be “certain sets, including the real numbers $\mathbf R$, are”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0066
     page: '166'
     text: "In the proof of Theorem 8.2.2 just before the second display, “convergent for each $m$” should\
-      \ be “convergent for each $n$“.. In the second display, the first $\\leq$ sign can be replaced with\
+      \ be “convergent for each $n$“. In the second display, the first $\\leq$ sign can be replaced with\
       \ equality. Two lines later, “Takingsuprema of this” is missing a space. The parenthetical “(Why\
       \ will this be enough? prove by contradiction)” can be replaced by “(see Exercise 5.4.7)”."
   - id: fourth-edition-0067
@@ -427,7 +517,7 @@ editions:
   - id: fourth-edition-0072
     page: '173'
     text: In Remark 8.3.5, “Exercise 7.2.6” should be “Exercise 7.2.6 of Analysis II“. In Exercise 8.3.2,
-      “a injection” should be “an injection”. In Remark 8.3.6,, replace Exercise 3.6.7 with Exercise 8.3.4.
+      “a injection” should be “an injection”. In Remark 8.3.6, replace Exercise 3.6.7 with Exercise 8.3.4.
   - id: fourth-edition-0073
     page: '174'
     text: "In Example 8.4.2, replace “For any sets $I$ and $X$” with “For any set $X$ and non-empty set\
@@ -483,6 +573,12 @@ editions:
     page: "?"
     text: "In the final claim of Proposition 9.3.14, add “with the convention that $f(x)/g(x)$ is set\
       \ to some arbitrary value when $g(x)=0$ (which can happen for $x \\not \\in E$)”."
+  - id: fourth-edition-0146
+    page: '189'
+    text: "A space is missing in “Chap.4”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0088
     page: '194'
     text: "In Remark 9.3.15, for completeness one can also include “$\\lim_{x \\rightarrow x_0} c f(x)\
@@ -505,10 +601,22 @@ editions:
   - id: fourth-edition-0093
     page: "?"
     text: In Exercise 9.6.1(c), the period at the end should be a semicolon.
+  - id: fourth-edition-0147
+    page: '200'
+    text: "“seperate” should be “separate”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0094
     page: '203'
     text: "In the proof of Lemma 9.6.3, it would be slightly more logical to have $|f(x)| > M$ rather\
       \ than $|f(x)| \\geq M$."
+  - id: fourth-edition-0148
+    page: 204, 205, 206
+    text: "The “min” and “max” subscripts should not be italicized."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0095
     page: '205'
     text: In the proof of Proposition 9.6.7, “in Proposition 2.3.2” should be “… Proposition 2.3.2 of
@@ -521,6 +629,30 @@ editions:
     page: "?"
     text: "In the hint for Exercise 9.8.5(c), the argument for $f_n$ should be changed from $x$ to $y$\
       \ to avoid collision."
+  - id: fourth-edition-0149
+    page: '208'
+    text: "“there exists three” should be “there exist three”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0150
+    page: '208'
+    text: "In Remark 9.7.3, the superscript “th” should not be italicized."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0151
+    page: '208'
+    text: "In Exercise 9.7.2, “which play” should be “which plays”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0152
+    page: 209, 290
+    text: "The superscript “th” should not be italicized."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0098
     page: '211'
     text: "In the second paragraph of Section 9.9, the “island of stability” can be defined as a closed\
@@ -542,6 +674,18 @@ editions:
   - id: fourth-edition-0103
     page: '220'
     text: "In Theorem 10.1.13(h), enlarge the parentheses around $\\frac{f}{g}$."
+  - id: fourth-edition-0153
+    page: '221'
+    text: "In Remark 10.1.17, “then chain rule” should be “the chain rule”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0154
+    page: '227'
+    text: "“(Why? Note that $f^{-1}$ is a bijection).” should be “(Why? Note that $f^{-1}$ is a bijection.)”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0104
     page: "?"
     text: In the last sentence above Proposition 10.3.3, “if function” should be “if a function”.
@@ -578,6 +722,18 @@ editions:
       \ calculus (Theorem 11.9.4). The $q=1$ case can also be treated by this method, but requires the\
       \ theory of the natural logarithm function, which is postponed to Analysis II“. This exercise should\
       \ also be moved to Section 11.9."
+  - id: fourth-edition-0155
+    page: '251'
+    text: "“Non-riemann” should be “Non-Riemann”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0156
+    page: '252'
+    text: "Definition 11.8.1: The closing square bracket before “Let” should be removed."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0113
     page: '252'
     text: In Remark 11.7.2, “Chapter 8” should be “Chapter 8 of Analysis II“.
@@ -595,6 +751,18 @@ editions:
       \ $X$ containing $I$“. After mentioning the continuous case, add as a parenthetical comment that\
       \ while in this section one will only need the monotone case of this lemma, the continuous case\
       \ will be useful in the next section."
+  - id: fourth-edition-0157
+    page: '253'
+    text: "“equl” should be “equal”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0158
+    page: '253'
+    text: "Example 11.8.3: A period is missing before “Thus”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0116
     page: '254'
     text: "After Example 11.8.7, $\\alpha(I)$ should be $\\alpha[I]$ (two occurrences)."
@@ -605,6 +773,24 @@ editions:
     page: '257'
     text: "In Definition 11.9.3, “all limit points $x$ of $I$” should be “all limit points $x$ of $I$\
       \ that are contained in $I$“."
+  - id: fourth-edition-0159
+    page: '260'
+    text: "“differentable” should be “differentiable”."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0160
+    page: 268, 273
+    text: "The asterisk should be replaced with a cross for multiplication."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
+  - id: fourth-edition-0161
+    page: '268'
+    text: "The sentence beginning with “One can make statements” should have a period at the end."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0119
     page: "?"
     text: "In the statement of Proposition 11.10.1, the notation $I$ can be safely removed."
@@ -619,6 +805,12 @@ editions:
   - id: fourth-edition-0122
     page: '271'
     text: "In Examples A.2.1, “no conclusion on $x$ or $x^2$” should be “no conclusion for $x^2$“."
+  - id: fourth-edition-0162
+    page: '281'
+    text: "A closing quotation mark is missing for a negation example."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0123
     page: 283-284
     text: In the proof of Proposition A.6.2, 0 \leq y \leq x may be improved to 0 < y < x; similarly for
@@ -641,6 +833,12 @@ editions:
     text: "In Exercise B.2.3, “$x$ is not at terminating decimal” should be “$x$ is not a terminating\
       \ decimal”. $n/10^{-m}$ can be $n/10^m$, and $m$ can be set to be a natural number rather than an\
       \ integer."
+  - id: fourth-edition-0163
+    page: '295'
+    text: "In the index, there is one occurrence of “$mathbf$” (in math mode without a backslash)."
+    reported_by:
+    - Ivan Panchenko
+    date: '2026-09-28'
   - id: fourth-edition-0129
     page: null
     text: In the index, the entries for ++ and for Cauchy-Schwarz are duplicated in some issues.
