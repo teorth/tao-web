@@ -754,6 +754,16 @@ lectures:
   venue: online
   date: '2022'
   topic: Mathematical thinking
+- name: ICM Public Lecture
+  url: "https://www.youtube.com/watch?v=M0--ZH1lOzg"
+  venue: International Congress of Mathematicians, Philadelphia
+  date: '2026'
+  topic: Mathematics in the age of AI
+- name: AIM Public Lecture Series
+  url: "slides/math-2-0-caltech-2026.pdf"
+  venue: Caltech
+  date: '2026'
+  topic: Math 2.0
 editorial_note:
   text: Advice on submitting papers to journals
   url: "https://www.math.ucla.edu/~tao/submissions.html"
