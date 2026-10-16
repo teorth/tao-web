@@ -6,7 +6,10 @@ Exits non-zero on any problem so CI fails loudly. Run: python scripts/validate.p
 """
 from __future__ import annotations
 
+import os
+import re
 import sys
+from datetime import date, datetime
 from pathlib import Path
 
 import yaml
@@ -122,6 +125,111 @@ def validate_cv() -> int:
     return len(errors)
 
 
+_MONTH_ABBR = {
+    "jan": 1,
+    "feb": 2,
+    "mar": 3,
+    "apr": 4,
+    "may": 5,
+    "jun": 6,
+    "jul": 7,
+    "aug": 8,
+    "sep": 9,
+    "oct": 10,
+    "nov": 11,
+    "dec": 12,
+    "january": 1,
+    "february": 2,
+    "march": 3,
+    "april": 4,
+    "june": 6,
+    "july": 7,
+    "august": 8,
+    "september": 9,
+    "october": 10,
+    "november": 11,
+    "december": 12,
+}
+
+
+def _travel_today() -> date:
+    raw = os.environ.get("TAO_WEB_TODAY", "").strip()
+    if raw:
+        return datetime.strptime(raw, "%Y-%m-%d").date()
+    return date.today()
+
+
+def _parse_upcoming_end_day(year: int, dates: str) -> date | None:
+    """Return the last calendar day implied by a simple upcoming `dates` string."""
+    text = dates.strip()
+    if not text:
+        return None
+    lowered = text.lower()
+    if "quarter" in lowered or "vacation" in lowered:
+        return None
+    if re.search(r"\d{4}", text):
+        return None
+    m = re.match(
+        r"^(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|"
+        r"January|February|March|April|June|July|August|September|October|November|December)"
+        r"\s+\d{1,2}(?:\s*[–—-]\s*(\d{1,2}))?)\s*$",
+        text,
+        re.IGNORECASE,
+    )
+    if not m:
+        return None
+    parts = re.split(r"\s*[–—-]\s*", text, maxsplit=1)
+    head = parts[0].strip()
+    tail = parts[1].strip() if len(parts) > 1 else None
+    head_m = re.match(r"^([A-Za-z]+)\s+(\d{1,2})$", head)
+    if not head_m:
+        return None
+    month = _MONTH_ABBR.get(head_m.group(1).lower())
+    if month is None:
+        return None
+    day = int(tail) if tail and tail.isdigit() else int(head_m.group(2))
+    try:
+        return date(year, month, day)
+    except ValueError:
+        return None
+
+
+def validate_travel_upcoming_dates() -> int:
+    """Flag non-tentative upcoming trips whose parseable dates are already past."""
+    path = TRAVEL / "travel.yaml"
+    if not path.exists():
+        return 0
+    doc = yaml.safe_load(path.read_text(encoding="utf-8"))
+    today = _travel_today()
+    problems = 0
+    for i, trip in enumerate(doc.get("upcoming") or []):
+        if trip.get("tentative") or trip.get("cancelled"):
+            continue
+        year = trip.get("year")
+        dates = trip.get("dates")
+        if not isinstance(year, int) or not isinstance(dates, str):
+            continue
+        end_day = _parse_upcoming_end_day(year, dates)
+        if end_day is None:
+            continue
+        if end_day < today:
+            place = trip.get("place", "?")
+            print(
+                f"travel.yaml: upcoming/{i}: {year} {dates} ({place}) "
+                f"ended {end_day.isoformat()} but is still listed as upcoming "
+                f"(today={today.isoformat()}; override with TAO_WEB_TODAY=YYYY-MM-DD)"
+            )
+            problems += 1
+    if problems:
+        print(
+            f"  travel.yaml: upcoming date sanity -> INVALID ({problems} stale trip(s))",
+            file=sys.stderr,
+        )
+    else:
+        print("  travel.yaml: upcoming date sanity -> OK")
+    return problems
+
+
 def validate_one(schema_path, data_path, label) -> int:
     """Validate a single data file against a schema; print a one-line summary."""
     if not data_path.exists():
@@ -178,6 +286,7 @@ def main() -> int:
     problems += validate_papers()
     problems += validate_cv()
     problems += validate_one(TRAVEL_SCHEMA, TRAVEL / "travel.yaml", "travel")
+    problems += validate_travel_upcoming_dates()
     problems += validate_one(CONTACT_SCHEMA, CONTACT / "contact.yaml", "contact")
     problems += validate_one(PROJECTS_SCHEMA, PROJECTS / "projects.yaml", "projects")
     problems += validate_one(APPLETS_SCHEMA, APPLETS / "applets.yaml", "applets")
