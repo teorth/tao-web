@@ -10,10 +10,12 @@ book:
     publisher: Quanta Books
     first_published: 2026
     isbn: "978-0-374-62179-7"
-    note: "Hardcover, 128 pages; also available as e-book and audiobook. Distributed by Farrar, Straus and Giroux. To be published October 27, 2026."
+    note: "Hardcover, 128 pages; also available as e-book and audiobook. Distributed by Farrar, Straus and Giroux. To be published October 27, 2026. A UK edition, titled “Six Maths Essentials: How to Model the World”, is published the same day by Pelican (hardback, 96 pages, ISBN 978-0-241-82948-6; also an e-book)."
   links:
   - title: "Publisher (Quanta Books)"
     url: "https://www.quantabooks.org/books/six-math-essentials/"
   - title: "Publisher (Farrar, Straus and Giroux)"
     url: "http://fsgbooks.com"
+  - title: "Publisher (Pelican, UK edition)"
+    url: "https://www.penguin.co.uk/books/482167/six-maths-essentials-by-tao-terence/9780241829486"
 editions: []
