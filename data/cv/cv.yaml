@@ -760,7 +760,7 @@ lectures:
   date: '2026'
   topic: Mathematics in the age of AI
 - name: AIM Public Lecture Series
-  url: "slides/math-2-0-caltech-2026.pdf"
+  url: "https://aimath.org/videos/terry-tao-pl/"
   venue: Caltech
   date: '2026'
   topic: Math 2.0
