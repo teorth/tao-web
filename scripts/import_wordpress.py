@@ -46,11 +46,17 @@ def img_to_latex(fragment: str) -> str:
 
 def li_to_text(li: str) -> str:
     txt = img_to_latex(li)
-    txt = re.sub(r"<[^>]+>", "", txt)          # drop remaining tags
+    # Strip HTML tags only outside $...$ math. A naive <...> regex treats the
+    # first "<" inside "$1 < p < ...$" as a tag opener and deletes through the
+    # next ">", which is how several errata lost their statements on import.
+    parts = txt.split("$")
+    for i, part in enumerate(parts):
+        if i % 2 == 0:  # outside math
+            parts[i] = re.sub(r"<[^>]+>", "", part)
+    txt = "$".join(parts)
     txt = H.unescape(txt)
     txt = txt.replace(" ", " ")            # nbsp -> space
     return re.sub(r"\s+", " ", txt).strip()
-
 
 def split_page(text: str):
     """Return (page_token_or_None, remaining_text).
