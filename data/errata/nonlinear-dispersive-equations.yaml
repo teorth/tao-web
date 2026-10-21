@@ -284,10 +284,10 @@ editions:
       \ \\cdots, |x_n|\\ll 1/\\varepsilon$“."
   - id: errata-0065
     page: 81-82
-    text: "In Exercise 2.46, the hypothesis $r \\leq \\infty$ should be replaced with $r all Schrödinger-admissible\
-      \ exponents). Also, to use complex interpolation to prove this estimate requires the theory of BMO\
-      \ (and the Fefferman-Stein interpolation theorem); it is easier to use the Littlewood-Paley inequality\
-      \ (A.7) instead."
+    text: "In Exercise 2.46, the hypothesis $r \\leq \\infty$ should be replaced with $r < \\infty$ (and so\
+      \ the claim is not quite true for all Schrödinger-admissible exponents). Also, to use complex interpolation\
+      \ to prove this estimate requires the theory of BMO (and the Fefferman-Stein interpolation theorem);\
+      \ it is easier to use the Littlewood-Paley inequality (A.7) instead."
   - id: errata-0066
     page: '83'
     text: two lines above (2.33), “transation” should be “translation”.
@@ -489,7 +489,8 @@ editions:
       \ be Theorem 2.3."
   - id: errata-0104
     page: '136'
-    text: "“$1 1/q'$” should be “$p/q < 1/q'$”."
+    text: "“$1 < p < 1+4/n$” should be “$1 < p < 1 + 4/d$”. “$q<r$” should be “$r<q$” (two occurrences), and\
+      \ “$p/q > 1/q'$” should be “$p/q < 1/q'$”."
   - id: errata-0105
     page: '137'
     text: "In the formula of Proposition 3.17, $2(n+2)/n$ should be $2(d+2)/d$. The final parenthetical\
