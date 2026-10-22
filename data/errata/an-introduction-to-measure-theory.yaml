@@ -19,6 +19,10 @@ book:
     url: "http://www.ams.org/bookstore-getitem/item=GSM-126"
   - title: Lecture notes (245A)
     url: "https://terrytao.wordpress.com/category/teaching/245a-real-analysis/"
+  - title: "Review by Takis Konstantopoulos (Amer. Math. Monthly 120 (2013))"
+    url: "https://www.jstor.org/stable/10.4169/amer.math.monthly.120.08.762"
+  - title: "Review by Mihaela Poplicher (MAA Reviews, archived)"
+    url: "http://web.archive.org/web/20140803115403/http://www.maa.org/publications/maa-reviews/an-introduction-to-measure-theory"
   contributors:
     note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
       were reported by the readers listed below over the years; individual per-erratum attributions for

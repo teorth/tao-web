@@ -21,6 +21,8 @@ book:
     url: "http://www.ams.org/bookstore-getitem/item=gsm-117"
   - title: Volume 2 (AMS)
     url: "http://www.ams.org/bookstore-getitem/item=MBK-77"
+  - title: "Review of Volume 1 by Jonathan Partington (Bull. London Math. Soc. 44 (2012))"
+    url: "https://academic.oup.com/blms/article/44/1/203/399812"
   contributors:
     note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
       were reported by the readers listed below over the years; individual per-erratum attributions for

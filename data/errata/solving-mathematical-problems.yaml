@@ -24,6 +24,10 @@ book:
     url: "http://www.math.ucla.edu/~tao/preprints/problem.ps"
   - title: Publisher (Oxford University Press)
     url: "https://global.oup.com/academic/product/solving-mathematical-problems-9780199205608"
+  - title: "Review by Loren Larson (Notices Amer. Math. Soc., February 2010)"
+    url: "https://www.ams.org/notices/201002/rtx100200244p.pdf"
+  - title: "Review of the Italian edition by Alberto Saracco (MaddMaths!)"
+    url: "https://maddmaths.simai.eu/divulgazione/risolvere-problemi-matematici-di-terence-tao-recensione/"
   contributors:
     note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
       were reported by the readers listed below over the years; individual per-erratum attributions for

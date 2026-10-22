@@ -17,6 +17,8 @@ book:
     url: "https://terrytao.wordpress.com/wp-content/uploads/2008/04/whatsnew_onlineversion1.pdf"
   - title: Publisher (AMS)
     url: "http://www.ams.org/bookstore-getitem/item=mbk-59"
+  - title: "Review by Cosma Shalizi, “Obstacles and Tricks” (American Scientist, March–April 2009; archived)"
+    url: "http://web.archive.org/web/20170201114730/http://www.americanscientist.org/bookshelf/pub/obstacles-and-tricks/"
   contributors:
     note: Thanks to all those who have contributed corrections. Corrections received on or before 2026-07-09
       were reported by the readers listed below over the years; individual per-erratum attributions for
