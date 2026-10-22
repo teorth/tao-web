@@ -18,4 +18,6 @@ book:
     url: "http://fsgbooks.com"
   - title: "Publisher (Pelican, UK edition)"
     url: "https://www.penguin.co.uk/books/482167/six-maths-essentials-by-tao-terence/9780241829486"
+  - title: "Review by Karmela Padavic-Callaghan (New Scientist, October 21, 2026)"
+    url: "https://www.newscientist.com/article/2594471-terence-taos-six-maths-essentials-opens-his-field-to-all-of-us"
 editions: []
