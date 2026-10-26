@@ -124,6 +124,30 @@ works:
     cross-references; a language model could go further, recovering dependencies stated only informally
     (“repeating the argument of Section 3”) and judging which results deserve a box. The main
     difficulties are informal proofs, implicit dependencies, and the subjective choice of what to include.
+- id: can-maths-survive-ai
+  kind: paper
+  title: "Can maths survive AI? Fields medallist Terence Tao calls for a ‘Maths 2.0’ world"
+  year: 2026
+  status: published
+  venue: "Nature 658 (2026) (World View)"
+  journal: Nature
+  tags:
+  - machine-assisted
+  - misc
+  links:
+  - type: journal
+    url: "https://www.nature.com/articles/d41586-026-03389-1"
+  abstract: >-
+    A World View op-ed arguing that mathematics must urgently establish a “Maths 2.0” era in which proof
+    scarcity is no longer a defining feature of the field. Surveys the problems already evident: AI-generated
+    results too poorly described to meet publication standards, unclear attribution to the prior work the
+    models draw on, and the centuries-old practice of openly sharing problems now threatened by the fear of
+    being scooped by a rival with a frontier model — with OpenAI’s October 6 release having disrupted
+    countless research programmes overnight. Argues that the deepest consequence is that human understanding
+    is falling behind, which matters beyond pure mathematics: AI-generated models already help decide who
+    qualifies for a bank loan and how financial risk is measured, and the risk of unforeseen failure grows
+    when model complexity outpaces human capacity to understand it. None of this is inevitable, given a
+    radical reassessment of incentives and more responsible practices.
 - id: rotating-needles-in-space-the-road-to-the-kakeya-conjecture
   kind: paper
   title: "Rotating needles in space: the road to the Kakeya conjecture, and why it matters"
