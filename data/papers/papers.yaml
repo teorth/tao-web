@@ -124,6 +124,28 @@ works:
     cross-references; a language model could go further, recovering dependencies stated only informally
     (“repeating the argument of Section 3”) and judging which results deserve a box. The main
     difficulties are informal proofs, implicit dependencies, and the subjective choice of what to include.
+- id: on-the-diameter-and-distribution-of-sidon-sets
+  kind: paper
+  title: On the diameter and distribution of Sidon sets
+  coauthors:
+  - Daniel Carter
+  - Kevin O'Bryant
+  year: 2026
+  status: preprint
+  venue: Preprint
+  arxiv: '2610.36207'
+  tags:
+  - additive-combinatorics-number-theory
+  links:
+  - type: arxiv
+    url: "https://arxiv.org/abs/2610.36207"
+  abstract: >-
+    An improved and explicit lower bound on the diameter of a Sidon set: a Sidon set of $k \ge 1$ elements has
+    diameter at least $k^2(1/(1+0.945/\sqrt{k}) - 0.945/\sqrt{k}) - 1$, and so at least $k^2 - 1.89k^{3/2}$;
+    equivalently a Sidon set in $[1,N]$ has at most $N^{1/2} + 0.945 N^{1/4} + 0.447$ elements, with
+    $k^2 - 1.88607 k^{3/2}$ available for $k \ge 483$. The diameter bounds extend to $\gamma$-Golomb rulers,
+    and the same techniques bound how far such a ruler can deviate from an arithmetic progression and how
+    large its gaps can be.
 - id: can-maths-survive-ai
   kind: paper
   title: "Can maths survive AI? Fields medallist Terence Tao calls for a ‘Maths 2.0’ world"
