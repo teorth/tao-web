@@ -656,6 +656,12 @@ students:
   years: 2025–
   atc: 2025
   url: "https://www.math.ucla.edu/~bengoldman"
+- name: Xinjie He
+  level: PhD
+  coadvisor: Ernest Ryu
+  institution: UCLA
+  years: 2026–
+  url: "https://xinjiegit.github.io/"
 postdocs:
 - name: Camil Muscalu
   title: E. R. Hedrick Assistant Professor
