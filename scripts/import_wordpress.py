@@ -36,10 +36,17 @@ def fetch(url: str) -> str:
 
 
 def img_to_latex(fragment: str) -> str:
-    """Replace WordPress LaTeX <img> tags with ``$...$`` from their alt text."""
+    """Replace WordPress LaTeX <img> tags with ``$...$`` from their alt text.
+
+    The alt text is left HTML-escaped. ``li_to_text`` strips tags with a naive
+    ``<...>`` regex, so an unescaped ``<`` in a formula (as in ``$1 < p$``)
+    would be read as a tag opener and everything up to the next ``>`` deleted;
+    three errata lost their statements that way. The ``H.unescape`` at the end
+    of ``li_to_text`` decodes it once the tags are gone, which also means the
+    alt text is unescaped exactly once rather than twice."""
     return re.sub(
         r'<img[^>]*\balt="([^"]*)"[^>]*>',
-        lambda m: f"${H.unescape(m.group(1)).strip()}$",
+        lambda m: f"${m.group(1).strip()}$",
         fragment,
     )
 
