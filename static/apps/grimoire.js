@@ -19,11 +19,11 @@
   'use strict';
 
   var PROP = 'Prop';   // the only sort in Stage 0; the field exists everywhere for the many-sorted future
-  var OMEGA = 'Ω';     // the first data sort (Chapter 16+); modeled in Lean by `variable {Ω}` (Ω is a valid identifier)
-  var SET = 'Set';     // Chapter 23: an ABSTRACT sort — a carrier equipped with a membership relation
-  var MAGMA = 'M';     // Chapter 23: the axiom-free teaching sort (a magma with a constant and a unary map)
-  var GRP = 'G';       // Chapter 25: a group — the first sort whose theory carries AXIOMS
-  var NAT = 'Nat';     // Chapter 26: the first CONCRETE sort — modelled on core Lean's Nat, reached by `import`
+  var OMEGA = 'Ω';     // the first data sort (Chapter 11+); modeled in Lean by `variable {Ω}` (Ω is a valid identifier)
+  var SET = 'Set';     // Chapter 16: an ABSTRACT sort — a carrier equipped with a membership relation
+  var MAGMA = 'M';     // Chapter 17: the axiom-free teaching sort (a magma with a constant and a unary map)
+  var GRP = 'G';       // Chapter 19: a group — the first sort whose theory carries AXIOMS
+  var NAT = 'Nat';     // Chapter 20: the first CONCRETE sort — modelled on core Lean's Nat, reached by `import`
 
   // ---------- sort registry: which sorts exist, and what each one carries ----------
   // Sorts are deliberately NOT first-class (no sort variables, no inference): this is a hardcoded table.
@@ -38,7 +38,7 @@
   function defSort(d) { SORTS[d.name] = d; return d; }
   defSort({ name: OMEGA, kind: 'generic', ops: [] });
   defSort({ name: SET, kind: 'abstract', ops: [{ sym: 'MEM', lean: 'mem', type: [SET, SET, PROP] }] });   // ∪/∩ and the axioms are attached below, once the Expr helpers exist
-  // Chapter 23's teaching sort: a MAGMA — a carrier with a binary operation, plus a constant and a unary
+  // Chapter 17's teaching sort: a MAGMA — a carrier with a binary operation, plus a constant and a unary
   // map. Deliberately axiom-free, so nothing can be proved ABOUT c, f or ∗ and attention stays on the
   // mechanic of building and placing terms. `c` is a SORT-LEVEL constant (0-ary operation): it belongs to
   // the theory, so it auto-populates the term bench in every exercise over M — unlike the per-exercise
@@ -61,33 +61,33 @@
   defSym({ name: 'IFF', arity: 2, fixity: 'infix', prec: 20, assoc: 'right', uni: '↔', abbrev: ['\\iff', '\\leftrightarrow'], resultSort: PROP });
   defSym({ name: 'TRUE', arity: 0, fixity: 'atom', uni: 'True', abbrev: ['\\true', '\\top'], resultSort: PROP });
   defSym({ name: 'FALSE', arity: 0, fixity: 'atom', uni: 'False', abbrev: ['\\false', '\\bot'], resultSort: PROP });
-  // Chapter 16+: predicate symbols (function application, rendered `Q(x, y)` on the board, `Q x y` in Lean).
+  // Chapter 11+: predicate symbols (function application, rendered `Q(x, y)` on the board, `Q x y` in Lean).
   // The registry entry only marks the symbol as an `app` of result-sort Prop; each exercise's `preds` pins the
   // actual arity/argument sorts (so `Q` can be binary in one exercise and a predicate letter reused elsewhere).
   defSym({ name: 'P', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'P' });
   defSym({ name: 'Q', arity: 2, fixity: 'app', argSorts: [OMEGA, OMEGA], resultSort: PROP, flex: true, uni: 'Q' });
   defSym({ name: 'R', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'R' });
   defSym({ name: 'S', arity: 1, fixity: 'app', argSorts: [OMEGA], resultSort: PROP, flex: true, uni: 'S' });
-  // Chapter 23: a RELATION. Infix on the board (`Y ∈ X`) but a plain function in Lean (`mem Y X`) — no
+  // Chapter 16: a RELATION. Infix on the board (`Y ∈ X`) but a plain function in Lean (`mem Y X`) — no
   // typeclass is introduced. `leanApp` names the function the infix form emits as.
-  // Chapter 23 operations. Note an `app` symbol emits its OWN NAME in Lean, so the registry name is the
+  // Chapter 17 operations. Note an `app` symbol emits its OWN NAME in Lean, so the registry name is the
   // Lean function name; `star` is infix on the board but a function in Lean, like ∈.
   defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
   defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
   defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
-  // Chapter 27: set operations. Both are infix on the board and plain functions in Lean.
+  // Chapter 18: set operations. Both are infix on the board and plain functions in Lean.
   defSym({ name: 'union', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '∪', abbrev: ['\\union', '\\cup'], argSorts: [SET, SET], resultSort: SET, leanApp: 'union' });
   defSym({ name: 'inter', arity: 2, fixity: 'infix', prec: 70, assoc: 'left', uni: '∩', abbrev: ['\\inter', '\\cap'], argSorts: [SET, SET], resultSort: SET, leanApp: 'inter' });
-  // Chapter 26: Peano arithmetic. `0` on the board is `zero` in Lean; `+` and `≤` are plain functions.
+  // Chapter 20: Peano arithmetic. `0` on the board is `zero` in Lean; `+` and `≤` are plain functions.
   defSym({ name: 'nzero', arity: 0, fixity: 'atom', uni: '0', leanApp: 'zero', resultSort: NAT });
   defSym({ name: 'succ', arity: 1, fixity: 'app', argSorts: [NAT], resultSort: NAT, uni: 'succ' });
   defSym({ name: 'add', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '+', abbrev: ['\\add', '\\plus'], argSorts: [NAT, NAT], resultSort: NAT, leanApp: 'add' });
   defSym({ name: 'le', arity: 2, fixity: 'infix', prec: 50, uni: '≤', abbrev: ['\\le', '\\leq'], argSorts: [NAT, NAT], resultSort: PROP, leanApp: 'le' });
-  // Chapter 25: the group carrier's operations.
+  // Chapter 19: the group carrier's operations.
   defSym({ name: 'one', arity: 0, fixity: 'atom', uni: '1', leanApp: 'one', resultSort: GRP });
   defSym({ name: 'mul', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '·', abbrev: ['\\mul', '\\cdot'], argSorts: [GRP, GRP], resultSort: GRP, leanApp: 'mul' });
   defSym({ name: 'inv', arity: 1, fixity: 'app', argSorts: [GRP], resultSort: GRP, uni: 'inv' });
-  // Chapter 24: EQUALITY — the one relation every sort has, and the only operation Ω will ever carry.
+  // Chapter 18: EQUALITY — the one relation every sort has, and the only operation Ω will ever carry.
   // `polyArgs` marks it as sort-polymorphic: both sides must share a sort, and it may not compare formulas.
   // Infix in Lean too, so no `leanApp` is needed.
   defSym({ name: 'EQ', arity: 2, fixity: 'infix', prec: 38, uni: '=', abbrev: ['\\eq', '\\equals'], resultSort: PROP, polyArgs: true });
@@ -203,7 +203,7 @@
     return null;
   }
   // `ctx` (optional) maps an identifier to its sort — the data variables currently in context (the gems).
-  // Without it every identifier is a propositional atom, which is right for Chapters 1–13 but wrong the
+  // Without it every identifier is a propositional atom, which is right for Chapters 1–10 but wrong the
   // moment a sort carries a relation: `r ∈ r` needs to know that r is a Set element, not a proposition.
   function parse(str, ctx) {
     var sortOfName = function (n) { return (ctx && ctx[n]) || PROP; };
@@ -363,7 +363,7 @@
     match: function (inp) { return (inp.length === 2 && inp[0].proof && sortOf(inp[1].type) === PROP) ? [{ output: OR(inp[0].type, inp[1].type), lean: 'Or.inl ' + inp[0].name }] : []; } });
   defRecipe({ id: 'Or.inr', leanName: 'Or.inr', chapter: 3, arity: 2, rule: 'a proof of B, and a formula A ⊢ A ∨ B', informal: 'disjunction introduction (right)',
     match: function (inp) { return (inp.length === 2 && inp[0].proof && sortOf(inp[1].type) === PROP) ? [{ output: OR(inp[1].type, inp[0].type), lean: 'Or.inr ' + inp[0].name }] : []; } });
-  // Chapter 8: modus ponens (→ elimination) — emit the Lean application  hAB hA
+  // Chapter 5: modus ponens (→ elimination) — emit the Lean application  hAB hA
   defRecipe({ id: 'modus_ponens', leanName: 'modus_ponens', chapter: 8, arity: 2, rule: 'a proof of A, and a proof of A → B ⊢ B', informal: 'modus ponens',
     match: function (inp) {
       if (inp.length !== 2 || !allProofs(inp)) return [];
@@ -371,7 +371,7 @@
       return (f.type.tag === 'app' && f.type.sym === 'IMPLIES' && exprEq(f.type.args[0], a.type)) ? [{ output: f.type.args[1], lean: f.name + ' ' + a.name }] : [];
     }
   });
-  // Chapter 9: case analysis (∨ elimination) — combine A → C and B → C into A ∨ B → C (emit an Or.elim lambda)
+  // Chapter 6: case analysis (∨ elimination) — combine A → C and B → C into A ∨ B → C (emit an Or.elim lambda)
   defRecipe({ id: 'case_analysis', leanName: 'case_analysis', chapter: 9, arity: 2, rule: 'a proof of A → C, and a proof of B → C ⊢ A ∨ B → C', informal: 'case analysis (disjunction elimination)',
     match: function (inp) {
       if (inp.length !== 2 || !allProofs(inp)) return [];
@@ -381,7 +381,7 @@
       return [{ output: IMPLIES(OR(f.args[0], g.args[0]), f.args[1]), lean: 'fun h => Or.elim h ' + inp[0].name + ' ' + inp[1].name }];
     }
   });
-  // Chapter 10: bi-implication (↔) — introduction from the two directions, and forward/backward elimination
+  // Chapter 7: bi-implication (↔) — introduction from the two directions, and forward/backward elimination
   defRecipe({ id: 'Iff.intro', leanName: 'Iff.intro', chapter: 10, arity: 2, rule: 'a proof of A → B, and a proof of B → A ⊢ A ↔ B', informal: 'iff introduction',
     match: function (inp) {
       if (inp.length !== 2 || !allProofs(inp)) return [];
@@ -404,24 +404,24 @@
       return (h.tag === 'app' && h.sym === 'IFF' && exprEq(h.args[1], inp[1].type)) ? [{ output: h.args[0], lean: inp[0].name + '.mpr ' + inp[1].name }] : [];
     }
   });
-  // Chapter 11: from a contradiction (a proof of A and a proof of ¬A) anything follows (emits Lean `absurd`).
-  // (`absurd hA hnA : B` hides the underlying `False`, which the game does not surface until Chapter 13.)
+  // Chapter 8: from a contradiction (a proof of A and a proof of ¬A) anything follows (emits Lean `absurd`).
+  // (`absurd hA hnA : B` hides the underlying `False`, which the game does not surface until Chapter 10.)
   defRecipe({ id: 'absurd', leanName: 'absurd', chapter: 11, arity: 3, rule: 'a proof of A, a proof of ¬A, and a formula B ⊢ B', informal: 'from a contradiction, anything',
     match: function (inp) {
       if (inp.length !== 3 || !inp[0].proof || !inp[1].proof || inp[2].proof || sortOf(inp[2].type) !== PROP) return [];
       return exprEq(inp[1].type, NOT(inp[0].type)) ? [{ output: inp[2].type, lean: 'absurd ' + inp[0].name + ' ' + inp[1].name }] : [];
     }
   });
-  // Chapter 12: the law of the excluded middle (classical) — a formula A yields a proof of A ∨ ¬A
+  // Chapter 9: the law of the excluded middle (classical) — a formula A yields a proof of A ∨ ¬A
   defRecipe({ id: 'Classical.em', leanName: 'Classical.em', chapter: 12, arity: 1, rule: 'a formula A ⊢ A ∨ ¬A', informal: 'the law of the excluded middle',
     match: function (inp) {
       if (inp.length !== 1 || inp[0].proof || sortOf(inp[0].type) !== PROP) return [];
       // must use the LEAN renderer: on a predicate application the display form is `Q(x, y)`, which Lean
-      // rejects — it wants `Q x y`. (Only ever exercised on propositional atoms until 16.2, where the two differ.)
+      // rejects — it wants `Q x y`. (Only ever exercised on propositional atoms until 11.3, where the two differ.)
       return [{ output: OR(inp[0].type, NOT(inp[0].type)), lean: 'Classical.em (' + render(inp[0].type, { lean: true }) + ')' }];
     }
   });
-  // Chapter 13: True and False become first-class. True is trivially provable; from False, anything (ex falso).
+  // Chapter 10: True and False become first-class. True is trivially provable; from False, anything (ex falso).
   var isFalse = function (t) { return t.tag === 'app' && t.sym === 'FALSE'; };
   defRecipe({ id: 'True.intro', leanName: 'True.intro', chapter: 13, arity: 0, rule: '⊢ True', informal: 'True holds trivially',
     match: function (inp) { return inp.length === 0 ? [{ output: TRUE(), lean: 'True.intro' }] : []; } });
@@ -431,7 +431,7 @@
       return isFalse(inp[0].type) ? [{ output: inp[1].type, lean: 'False.elim ' + inp[0].name }] : [];
     }
   });
-  // Chapter 18: universal instantiation — the ∀ counterpart of modus_ponens (specialize ∀x,P(x) at a term t → P(t),
+  // Chapter 12: universal instantiation — the ∀ counterpart of modus_ponens (specialize ∀x,P(x) at a term t → P(t),
   // emitting the Lean application `h t`). The second ingredient is a TERM (a non-proof of the bound variable's sort).
   defRecipe({ id: 'universal_instantiation', leanName: 'universal_instantiation', chapter: 18, arity: 2, rule: 'a proof of ∀ x, P(x), and a term t ⊢ P(t)', informal: 'universal instantiation (specialization)',
     match: function (inp) {
@@ -441,7 +441,7 @@
       return [{ output: substE(h.body, h.v.name, h.v.sort, t), lean: inp[0].name + ' ' + render(t, { lean: true, arg: true }) }];
     }
   });
-  // ---------- Chapter 22: existential introduction (finite occurrence-abstraction) ----------
+  // ---------- Chapter 15: existential introduction (finite occurrence-abstraction) ----------
   // enumAbstract(φ, t, xv): every body ψ with ψ[xv := t] = φ — i.e. φ with SOME SUBSET of the occurrences of the
   // (variable) witness t replaced by the fresh bound variable xv. Finite (2^#occurrences); the player picks which.
   // The witness is always a context VARIABLE (no compound terms yet), so each occurrence is independently abstract/keep.
@@ -476,7 +476,7 @@
       });
     }
   });
-  // ---------- Chapter 24: equality ----------
+  // ---------- Chapter 18: equality ----------
   // Only two primitives are needed. Everything else — symmetry, transitivity, congruence — is an EXERCISE
   // the player derives from them, which is the point of the chapter.
   defRecipe({ id: 'Eq.refl', leanName: 'Eq.refl', chapter: 24, arity: 1, rule: 'a term t ⊢ t = t', informal: 'everything equals itself',
@@ -507,7 +507,7 @@
       return out;
     }
   });
-  // Chapter 26: INDUCTION. The motive is not searched for — it is READ OFF the step's antecedent, which is
+  // Chapter 20: INDUCTION. The motive is not searched for — it is READ OFF the step's antecedent, which is
   // the only thing it could be, and then the two soundness conditions are checked outright:
   //   step : ∀ n, (A(n) → B(n))   with   B = A[n := succ n]   and   base = A[n := 0].
   // Both checks are first-order (substE + exprEq), so no higher-order unification is involved; this sits
@@ -564,7 +564,7 @@
   }
   // Miller-pattern higher-order unification. `rigid` (name->1) are the ∀-bound variables aligned so far.
   // ---------- sort polymorphism ----------
-  // Every exercise built before Chapter 23 lives over Ω, and its minted lemma is pure first-order logic, so
+  // Every exercise built before Chapter 16 lives over Ω, and its minted lemma is pure first-order logic, so
   // it must apply at ANY sort — M, Set, a group's carrier. That is the ONLY polymorphism needed: a lemma
   // about Nat never has to generalise. So when matching, Ω in a TEMPLATE is a sort metavariable while every
   // other sort is rigid, and the binding is made ONCE PER APPLICATION (stored under a reserved key), which
@@ -671,7 +671,7 @@
     return { ok: true, env: env2, binding: b, solved: env.goal ? exprEq(c.output, env.goal) : false };
   }
 
-  // ---------- Chapter 4: sub-environments (deduction theorem) · Chapter 16: ∀ (variable introduction) ----------
+  // ---------- Chapter 4: sub-environments (deduction theorem) · Chapter 11: ∀ (variable introduction) ----------
   function openAssumption(env, A) {   // assume the formula A → a child env that imports parent proofs + adds hA:A
     var asm = binding(freshName(A, env), A);
     return withEnv(env, { bindings: env.bindings.concat([asm]), vars: env.vars, goal: null, steps: [], parent: env, assumption: { kind: 'hyp', name: asm.name, type: A }, depth: env.depth + 1 });
@@ -710,14 +710,14 @@
     var tenv = withEnv(target, { bindings: target.bindings.concat([b]), steps: target.steps.concat([step]) });
     return { ok: true, env: tenv, binding: b, solved: tenv.goal ? exprEq(implType, tenv.goal) : false };
   }
-  // Chapter 12: negation introduction (reductio ad absurdum). Inside a sub-env assuming A, a contradiction
+  // Chapter 9: negation introduction (reductio ad absurdum). Inside a sub-env assuming A, a contradiction
   // (a proof of C and a proof of ¬C) closes it as ¬A. Emitted as `have h : ¬A := by intro hA; …; exact absurd hC hnC`
-  // (the reductio's `False` goal is discharged by `absurd`, so `False` never surfaces — deferred to Chapter 13).
+  // (the reductio's `False` goal is discharged by `absurd`, so `False` never surfaces — deferred to Chapter 10).
   function isFalseT(t) { return t.tag === 'app' && t.sym === 'FALSE'; }
   function notIntroOption(env, names) {
     if (!env.parent || env.assumption.kind !== 'hyp') return null;   // reductio negates a hypothesis, not a variable
     var bs = (names || []).map(function (n) { return byName(env, n); }).filter(Boolean);
-    for (var k = 0; k < bs.length; k++) if (isFalseT(bs[k].type)) return { fals: bs[k].name, output: NOT(env.assumption.type) };   // a direct proof of False (Chapter 13)
+    for (var k = 0; k < bs.length; k++) if (isFalseT(bs[k].type)) return { fals: bs[k].name, output: NOT(env.assumption.type) };   // a direct proof of False (Chapter 10)
     for (var i = 0; i < bs.length; i++) for (var j = 0; j < bs.length; j++)
       if (i !== j && exprEq(bs[j].type, NOT(bs[i].type))) return { pos: bs[i].name, neg: bs[j].name, output: NOT(env.assumption.type) };
     return null;
@@ -741,7 +741,7 @@
     var tenv = withEnv(target, { bindings: target.bindings.concat([bnd]), steps: target.steps.concat([step]) });
     return { ok: true, env: tenv, binding: bnd, solved: tenv.goal ? exprEq(implType, tenv.goal) : false };
   }
-  // ---------- Chapter 19: ∃ elimination (`obtain`) ----------
+  // ---------- Chapter 13: ∃ elimination (`obtain`) ----------
   // From an existential hypothesis `h : ∃ x : Ω, P x` and an UNCLAIMED variable name, add a witness variable to the
   // context together with its defining property `P <name>` — WITHOUT opening a sub-environment; the goal is unchanged.
   // QED style keeps hypotheses, but Lean's `obtain` consumes its target, so we COPY first: `have h2 := h; obtain ⟨x,hx⟩ := h2`
@@ -766,7 +766,7 @@
     return { ok: true, env: env2, binding: hx, variable: v, solved: env.goal ? exprEq(witness, env.goal) : false };
   }
 
-  // ---------- Chapter 21: pick an arbitrary inhabitant of a (nonempty) sort ----------
+  // ---------- Chapter 14: pick an arbitrary inhabitant of a (nonempty) sort ----------
   // "pick a : Ω arbitrarily" — add a variable of a NONEMPTY sort directly to the CURRENT context (no hypothesis, no
   // existential; the goal is unchanged). Every sort in the game is nonempty by construction; Lean gets the witness
   // from the [Nonempty Ω] instance via `Classical.choice inferInstance`. Informal: "pick a natural number n
@@ -1016,13 +1016,13 @@
   // tutorial itself is reachable (you need it to solve that tutorial), and early levels show a
   // correspondingly simplified interface.
   var A = varE('A'), B = varE('B'), C = varE('C'), D = varE('D');
-  var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 16+)
+  var X = varE('X', OMEGA), Y = varE('Y', OMEGA), alpha = varE('α', OMEGA), xL = varE('x', OMEGA);   // term variables of sort Ω (Chapter 11+)
   var beta = varE('β', OMEGA), gamma = varE('γ', OMEGA);      // further Ω constants, for the equality chapter
-  // ---------- Chapter 27: naive set theory ----------
+  // ---------- Chapter 18, second half: naive set theory ----------
   // ∪ and ∩ are not primitive: each is pinned down by WHEN SOMETHING BELONGS TO IT, and sets are equal when
   // they have the same members. So every set law is the corresponding PROPOSITIONAL law transported through
   // membership — commutativity of ∪ is Or.symm', of ∩ is And.symm', distributivity is and_or_left'. The
-  // chapter is where Chapters 2 and 9 come back and pay.
+  // chapter is where Chapters 2 and 6 come back and pay.
   var sv2 = function (n) { return varE(n, SET); };
   var smem = function (x, a) { return appE('MEM', [x, a]); };
   var sunion = function (a, b) { return appE('union', [a, b]); }, sinter = function (a, b) { return appE('inter', [a, b]); };
@@ -1039,7 +1039,7 @@
         IMPLIES(faS('x', SET, IFF(smem(sv2('x'), sv2('a')), smem(sv2('x'), sv2('b')))), appE('EQ', [sv2('a'), sv2('b')])))) }
   ];
 
-  // ---------- Chapter 26: Peano arithmetic ----------
+  // ---------- Chapter 20: Peano arithmetic ----------
   // A CONCRETE sort: `Nat` is modelled on core Lean's `Nat` in its own module, so its "axioms" are proved
   // theorems there and the theory is consistent by construction. The proof reaches them by `import`.
   var nv = function (n) { return varE(n, NAT); };
@@ -1055,7 +1055,7 @@
       { name: 'not_succ_le', type: faS('a', NAT, NOT(nle(nsucc(nv('a')), nv('a')))) }
     ] });
 
-  // ---------- Chapter 25: the theory of groups ----------
+  // ---------- Chapter 19: the theory of groups ----------
   // An ABSTRACT theory: carrier G with 1, ·, inv, and five axioms. Parameterised rather than axiomatised —
   // every one of these becomes a `variable` hypothesis, so the emitted theorem holds of ANY such structure
   // and the module is consistent by construction. Both identities and both inverses are included (rather
@@ -1080,454 +1080,493 @@
   function mem(a, b) { return appE('MEM', [a, b]); }
   var setV = function (n) { return varE(n, SET); };
   var EXERCISES = [
-    { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], needs: ['and.intro'] },
-    { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), prereqs: ['1.1'], needs: [] },
-    { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], needs: ['and.elim'] },
-    { id: '2.2a', kind: 'lemma', leanName: 'And.assoc_left', chapter: 2, givens: [binding('hABC', AND(AND(A, B), C))], goal: AND(A, AND(B, C)), prereqs: ['2.1'], needs: [] },
-    { id: '2.2b', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), prereqs: ['2.1'], needs: [] },
-    { id: '3.1a', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), prereqs: ['2.1'], needs: ['or', 'formula'] },
-    { id: '3.1b', kind: 'lemma', leanName: 'Or.idem', chapter: 3, givens: [binding('hA', A)], formulas: [A], goal: OR(A, A), prereqs: ['3.1a'], needs: [] },
-    // 6.1a (⊢ A → A) is the SIMPLEST assume-then-discharge exercise — bare intro/discharge with nothing
+    // ---------- Chapter 1: Conjunction introduction ----------
+    { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], qed: '1.1', needs: ['and.intro'] },
+    { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), prereqs: ['1.1'], qed: '1.2', needs: [] },
+
+    // ---------- Chapter 2: Conjunction elimination ----------
+    { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], qed: '2.1', needs: ['and.elim'] },
+    { id: '2.2', kind: 'lemma', leanName: 'And.assoc_left', chapter: 2, givens: [binding('hABC', AND(AND(A, B), C))], goal: AND(A, AND(B, C)), prereqs: ['2.1'], qed: '2.2(a)', needs: [] },
+    { id: '2.3', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), prereqs: ['2.1'], qed: '2.2(b)', needs: [] },
+
+    // ---------- Chapter 3: Disjunction, and building formulas ----------
+    { id: '3.1', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), prereqs: ['2.1'], qed: '3.1(a)', needs: ['or', 'formula'] },
+    { id: '3.2', kind: 'lemma', leanName: 'Or.idem', chapter: 3, givens: [binding('hA', A)], formulas: [A], goal: OR(A, A), prereqs: ['3.1'], qed: '3.1(b)', needs: [] },
+
+    // ---------- Chapter 4: Assumptions and the deduction theorem ----------
+    // 4.1 (⊢ A → A) is the SIMPLEST assume-then-discharge exercise — bare intro/discharge with nothing
     // inside — so it introduces the deduction theorem (and the `assume` capability) even though its chapter
-    // number is higher. 4.1 and 5.1 then hang off it as optional side-branches: same shape, but 4.1 crafts
-    // an ∧ before discharging and 5.1 uses a bulkier formula. Map rows come from DAG depth, not chapter,
+    // number is higher. 4.2 and 4.3 then hang off it as optional side-branches: same shape, but 4.2 crafts
+    // an ∧ before discharging and 4.3 uses a bulkier formula. Map rows come from DAG depth, not chapter,
     // so this reads correctly on the tree.
-    { id: '6.1a', kind: 'lemma', leanName: 'Impl.idem', chapter: 6, givens: [], formulas: [A], goal: IMPLIES(A, A), prereqs: ['3.1a'], needs: ['assume'] },
-    { id: '4.1', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), prereqs: ['6.1a'], needs: [] },
-    { id: '5.1', kind: 'example', chapter: 5, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), prereqs: ['6.1a'], needs: [] },
-    // 5.2 (QED 5.2): two assumptions deep, and the inner goal is the inner assumption — the first time a
-    // sub-proof is opened inside a sub-proof. An optional leaf, like 5.1 itself.
-    { id: '5.2', kind: 'example', chapter: 5, givens: [], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, A)), prereqs: ['6.1a'], needs: [] },
-    // 6.1b is an OPTIONAL side-branch; the main path runs 6.1a → 7.1.
-    { id: '6.1b', kind: 'example', chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, OR(A, B)), A), prereqs: ['6.1a'], needs: [] },
-    // 6.2 (QED 6.2): the deduction theorem applied twice over — a statement you already hold can be
+    { id: '4.1', kind: 'lemma', leanName: 'Impl.idem', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, A), prereqs: ['3.1'], qed: '6.1(a)', needs: ['assume'] },
+    { id: '4.2', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), prereqs: ['4.1'], qed: '4.1', qedNote: 'stated there with an assumption environment', needs: [] },
+    { id: '4.3', kind: 'example', chapter: 4, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), prereqs: ['4.1'], qed: '5.1', qedNote: 'stated there with an assumption environment', needs: [] },
+    // 4.4 (QED 5.2): two assumptions deep, and the inner goal is the inner assumption — the first time a
+    // sub-proof is opened inside a sub-proof. An optional leaf, like 4.3 itself.
+    { id: '4.4', kind: 'example', chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, A)), prereqs: ['4.1'], qed: '5.2', qedNote: 'stated there with an assumption environment', needs: [] },
+    // 4.5 is an OPTIONAL side-branch; the main path runs 4.1 → 4.7.
+    { id: '4.5', kind: 'example', chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, OR(A, B)), A), prereqs: ['4.1'], qed: '6.1(b)', needs: [] },
+    // 4.6 (QED 6.2): the deduction theorem applied twice over — a statement you already hold can be
     // discharged through BOTH assumptions at once, giving A → B → C from C alone.
-    { id: '6.2', kind: 'lemma', leanName: "imp_const'", chapter: 6, givens: [binding('hC', C)], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['6.1a'], needs: [] },
-    { id: '7.1', kind: 'example', chapter: 7, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), prereqs: ['6.1a'], needs: [] },
-    // 8.1 (QED 8.1a): modus ponens by itself — one craft. It introduces the `mp` capability, so it is now
-    // the entry to Chapter 8 rather than 8.2 (implies_trans), which needs a sub-proof as well.
-    { id: '8.1', kind: 'example', chapter: 8, givens: [binding('hA', A), binding('hAB', IMPLIES(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1a'], needs: ['mp'] },
-    { id: '8.2', kind: 'lemma', leanName: 'implies_trans', chapter: 8, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['8.1'], needs: [] },
-    // 8.3 roots an OPTIONAL branch (8.3 → 8.5a → 8.5b); the main Chapter-8 spine is 8.2 → 8.4a → 8.4b → 8.6b.
-    { id: '8.3', kind: 'lemma', leanName: "And.symm'", chapter: 8, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, B), AND(B, A)), prereqs: ['6.1a'], needs: [] },
-    { id: '8.4a', kind: 'lemma', leanName: "And.elim'", chapter: 8, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(AND(A, B), C), prereqs: ['8.1'], needs: [] },
-    { id: '8.4b', kind: 'lemma', leanName: 'And.elim_rev', chapter: 8, givens: [binding('hABC', IMPLIES(AND(A, B), C))], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['8.1'], needs: [] },
-    { id: '8.4c', kind: 'lemma', leanName: 'implies_swap', chapter: 8, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, C)), prereqs: ['8.1'], needs: [] },   // optional leaf
-    { id: '8.5a', kind: 'lemma', leanName: 'implies_and_self', chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(A, B)), prereqs: ['8.1'], needs: [] },
-    { id: '8.5b', kind: 'lemma', leanName: "implies_and_self'", chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(B, A)), prereqs: ['8.1'], needs: [] },   // optional leaf
-    { id: '8.6a', kind: 'lemma', leanName: "And.imp_left'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [], goal: AND(C, B), prereqs: ['8.1'], needs: [] },
-    { id: '8.6b', kind: 'lemma', leanName: "And.imp_right'", chapter: 8, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), prereqs: ['8.1'], needs: [] },
-    // Chapter 9 — case analysis (∨ elimination), a WEB of QED §9 exercises. 9.1 introduces case_analysis; three
-    // imp-lemma gateways (9.4/9.5/9.6) each unlock Chapter 10 (complete ANY path); associativity (9.7/9.8) and
-    // distributivity (9.9–9.12) are optional sibling branches. Every one is solvable with BASE recipes only.
-    { id: '9.1', kind: 'example', chapter: 9, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), prereqs: ['8.1'], needs: ['case'] },
-    { id: '9.2', kind: 'lemma', leanName: "Or.symm'", chapter: 9, givens: [], formulas: [A, B], goal: IMPLIES(OR(A, B), OR(B, A)), prereqs: ['9.1'], needs: [] },
-    // 9.2b is the hypothesis form of 9.2, mirroring And.comm' (2.1) for ∨. A one-move consequence of the
-    // minted Or.symm', and in turn the lemma that makes 9.8 cheap (see the comment there).
-    { id: '9.2b', kind: 'lemma', leanName: "Or.comm'", chapter: 9, givens: [binding('hAB', OR(A, B))], formulas: [A, B], goal: OR(B, A), prereqs: ['9.2'], needs: [] },
-    { id: '9.3', kind: 'lemma', leanName: "Or.elim'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, prereqs: ['9.1'], needs: [] },
-    // 9.5 is the GENERAL two-implication form, so 9.4 and 9.6 are corollaries of it (take the other
-    // implication to be the identity, i.e. the minted Impl.idem). It therefore sits before them and
-    // unlocks them, giving a two-move alternate route in addition to the from-scratch one via 9.2.
-    { id: '9.5', kind: 'lemma', leanName: "Or.imp'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), prereqs: ['9.1'], needs: [] },
-    // three Chapter-10 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
-    { id: '9.4', kind: 'lemma', leanName: "Or.imp_left'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['9.5'], needs: [] },
-    { id: '9.6', kind: 'lemma', leanName: "Or.imp_right'", chapter: 9, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['9.5'], needs: [] },
-    // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
-    { id: '9.7', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 9, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['9.1'], needs: [] },
-    // 9.8 is reachable from BOTH 9.7 (Or.assoc_left) and 9.2b (Or.comm'), so both are in principle in hand
-    // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
-    { id: '9.8', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 9, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['9.2b', '9.7'], needs: [] },
-    { id: '9.9', kind: 'lemma', leanName: "or_and_left'", chapter: 9, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['9.1'], needs: [] },
-    { id: '9.10', kind: 'lemma', leanName: "and_or_left'", chapter: 9, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['9.1'], needs: [] },
-    { id: '9.11', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 9, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['9.1'], needs: [] },
-    { id: '9.12', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 9, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['9.1'], needs: [] },
-    // 9.13 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
-    { id: '9.13', kind: 'lemma', leanName: "or_self_elim'", chapter: 9, givens: [binding('hAA', OR(A, A))], formulas: [A], goal: A, prereqs: ['9.3'], needs: [] },
-    // 9.14–9.17 (QED 9.5a–d): the congruence/monotonicity family — an implication A → B may be applied inside
+    { id: '4.6', kind: 'lemma', leanName: "imp_const'", chapter: 4, givens: [binding('hC', C)], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['4.1'], qed: '6.2', needs: [] },
+    { id: '4.7', kind: 'example', chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), prereqs: ['4.1'], qed: '7.1', needs: [] },
+    // 4.8 roots an OPTIONAL branch (4.8 → 5.6 → 5.7); the main Chapter-5 spine is 5.2 → 5.3 → 5.4 → 5.9.
+    { id: '4.8', kind: 'lemma', leanName: "And.symm'", chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, B), AND(B, A)), prereqs: ['4.1'], qed: '8.3', needs: [] },
+
+    // ---------- Chapter 5: Modus ponens ----------
+    // 5.1 (QED 8.1a): modus ponens by itself — one craft. It introduces the `mp` capability, so it is now
+    // the entry to Chapter 5 rather than 5.2 (implies_trans), which needs a sub-proof as well.
+    { id: '5.1', kind: 'example', chapter: 5, givens: [binding('hA', A), binding('hAB', IMPLIES(A, B))], formulas: [A, B], goal: B, prereqs: ['4.1'], qed: '8.1(a)', qedNote: 'modus ponens, stated there in assumption form', needs: ['mp'] },
+    { id: '5.2', kind: 'lemma', leanName: 'implies_trans', chapter: 5, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['5.1'], qed: '8.2', needs: [] },
+    { id: '5.3', kind: 'lemma', leanName: "And.elim'", chapter: 5, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(AND(A, B), C), prereqs: ['5.1'], qed: '8.4(a)', needs: [] },
+    { id: '5.4', kind: 'lemma', leanName: 'And.elim_rev', chapter: 5, givens: [binding('hABC', IMPLIES(AND(A, B), C))], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['5.1'], qed: '8.4(b)', needs: [] },
+    { id: '5.5', kind: 'lemma', leanName: 'implies_swap', chapter: 5, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, C)), prereqs: ['5.1'], qed: '8.4(c)', needs: [] },   // optional leaf
+    { id: '5.6', kind: 'lemma', leanName: 'implies_and_self', chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(A, B)), prereqs: ['5.1'], qed: '8.5(a)', needs: [] },
+    { id: '5.7', kind: 'lemma', leanName: "implies_and_self'", chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(B, A)), prereqs: ['5.1'], qed: '8.5(b)', needs: [] },   // optional leaf
+    { id: '5.8', kind: 'lemma', leanName: "And.imp_left'", chapter: 5, givens: [binding('hAB', AND(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [], goal: AND(C, B), prereqs: ['5.1'], qed: '8.6(a)', needs: [] },
+    { id: '5.9', kind: 'lemma', leanName: "And.imp_right'", chapter: 5, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), prereqs: ['5.1'], qed: '8.6(b)', needs: [] },
+    // 5.10–6.16 (QED 9.5a–d): the congruence/monotonicity family — an implication A → B may be applied inside
     // either slot of a ∧ or a ∨. Each is the IMPLICATION form of a hypothesis-form lemma already minted
-    // (8.6a/8.6b for ∧, 9.4/9.6 for ∨), so each is just assume, apply, discharge. The `mono` names are because
-    // And.imp_left'/And.imp_right' are already taken by 8.6a/8.6b.
-    { id: '9.14', kind: 'lemma', leanName: "And.mono_left'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(A, C)], goal: IMPLIES(AND(A, C), AND(B, C)), prereqs: ['8.6a'], needs: [] },
-    { id: '9.15', kind: 'lemma', leanName: "Or.mono_left'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(A, C)], goal: IMPLIES(OR(A, C), OR(B, C)), prereqs: ['9.4'], needs: [] },
-    { id: '9.16', kind: 'lemma', leanName: "And.mono_right'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(C, A)], goal: IMPLIES(AND(C, A), AND(C, B)), prereqs: ['8.6b'], needs: [] },
-    { id: '9.17', kind: 'lemma', leanName: "Or.mono_right'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(C, A)], goal: IMPLIES(OR(C, A), OR(C, B)), prereqs: ['9.6'], needs: [] },
-    // Chapter 10 — bi-implication (↔). 10.1 introduces Iff; symmetry (10.2) and transitivity (10.3) are the
-    // MANDATORY spine (10.3 will unlock Ch11 later); reflexivity (10.4) and the ↔-congruences (10.5–10.7,
+    // (5.8/5.9 for ∧, 6.6/6.7 for ∨), so each is just assume, apply, discharge. The `mono` names are because
+    // And.imp_left'/And.imp_right' are already taken by 5.8/5.9.
+    { id: '5.10', kind: 'lemma', leanName: "And.mono_left'", chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(A, C)], goal: IMPLIES(AND(A, C), AND(B, C)), prereqs: ['5.8'], qed: '9.5(a)', needs: [] },
+    { id: '5.11', kind: 'lemma', leanName: "And.mono_right'", chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, AND(C, A)], goal: IMPLIES(AND(C, A), AND(C, B)), prereqs: ['5.9'], qed: '9.5(c)', needs: [] },
+
+    // ---------- Chapter 6: Case analysis ----------
+    // Case analysis (∨ elimination), a WEB of QED §9 exercises. 6.1 introduces case_analysis; three
+    // imp-lemma gateways (6.6/6.5/6.7) each unlock Chapter 7 (complete ANY path); associativity (6.8/6.9) and
+    // distributivity (6.10–6.13) are optional sibling branches. Every one is solvable with BASE recipes only.
+    { id: '6.1', kind: 'example', chapter: 6, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), prereqs: ['5.1'], needs: ['case'] },
+    { id: '6.2', kind: 'lemma', leanName: "Or.symm'", chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(OR(A, B), OR(B, A)), prereqs: ['6.1'], qed: '9.1(a)', qedNote: 'the same law in implication form', needs: [] },
+    // 6.3 is the hypothesis form of 6.2, mirroring And.comm' (2.1) for ∨. A one-move consequence of the
+    // minted Or.symm', and in turn the lemma that makes 6.9 cheap (see the comment there).
+    { id: '6.3', kind: 'lemma', leanName: "Or.comm'", chapter: 6, givens: [binding('hAB', OR(A, B))], formulas: [A, B], goal: OR(B, A), prereqs: ['6.2'], qed: '9.1(a)', needs: [] },
+    { id: '6.4', kind: 'lemma', leanName: "Or.elim'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: C, prereqs: ['6.1'], needs: [] },
+    // 6.5 is the GENERAL two-implication form, so 6.6 and 6.7 are corollaries of it (take the other
+    // implication to be the identity, i.e. the minted Impl.idem). It therefore sits before them and
+    // unlocks them, giving a two-move alternate route in addition to the from-scratch one via 6.2.
+    { id: '6.5', kind: 'lemma', leanName: "Or.imp'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), prereqs: ['6.1'], qed: '9.4(c)', needs: [] },
+    // three Chapter-7 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
+    { id: '6.6', kind: 'lemma', leanName: "Or.imp_left'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['6.5'], qed: '9.4(a)', needs: [] },
+    { id: '6.7', kind: 'lemma', leanName: "Or.imp_right'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['6.5'], qed: '9.4(b)', needs: [] },
+    // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
+    { id: '6.8', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 6, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['6.1'], qed: '9.2(a)', needs: [] },
+    // 6.9 is reachable from BOTH 6.8 (Or.assoc_left) and 6.3 (Or.comm'), so both are in principle in hand
+    // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
+    { id: '6.9', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 6, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['6.3', '6.8'], qed: '9.2(b)', needs: [] },
+    { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', needs: [] },
+    { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', needs: [] },
+    { id: '6.12', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 6, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['6.1'], qed: '9.3(c)', needs: [] },
+    { id: '6.13', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 6, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['6.1'], qed: '9.3(d)', needs: [] },
+    // 6.14 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
+    { id: '6.14', kind: 'lemma', leanName: "or_self_elim'", chapter: 6, givens: [binding('hAA', OR(A, A))], formulas: [A], goal: A, prereqs: ['6.4'], qed: '9.1(b)', needs: [] },
+    { id: '6.15', kind: 'lemma', leanName: "Or.mono_left'", chapter: 6, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(A, C)], goal: IMPLIES(OR(A, C), OR(B, C)), prereqs: ['6.6'], qed: '9.5(b)', needs: [] },
+    { id: '6.16', kind: 'lemma', leanName: "Or.mono_right'", chapter: 6, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(C, A)], goal: IMPLIES(OR(C, A), OR(C, B)), prereqs: ['6.7'], qed: '9.5(d)', needs: [] },
+
+    // ---------- Chapter 7: If and only if ----------
+    // Bi-implication (↔). 7.1 introduces Iff; symmetry (7.2) and transitivity (7.3) are the
+    // MANDATORY spine (7.3 will unlock Ch 8 later); reflexivity (7.4) and the ↔-congruences (7.5–7.7,
     // QED 10.1b/d/f) are optional side-branches.
-    { id: '10.1', kind: 'example', chapter: 10, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['9.1'], needs: ['iff'] },
-    { id: '10.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 10, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), prereqs: ['10.1'], needs: [] },
-    { id: '10.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 10, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), prereqs: ['10.1'], needs: [] },
-    { id: '10.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 10, givens: [], formulas: [A], goal: IFF(A, A), prereqs: ['10.1'], needs: [] },
-    { id: '10.5', kind: 'lemma', leanName: "And.congr_left'", chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: AND(C, B), prereqs: ['10.1'], needs: [] },
-    { id: '10.6', kind: 'lemma', leanName: "Or.congr_left'", chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['10.1'], needs: [] },
-    { id: '10.7', kind: 'example', chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: IMPLIES(C, B), prereqs: ['10.1'], needs: [] },
-    // 10.8 is a Grimoire helper, not a QED exercise: it turns a ↔ into the implication hiding inside it.
+    { id: '7.1', kind: 'example', chapter: 7, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1'], qed: '10.1(a)', needs: ['iff'] },
+    { id: '7.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 7, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), prereqs: ['7.1'], qed: '10.2(a)', needs: [] },
+    { id: '7.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 7, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), prereqs: ['7.1'], qed: '10.2(b)', needs: [] },
+    { id: '7.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 7, givens: [], formulas: [A], goal: IFF(A, A), prereqs: ['7.1'], qed: '10.2(c)', needs: [] },
+    { id: '7.5', kind: 'lemma', leanName: "And.congr_left'", chapter: 7, givens: [binding('hAB', AND(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: AND(C, B), prereqs: ['7.1'], qed: '10.1(b)', needs: [] },
+    { id: '7.6', kind: 'lemma', leanName: "Or.congr_left'", chapter: 7, givens: [binding('hAB', OR(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['7.1'], qed: '10.1(d)', needs: [] },
+    { id: '7.7', kind: 'example', chapter: 7, givens: [binding('hAB', IMPLIES(A, B)), binding('hAC', IFF(A, C))], formulas: [A, B, C], goal: IMPLIES(C, B), prereqs: ['7.1'], qed: '10.1(f)', needs: [] },
+    // 7.8 is a Grimoire helper, not a QED exercise: it turns a ↔ into the implication hiding inside it.
     // With it, QED's three "second slot" congruences (10.1c/e/g) each become two crafts, reusing the
-    // monotonicity lemmas already minted (8.6b for ∧, 9.6 for ∨, 8.2 for →) — the same shape as 9.14–9.17.
-    { id: '10.8', kind: 'lemma', leanName: "Iff.imp'", chapter: 10, givens: [binding('hiff', IFF(A, B))], formulas: [A, B], goal: IMPLIES(A, B), prereqs: ['10.1'], needs: [] },
-    { id: '10.9', kind: 'lemma', leanName: "And.congr_right'", chapter: 10, givens: [binding('hAB', AND(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: AND(A, C), prereqs: ['8.6b', '10.8'], needs: [] },
-    { id: '10.10', kind: 'lemma', leanName: "Or.congr_right'", chapter: 10, givens: [binding('hAB', OR(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['9.6', '10.8'], needs: [] },
-    { id: '10.11', kind: 'lemma', leanName: "imp_congr_right'", chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['8.2', '10.8'], needs: [] },
-    // 10.12–10.14 (QED 10.3, 10.4, 10.5): building a ↔ rather than using one. 10.12 is Iff.intro bare; the
+    // monotonicity lemmas already minted (5.9 for ∧, 6.7 for ∨, 5.2 for →) — the same shape as 5.10–6.16.
+    { id: '7.8', kind: 'lemma', leanName: "Iff.imp'", chapter: 7, givens: [binding('hiff', IFF(A, B))], formulas: [A, B], goal: IMPLIES(A, B), prereqs: ['7.1'], needs: [] },
+    { id: '7.9', kind: 'lemma', leanName: "And.congr_right'", chapter: 7, givens: [binding('hAB', AND(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: AND(A, C), prereqs: ['5.9', '7.8'], qed: '10.1(c)', needs: [] },
+    { id: '7.10', kind: 'lemma', leanName: "Or.congr_right'", chapter: 7, givens: [binding('hAB', OR(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['6.7', '7.8'], qed: '10.1(e)', needs: [] },
+    { id: '7.11', kind: 'lemma', leanName: "imp_congr_right'", chapter: 7, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['5.2', '7.8'], qed: '10.1(g)', needs: [] },
+    // 7.12–7.14 (QED 10.3, 10.4, 10.5): building a ↔ rather than using one. 7.12 is Iff.intro bare; the
     // other two glue it onto lemmas already minted (Or.idem/or_self_elim', And.assoc_left/right).
-    { id: '10.12', kind: 'example', chapter: 10, givens: [binding('hAB', IMPLIES(A, B)), binding('hBA', IMPLIES(B, A))], formulas: [A, B], goal: IFF(A, B), prereqs: ['10.1'], needs: [] },
-    { id: '10.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 10, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), prereqs: ['3.1b', '9.13', '10.1'], needs: [] },
-    { id: '10.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 10, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), prereqs: ['2.2a', '2.2b', '10.1'], needs: [] },
-    // Chapter 11 — from a contradiction, anything (ex falso, via `absurd`). 11.1 intro; 11.2 optional sibling.
-    { id: '11.1', kind: 'example', chapter: 11, givens: [binding('hAnA', AND(A, NOT(A)))], formulas: [A, B], goal: B, prereqs: ['10.1'], needs: ['neg'] },
-    { id: '11.2', kind: 'example', chapter: 11, givens: [binding('hnAA', AND(NOT(A), A))], formulas: [A, B], goal: B, prereqs: ['11.1'], needs: [] },
-    // Chapter 12 — negation introduction (reductio) + excluded middle (classical). 12.1 introduces em; 12.2/12.3
-    // are double-negation (intro via reductio, elim via em); 12.4 is the contrapositive.
-    { id: '12.1', kind: 'example', chapter: 12, givens: [], formulas: [A], goal: OR(A, NOT(A)), prereqs: ['11.1'], needs: ['em'] },
-    { id: '12.2', kind: 'lemma', leanName: "not_not_intro'", chapter: 12, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), prereqs: ['11.1'], needs: [] },
-    { id: '12.3', kind: 'lemma', leanName: 'not_not_elim', chapter: 12, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, prereqs: ['12.1'], needs: [] },
-    { id: '12.4', kind: 'lemma', leanName: "mt'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), prereqs: ['11.1'], needs: [] },
-    // 12.5–12.7 (QED 12.1a/b/c): reductio in its general forms — assume A, reach a contradiction, conclude ¬A.
-    // 12.7 splits on excluded middle instead, and is minted as a lemma (`by_cases'`) that later chapters reuse.
-    { id: '12.5', kind: 'example', chapter: 12, givens: [binding('hAcon', IMPLIES(A, AND(B, NOT(B))))], formulas: [A], goal: NOT(A), prereqs: ['11.1'], needs: [] },
-    { id: '12.6', kind: 'example', chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hAnB', IMPLIES(A, NOT(B)))], formulas: [A], goal: NOT(A), prereqs: ['11.1'], needs: [] },
-    { id: '12.7', kind: 'lemma', leanName: "by_cases'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, prereqs: ['12.1'], needs: [] },
-    // 12.8–12.9 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
-    // with the minted `not_not_elim` (12.3). The two differ only in the order of the contradictory pair.
-    { id: '12.8', kind: 'example', chapter: 12, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(B, NOT(B))))], formulas: [A, NOT(A)], goal: A, prereqs: ['12.3'], needs: [] },
-    { id: '12.9', kind: 'example', chapter: 12, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(NOT(B), B)))], formulas: [A, NOT(A)], goal: A, prereqs: ['12.3'], needs: [] },
-    // 12.10–12.13 (QED 12.5a/d/b/c): De Morgan for ∧/∨, ordered easiest-first rather than by QED's lettering.
+    { id: '7.12', kind: 'example', chapter: 7, givens: [binding('hAB', IMPLIES(A, B)), binding('hBA', IMPLIES(B, A))], formulas: [A, B], goal: IFF(A, B), prereqs: ['7.1'], qed: '10.3', qedNote: 'stated there with assumption environments', needs: [] },
+    { id: '7.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 7, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), prereqs: ['3.2', '6.14', '7.1'], qed: '10.4', needs: [] },
+    { id: '7.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 7, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), prereqs: ['2.2', '2.3', '7.1'], qed: '10.5', needs: [] },
+
+    // ---------- Chapter 8: Negation and contradiction ----------
+    // From a contradiction, anything (ex falso, via `absurd`). 8.1 intro; 8.2 optional sibling.
+    { id: '8.1', kind: 'example', chapter: 8, givens: [binding('hAnA', AND(A, NOT(A)))], formulas: [A, B], goal: B, prereqs: ['7.1'], qed: '11.1, 12.3(a)', needs: ['neg'] },
+    { id: '8.2', kind: 'example', chapter: 8, givens: [binding('hnAA', AND(NOT(A), A))], formulas: [A, B], goal: B, prereqs: ['8.1'], qed: '11.2, 12.3(b)', needs: [] },
+    { id: '8.3', kind: 'lemma', leanName: "not_not_intro'", chapter: 8, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), prereqs: ['8.1'], qed: '12.2(b)', needs: [] },
+    { id: '8.4', kind: 'lemma', leanName: "mt'", chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), prereqs: ['8.1'], qed: '12.6(a)', needs: [] },
+    // 8.5–9.3 (QED 12.1a/b/c): reductio in its general forms — assume A, reach a contradiction, conclude ¬A.
+    // 9.3 splits on excluded middle instead, and is minted as a lemma (`by_cases'`) that later chapters reuse.
+    { id: '8.5', kind: 'example', chapter: 8, givens: [binding('hAcon', IMPLIES(A, AND(B, NOT(B))))], formulas: [A], goal: NOT(A), prereqs: ['8.1'], qed: '12.1(a)', qedNote: 'reductio ad absurdum, stated there with an assumption environment', needs: [] },
+    { id: '8.6', kind: 'example', chapter: 8, givens: [binding('hAB', IMPLIES(A, B)), binding('hAnB', IMPLIES(A, NOT(B)))], formulas: [A], goal: NOT(A), prereqs: ['8.1'], qed: '12.1(b)', qedNote: 'reductio in separated form, stated there with assumption environments', needs: [] },
+    // 8.7–9.6 (QED 12.5a/d/b/c): De Morgan for ∧/∨, ordered easiest-first rather than by QED's lettering.
     // The first three are constructive; only the last (¬(A ∧ B) ⊢ ¬A ∨ ¬B) genuinely needs excluded middle,
-    // and it reuses the minted `by_cases'` (12.7) to do the split.
-    { id: '12.10', kind: 'lemma', leanName: "not_or'", chapter: 12, givens: [binding('hnAB', NOT(OR(A, B)))], formulas: [A, B], goal: AND(NOT(A), NOT(B)), prereqs: ['11.1'], needs: [] },
-    { id: '12.11', kind: 'lemma', leanName: "not_or_intro'", chapter: 12, givens: [binding('hnAnB', AND(NOT(A), NOT(B)))], formulas: [A, B, OR(A, B)], goal: NOT(OR(A, B)), prereqs: ['11.1'], needs: [] },
-    { id: '12.12', kind: 'lemma', leanName: "not_and_of_not_or'", chapter: 12, givens: [binding('hnAonB', OR(NOT(A), NOT(B)))], formulas: [A, B, AND(A, B), NOT(A), NOT(B)], goal: NOT(AND(A, B)), prereqs: ['11.1'], needs: [] },
+    // and it reuses the minted `by_cases'` (9.3) to do the split.
+    { id: '8.7', kind: 'lemma', leanName: "not_or'", chapter: 8, givens: [binding('hnAB', NOT(OR(A, B)))], formulas: [A, B], goal: AND(NOT(A), NOT(B)), prereqs: ['8.1'], qed: '12.5(a)', needs: [] },
+    { id: '8.8', kind: 'lemma', leanName: "not_or_intro'", chapter: 8, givens: [binding('hnAnB', AND(NOT(A), NOT(B)))], formulas: [A, B, OR(A, B)], goal: NOT(OR(A, B)), prereqs: ['8.1'], qed: '12.5(d)', needs: [] },
+    { id: '8.9', kind: 'lemma', leanName: "not_and_of_not_or'", chapter: 8, givens: [binding('hnAonB', OR(NOT(A), NOT(B)))], formulas: [A, B, AND(A, B), NOT(A), NOT(B)], goal: NOT(AND(A, B)), prereqs: ['8.1'], qed: '12.5(b)', needs: [] },
+    { id: '8.10', kind: 'lemma', leanName: "imp_of_not_or'", chapter: 8, givens: [binding('hnAB', OR(NOT(A), B))], formulas: [A, B, NOT(A)], goal: IMPLIES(A, B), prereqs: ['6.4', '8.1'], qed: '12.4(b)', needs: [] },
+    // 8.11–8.13 (QED 12.6b/c/d): the contrapositive family. All three are corollaries of the minted mt'
+    // (8.4) — two or three moves each, rather than a fresh reductio every time.
+    { id: '8.11', kind: 'lemma', leanName: "mt_apply'", chapter: 8, givens: [binding('hAB', IMPLIES(A, B)), binding('hnB', NOT(B))], formulas: [A, B], goal: NOT(A), prereqs: ['8.4'], qed: '12.6(b)', needs: [] },
+    { id: '8.12', kind: 'lemma', leanName: "not_of_iff'", chapter: 8, givens: [binding('hnA', NOT(A)), binding('hiff', IFF(A, B))], formulas: [A, B], goal: NOT(B), prereqs: ['8.1'], qed: '12.6(c)', needs: [] },
+    { id: '8.13', kind: 'lemma', leanName: "not_of_imp_not'", chapter: 8, givens: [binding('hAnB', IMPLIES(A, NOT(B))), binding('hB', B)], formulas: [A, B], goal: NOT(A), prereqs: ['8.3', '8.4'], qed: '12.6(d)', needs: [] },
+    { id: '8.14', kind: 'lemma', leanName: "resolution'", chapter: 8, givens: [binding('hAB', OR(A, B)), binding('hnAC', OR(NOT(A), C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['6.6', '8.10'], qed: '12.8', needs: [] },
+    { id: '8.15', kind: 'lemma', leanName: 'not_iff_imp_false', chapter: 8, givens: [], formulas: [A, FALSE(), NOT(A), IMPLIES(A, FALSE())], goal: IFF(NOT(A), IMPLIES(A, FALSE())), prereqs: ['8.1'], qed: '13.3(d)', needs: [] },
+    // 8.16 (QED 13.2a) is the one place a reductio closes on a DIRECT proof of False rather than on a
+    // contradictory pair; 10.6 (QED 13.3c) is True acting as the unit of implication.
+    { id: '8.16', kind: 'example', chapter: 8, givens: [], formulas: [A, FALSE(), AND(FALSE(), A)], goal: NOT(AND(FALSE(), A)), prereqs: ['8.1'], qed: '13.2(a)', needs: [] },
+
+    // ---------- Chapter 9: The excluded middle ----------
+    // Negation introduction (reductio) + excluded middle (classical). 9.1 introduces em; 8.3/9.2
+    // are double-negation (intro via reductio, elim via em); 8.4 is the contrapositive.
+    { id: '9.1', kind: 'example', chapter: 9, givens: [], formulas: [A], goal: OR(A, NOT(A)), prereqs: ['8.1'], qed: '12.1(d)', qedNote: 'QED states the reversed form, ¬A ∨ A', needs: ['em'] },
+    { id: '9.2', kind: 'lemma', leanName: 'not_not_elim', chapter: 9, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.1'], qed: '12.2(a)', needs: [] },
+    { id: '9.3', kind: 'lemma', leanName: "by_cases'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, prereqs: ['9.1'], qed: '12.1(c)', qedNote: 'the excluded middle in case-analysis form, stated there with assumptions', needs: [] },
+    // 9.4–9.5 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
+    // with the minted `not_not_elim` (9.2). The two differ only in the order of the contradictory pair.
+    { id: '9.4', kind: 'example', chapter: 9, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(B, NOT(B))))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.2'], needs: [] },
+    { id: '9.5', kind: 'example', chapter: 9, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(NOT(B), B)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.2'], needs: [] },
     // (`not_and'` is already declared by core Lean's Init, so this one is `not_and_or'` — cf. Mathlib's not_and_or.)
-    { id: '12.13', kind: 'lemma', leanName: "not_and_or'", chapter: 12, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), prereqs: ['12.7'], needs: [] },
-    // 12.14–12.16 (QED 12.4a/b/c): implication as a disjunction. 12.16 is just the two halves glued with
+    { id: '9.6', kind: 'lemma', leanName: "not_and_or'", chapter: 9, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), prereqs: ['9.3'], qed: '12.5(c)', needs: [] },
+    // 9.7–9.8 (QED 12.4a/b/c): implication as a disjunction. 9.8 is just the two halves glued with
     // Iff.intro, so it reuses them rather than reproving anything.
-    { id: '12.14', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), prereqs: ['12.7'], needs: [] },
-    { id: '12.15', kind: 'lemma', leanName: "imp_of_not_or'", chapter: 12, givens: [binding('hnAB', OR(NOT(A), B))], formulas: [A, B, NOT(A)], goal: IMPLIES(A, B), prereqs: ['9.3', '11.1'], needs: [] },
-    { id: '12.16', kind: 'lemma', leanName: "imp_iff_not_or'", chapter: 12, givens: [], formulas: [A, B, NOT(A), IMPLIES(A, B), OR(NOT(A), B)], goal: IFF(IMPLIES(A, B), OR(NOT(A), B)), prereqs: ['12.14', '12.15'], needs: [] },
-    // 12.17–12.19 (QED 12.6b/c/d): the contrapositive family. All three are corollaries of the minted mt'
-    // (12.4) — two or three moves each, rather than a fresh reductio every time.
-    { id: '12.17', kind: 'lemma', leanName: "mt_apply'", chapter: 12, givens: [binding('hAB', IMPLIES(A, B)), binding('hnB', NOT(B))], formulas: [A, B], goal: NOT(A), prereqs: ['12.4'], needs: [] },
-    { id: '12.18', kind: 'lemma', leanName: "not_of_iff'", chapter: 12, givens: [binding('hnA', NOT(A)), binding('hiff', IFF(A, B))], formulas: [A, B], goal: NOT(B), prereqs: ['11.1'], needs: [] },
-    { id: '12.19', kind: 'lemma', leanName: "not_of_imp_not'", chapter: 12, givens: [binding('hAnB', IMPLIES(A, NOT(B))), binding('hB', B)], formulas: [A, B], goal: NOT(A), prereqs: ['12.2', '12.4'], needs: [] },
-    // 12.20 (QED 12.2c): the ↔ form of double negation, from the two halves already minted (12.2, 12.3).
-    { id: '12.20', kind: 'lemma', leanName: "not_not_iff'", chapter: 12, givens: [], formulas: [A, NOT(A), NOT(NOT(A))], goal: IFF(A, NOT(NOT(A))), prereqs: ['12.2', '12.3'], needs: [] },
-    // 12.21 (QED 12.7) Peirce's law, the classical capstone: split on A with by_cases'; in the ¬A case a
-    // vacuous A → B feeds the hypothesis. 12.22 (QED 12.8) is resolution, and falls out of 12.15 + Or.imp_left'.
-    // (core Lean's Init already declares `peirce'`, hence `peirce_law'` — cf. the not_and' collision at 12.13)
-    { id: '12.21', kind: 'lemma', leanName: "peirce_law'", chapter: 12, givens: [binding('hPA', IMPLIES(IMPLIES(A, B), A))], formulas: [A, B, NOT(A)], goal: A, prereqs: ['12.7'], needs: [] },
-    { id: '12.22', kind: 'lemma', leanName: "resolution'", chapter: 12, givens: [binding('hAB', OR(A, B)), binding('hnAC', OR(NOT(A), C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['9.4', '12.15'], needs: [] },
-    // Chapter 13 — True and False as first-class objects (the last propositional chapter). 13.1 introduces them;
-    // then the ∨/∧ identities, and the capstone 13.6 = the very definition of negation, ¬A ↔ (A → False).
-    { id: '13.1', kind: 'example', chapter: 13, givens: [], formulas: [A], goal: OR(TRUE(), A), prereqs: ['12.1'], needs: ['tf'] },
-    { id: '13.2', kind: 'example', chapter: 13, givens: [], formulas: [A, FALSE()], goal: IMPLIES(FALSE(), A), prereqs: ['13.1'], needs: [] },
-    { id: '13.3', kind: 'example', chapter: 13, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), prereqs: ['13.1'], needs: [] },
-    { id: '13.4', kind: 'lemma', leanName: "true_and'", chapter: 13, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), prereqs: ['13.1'], needs: [] },
-    { id: '13.5', kind: 'lemma', leanName: "false_or'", chapter: 13, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['13.1'], needs: [] },
-    { id: '13.6', kind: 'lemma', leanName: 'not_iff_imp_false', chapter: 13, givens: [], formulas: [A, FALSE(), NOT(A), IMPLIES(A, FALSE())], goal: IFF(NOT(A), IMPLIES(A, FALSE())), prereqs: ['11.1'], needs: [] },
-    // 13.7 (QED 13.2a) is the one place a reductio closes on a DIRECT proof of False rather than on a
-    // contradictory pair; 13.8 (QED 13.3c) is True acting as the unit of implication.
-    { id: '13.7', kind: 'example', chapter: 13, givens: [], formulas: [A, FALSE(), AND(FALSE(), A)], goal: NOT(AND(FALSE(), A)), prereqs: ['11.1'], needs: [] },
-    { id: '13.8', kind: 'lemma', leanName: "iff_true_imp'", chapter: 13, givens: [], formulas: [A, TRUE(), IMPLIES(TRUE(), A)], goal: IFF(A, IMPLIES(TRUE(), A)), prereqs: ['13.1'], needs: [] },
-    // Chapters 16–18 — first-order logic over the generic sort Ω. Introduce a free variable (a sub-env, like an
-    // assumption); discharging a proof gives ∀ x : Ω, … . 17.1 (one variable, unary predicate) is the gentle entry;
-    // 16.1 (two variables) is an optional side-quest. Ch 18 adds universal_instantiation (the ∀ analogue of MP).
-    { id: '17.1', kind: 'example', chapter: 17, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [X],
-      goal: fa('X', IMPLIES(appE('P', [X]), appE('P', [X]))), prereqs: ['13.1'], needs: ['forall'] },
-    { id: '16.1', kind: 'example', chapter: 16, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
-      goal: FORALL({ name: 'x', sort: OMEGA }, FORALL({ name: 'y', sort: OMEGA }, IMPLIES(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), appE('Q', [varE('x', OMEGA), varE('y', OMEGA)])))), prereqs: ['17.1'], needs: [] },
-    // 16.2 (QED 16.1): excluded middle holds of every instance of a two-place predicate. Introduce both
+    { id: '9.7', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), prereqs: ['9.3'], qed: '12.4(a)', needs: [] },
+    { id: '9.8', kind: 'lemma', leanName: "imp_iff_not_or'", chapter: 9, givens: [], formulas: [A, B, NOT(A), IMPLIES(A, B), OR(NOT(A), B)], goal: IFF(IMPLIES(A, B), OR(NOT(A), B)), prereqs: ['8.10', '9.7'], qed: '12.4(c)', needs: [] },
+    // 9.9 (QED 12.2c): the ↔ form of double negation, from the two halves already minted (8.3, 9.2).
+    { id: '9.9', kind: 'lemma', leanName: "not_not_iff'", chapter: 9, givens: [], formulas: [A, NOT(A), NOT(NOT(A))], goal: IFF(A, NOT(NOT(A))), prereqs: ['8.3', '9.2'], qed: '12.2(c)', needs: [] },
+    // 9.10 (QED 12.7) Peirce's law, the classical capstone: split on A with by_cases'; in the ¬A case a
+    // vacuous A → B feeds the hypothesis. 8.14 (QED 12.8) is resolution, and falls out of 8.10 + Or.imp_left'.
+    // (core Lean's Init already declares `peirce'`, hence `peirce_law'` — cf. the not_and' collision at 9.6)
+    { id: '9.10', kind: 'lemma', leanName: "peirce_law'", chapter: 9, givens: [binding('hPA', IMPLIES(IMPLIES(A, B), A))], formulas: [A, B, NOT(A)], goal: A, prereqs: ['9.3'], qed: '12.7', needs: [] },
+
+    // ---------- Chapter 10: True and False ----------
+    // True and False as first-class objects (the last propositional chapter). 10.1 introduces them;
+    // then the ∨/∧ identities, and the capstone 8.15 = the very definition of negation, ¬A ↔ (A → False).
+    { id: '10.1', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: OR(TRUE(), A), prereqs: ['9.1'], qed: '13.2(b)', needs: ['tf'] },
+    { id: '10.2', kind: 'example', chapter: 10, givens: [], formulas: [A, FALSE()], goal: IMPLIES(FALSE(), A), prereqs: ['10.1'], qed: '13.3(a)', needs: [] },
+    { id: '10.3', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), prereqs: ['10.1'], qed: '13.3(b)', needs: [] },
+    { id: '10.4', kind: 'lemma', leanName: "true_and'", chapter: 10, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), prereqs: ['10.1'], qed: '13.1(a)', needs: [] },
+    { id: '10.5', kind: 'lemma', leanName: "false_or'", chapter: 10, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['10.1'], qed: '13.1(b)', needs: [] },
+    { id: '10.6', kind: 'lemma', leanName: "iff_true_imp'", chapter: 10, givens: [], formulas: [A, TRUE(), IMPLIES(TRUE(), A)], goal: IFF(A, IMPLIES(TRUE(), A)), prereqs: ['10.1'], qed: '13.3(c)', needs: [] },
+
+    // ---------- Chapter 11: Variables and the universal quantifier ----------
+    // Chapters 11–12 — first-order logic over the generic sort Ω. Introduce a free variable (a sub-env, like an
+    // assumption); discharging a proof gives ∀ x : Ω, … . 11.1 (one variable, unary predicate) is the gentle entry;
+    // 11.2 (two variables) is an optional side-quest. Ch 12 adds universal_instantiation (the ∀ analogue of MP).
+    { id: '11.1', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [X],
+      goal: fa('X', IMPLIES(appE('P', [X]), appE('P', [X]))), prereqs: ['10.1'], qed: '17.1', needs: ['forall'] },
+    { id: '11.2', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
+      goal: FORALL({ name: 'x', sort: OMEGA }, FORALL({ name: 'y', sort: OMEGA }, IMPLIES(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), appE('Q', [varE('x', OMEGA), varE('y', OMEGA)])))), prereqs: ['11.1'], qed: '23.1(a)', needs: [] },
+    // 11.3 (QED 16.1): excluded middle holds of every instance of a two-place predicate. Introduce both
     // variables, invoke Classical.em on Q(x, y), then discharge straight through both levels.
-    { id: '16.2', kind: 'example', chapter: 16, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
-      goal: fa('x', fa('y', OR(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), NOT(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]))))), prereqs: ['17.1'], needs: [] },
-    { id: '17.2', kind: 'example', chapter: 17, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [fa('X', fa('Y', appE('Q', [X, Y])))],
-      goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), prereqs: ['17.1'], needs: [] },
-    { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+    { id: '11.3', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
+      goal: fa('x', fa('y', OR(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), NOT(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]))))), prereqs: ['11.1'], qed: '16.1', qedNote: 'stated there with free variables held arbitrary', needs: [] },
+    { id: '11.4', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [fa('X', fa('Y', appE('Q', [X, Y])))],
+      goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), prereqs: ['11.1'], qed: '17.2', needs: [] },
+    { id: '11.5', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [], terms: [X], givens: [binding('hA', A)], goal: fa('X', A), prereqs: ['11.1'], qed: '18.2(a)', needs: [] },
+
+    // ---------- Chapter 12: Universal instantiation ----------
+    { id: '12.1', kind: 'example', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hpr', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hp', fa('X', appE('P', [X])))],
-      goal: fa('X', appE('R', [X])), prereqs: ['17.1'], needs: ['instantiate'] },
-    // 18.3a "Barbara singular": a term constant α : Ω is given in the context; instantiate hPQ at α, then modus ponens.
-    // A LEMMA — minting `barbara` mints a higher-order recipe (P, Q are second-order metavars, α explicit) reusable for 18.3b.
-    { id: '18.3a', kind: 'lemma', leanName: 'barbara', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }],
+      goal: fa('X', appE('R', [X])), prereqs: ['11.1'], needs: ['instantiate'] },
+    // 12.2 "Barbara singular": a term constant α : Ω is given in the context; instantiate hPQ at α, then modus ponens.
+    // A LEMMA — minting `barbara` mints a higher-order recipe (P, Q are second-order metavars, α explicit) reusable for 12.3.
+    { id: '12.2', kind: 'lemma', leanName: 'barbara', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hP', appE('P', [alpha]))],
-      goal: appE('Q', [alpha]), prereqs: ['18.1'], needs: [] },
-    { id: '18.2a', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [], terms: [X], givens: [binding('hA', A)], goal: fa('X', A), prereqs: ['17.1'], needs: [] },
-    { id: '18.3b', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: appE('Q', [alpha]), prereqs: ['12.1'], qed: '18.3(a)', needs: [] },
+    { id: '12.3', kind: 'example', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hpr', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hsp', fa('X', IMPLIES(appE('S', [X]), appE('P', [X]))))],
-      goal: fa('X', IMPLIES(appE('S', [X]), appE('R', [X]))), prereqs: ['18.1'], needs: [] },
-    { id: '18.4', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
+      goal: fa('X', IMPLIES(appE('S', [X]), appE('R', [X]))), prereqs: ['12.1'], qed: '18.3(b)', needs: [] },
+    { id: '12.4', kind: 'example', chapter: 12, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [binding('h', fa('X', fa('Y', appE('Q', [X, Y]))))],
-      goal: fa('Y', fa('X', appE('Q', [X, Y]))), prereqs: ['18.1'], needs: [] },
-    // 18.5 / 18.6 — the ∀ distributes over ∧ (both directions), the capstone pair of the universal-quantifier chapter.
-    { id: '18.5', kind: 'lemma', leanName: "forall_and'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: fa('Y', fa('X', appE('Q', [X, Y]))), prereqs: ['12.1'], qed: '18.4', needs: [] },
+    // 12.5 / 12.6 — the ∀ distributes over ∧ (both directions), the capstone pair of the universal-quantifier chapter.
+    { id: '12.5', kind: 'lemma', leanName: "forall_and'", chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('h', fa('X', AND(appE('P', [X]), appE('Q', [X]))))],
-      goal: AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))), prereqs: ['18.1'], needs: [] },
-    { id: '18.6', kind: 'lemma', leanName: "forall_and_rev'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))), prereqs: ['12.1'], qed: '18.5', qedNote: 'one direction of QED’s biconditional', needs: [] },
+    { id: '12.6', kind: 'lemma', leanName: "forall_and_rev'", chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('h', AND(fa('X', appE('P', [X])), fa('X', appE('Q', [X]))))],
-      goal: fa('X', AND(appE('P', [X]), appE('Q', [X]))), prereqs: ['18.1'], needs: [] },
-    // 18.7 (QED's 18.6): a hypothesis independent of X may be moved in or out of a ∀. Note Grimoire's own
-    // 18.5/18.6 are the ∀-over-∧ pair, a DIFFERENT statement — QED's 18.6 had no counterpart until now.
-    { id: '18.7', kind: 'lemma', leanName: "forall_imp_comm'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: fa('X', AND(appE('P', [X]), appE('Q', [X]))), prereqs: ['12.1'], qed: '18.5', qedNote: 'the other direction of QED’s biconditional', needs: [] },
+    // 12.7 (QED's 18.6): a hypothesis independent of X may be moved in or out of a ∀. Note Grimoire's own
+    // 12.5/12.6 are the ∀-over-∧ pair, a DIFFERENT statement — QED's 18.6 had no counterpart until now.
+    { id: '12.7', kind: 'lemma', leanName: "forall_imp_comm'", chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [], formulas: [A, fa('X', appE('P', [X])), IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))],
-      goal: IFF(IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))), prereqs: ['18.1'], needs: [] },
-    // Chapter 19 — the existential quantifier ∃ and its ELIMINATION via `obtain`: given `∃ x, P x` and an UNCLAIMED
+      goal: IFF(IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))), prereqs: ['12.1'], qed: '18.6', needs: [] },
+    { id: '12.8', kind: 'lemma', leanName: 'forall_dne', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hdn', fa('X', NOT(NOT(appE('P', [X])))))], goal: fa('X', appE('P', [X])), prereqs: ['9.2', '12.1'], needs: [] },
+
+    // ---------- Chapter 13: The existential quantifier ----------
+    // The existential quantifier ∃ and its ELIMINATION via `obtain`: given `∃ x, P x` and an UNCLAIMED
     // variable name, place that variable in context together with its witnessing hypothesis (no sub-environment; the
     // goal is unchanged). Non-destructive — `have h2 := h; obtain ⟨a, ha⟩ := h2` — so the ∃ survives. (QED §19's
     // "push" exercises don't port: they moved the goal INTO an ∃ sub-environment, which the Lean model has no need of.)
-    // 19.1 introduces `exists` (obtain → instantiate → modus_ponens); 19.2 (ex falso) and 19.3 (∧-elim) are siblings.
-    { id: '19.1', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+    // 13.1 introduces `exists` (obtain → instantiate → modus_ponens); 13.2 (ex falso) and 13.3 (∧-elim) are siblings.
+    { id: '13.1', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, prereqs: ['18.1'], needs: ['exists'] },
-    { id: '19.2', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
+      goal: C, prereqs: ['12.1'], needs: ['exists'] },
+    { id: '13.2', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hnp', fa('X', NOT(appE('P', [X]))))],
-      goal: C, prereqs: ['19.1'], needs: [] },
-    { id: '19.3', kind: 'example', chapter: 19, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      goal: C, prereqs: ['13.1'], needs: [] },
+    { id: '13.3', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', AND(appE('P', [xL]), appE('Q', [xL])))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, prereqs: ['19.1'], needs: [] },
-    // Chapter 21 — every sort in the game is NONEMPTY, so one can "pick a : Ω arbitrarily" (a new recipe that adds a
-    // variable directly to the context, no ∃/witness hypothesis). 21.1: from ∀x, A (A not depending on x) deduce A —
+      goal: C, prereqs: ['13.1'], needs: [] },
+    { id: '13.4', kind: 'lemma', leanName: 'forall_not_not_exists', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hfn', fa('X', NOT(appE('P', [X]))))], goal: NOT(ee('X', appE('P', [X]))), prereqs: ['13.1'], qed: '22.3(a)', qedNote: 'the other direction of QED’s biconditional', needs: [] },
+
+    // ---------- Chapter 14: Picking an inhabitant ----------
+    // Every sort in the game is NONEMPTY, so one can "pick a : Ω arbitrarily" (a new recipe that adds a
+    // variable directly to the context, no ∃/witness hypothesis). 14.1: from ∀x, A (A not depending on x) deduce A —
     // provable only because Ω is inhabited (pick a witness, then instantiate). Minted as the reusable `forall_const'`.
-    { id: '21.1', kind: 'lemma', leanName: "forall_const'", chapter: 21, sorts: [OMEGA], nonempty: [OMEGA], terms: [varE('a', OMEGA)],
-      givens: [binding('hA', fa('X', A))], goal: A, prereqs: ['19.1'], needs: ['pick'] },
-    // Chapter 22 — EXISTENTIAL INTRODUCTION: from a proof of P(t) and a witness term t, conclude ∃x, P(x). The witness
+    { id: '14.1', kind: 'lemma', leanName: "forall_const'", chapter: 14, sorts: [OMEGA], nonempty: [OMEGA], terms: [varE('a', OMEGA)],
+      givens: [binding('hA', fa('X', A))], goal: A, prereqs: ['13.1'], qed: '21.1', qedNote: 'QED’s "pull" for arbitrary variables', needs: ['pick'] },
+
+    // ---------- Chapter 15: Existential introduction ----------
+    // EXISTENTIAL INTRODUCTION: from a proof of P(t) and a witness term t, conclude ∃x, P(x). The witness
     // occurrences are abstracted, and since that choice is not unique the player selects among the finitely-many results
-    // (e.g. Q(α,α) offers ∃x,Q(x,x) / ∃x,Q(x,α) / ∃x,Q(α,x) / ∃x,Q(α,α)). 22.1 introduces it; 22.2 is the ∀→∃ implication
-    // (needs a witness, so pick one first — Chapter 21); 22.3 is the four-way choice exercise.
-    { id: '22.1', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
-      givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), prereqs: ['21.1'], needs: ['exists_intro'] },
-    { id: '22.2', kind: 'lemma', leanName: 'exists_of_forall', chapter: 22, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
-      givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), prereqs: ['22.1'], needs: [] },
-    { id: '22.3', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
-      givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('x', appE('Q', [xL, xL])), prereqs: ['22.1'], needs: [] },
+    // (e.g. Q(α,α) offers ∃x,Q(x,x) / ∃x,Q(x,α) / ∃x,Q(α,x) / ∃x,Q(α,α)). 15.1 introduces it; 15.2 is the ∀→∃ implication
+    // (needs a witness, so pick one first — Chapter 14); 15.3 is the four-way choice exercise.
+    { id: '15.1', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+      givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), prereqs: ['14.1'], needs: ['exists_intro'] },
+    { id: '15.2', kind: 'lemma', leanName: 'exists_of_forall', chapter: 15, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), prereqs: ['15.1'], qed: '22.2', needs: [] },
+    { id: '15.3', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+      givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('x', appE('Q', [xL, xL])), prereqs: ['15.1'], needs: [] },
     // rest of QED §22 (obtain + instantiate + ∃-intro + reductio). QED 22.6(c) (bound-variable renaming) does NOT
-    // port — α-equivalence is automatic here. 22.4 = QED 22.1 (∃-intro into a conjunction, a real abstraction choice);
-    // 22.5a = QED 22.3(a) quantifier De Morgan; 22.6a/b = QED 22.4(a)/(b) syllogisms; 22.8a/b = QED 22.6(a)/(b) swaps.
-    { id: '22.4', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
-      givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('X', AND(appE('Q', [alpha, X]), appE('Q', [X, alpha]))), prereqs: ['22.1'], needs: [] },
-    { id: '22.5a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [], goal: IFF(NOT(ee('X', appE('P', [X]))), fa('X', NOT(appE('P', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.6a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+    // port — α-equivalence is automatic here. 15.4 = QED 22.1 (∃-intro into a conjunction, a real abstraction choice);
+    // 15.5 = QED 22.3(a) quantifier De Morgan; 15.6/b = QED 22.4(a)/(b) syllogisms; 15.11/b = QED 22.6(a)/(b) swaps.
+    { id: '15.4', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+      givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('X', AND(appE('Q', [alpha, X]), appE('Q', [X, alpha]))), prereqs: ['15.1'], qed: '22.1', needs: [] },
+    { id: '15.5', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [], goal: IFF(NOT(ee('X', appE('P', [X]))), fa('X', NOT(appE('P', [X])))), prereqs: ['15.1'], qed: '22.3(a)', needs: [] },
+    { id: '15.6', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hRP', fa('X', IMPLIES(appE('R', [X]), appE('P', [X]))))],
-      goal: NOT(ee('X', AND(appE('R', [X]), appE('Q', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.6b', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: NOT(ee('X', AND(appE('R', [X]), appE('Q', [X])))), prereqs: ['15.1'], qed: '22.4(a)', needs: [] },
+    { id: '15.7', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hex', ee('X', AND(appE('R', [X]), appE('P', [X]))))],
-      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['22.1'], needs: [] },
-    // 22.6c = QED 22.4(c): derive an ∃ whose body has a negation proved by an inner reductio
-    { id: '22.6c', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['15.1'], qed: '22.4(b)', needs: [] },
+    // 15.8 = QED 22.4(c): derive an ∃ whose body has a negation proved by an inner reductio
+    { id: '15.8', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hex', ee('X', AND(appE('R', [X]), appE('P', [X]))))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['22.1'], needs: [] },
-    // 22.7a = QED 22.5(a): a chained syllogism with an existential witness
-    { id: '22.7a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.4(c)', needs: [] },
+    // 15.9 = QED 22.5(a): a chained syllogism with an existential witness
+    { id: '15.9', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hQR', fa('X', IMPLIES(appE('Q', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('P', [X]), appE('R', [X]))), prereqs: ['22.1'], needs: [] },
-    // 22.10 = QED 22.8: a ∀-goal syllogism combining instantiation, chaining and an inner reductio
-    { id: '22.10', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('P', [X]), appE('R', [X]))), prereqs: ['15.1'], qed: '22.5(a)', needs: [] },
+    // 15.10 = QED 22.8: a ∀-goal syllogism combining instantiation, chaining and an inner reductio
+    { id: '15.10', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPnQ', fa('X', IMPLIES(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hnQR', fa('X', IMPLIES(NOT(appE('Q', [X])), appE('R', [X])))), binding('hnrs', NOT(ee('X', AND(appE('R', [X]), appE('S', [X])))))],
-      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.8a', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
-      givens: [binding('h', ee('Y', ee('X', appE('Q', [X, Y]))))], goal: ee('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['22.1'], needs: [] },
-    { id: '22.8b', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
-      givens: [binding('h', ee('Y', fa('X', appE('Q', [X, Y]))))], goal: fa('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['22.1'], needs: [] },
+      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['15.1'], qed: '22.8', needs: [] },
+    { id: '15.11', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
+      givens: [binding('h', ee('Y', ee('X', appE('Q', [X, Y]))))], goal: ee('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['15.1'], qed: '22.6(a)', needs: [] },
+    { id: '15.12', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
+      givens: [binding('h', ee('Y', fa('X', appE('Q', [X, Y]))))], goal: fa('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['15.1'], qed: '22.6(b)', needs: [] },
     // Helper lemmas → heavier claims via MATCHING (a Grimoire capability QED lacked). The directional De Morgan halves
-    // (22.11/22.12) MINT reusable recipes (the hypothesis pins the predicate P, so they are determinate). 22.13
-    // `forall_dne` reuses the earlier `not_not_elim` (12.3) under a ∀. The classical De Morgan 22.3b then accelerates:
+    // (15.13/13.4) MINT reusable recipes (the hypothesis pins the predicate P, so they are determinate). 12.8
+    // `forall_dne` reuses the earlier `not_not_elim` (9.2) under a ∀. The classical De Morgan 15.14 then accelerates:
     // `not_exists_forall_not` fires on `¬∃X,¬P X` (its predicate metavar solved to λx.¬P x by higher-order matching),
     // then `forall_dne`, then `not_not_elim` — a few steps instead of ~20 raw ones.
-    { id: '22.11', kind: 'lemma', leanName: 'not_exists_forall_not', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [binding('hne', NOT(ee('X', appE('P', [X]))))], goal: fa('X', NOT(appE('P', [X]))), prereqs: ['22.1'], needs: [] },
-    { id: '22.12', kind: 'lemma', leanName: 'forall_not_not_exists', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [binding('hfn', fa('X', NOT(appE('P', [X]))))], goal: NOT(ee('X', appE('P', [X]))), prereqs: ['19.1'], needs: [] },
-    { id: '22.13', kind: 'lemma', leanName: 'forall_dne', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [binding('hdn', fa('X', NOT(NOT(appE('P', [X])))))], goal: fa('X', appE('P', [X])), prereqs: ['12.3', '18.1'], needs: [] },
-    // 22.3b = QED 22.3(b): classical De Morgan `¬∀X,P ↔ ∃X,¬P` — the heavy claim; the forward direction reuses 22.11 + 22.13 + not_not_elim
-    { id: '22.3b', kind: 'lemma', leanName: 'not_forall_iff_exists_not', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
-      givens: [], goal: IFF(NOT(fa('X', appE('P', [X]))), ee('X', NOT(appE('P', [X])))), prereqs: ['22.11', '22.13'], needs: [] },
-    // 22.6d/e = QED 22.4(d)/(e) and 22.7b–e = QED 22.5(b)–(e): the rest of the syllogism family. All follow the
+    { id: '15.13', kind: 'lemma', leanName: 'not_exists_forall_not', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [binding('hne', NOT(ee('X', appE('P', [X]))))], goal: fa('X', NOT(appE('P', [X]))), prereqs: ['15.1'], qed: '22.3(a)', qedNote: 'one direction of QED’s biconditional', needs: [] },
+    // 15.14 = QED 22.3(b): classical De Morgan `¬∀X,P ↔ ∃X,¬P` — the heavy claim; the forward direction reuses 15.13 + 12.8 + not_not_elim
+    { id: '15.14', kind: 'lemma', leanName: 'not_forall_iff_exists_not', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      givens: [], goal: IFF(NOT(fa('X', appE('P', [X]))), ee('X', NOT(appE('P', [X])))), prereqs: ['12.8', '15.13'], qed: '22.3(b)', needs: [] },
+    // 15.15/e = QED 22.4(d)/(e) and 15.17–e = QED 22.5(b)–(e): the rest of the syllogism family. All follow the
     // same shape — unearth a witness from the ∃, derive the missing component at that witness, then ∃-introduce
-    // back. 22.6d additionally reuses the minted `mt'` (12.4) at the witness, and 22.7b/c/d get their negated
+    // back. 15.15 additionally reuses the minted `mt'` (8.4) at the witness, and 15.17/c/d get their negated
     // component from an inner reductio against the ¬∃ hypothesis.
-    { id: '22.6d', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+    { id: '15.15', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hex', ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['12.4', '22.1'], needs: [] },
-    { id: '22.6e', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['8.4', '15.1'], qed: '22.4(d)', needs: [] },
+    { id: '15.16', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hex', ee('X', AND(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X]))))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.7b', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.4(e)', needs: [] },
+    { id: '15.17', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hRP', fa('X', IMPLIES(appE('R', [X]), appE('P', [X])))), binding('hex', ee('X', appE('R', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.7c', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(b)', needs: [] },
+    { id: '15.18', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hnrq', NOT(ee('X', AND(appE('R', [X]), appE('Q', [X]))))), binding('hex', ee('X', appE('R', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.7d', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['15.1'], qed: '22.5(c)', needs: [] },
+    { id: '15.19', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['22.1'], needs: [] },
-    { id: '22.7e', kind: 'example', chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(d)', qedNote: 'the Felapton syllogism; QED arranges the premises differently', needs: [] },
+    { id: '15.20', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['22.1'], needs: [] },
-    // 22.9 = QED 22.7: two independent existentials may be merged into a nested one, and split back out.
+      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['15.1'], qed: '22.5(e)', needs: [] },
+    // 15.21 = QED 22.7: two independent existentials may be merged into a nested one, and split back out.
     // The ∧ never mixes the witnesses, which is exactly why both directions go through.
-    { id: '22.9', kind: 'lemma', leanName: "exists_and_iff'", chapter: 22, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X, Y],
+    { id: '15.21', kind: 'lemma', leanName: "exists_and_iff'", chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [], formulas: [AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))],
-      goal: IFF(AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))), prereqs: ['22.1'], needs: [] },
-    // ---------- Chapter 23: SORTS WITH OPERATIONS. `Set` is an ABSTRACT sort — a carrier equipped with a
+      goal: IFF(AND(ee('X', appE('P', [X])), ee('Y', appE('Q', [Y]))), ee('X', ee('Y', AND(appE('P', [X]), appE('Q', [Y]))))), prereqs: ['15.1'], qed: '22.7', needs: [] },
+
+    // ---------- Chapter 16: Sorts and relations ----------
+    // SORTS WITH OPERATIONS. `Set` is an ABSTRACT sort — a carrier equipped with a
     // membership relation, emitted as a `variable` preamble (never an `axiom`), so each theorem reads
     // "for any type with such a relation …". Note nothing here can be proved ABOUT ∈ yet: without equality
-    // an operation is opaque, so the facts you need arrive as hypotheses. That is the cliffhanger for Ch24.
-    // 23.1 is the notation drill (QED 23.1b's role); 23.2 is Russell's paradox (QED 23.2), which needs only
+    // an operation is opaque, so the facts you need arrive as hypotheses. That is the cliffhanger for Ch 18.
+    // 16.1 is the notation drill (QED 23.1b's role); 16.2 is Russell's paradox (QED 23.2), which needs only
     // a relation — no operations — and which Grimoire can state honestly as `False` where QED writes ¬True.
-    { id: '23.1', kind: 'example', chapter: 23, sorts: [SET], terms: [setV('X'), setV('Y')],
+    { id: '16.1', kind: 'example', chapter: 16, sorts: [SET], terms: [setV('X'), setV('Y')],
       givens: [], formulas: [],
       goal: faS('X', SET, faS('Y', SET, IMPLIES(mem(setV('Y'), setV('X')), mem(setV('Y'), setV('X'))))),
-      prereqs: ['22.1'], needs: ['sets'] },
-    // ---------- Chapter 23, second half: OPERATIONS. The sort M is a magma — a carrier with a constant c,
+      prereqs: ['15.1'], qed: '23.1(b)', qedNote: 'the analogous exercise over a different relation', needs: ['sets'] },
+    // 16.2 (QED 23.2) Russell's paradox — an optional side-quest, disjoint from the algebra of ∪ and ∩:
+    // it needs only membership, and it is where a set theory this naive is shown to break.
+    { id: '16.2', kind: 'example', chapter: 16, sorts: [SET], terms: [],
+      givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
+      formulas: [FALSE()], goal: FALSE(), prereqs: ['16.1'], qed: '23.2', qedNote: 'Russell’s paradox', needs: [] },   // an optional leaf: it leads nowhere on purpose
+
+    // ---------- Chapter 17: Operations and compound terms ----------
+    // OPERATIONS. The sort M is a magma — a carrier with a constant c,
     // a unary f and a binary ∗, and NO axioms at all. Nothing can be proved about them, which is the point:
     // these five drills are about BUILDING terms and putting them where a variable would go. `c` arrives in
     // the term bench on its own, because a 0-ary operation belongs to the sort rather than to the exercise.
-    { id: '23.3', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [varE('x', MAGMA)],
+    { id: '17.1', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [varE('x', MAGMA)],
       givens: [], formulas: [],
-      goal: faS('x', MAGMA, IMPLIES(appE('P', [appE('f', [varE('x', MAGMA)])]), appE('P', [appE('f', [varE('x', MAGMA)])]))), prereqs: ['23.1'], needs: ['ops'] },
-    { id: '23.4', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
+      goal: faS('x', MAGMA, IMPLIES(appE('P', [appE('f', [varE('x', MAGMA)])]), appE('P', [appE('f', [varE('x', MAGMA)])]))), prereqs: ['16.1'], qed: '23.1(c)', qedNote: 'a predicate of a compound term, over a different operation', needs: ['ops'] },
+    { id: '17.2', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
       givens: [binding('h', faS('x', MAGMA, appE('P', [varE('x', MAGMA)])))], formulas: [],
-      goal: appE('P', [appE('c', [])]), prereqs: ['23.3'], needs: [] },
-    // 23.5: the same move, but the term must be BUILT first — f(c) ∗ c
-    { id: '23.5', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
+      goal: appE('P', [appE('c', [])]), prereqs: ['17.1'], needs: [] },
+    // 17.3: the same move, but the term must be BUILT first — f(c) ∗ c
+    { id: '17.3', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
       givens: [binding('h', faS('x', MAGMA, appE('P', [varE('x', MAGMA)])))], formulas: [],
-      goal: appE('P', [appE('star', [appE('f', [appE('c', [])]), appE('c', [])])]), prereqs: ['23.3'], needs: [] },
-    // 23.6: a COMPOUND ∃-witness. Q(f c, f c) abstracts three ways over f c — pick the one asked for.
-    { id: '23.6', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'Q', argSorts: [MAGMA, MAGMA], resultSort: PROP }], terms: [],
+      goal: appE('P', [appE('star', [appE('f', [appE('c', [])]), appE('c', [])])]), prereqs: ['17.1'], needs: [] },
+    // 17.4: a COMPOUND ∃-witness. Q(f c, f c) abstracts three ways over f c — pick the one asked for.
+    { id: '17.4', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'Q', argSorts: [MAGMA, MAGMA], resultSort: PROP }], terms: [],
       givens: [binding('hQ', appE('Q', [appE('f', [appE('c', [])]), appE('f', [appE('c', [])])]))], formulas: [],
-      goal: eeS('x', MAGMA, appE('Q', [varE('x', MAGMA), appE('f', [appE('c', [])])])), prereqs: ['23.3'], needs: [] },
-    // 23.7: rewriting reaches INSIDE a term — α sits under f, and only the equation α = β is given.
-    // ---------- Chapter 24: EQUALITY. Largely original: QED supplies only symmetry and transitivity, and
+      goal: eeS('x', MAGMA, appE('Q', [varE('x', MAGMA), appE('f', [appE('c', [])])])), prereqs: ['17.1'], needs: [] },
+
+    // ---------- Chapter 18: Equality and rewriting ----------
+    // 18.2: rewriting reaches INSIDE a term — α sits under f, and only the equation α = β is given.
+    // EQUALITY. Largely original: QED supplies only symmetry and transitivity, and
     // here even those are EXERCISES rather than primitives. The chapter has just two primitives —
     // `Eq.refl` (a term equals itself) and `rw` (rewrite some occurrences along an equation) — and every
     // other fact is derived from them. `rw` reuses ∃-introduction's finite-choice machinery, so choosing
-    // WHICH occurrences move is part of the puzzle (24.3 is where that first bites).
+    // WHICH occurrences move is part of the puzzle (18.4 is where that first bites).
     // Equality is also the one relation every sort shares, so these lemmas serve every later chapter.
-    { id: '24.1', kind: 'example', chapter: 24, sorts: [OMEGA], consts: [cO('α')], terms: [alpha],
-      givens: [], formulas: [], goal: eq(alpha, alpha), prereqs: ['23.3'], needs: ['eq'] },
-    // 23.7 lives here rather than in Chapter 23: it is an operations exercise, but the only way to move the
+    { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], consts: [cO('α')], terms: [alpha],
+      givens: [], formulas: [], goal: eq(alpha, alpha), prereqs: ['17.1'], needs: ['eq'] },
+    // 18.2 lives here rather than in Chapter 17: it is an operations exercise, but the only way to move the
     // equation through `f` is `rw`, so it cannot open before the equality tutorial that introduces `rw`.
-    { id: '23.7', kind: 'example', chapter: 23, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
+    { id: '18.2', kind: 'example', chapter: 18, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
       givens: [binding('hP', appE('P', [appE('f', [varE('α', MAGMA)])])), binding('hab', appE('EQ', [varE('α', MAGMA), varE('β', MAGMA)]))],
-      formulas: [], goal: appE('P', [appE('f', [varE('β', MAGMA)])]), prereqs: ['24.1'], needs: [] },
-    { id: '24.2', kind: 'example', chapter: 24, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      formulas: [], goal: appE('P', [appE('f', [varE('β', MAGMA)])]), prereqs: ['18.1'], qed: '24.2', qedNote: 'substitution under a function symbol', needs: [] },
+    { id: '18.3', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hP', appE('P', [alpha])), binding('hab', eq(alpha, beta))],
-      formulas: [], goal: appE('P', [beta]), prereqs: ['24.1'], needs: [] },
-    // 24.3: Q(α,α) has TWO occurrences of α, so rewriting offers Q(β,α), Q(α,β) and Q(β,β) — pick one.
-    { id: '24.3', kind: 'example', chapter: 24, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      formulas: [], goal: appE('P', [beta]), prereqs: ['18.1'], needs: [] },
+    // 18.4: Q(α,α) has TWO occurrences of α, so rewriting offers Q(β,α), Q(α,β) and Q(β,β) — pick one.
+    { id: '18.4', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hQ', appE('Q', [alpha, alpha])), binding('hab', eq(alpha, beta))],
-      formulas: [], goal: appE('Q', [alpha, beta]), prereqs: ['24.1'], needs: [] },
-    // 24.4: symmetry (QED 24.1a) — rewrite inside `α = α` itself. The prettiest use of the two primitives.
-    { id: '24.4', kind: 'lemma', leanName: "Eq.symm'", chapter: 24, sorts: [OMEGA], consts: [cO('α'), cO('β')], terms: [alpha, beta],
-      givens: [binding('hab', eq(alpha, beta))], formulas: [], goal: eq(beta, alpha), prereqs: ['24.1'], needs: [] },
-    // 24.5: transitivity (QED 24.1b) — a single rewrite of the first equation along the second.
-    { id: '24.5', kind: 'lemma', leanName: "Eq.trans'", chapter: 24, sorts: [OMEGA], consts: [cO('α'), cO('β'), cO('γ')], terms: [alpha, beta, gamma],
-      givens: [binding('hab', eq(alpha, beta)), binding('hbc', eq(beta, gamma))], formulas: [], goal: eq(alpha, gamma), prereqs: ['24.1'], needs: [] },
-    // 24.6: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
-    { id: '24.6', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 24, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      formulas: [], goal: appE('Q', [alpha, beta]), prereqs: ['18.1'], needs: [] },
+    // 18.5: symmetry (QED 24.1a) — rewrite inside `α = α` itself. The prettiest use of the two primitives.
+    { id: '18.5', kind: 'lemma', leanName: "Eq.symm'", chapter: 18, sorts: [OMEGA], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+      givens: [binding('hab', eq(alpha, beta))], formulas: [], goal: eq(beta, alpha), prereqs: ['18.1'], qed: '24.1(a)', needs: [] },
+    // 18.6: transitivity (QED 24.1b) — a single rewrite of the first equation along the second.
+    { id: '18.6', kind: 'lemma', leanName: "Eq.trans'", chapter: 18, sorts: [OMEGA], consts: [cO('α'), cO('β'), cO('γ')], terms: [alpha, beta, gamma],
+      givens: [binding('hab', eq(alpha, beta)), binding('hbc', eq(beta, gamma))], formulas: [], goal: eq(alpha, gamma), prereqs: ['18.1'], qed: '24.1(b)', needs: [] },
+    // 18.7: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
+    { id: '18.7', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hab', eq(alpha, beta))], formulas: [appE('P', [alpha]), appE('P', [beta])],
-      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['24.4'], needs: [] },
-    // ---------- Chapter 25: GROUPS — the first branch chapter, and the first theory with AXIOMS.
-    // The five axioms are in hand from the start because they belong to the sort, not to the exercise:
-    // no exercise restates them. They reach Lean as `variable` hypotheses, so each theorem holds of any
-    // group and nothing is ever declared with `axiom`.
-    // 25.1 (QED 24.3): a left identity and a right identity must coincide. Needs no group axiom at all —
-    // it is pure equality reasoning, which makes it the gentle way in.
-    { id: '25.1', kind: 'example', chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
-      givens: [binding('hL', faS('x', GRP, appE('EQ', [gmul(gv('α'), gv('x')), gv('x')]))),
-               binding('hR', faS('x', GRP, appE('EQ', [gmul(gv('x'), gv('β')), gv('x')])))],
-      formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), prereqs: ['24.1'], needs: ['groups'] },
-    // 25.2: the inverse of the identity is the identity — the first proof that actually uses the axioms.
-    { id: '25.2', kind: 'lemma', leanName: "inv_one'", chapter: 25, sorts: [GRP], consts: [], terms: [],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), prereqs: ['25.1'], needs: [] },
-    // 25.3 (QED 24.4): left cancellation. The long one, and the first proof that needs an equation read
-    // BACKWARDS — which is Eq.symm' (24.4) applied at G, i.e. the payoff of sort polymorphism.
-    { id: '25.3', kind: 'lemma', leanName: "mul_left_cancel'", chapter: 25, sorts: [GRP],
-      consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }, { name: 'γ', sort: GRP }],
-      terms: [gv('α'), gv('β'), gv('γ')],
-      givens: [binding('h', appE('EQ', [gmul(gv('α'), gv('β')), gmul(gv('α'), gv('γ'))]))],
-      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), prereqs: ['24.4', '25.1'], needs: [] },
-    // 25.4 (QED 24.6): the inverse is an involution. A pure chain of rewrites through the axioms.
-    { id: '25.4', kind: 'lemma', leanName: "inv_inv'", chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }], terms: [gv('α')],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), prereqs: ['24.4', '25.1'], needs: [] },
-    // 25.5 (QED 24.5): the inverse of a product reverses it. The chapter's capstone — it shows that
-    // (α·β)·(inv β·inv α) = 1, matches that against (α·β)·inv(α·β) = 1, and CANCELS with the minted 25.3.
-    { id: '25.5', kind: 'lemma', leanName: "mul_inv_rev'", chapter: 25, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(gmul(gv('α'), gv('β'))), gmul(ginv(gv('β')), ginv(gv('α')))]), prereqs: ['25.3'], needs: [] },
-    // ---------- Chapter 26: PEANO ARITHMETIC. The first CONCRETE sort: `Nat` is a real type in its own
-    // Lean module, so the proof `import`s it instead of quantifying over a carrier. Its two defining
-    // equations give `a + 0` and `a + succ b`; everything on the LEFT has to be earned by induction.
-    { id: '26.1', kind: 'lemma', leanName: "zero_add'", chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [],
-      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), prereqs: ['25.1'], needs: ['induction'] },
-    // 26.2: the other half of the asymmetry. `a + succ b` is definitional; `succ a + b` must be earned.
-    { id: '26.2', kind: 'lemma', leanName: "succ_add'", chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [],
-      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nsucc(nv('a')), nv('b')), nsucc(nadd(nv('a'), nv('b')))]))),
-      prereqs: ['24.4', '26.1'], needs: [] },
-    // 26.3: commutativity — the first rung that pays for the two before it.
-    { id: '26.3', kind: 'lemma', leanName: "add_comm'", chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [],
-      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nv('a'), nv('b')), nadd(nv('b'), nv('a'))]))),
-      prereqs: ['26.2'], needs: [] },
-    // 26.4: associativity, by induction on the third summand.
-    { id: '26.4', kind: 'lemma', leanName: "add_assoc'", chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [],
-      goal: faS('a', NAT, faS('b', NAT, faS('c', NAT, appE('EQ', [nadd(nadd(nv('a'), nv('b')), nv('c')), nadd(nv('a'), nadd(nv('b'), nv('c')))])))),
-      prereqs: ['24.4', '26.1'], needs: [] },
-    // 26.5–26.7: ORDER, defined as `a ≤ b` iff `b` is `a` plus something. So the order facts are earned
-    // from the addition ladder rather than assumed: reflexivity is add_zero, transitivity is add_assoc.
-    { id: '26.5', kind: 'lemma', leanName: "le_refl'", chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [], goal: faS('a', NAT, nle(nv('a'), nv('a'))), prereqs: ['26.1'], needs: [] },
-    { id: '26.6', kind: 'lemma', leanName: "le_trans'", chapter: 26, sorts: [NAT],
-      consts: [{ name: 'a', sort: NAT }, { name: 'b', sort: NAT }, { name: 'c', sort: NAT }], terms: [nv('a'), nv('b'), nv('c')],
-      givens: [binding('hab', nle(nv('a'), nv('b'))), binding('hbc', nle(nv('b'), nv('c')))],
-      formulas: [], goal: nle(nv('a'), nv('c')), prereqs: ['26.4'], needs: [] },
-    // 26.7: the capstone. QED had to hand you the key fact as a hypothesis; here it is a theorem of the
-    // module, and everything else in the proof is the player's own ≤ machinery.
-    { id: '26.7', kind: 'example', chapter: 26, sorts: [NAT], terms: [nv('n')],
-      givens: [], formulas: [FALSE()],
-      goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), prereqs: ['26.1'], needs: [] },
-    // ---------- Chapter 27: SETS. Two sets are equal when they have the same members, so each law below
-    // is the propositional law of Chapter 2 or 9, transported through membership by extensionality.
-    { id: '27.1', kind: 'lemma', leanName: "union_comm'", chapter: 27, sorts: [SET],
+      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['18.5'], needs: [] },
+    // SETS. Two sets are equal when they have the same members, so each law below
+    // is the propositional law of Chapter 2 or 6, transported through membership by extensionality.
+    { id: '18.8', kind: 'lemma', leanName: "union_comm'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
-      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), prereqs: ['9.2', '10.2', '10.3', '24.1'], needs: [] },
-    { id: '27.2', kind: 'lemma', leanName: "inter_comm'", chapter: 27, sorts: [SET],
+      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), prereqs: ['6.2', '7.2', '7.3', '18.1'], needs: [] },
+    { id: '18.9', kind: 'lemma', leanName: "inter_comm'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
-      goal: appE('EQ', [sinter(sv2('a'), sv2('b')), sinter(sv2('b'), sv2('a'))]), prereqs: ['8.3', '10.2', '10.3', '24.1'], needs: [] },
-    // 27.3 (QED 23.2) Russell's paradox — an optional side-quest, disjoint from the algebra of ∪ and ∩:
-    // it needs only membership, and it is where a set theory this naive is shown to break.
-    { id: '27.3', kind: 'example', chapter: 27, sorts: [SET], terms: [],
-      givens: [binding('hR', eeS('X', SET, faS('Y', SET, IFF(mem(setV('Y'), setV('X')), NOT(mem(setV('Y'), setV('Y')))))))],
-      formulas: [FALSE()], goal: FALSE(), prereqs: ['23.1'], needs: [] },   // an optional leaf: it leads nowhere on purpose
-    // 27.4: the capstone. Distributivity of ∩ over ∪ is exactly the propositional distributivity of
-    // Chapter 9 (and_or_left' / and_or_left_rev), carried across membership in both directions.
-    { id: '27.4', kind: 'lemma', leanName: "inter_union_distrib'", chapter: 27, sorts: [SET],
+      goal: appE('EQ', [sinter(sv2('a'), sv2('b')), sinter(sv2('b'), sv2('a'))]), prereqs: ['4.8', '7.2', '7.3', '18.1'], needs: [] },
+    // 18.10: the capstone. Distributivity of ∩ over ∪ is exactly the propositional distributivity of
+    // Chapter 6 (and_or_left' / and_or_left_rev), carried across membership in both directions.
+    { id: '18.10', kind: 'lemma', leanName: "inter_union_distrib'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sinter(sv2('a'), sunion(sv2('b'), sv2('c'))),
-                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), prereqs: ['9.5', '9.10', '9.11', '10.2', '10.9', '24.1'], needs: [] },
-    // 27.5–27.6: associativity, the same shape again — the bridge is Chapter 2/9's associativity, with the
-    // left- and right-slot congruences (10.5/10.6, 10.9/10.10) reaching into whichever operand is unfolded.
-    { id: '27.5', kind: 'lemma', leanName: "union_assoc'", chapter: 27, sorts: [SET],
+                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), prereqs: ['6.5', '6.11', '6.12', '7.2', '7.9', '18.1'], needs: [] },
+    // 18.11–18.12: associativity, the same shape again — the bridge is Chapter 2/6's associativity, with the
+    // left- and right-slot congruences (7.5/7.6, 7.9/7.10) reaching into whichever operand is unfolded.
+    { id: '18.11', kind: 'lemma', leanName: "union_assoc'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sunion(sunion(sv2('a'), sv2('b')), sv2('c')), sunion(sv2('a'), sunion(sv2('b'), sv2('c')))]),
-      prereqs: ['9.8', '10.2', '10.6', '10.10', '24.1'], needs: [] },
-    { id: '27.6', kind: 'lemma', leanName: "inter_assoc'", chapter: 27, sorts: [SET],
+      prereqs: ['6.9', '7.2', '7.6', '7.10', '18.1'], needs: [] },
+    { id: '18.12', kind: 'lemma', leanName: "inter_assoc'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sinter(sinter(sv2('a'), sv2('b')), sv2('c')), sinter(sv2('a'), sinter(sv2('b'), sv2('c')))]),
-      prereqs: ['2.2a', '2.2b', '10.2', '10.5', '10.9', '24.1'], needs: [] },
-    // 27.7: the dual capstone — ∪ over ∩, from or_and_left' / or_and_left_rev.
-    { id: '27.7', kind: 'lemma', leanName: "union_inter_distrib'", chapter: 27, sorts: [SET],
+      prereqs: ['2.2', '2.3', '7.2', '7.5', '7.9', '18.1'], needs: [] },
+    // 18.13: the dual capstone — ∪ over ∩, from or_and_left' / or_and_left_rev.
+    { id: '18.13', kind: 'lemma', leanName: "union_inter_distrib'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sunion(sv2('a'), sinter(sv2('b'), sv2('c'))),
-                        sinter(sunion(sv2('a'), sv2('b')), sunion(sv2('a'), sv2('c')))]), prereqs: ['9.9', '9.12', '10.2', '10.5', '10.9', '10.10', '24.1'], needs: [] },
+                        sinter(sunion(sv2('a'), sv2('b')), sunion(sv2('a'), sv2('c')))]), prereqs: ['6.10', '6.13', '7.2', '7.5', '7.9', '7.10', '18.1'], needs: [] },
+
+    // ---------- Chapter 19: Theories with axioms ----------
+    // GROUPS — the first branch chapter, and the first theory with AXIOMS.
+    // The five axioms are in hand from the start because they belong to the sort, not to the exercise:
+    // no exercise restates them. They reach Lean as `variable` hypotheses, so each theorem holds of any
+    // group and nothing is ever declared with `axiom`.
+    // 19.1 (QED 24.3): a left identity and a right identity must coincide. Needs no group axiom at all —
+    // it is pure equality reasoning, which makes it the gentle way in.
+    { id: '19.1', kind: 'example', chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
+      givens: [binding('hL', faS('x', GRP, appE('EQ', [gmul(gv('α'), gv('x')), gv('x')]))),
+               binding('hR', faS('x', GRP, appE('EQ', [gmul(gv('x'), gv('β')), gv('x')])))],
+      formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), prereqs: ['18.1'], qed: '24.3', needs: ['groups'] },
+    // 19.2: the inverse of the identity is the identity — the first proof that actually uses the axioms.
+    { id: '19.2', kind: 'lemma', leanName: "inv_one'", chapter: 19, sorts: [GRP], consts: [], terms: [],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), prereqs: ['19.1'], needs: [] },
+    // 19.3 (QED 24.4): left cancellation. The long one, and the first proof that needs an equation read
+    // BACKWARDS — which is Eq.symm' (18.5) applied at G, i.e. the payoff of sort polymorphism.
+    { id: '19.3', kind: 'lemma', leanName: "mul_left_cancel'", chapter: 19, sorts: [GRP],
+      consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }, { name: 'γ', sort: GRP }],
+      terms: [gv('α'), gv('β'), gv('γ')],
+      givens: [binding('h', appE('EQ', [gmul(gv('α'), gv('β')), gmul(gv('α'), gv('γ'))]))],
+      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), prereqs: ['18.5', '19.1'], qed: '24.4', qedNote: 'the cancellation law; QED carries the group axioms as premises', needs: [] },
+    // 19.4 (QED 24.6): the inverse is an involution. A pure chain of rewrites through the axioms.
+    { id: '19.4', kind: 'lemma', leanName: "inv_inv'", chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }], terms: [gv('α')],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), prereqs: ['18.5', '19.1'], qed: '24.6', qedNote: 'the inverse is an involution; QED carries the group axioms as premises', needs: [] },
+    // 19.5 (QED 24.5): the inverse of a product reverses it. The chapter's capstone — it shows that
+    // (α·β)·(inv β·inv α) = 1, matches that against (α·β)·inv(α·β) = 1, and CANCELS with the minted 19.3.
+    { id: '19.5', kind: 'lemma', leanName: "mul_inv_rev'", chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
+      givens: [], formulas: [], goal: appE('EQ', [ginv(gmul(gv('α'), gv('β'))), gmul(ginv(gv('β')), ginv(gv('α')))]), prereqs: ['19.3'], needs: [] },
+
+    // ---------- Chapter 20: Induction ----------
+    // PEANO ARITHMETIC. The first CONCRETE sort: `Nat` is a real type in its own
+    // Lean module, so the proof `import`s it instead of quantifying over a carrier. Its two defining
+    // equations give `a + 0` and `a + succ b`; everything on the LEFT has to be earned by induction.
+    { id: '20.1', kind: 'lemma', leanName: "zero_add'", chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), prereqs: ['19.1'], needs: ['induction'] },
+    // 20.2: the other half of the asymmetry. `a + succ b` is definitional; `succ a + b` must be earned.
+    { id: '20.2', kind: 'lemma', leanName: "succ_add'", chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nsucc(nv('a')), nv('b')), nsucc(nadd(nv('a'), nv('b')))]))),
+      prereqs: ['18.5', '20.1'], needs: [] },
+    // 20.3: commutativity — the first rung that pays for the two before it.
+    { id: '20.3', kind: 'lemma', leanName: "add_comm'", chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, appE('EQ', [nadd(nv('a'), nv('b')), nadd(nv('b'), nv('a'))]))),
+      prereqs: ['20.2'], needs: [] },
+    // 20.4: associativity, by induction on the third summand.
+    { id: '20.4', kind: 'lemma', leanName: "add_assoc'", chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [],
+      goal: faS('a', NAT, faS('b', NAT, faS('c', NAT, appE('EQ', [nadd(nadd(nv('a'), nv('b')), nv('c')), nadd(nv('a'), nadd(nv('b'), nv('c')))])))),
+      prereqs: ['18.5', '20.1'], needs: [] },
+    // 20.5–20.7: ORDER, defined as `a ≤ b` iff `b` is `a` plus something. So the order facts are earned
+    // from the addition ladder rather than assumed: reflexivity is add_zero, transitivity is add_assoc.
+    { id: '20.5', kind: 'lemma', leanName: "le_refl'", chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [], goal: faS('a', NAT, nle(nv('a'), nv('a'))), prereqs: ['20.1'], needs: [] },
+    { id: '20.6', kind: 'lemma', leanName: "le_trans'", chapter: 20, sorts: [NAT],
+      consts: [{ name: 'a', sort: NAT }, { name: 'b', sort: NAT }, { name: 'c', sort: NAT }], terms: [nv('a'), nv('b'), nv('c')],
+      givens: [binding('hab', nle(nv('a'), nv('b'))), binding('hbc', nle(nv('b'), nv('c')))],
+      formulas: [], goal: nle(nv('a'), nv('c')), prereqs: ['20.4'], needs: [] },
+    // 20.7: the capstone. QED had to hand you the key fact as a hypothesis; here it is a theorem of the
+    // module, and everything else in the proof is the player's own ≤ machinery.
+    { id: '20.7', kind: 'example', chapter: 20, sorts: [NAT], terms: [nv('n')],
+      givens: [], formulas: [FALSE()],
+      goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), prereqs: ['20.1'], qed: '23.3', qedNote: 'no largest natural number; QED carries the ordering axiom as a premise', needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
 

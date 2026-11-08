@@ -139,7 +139,7 @@
   details#mapwrap > summary { cursor: pointer; color: var(--muted); font-size: .9rem; }
   .mapbar { display: flex; align-items: center; gap: .5rem; margin: .5rem 0; flex-wrap: wrap; }
   .mapbar button { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .25rem .55rem; cursor: pointer; }
-  .mapbar .dev { margin-left: auto; border-style: dashed; color: var(--muted); }   /* DEV cheat — hide at final polish, keep the code */
+  .mapbar .dev { margin-left: auto; border-style: dashed; color: var(--muted); }   /* "Unlock all" — deliberately set apart from the real controls */
   .mapbar .dev.on { border-style: solid; color: var(--accent); border-color: var(--accent); }
   #mapview { border: 1px solid var(--line); border-radius: 8px; background: var(--panel); overflow: hidden; height: 340px; touch-action: none; }
   #mapsvg { width: 100%; height: 100%; display: block; cursor: grab; }
@@ -155,6 +155,8 @@
   #mapsvg .node.solved rect { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
   #mapsvg .node.solved text { fill: var(--ink); }
   #mapsvg .node.cur rect { stroke-width: 2.5; }
+  #goal .prov { margin-top: .5rem; color: var(--muted); font-size: .82rem; }
+  #goal .prov strong { font-weight: 600; color: var(--muted); }
 </style>
 </head>
 <body>
@@ -192,9 +194,9 @@
       <button id="mapfit" type="button" title="Fit the whole tree in view">Fit</button>
       <button id="mapcur" type="button" title="Centre the map on the exercise you are working on (a one-off jump — it does not turn on Follow current)">Current</button>
       <label title="Keep the map centered on the exercise you are working on (it re-centers when you advance)" style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;color:var(--muted);font-size:.9rem"><input type="checkbox" id="mapfollow" checked> Follow current</label>
-      <!-- DEV cheat: reveal every exercise (does NOT solve them). Hide this button at final
-           polish once testing is done, but KEEP THE CODE so it is easy to restore. -->
-      <button id="cheat" class="dev" type="button" title="DEV: make every exercise accessible (they still need solving)">Unlock all</button>
+      <!-- Kept for players, not just for testing: a visitor who wants to see the later chapters
+           should not have to solve twenty levels first. It reveals every exercise but solves none. -->
+      <button id="cheat" class="dev" type="button" title="Reveal every exercise at once, so you can look around — they still have to be solved, and nothing is marked as done">Unlock all</button>
     </div>
     <div id="mapview"><svg id="mapsvg" xmlns="http://www.w3.org/2000/svg"><g id="mapg"></g></svg></div>
   </details>
@@ -276,6 +278,22 @@
       the shape of the proof stays visible; an experienced Lean user would write most of these proofs in a
       line or two. To learn Lean properly, start with
       <a href="https://leanprover-community.github.io/learn.html">the Lean community's learning resources</a>.</p>
+  </details>
+
+  <details class="note" id="numbering">
+    <summary>Numbering, and the relation to QED</summary>
+    <p>Each chapter here is one <em>mechanic</em>: chapter <em>N</em> opens with exercise <em>N</em>.1, the
+      level that introduces the mechanic, and the rest of the chapter is practice that needs nothing newer.
+      So the twenty tutorial levels are exactly 1.1, 2.1, …, 20.1, and an exercise never depends on a
+      higher number than its own.</p>
+    <p>That numbering is Grimoire's own, and it does <strong>not</strong> follow
+      <a href="https://teorth.github.io/QED/">QED</a>, whose sections are organised by topic instead. Where a
+      level descends from a QED exercise it says so under the goal — and says when QED states the same
+      thing differently, which is usually QED's assumption environments where Grimoire uses an implication,
+      or its group-theory sections, which carry the axioms as hypotheses where Grimoire puts them in the
+      theory of the sort. QED's own sections on free variables and on "push"/"pull" have no counterpart
+      here: Grimoire makes no distinction between free and bound variables, so those moves have nothing
+      left to do. Some chapters are new, and about a fifth of the levels have no QED ancestor at all.</p>
   </details>
 
   <p class="cap">The applet source is released under the MIT license; the mathematical content is reserved.</p>
@@ -562,13 +580,20 @@
     var badge = isTutorial(state.ex)
       ? '<div class="givens">★ ' + (state.fantasy ? 'New magic here' : 'Tutorial') + ' — this level introduces <strong>' + esc(mechOf(state.ex)) + '</strong></div>'
       : '';
+    // where this exercise came from. Grimoire's numbering is its own (the mechanics are the chapters),
+    // so a level that descends from a QED exercise says which one -- and says so honestly when QED
+    // states it differently, which is usually its `[assuming A]` environment where we use an arrow.
+    var prov = state.ex.qed
+      ? '<div class="prov">Corresponds to <strong>QED ' + esc(state.ex.qed) + '</strong>'
+        + (state.ex.qedNote ? ' — ' + esc(state.ex.qedNote) : '') + '</div>'
+      : '';
     var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
     var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
       ? ' <span class="unlock">🗺️ unlocked on the map: ' + state.justUnlockedEx.map(function (id) { return '<code>' + esc(id) + '</code>'; }).join(', ') + '</span>' : '';
     var main = solved
       ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
-    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>';
+    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + prov;
     // once solved, offer the next thing to do right where the player is looking (appended as a real
     // element, not markup, so it carries its own handler)
     if (solved) {
@@ -869,7 +894,8 @@
   el.cheat.addEventListener('click', function () { state.cheat = !state.cheat; el.cheat.classList.toggle('on', state.cheat); renderAll(); });
 
   // ---- save progress (opt-in; browser local storage only, never sent over any network) ----
-  var SAVE_KEY = 'grimoire.v1';
+  var SAVE_KEY = 'grimoire.v2';   // v1 keyed progress by the old exercise numbers; the
+                                 // renumbering makes those ids meaningless, so start fresh
   function storageGet() { try { return localStorage.getItem(SAVE_KEY); } catch (e) { return null; } }
   function storageSet(v) { try { localStorage.setItem(SAVE_KEY, v); } catch (e) {} }
   function storageDel() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
