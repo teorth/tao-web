@@ -263,6 +263,21 @@
       see the proof being built, not to write the slickest tactic.</p>
   </details>
 
+  <details class="note" id="caveat">
+    <summary>What this app is <em>not</em></summary>
+    <p>This is not a full Lean tutorial, and it teaches only a small subset of the available Lean
+      tactics. In particular, the powerful ability of Lean tactics to <strong>modify the goal</strong> is
+      completely untapped here: every move works forwards, from what you already have towards the goal,
+      whereas real Lean proofs freely work backwards as well. The automation that does most of the work in
+      practice — <code>simp</code>, <code>omega</code>, <code>decide</code>, <code>exact?</code>, and the
+      rest — is absent by design, since the point of the game is to perform each logical step yourself.</p>
+    <p>For the same reason, the Lean written out as you play should <strong>not</strong> be taken as an
+      indication of best practice for idiomatic Lean code. It is deliberately plain and step-by-step so that
+      the shape of the proof stays visible; an experienced Lean user would write most of these proofs in a
+      line or two. To learn Lean properly, start with
+      <a href="https://leanprover-community.github.io/learn.html">the Lean community's learning resources</a>.</p>
+  </details>
+
   <p class="cap">The applet source is released under the MIT license; the mathematical content is reserved.</p>
 </div>
 <div id="ctxmenu" hidden></div>
@@ -291,7 +306,10 @@
     if (state.cheat) { var all = {}; G.EXERCISES.forEach(function (e) { all[e.id] = true; }); return all; }
     return G.accessibleSet(state.solved);
   }
-  function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1, 'pick': 1, 'exists_intro': 1 } : G.activeCaps(accessible()); }
+  // `activeCaps` is a plain union of `needs` over the accessible set, so the cheat needs no special case:
+  // revealing every exercise reveals every tutorial, hence every mechanic. (It used to carry a hand-written
+  // list of capabilities here, which silently fell behind when Chapters 23-27 added five more.)
+  function caps() { return G.activeCaps(accessible()); }
   var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
   function hasCap(c) { return !!caps()[c]; }
   // A level is a TUTORIAL when it introduces a mechanic; everything else is practice. The tutorials run in
