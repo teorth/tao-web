@@ -185,7 +185,7 @@
   </div>
 
   <details id="mapwrap">
-    <summary id="mapsum" title="The discovery tree — solve an exercise to unlock the next ones">Map — progression tree</summary>
+    <summary id="mapsum" title="The discovery tree — a level opens once ALL of the levels feeding into it are solved; ★ levels introduce a new mechanic and run in a single line, so they can be followed on their own">Map — progression tree</summary>
     <div class="mapbar">
       <button id="mapzin" type="button" title="Zoom in">+</button>
       <button id="mapzout" type="button" title="Zoom out">&minus;</button>
@@ -294,6 +294,20 @@
   function caps() { return state.cheat ? { 'and.intro': 1, 'and.elim': 1, 'or': 1, 'formula': 1, 'assume': 1, 'mp': 1, 'case': 1, 'iff': 1, 'neg': 1, 'em': 1, 'tf': 1, 'forall': 1, 'instantiate': 1, 'exists': 1, 'pick': 1, 'exists_intro': 1 } : G.activeCaps(accessible()); }
   var FCAP = {}; G.FORMULA_RECIPES.forEach(function (r) { if (r.cap) FCAP[r.id] = r.cap; });   // formula constructors gated by capability
   function hasCap(c) { return !!caps()[c]; }
+  // A level is a TUTORIAL when it introduces a mechanic; everything else is practice. The tutorials run in
+  // one straight line, so these labels double as the game's table of contents.
+  var MECH = {
+    'and.intro': 'conjunction introduction', 'and.elim': 'conjunction elimination', 'or': 'disjunction',
+    'formula': 'the formula bench', 'assume': 'assumptions and the deduction theorem', 'mp': 'modus ponens',
+    'case': 'case analysis', 'iff': 'if and only if', 'neg': 'negation and contradiction',
+    'em': 'the excluded middle', 'tf': 'True and False', 'forall': 'variables and ∀',
+    'instantiate': 'universal instantiation', 'exists': '∃ and obtaining a witness',
+    'pick': 'picking an inhabitant', 'exists_intro': '∃-introduction', 'sets': 'sorts and relations',
+    'ops': 'operations and compound terms', 'eq': 'equality and rewriting',
+    'groups': 'theories with axioms', 'induction': 'induction'
+  };
+  function mechOf(ex) { return (ex.needs || []).map(function (c) { return MECH[c] || c; }).join(' + '); }
+  function isTutorial(ex) { return !!(ex && (ex.needs || []).length); }
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
   function R(e) { return G.render(e, { parens: state.parens }); }   // render with the current parenthesization mode
@@ -323,7 +337,8 @@
       if (!acc[ex.id]) return;
       var o = document.createElement('option');
       o.value = ex.id;
-      o.textContent = 'Exercise ' + ex.id + (ex.leanName ? ' — ' + ex.leanName : '');
+      o.textContent = (isTutorial(ex) ? '★ ' : '') + 'Exercise ' + ex.id
+        + (isTutorial(ex) ? ' — new: ' + mechOf(ex) : (ex.leanName ? ' — ' + ex.leanName : ''));
       el.exsel.appendChild(o);
     });
     if (state.ex) el.exsel.value = state.ex.id;
@@ -525,13 +540,17 @@
     var givens = state.ex.givens.length
       ? '<div class="givens">Given ' + state.ex.givens.map(function (g) { return '<span class="nm">' + esc(g.name) + '</span> : <span class="ty">' + esc(R(g.type)) + '</span>'; }).join(', ') + '</div>'
       : '';
+    // say which kind of level this is: a tutorial brings one new mechanic, practice brings none
+    var badge = isTutorial(state.ex)
+      ? '<div class="givens">★ ' + (state.fantasy ? 'New magic here' : 'Tutorial') + ' — this level introduces <strong>' + esc(mechOf(state.ex)) + '</strong></div>'
+      : '';
     var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
     var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
       ? ' <span class="unlock">🗺️ unlocked on the map: ' + state.justUnlockedEx.map(function (id) { return '<code>' + esc(id) + '</code>'; }).join(', ') + '</span>' : '';
     var main = solved
       ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
-    el.goal.innerHTML = givens + '<div>' + main + '</div>';
+    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>';
     // once solved, offer the next thing to do right where the player is looking (appended as a real
     // element, not markup, so it carries its own handler)
     if (solved) {
@@ -792,7 +811,11 @@
         t.setAttribute('x', p.x); t.setAttribute('y', p.y); t.textContent = open ? (e.id + (done ? ' ✓' : '')) : '🔒';
         node.appendChild(t);
         var ti = document.createElementNS(NS, 'title');
-        ti.textContent = open ? ('Exercise ' + e.id + (e.leanName ? ' — ' + e.leanName : '') + (done ? ' (solved)' : '')) : 'Locked — solve earlier exercises to reveal';
+        // an AND-gate has to say WHY it is shut, or a locked node is just a mystery
+        var miss = open ? [] : G.missingPrereqs(e.id, state.solved);
+        ti.textContent = open
+          ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + e.id + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : ''))
+          : ('Locked — waiting on ' + (miss.length > 5 ? miss.slice(0, 5).join(', ') + ' and ' + (miss.length - 5) + ' more' : miss.join(', ')));
         node.appendChild(ti);
         g.appendChild(node);   // selection is handled by tap hit-testing in the pointerup handler
       });
