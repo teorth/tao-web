@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The making of Lean Grimoire — Terence Tao</title>
+<link rel="stylesheet" href="applet.css">
+<style>
+  .wrap { max-width: 760px; }
+  article h2 { margin: 2.2rem 0 .6rem; font-size: 1.25rem; padding-top: .4rem; border-top: 1px solid var(--line); }
+  article h1 { font-size: 1.7rem; }
+  article p { margin: .7rem 0; }
+  article hr { display: none; }
+  article blockquote { margin: .8rem 0; padding: .1rem 0 .1rem 1rem; border-left: 3px solid var(--accent); color: var(--ink); }
+  article blockquote p { margin: .5rem 0; }
+  article ul { margin: .6rem 0; padding-left: 1.3rem; }
+  article li { margin: .35rem 0; }
+  article code { font-family: var(--mono); font-size: .9em; background: var(--accent-soft); padding: .05rem .3rem; border-radius: 4px; }
+  article pre { font-family: var(--mono); font-size: .82rem; background: var(--accent-soft); padding: .6rem .8rem; border-radius: 6px; overflow-x: auto; }
+  .prov { color: var(--muted); font-size: .9rem; }
+  .gap { margin: 1.2rem 0; padding: .7rem 1rem; border: 1px dashed var(--line); border-radius: 6px; color: var(--muted); font-size: .92rem; }
+  .gap strong { color: var(--ink); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../applets.html">&larr; Interactive tools</a></p>
+  <header>
+    <h1>The making of Lean Grimoire</h1>
+    <p class="prov">A lightly edited transcript of the conversations that built
+      <a href="grimoire.html">Lean Grimoire</a>.</p>
+  </header>
+  <article>
+
+<p><em>A curated transcript of the conversations (with Claude Code) that produced
+<a href="grimoire.html">Lean Grimoire</a> for <a href="https://github.com/teorth/tao-web">tao-web</a> — a
+proof-crafting game that is a rebuilt, Lean-flavoured successor to the
+<a href="https://teorth.github.io/QED/">QED</a> game, from the first stray idea to a hundred and
+fifty-eight levels whose proofs all compile.</em></p>
+
+<p><strong>How to read this.</strong> Terence Tao's messages appear verbatim in the blockquotes, trimmed
+with <code>[&hellip;]</code> where they ran long; the assistant's replies are summarised in italics between
+them. Routine &quot;looks good, continue&quot; replies are folded into the narration. The app was built over
+four days in July 2026, with two later sessions in November; <strong>one stretch of the build has no
+surviving transcript</strong>, and that section says so and is narrated from the commit history instead.</p>
+
+<h2>1. A stray idea, and a sharp correction to it</h2>
+
+<p><em>The project began as an aside at the end of a conversation about a different applet.</em></p>
+
+<blockquote><p>Another vague idea is to make some version of Lean's &quot;natural number game&quot; that looks more
+like a classic RPG game, in which Lean tactics become 'spells' or 'attacks', proof state becomes
+'inventory', goals become 'monsters to defeat'. Doing this for a fully functional version of Lean looks
+intimidating — ooh, but I have an idea: take my existing QED game at
+https://teorth.github.io/QED/ and port it into a Lean game.</p></blockquote>
+
+<p><em>Two days later the idea came back, with the key structural insight that set the whole design — and it
+was a correction of the original framing.</em></p>
+
+<blockquote><p>I now realize that the app is more of a &quot;crafting game&quot; than a &quot;monster defeating
+game&quot;, as the QED structure is based on changing the hypotheses until they match the goal (crafting),
+rather than reducing the goal until they match the hypotheses (attacking a monster). So an interface more
+like the &quot;Alchemy&quot; game may be appropriate.</p>
+<p>One thing that adds complexity is that there will be more than one &quot;crafting table&quot; in which to
+work on. Initially there is just the &quot;Root environment&quot; of statements known to follow from the
+hypotheses; but later there will be sub-environments where some assumptions or free variables are [in]
+effect, as well as a separate Formula-crafting table to create well-formed formulas, and a term-crafting
+table to create terms. [&hellip;] Can you first go through the QED repository and understand the basic
+structure of the existing QED game, and then we can discuss how to create a crafting game version that has
+an auto-export to Lean feature?</p>
+<p>Some of the &quot;push&quot; and &quot;pull&quot; moves in the QED game will disappear in the Lean version:
+the analogue of passing to a subenvironment is creating a new &quot;have&quot; statement with a hypothesis to
+be proven, and when opening up tactic mode for such a statement, all previously known statements are
+automatically pushed into this subenvironment. Also the &quot;obtain&quot; tactic adds variables into the
+current environment from an existential, removing the need to generate sub-environments to push and pull
+from.</p></blockquote>
+
+<p><em>That last paragraph is the single most consequential decision in the project. QED's &quot;push&quot;
+and &quot;pull&quot; — moving a statement into or out of a sub-environment — occupy three whole sections of
+the original game. In Lean they are automatic, so those sections simply have nothing left to do, and the
+game shortens by that much.</em></p>
+
+<p><em>A file of hand-written Lean arrived alongside, as the target to aim at: translations of the QED
+exercises into deliberately plain, step-by-step proofs. It was explicit about not being idiomatic —</em></p>
+
+<blockquote><p>For the QED app, I wrote some compiling Lean code translating some of the exercises into Lean
+proofs (which are not Mathlib idiomatic, but rather idiomatic in the QED style). Can you create a scratch
+folder in the repo to hold this file, and .gitignore it? This will serve as notes to help develop the
+app.</p></blockquote>
+
+<p><em>The notes are the reason the app's Lean output looks the way it does. They established the house
+style — a chain of <code>have</code> steps ending in <code>assumption</code>, every move forward from the
+hypotheses, the goal never touched — and they contained the trick that makes the deduction theorem work as
+a game move:</em></p>
+
+<pre>theorem deduction_theorem (hB : &forall; _ : A, B) : A &rarr; B := hB</pre>
+
+<h2>2. Rebuilding the engine rather than porting it</h2>
+
+<blockquote><p>I think I want to rebuild the engine, using the existing logic.js as inspiration and
+reference. [&hellip;] Note that the original data model had some weaknesses, in that some laws had to be
+implemented in ad hoc ways, and many of the later results could not be used well in crafting because of
+deficiencies in the matching function. There may be a way to abstract this by creating parser functions to
+handle the matching which can become more sophisticated over time, but are called as black boxes for the
+main gameplay, allowing more sophisticated matching to be deferred to later. (Lean itself has an extremely
+sophisticated matching algorithm, but I am sure we will only need a subset of that, as we will not come
+close to implementing full Lean functionality here; the game is producing pseudo-Lean rather than actual
+Lean.)</p>
+<p>I certainly agree that propositional is a natural target. In fact each chapter becomes a natural
+milestone, where more functionality (and crafting rules) are introduced in each chapter.</p>
+<p>Since QED already exists, I want to emphasize the Lean aspect, giving all the recipes Lean names like
+And.intro (but maybe in a fantasy-themed font, etc.), with the Lean code being generated live in the
+&quot;magic spellbook&quot;.</p></blockquote>
+
+<p><em>&quot;Called as black boxes&quot; is the design that let the project keep moving: each recipe owns a
+<code>match(inputs, env)</code> that returns the statements it can make, so a recipe can start as a
+hand-written special case and be generalised later without the gameplay noticing. By the end most recipes
+run through one higher-order unifier, but three of them never did, and did not need to.</em></p>
+
+<p><em>Two more requests shaped the data model before a line was written. First, text entry, which QED
+lacked —</em></p>
+
+<blockquote><p>we can also implement features not present in the original QED game. In the original game the
+only way to create new terms and formulas was through the &quot;crafting tables&quot;, which can be tedious.
+But we can implement Lean's parser so that one can enter in a text string such as <code>(A \and B) \and
+C</code> and the \and will automatically change to unicode (as it does in Lean IDEs) and this will match to
+the indicated expression.</p></blockquote>
+
+<p><em>— and second, sorts, requested on day one and not actually used until day three, but designed in from
+the start:</em></p>
+
+<blockquote><p>I agree with the unified Expr framework. Hypotheses can be mnemonic and also player-renamable.
+From the GUI perspective, a hypothesis <code>hA : A</code> could for instance be a potion bottle with a name
+tag &quot;hA&quot; filled with a liquid which is indicated to be A (using a different typography or something
+for the name and the label to maintain a clear distinction between objects and types). When variables are
+introduced later, they can be a different type of object (a gemstone, for instance, with a label 'x').
+Actually, we may now be able to introduce sorts; for simplicity QED is coded in a single-sorted universe
+(which I denoted Omega in the scratch notes), but it should now be possible to have a many-sorted universe
+(e.g., sets, natural numbers, etc.) [&hellip;] This also allows us to introduce axioms for individual types
+(e.g. Peano axioms) that persist from one exercise to the next (the current QED model requires all axioms to
+be stated explicitly in each exercise, which would rapidly get cumbersome).</p></blockquote>
+
+<p><em>The engine that came out of this is one <code>Expr</code> type with three shapes — a variable, an
+application, a binder — and a registry of symbols that drives the parser, the renderer, the Lean emitter and
+the backslash-abbreviation expander from one place. Adding <code>&cup;</code> to the game later meant adding
+one row to that registry.</em></p>
+
+<h2>3. The interface: potions, benches, and the fantasy switch</h2>
+
+<p><em>The first playable build drew a round of precise interface notes, of which the most interesting was a
+genuine conflict between two things the player needs from one gesture:</em></p>
+
+<blockquote><p>There is a slight UI issue when one wants to select a potion twice (e.g., to create A \and A):
+currently clicking on a potion twice will deselect it. But we do want both functionalities. One option is to
+allow shift-click to select potions even if already selected; another is to make the toggle effect a checkbox
+that one can turn off temporarily in order to do repeated selections. I guess one can implement both. One can
+also have a small box to clear all selections.</p>
+<p>Perhaps we can have a &quot;Fantasy mode&quot; checkmark (on by default), in which we use fantasy terms
+such as &quot;Potions&quot;, &quot;Grimoire&quot;, etc., as well as a fantasy-themed text font, but when off,
+we use boring standard math terminology (&quot;hypothesis&quot;, &quot;proof&quot;, etc.).</p></blockquote>
+
+<p><em>Both were implemented. Fantasy mode turned out to need more care than a word-swap, because the
+explanatory prose around the app had the fantasy vocabulary baked in:</em></p>
+
+<blockquote><p>Some of the flavor text in side documentation refers to fantasy elements such as potions or
+ingredients even when fantasy mode is deselected. They should automatically change over when that mode is
+toggled.</p></blockquote>
+
+<p><em>— which is why the app keeps its original prose and runs it through a vocabulary map on every toggle,
+rather than storing two copies. A later note extended the same idea to the verbs: in fantasy mode you
+<em>brew</em> a potion, <em>scribe</em> a scroll and <em>craft</em> a gem; with it off you <em>form</em> a
+formula and <em>build</em> a term.</em></p>
+
+<p><em>One feature request from this stretch became load-bearing much later:</em></p>
+
+<blockquote><p>One thing we can implement now: whenever a problem is solved, and it is not listed as an
+&quot;example&quot;, it becomes a new recipe to add.</p></blockquote>
+
+<p><em>Solved lemmas becoming recipes is what makes the later chapters tractable — by Chapter 20 a proof may
+lean on a dozen things the player proved earlier. It also raised a circularity question, which was answered
+before it could bite:</em></p>
+
+<blockquote><p>For future development: once a proper progress tree is made, one should only be able to access
+recipes in exercises that are downstream of the exercise the recipe was crafted in (to avoid
+circularity).</p></blockquote>
+
+<h2>4. Assumptions, and the disappearance of three chapters</h2>
+
+<p><em>Sub-environments — proving something under a temporary assumption — were the first real mechanic
+beyond combining hypotheses, and the design conversation settled four things at once:</em></p>
+
+<blockquote><p>For simplicity, I'd say that once a sub-environment is discharged, it's gone. Looking at the
+exercises, there are basically zero cases where one would re-use a sub-environment to discharge multiple
+goals, so it's not worth creating separate UI for it.</p>
+<p>One can move away from the QED model and closer to Lean syntax by making the have statement be of the
+form &quot;A \implies ?a&quot; and have the first line in the proof automatically be &quot;intro hA&quot;.
+This makes the deduction theorem automatic; the desired conclusion is automatically in the implication form
+A \implies B rather than the custom &quot;B, assuming A&quot; that is in the original QED game. This
+eliminates a few technical levels of the game intended to pass between conditional results and
+implications.</p>
+<p>I agree that discharge should be explicit, for pedagogical reasons. One could create an
+&quot;intro&quot; tactic that, when the goal is A -&gt; B, assumes A and makes the goal B instead of
+undefined, but this goes against the QED spirit of never touching the goal and only moving forward from
+hypotheses (even though this would be a very Lean-idiomatic tactic). [&hellip;]</p>
+<p>In the original QED interface, some recipes required one to select an ambient environment as well as the
+hypotheses being crafted together. I would drop this in the grimoire and automatch to any ambient environment
+that contains all of the relevant hypotheses [&hellip;] For instance, double discharge: if there is a nested
+environment assuming A and then B, and C is proven in that environment, double discharge would offer to place
+A -&gt; (B -&gt; C) in the environment two levels above, without having to explicitly select that
+environment.</p></blockquote>
+
+<p><em>The third paragraph is the project's governing constraint, stated plainly: Lean's goal-directed
+tactics are deliberately refused, because the game is about moving forward. Everything else follows from
+it — including, eventually, which exercises can exist at all.</em></p>
+
+<p><em>Around here came a note to keep for the end, which is now a section on the app page itself:</em></p>
+
+<blockquote><p>a remark to put in the final documentation for this app: this app is not intended to be a full
+Lean tutorial, and is only teaching a small subset of possible Lean tactics. In particular, the powerful
+ability of Lean tactics to modify the goal is completely untapped in this app, and that one should not use the
+Lean code generated by this app as an indication of best practices for idiomatic Lean code. This can of course
+be deferred to the final polishing stages of the app.</p></blockquote>
+
+<h2>5. The propositional half, and making the Lean actually compile</h2>
+
+<p><em>Chapters 1 to 13 went in over a day and a half, a chapter or two per exchange — modus ponens, case
+analysis, the biconditional, negation and contradiction, the excluded middle, and finally True and False as
+first-class objects. Two threads ran alongside the content.</em></p>
+
+<p><em>The first was naming. The recipes carry Lean names, so the names had to be defensible:</em></p>
+
+<blockquote><p>in the recipes window, impl_trans is in italic for some reason (and the more canonical spelling
+might be implies_trans). 8.4a can be called And.elim'. 8.4b doesn't seem to have a standard Lean name, but
+perhaps And.elim_rev? Perhaps you have some suggestions for the other exercises, for instance following the
+conventions in https://leanprover-community.github.io/contribute/naming.html?</p>
+<p>As a side note, would it be worth installing Lean in this repo to help test out the Lean side of this app?
+It would add to the size of the repo but as long as we don't enforce any CI I think it should not be too
+burdensome.</p></blockquote>
+
+<p><em>That second paragraph produced the harness the project then leaned on for the rest of its life. Lean
+was installed locally (never committed), and a script was written that solves every exercise through the real
+engine, emits the Lean, and compiles the whole batch. Every chapter since has had to pass it. A naming rule
+fell out of the first run:</em></p>
+
+<blockquote><p>If a Grimoire lemma clashes with an Init lemma we should put a prime on the Grimoire lemma to
+avoid collision. So if we put &quot;import Init&quot; or something at the top of the spellbook then it will
+legitimately build in Lean? In which case we can add that to the header.</p></blockquote>
+
+<p><em>Hence <code>And.comm'</code>, <code>Or.symm'</code>, <code>by_cases'</code> and the rest. The proofs
+compile against core Lean with no Mathlib and, as it turns out, no <code>import</code> line at all —
+<code>Init</code> is already there. One collision was found the hard way much later: core Lean declares
+<code>peirce'</code>, so the game's Peirce law is <code>peirce_law'</code>.</em></p>
+
+<p><em>The second thread was the shape of the progression. The first unlock tree was close to a straight
+line, and was pushed away from that immediately:</em></p>
+
+<blockquote><p>The map looks good, but the initial zoom is too far out; one should start with 1.1 large in the
+center. And should be able to click on any unlocked entry in the map and set it as the current exercise.</p>
+<p>I like the initial tree placement, but one can make it a little more nonlinear by having some of the
+exercises be optional (not needed for further unlocks). For instance 4.1 or 6.1b are in this category; they
+can still branch off of their predecessor but can be removed from the main path.</p></blockquote>
+
+<blockquote><p>The original QED had several further Section 9 exercises; they are somewhat optional, but one
+could perhaps make some multi-pathway through them to get to unlock Chapter 10.</p></blockquote>
+
+<blockquote><p>again I would like to port the QED chapter 10 over as a non-linear web, though there are some
+core results (e.g., symmetry and transitivity of Iff) that should be mandatory</p></blockquote>
+
+<p><em>&quot;A non-linear web&quot; was the right instinct and the implementation did not yet deserve it; the
+tree was rebuilt from scratch four months later, in §8 below. Saved progress arrived here too, with the
+consent requirement stated up front —</em></p>
+
+<blockquote><p>let's try save progress - this may need a user box to explicitly accept cookies; and when save
+progress is unchecked, another box is needed to acknowledge that the state will not be restored on the next
+reload.</p></blockquote>
+
+<p><em>— so saving is off by default, asks before it starts, and confirms when it stops.</em></p>
+
+<h2>6. Variables and quantifiers, and a matching problem</h2>
+
+<p><em>The first-order half opened by collapsing another QED distinction, exactly as push and pull had
+been:</em></p>
+
+<blockquote><p>We're now ready to start with free variables and the universal quantifier. In QED a
+distinction was made between &quot;P(x) [letting x be arbitrary]&quot; and &quot;For all X, P(X)&quot; where
+x was a free variable and X was a bound variable, but similar to how we handled assumptions and implications,
+we can elide this distinction and make the two claims semantically equivalent, removing the need to perform
+pushes and pulls. Instead we can have introduction/discharge operations similar to what we do for
+assumptions [&hellip;]</p>
+<p>In addition to a formula bench, we now need a &quot;term bench&quot; with one constructor for each sort,
+and for each available operator. [&hellip;] selecting a variable term can enable an intro command to enter a
+sub-environment where that variable is now a free variable. Conversely, clicking on a hypothesis while in that
+sub-environment discharges the sub-environment and creates a universally quantified statement in the parent
+environment.</p>
+<p>The chapter 14 and 15 exercises are, I think, basically redundant, so the place to start is 16.1, rephrased
+as a universally quantified statement.</p></blockquote>
+
+<p><em>So QED's sections 14 and 15 join 19 and 20 in having nothing left to do. That is four of QED's
+twenty-four sections dissolved by the choice of Lean as the target — not cut for time, but genuinely vacant.</em></p>
+
+<p><em>Then the hard part. Recipes minted from solved lemmas may quantify over predicates, and a predicate is
+not something the player can select, so the engine has to infer it. The risk was spotted before it was
+hit:</em></p>
+
+<blockquote><p>One thing to guard against with the higher order matching is that we could run into a situation
+where there are infinitely many matches to a theorem. For instance, if we make \forall x, P x \implies P x
+into a theorem with no inputs other than the second-order predicate P (which we don't have a bench to select
+for), then there are an infinite number of statements of this form that one could craft from scratch. This
+corresponds to the Lean situation in which the unifier cannot match all the implicit metavariables needed. I
+suppose the way out here is to only allow crafting when all implicit metavariables can be uniquely determined
+from the assignment of the explicit metavariables. [&hellip;]</p>
+<p>I guess what I want to avoid is the need to create a &quot;function bench&quot; that somehow develops
+enough lambda calculus to describe arbitrary functions to insert as inputs to replace generic predicates such
+as <code>P</code>. In principle this is doable, just as it is possible to code in Lean without relying on the
+unifier at all and supplying all implicit terms explicitly, but it is a pedagogical nightmare and not what I
+want the students to be struggling with here.</p></blockquote>
+
+<p><em>&quot;Only allow crafting when all implicit metavariables can be uniquely determined&quot; is, near
+enough, Miller's pattern condition, and it was implemented as the rule for every minted recipe. Then, looking
+one chapter ahead, the rule turned out to be too strong:</em></p>
+
+<blockquote><p>Looking ahead to Chapter 22, I see actually that unique matching identification might be too
+strong of a requirement; we also want situations where finite matching occurs. A specific example is there is
+a term alpha and a hypothesis Q(alpha,alpha) in context, and one wants to use existential introduction from
+this data (and a variable x), which actually generates four possibilities: <code>\exists x, Q(x,x)</code>,
+<code>\exists x, Q(x,alpha)</code>, <code>\exists x, Q(alpha,x)</code>, and <code>\exists x,
+Q(alpha,alpha)</code>. So we do not have uniqueness here, but we still want to be able to use existential
+introduction without having to have a function bench. Would your unifier be able to be modified to handle
+finitely many matches instead of unique matching?</p></blockquote>
+
+<blockquote><p>I begin to remember now why I had to implement bespoke matching rules for existential
+introduction and a few other rules when I did QED, as it didn't fit under the usual matching. So that is one
+possibility here — to treat existential introduction as a sui generis tactic that requires its own custom
+unifier. But if you think it can be integrated into the general purpose unifier that would be great.</p></blockquote>
+
+<p><em>It was not integrated, and that was the right call: existential introduction enumerates which
+occurrences of the witness to abstract, offers the player the finite list, and lets them choose. Choosing is
+the exercise. The general unifier stayed unique-match, and the black-box recipe interface from §2 is what made
+the exception cost nothing.</em></p>
+
+<p><em>Existential elimination went the same way — away from QED's machinery, towards Lean's:</em></p>
+
+<blockquote><p>the main new fundamental game mechanic is the ability to set variables that witness an
+existential already in the hypothesis bench. In QED this spawned a new sub-environment, with attendant push
+and pull operations, but in Lean instead the environment stays the same but an <code>obtain</code> type
+operation adds the new variable and its defining property to the proof state. (Small note:
+<code>obtain</code> destroys the existential hypothesis, but the QED style is not to destroy hypotheses, so
+the lean version would involve creating a copy first, e.g., starting from <code>h : \exist x, P x</code> one
+should do <code>have := h; obtain \langle x, hx \rangle := this</code>.) [&hellip;] The goal remains
+unchanged, as with all other Grimoire tactics.</p></blockquote>
+
+<p><em>A very short chapter followed, on being allowed to pick an element at all —</em></p>
+
+<blockquote><p>Here we have a new recipe: given a variable x : Omega, deduce h\Omega : \exist x : Omega, True.
+In the Lean file, one would create an [Nonempty Omega] instance in the variable list [&hellip;] In this game
+we will only work with Nonempty sorts, so when we introduce Nat, Real, etc. later on we will build Nonempty
+instances into their Lean source.</p></blockquote>
+
+<p><em>— and then the numbering problem was noticed, and deliberately shelved:</em></p>
+
+<blockquote><p>At this point the numbering is diverging enough from the original QED that we will probably do
+a thorough renumbering of the exercises at a later point to maintain internal consistency at the cost of
+alignment with the legacy game. But this can be deferred to later.</p></blockquote>
+
+<p><em>It was deferred for four months, and is §9 below.</em></p>
+
+<h2>7. The travel stretch: Chapters 23 to 27</h2>
+
+<div class="gap"><p><strong>No transcript survives for this section.</strong> The rest of the build happened
+on a travel laptop whose conversation logs were never copied off it and have since been deleted. What follows
+is narrated from the commit history, the test files and the code itself — so unlike every other section on
+this page, it contains no quotations, and the reasoning attributed below is inferred from what was built
+rather than recorded at the time.</p></div>
+
+<p><em>The last desktop exchange arranged the handover:</em></p>
+
+<blockquote><p>I'm about to embark on a week-long travel trip in which I will only have my laptop rather than
+this device. I'm comfortable with pushing this work onto the public repo without linking it to the main pages
+yet, so that the laptop can sync up and continue development.</p></blockquote>
+
+<p><em>Which is why the app has been sitting on a public repository, unlinked from any page, since July. Over
+the following two days, twenty-seven commits finished the legacy port and then went well past it.</em></p>
+
+<p><em>The port was completed first: the reductio family, De Morgan for <code>&and;</code> and
+<code>&or;</code>, the rest of QED's sections 5, 6, 8, 9, 10, 12, 13, 16, 18 and 22, plus interface work
+— exercise navigation, right-click assume and discharge, abandoning a sub-proof, and the one contiguous
+workbench the app now uses. With <code>afe4704</code> the commit message reads &quot;the legacy port is now
+complete&quot;.</em></p>
+
+<p><em>Everything after that is new, and it is the half of the game QED does not have:</em></p>
+
+<ul>
+<li><strong>Sorts with relations.</strong> A registry of sorts, each carrying its own operations and emitted
+into Lean as a <code>variable</code> preamble rather than an <code>axiom</code> — so each theorem reads
+&quot;for any type with such a relation&hellip;&quot;. Nothing can yet be proved <em>about</em> the relation,
+which is the cliffhanger the equality chapter resolves.</li>
+<li><strong>Equality</strong>, with just two primitives — a term equals itself, and rewriting some
+occurrences along an equation. Choosing <em>which</em> occurrences is the exercise, the same shape as
+existential introduction.</li>
+<li><strong>Operations and compound terms</strong>, which is where the term bench stops being a place to name
+variables and starts being a place to build things.</li>
+<li><strong>Groups, and the Theory mechanism</strong> — the axioms-per-sort idea from day one, four days
+later. This is the thing QED structurally could not do: its axioms had to be restated in every exercise.</li>
+<li><strong>Sort polymorphism</strong>, so a lemma proved over the generic sort can be used over the group.
+The commit history shows this arriving in the middle of the group chapter, which is about when it would
+become unavoidable: group cancellation needs an equation read backwards, and that is the generic
+<code>Eq.symm'</code> applied at the group.</li>
+<li><strong>The concrete <code>Nat</code> sort and induction</strong>, with its own small Lean module that the
+harness builds before the batch. The chapter is an addition ladder — <code>0 + a = a</code>, then
+<code>succ a + b</code>, then commutativity and associativity — and ends by defining order from addition and
+proving there is no largest natural number. QED had to hand that one its key fact as a hypothesis; here it is
+a theorem.</li>
+<li><strong>Sets</strong>, where two sets are equal when they have the same members, so every law is a
+propositional law from Chapter 2 or 6 transported across membership. Russell's paradox lives here, and
+Grimoire can state it honestly as <code>False</code> where QED wrote <code>&not;True</code>.</li>
+</ul>
+
+<p><em>The final commit of that stretch, <code>0099407</code>, is titled &quot;finish Chapter 27&quot;. Then
+the project went quiet for three and a half months.</em></p>
+
+<h2>8. The unlock tree, rebuilt</h2>
+
+<p><em>Work resumed on the desktop in November. The first session took up the &quot;non-linear web&quot; that
+had been asked for back in §5 and never really delivered, and specified it properly:</em></p>
+
+<blockquote><p>I'd like to make the unlocking tree more non-linear, allowing for multiple paths to reach
+various levels. Broadly, I think there are two types of levels: &quot;tutorial levels&quot; that introduce a
+new &quot;game mechanic&quot;, and &quot;exercise levels&quot; that do not introduce new mechanics, but
+instead allow the student to train on existing mechanics. I'd like each exercise level to be unlocked as soon
+as all the tutorial levels for prerequisite mechanics, and all prior useful exercises were already solved (so
+for each exercise, one should find one or two natural proofs of that exercise, possibly using previous
+exercises as inputs, to collect prereqs). The tutorial mechanics should be in a linear order: the N<sup>th</sup>
+mechanic is unlocked once the N&minus;1<sup>th</sup> mechanic is unlocked, as well as any other relevant
+exercises needed to solve the tutorial level (it should be rare that such prereqs are needed though). Thus an
+impatient student could skip most of the exercises initially and focus on unlocking all the mechanics, or take
+a more completionist view and do all the exercises tied to a single mechanic before moving on to the next
+one.</p></blockquote>
+
+<p><em>The useful move here was not to design the graph but to <strong>derive</strong> it. The Lean harness
+from §5 already contains a scripted, verified proof of all 158 levels; instrumenting those proofs says exactly
+which mechanics and which earlier lemmas each one reaches for, and a transitive reduction turns that into the
+prerequisite graph. So the tree is a fact about the proofs rather than a judgement about them, and it can be
+re-derived whenever an exercise changes. A companion mode replays every solution as a player holding exactly
+that level's prerequisites — lemmas they have not earned stripped out of the registry, every mechanic checked
+against the active capability set — which proves that no level can open before it can be solved.</em></p>
+
+<p><em>The derivation also exposed a bug that had been shipped: one exercise's only route was rewriting, whose
+capability came from the equality tutorial — which that very exercise was the level that unlocked. It had been
+unsolvable. It now sits after the tutorial it depends on.</em></p>
+
+<p><em>The result was a map 22 layers deep and up to 20 wide, in place of 72 layers never wider than 7. Of the
+138 practice levels, 96 hang straight off their mechanic's tutorial, 18 wait on one earlier result and 24 are
+corollaries of several; walking the tutorial chain alone opens 116 of the 158 levels. Long-range dependencies
+appeared for free — commutativity of intersection turns out to need <code>And.symm'</code>, proved fourteen
+chapters earlier — and the group, arithmetic and set chapters became three parallel branches off equality
+instead of a queue. No tutorial needed an exercise as a prerequisite, which had been the open question.</em></p>
+
+<h2>9. Renumbering, and what became of QED's numbers</h2>
+
+<p><em>A publication review in the second November session turned up one blocker, and it was the numbering
+shelved in §6. Chapters 14, 15 and 20 were missing — QED's vacated sections — and within a chapter the order
+had scrambled, so the exercise menu read 18.1, 18.3a, 18.2a, 18.3b. Worse, it could not be fixed in place:
+exercises 4.1, 5.1 and 5.2 all depended on 6.1a, because collapsing the deduction theorem in §4 means
+assumption practice cannot precede it. Play order and chapter order were unreconcilable while the chapters
+kept QED's topics.</em></p>
+
+<p><em>The decision was to make the chapters structural:</em></p>
+
+<blockquote><p>We can do renumbering but for those exercises that have direct counterparts in the original QED
+game we can add a note in the commentary for the exercise recording the correspondence.</p></blockquote>
+
+<p><em>So each chapter is now one mechanic. Chapter <em>N</em> opens with <em>N</em>.1, the level that
+introduces the mechanic, and holds the practice that needs nothing newer; a level is filed under the last
+mechanic its proof actually requires, which is why the set identities sit in the equality chapter. The twenty
+tutorials are therefore exactly 1.1, 2.1, &hellip;, 20.1; numeric order is play order; and no level depends on
+a higher number than its own. All of it is asserted in the test suite.</em></p>
+
+<p><em>That left the correspondence to QED. The obvious approach — trust the numbers, since they started as
+QED's — is wrong, and measurably so: the numbering had drifted so far that Grimoire's 10.1 is QED 13.2(b), and
+its 11.2 is QED 23.1(a), a whole section away. QED's numbers had also been <em>flattened</em> along the way,
+its parenthesised variants spread out into plain numbers.</em></p>
+
+<p><em>The correspondence was therefore computed from the statements. QED ships a worked proof for every one
+of its exercises, which gives each one's premises and conclusion; a script lifts all 144 out of its HTML,
+parses QED's surface syntax using Grimoire's own operator precedences, and compares the two statements as
+trees — up to a consistent renaming of propositional atoms, predicate letters and function symbols, and up to
+&alpha;-equivalence of bound variables. <strong>101 levels match statement for statement.</strong> Another 24
+are marked by hand as restated, where QED proves the same thing differently: usually with its
+<code>[assuming A]</code> environment where Grimoire uses an implication, or in its group-theory sections,
+which carry the axioms as premises where Grimoire puts them in the theory of the sort. 33 levels have no QED
+ancestor and claim none. Each level says which case it is, under the goal.</em></p>
+
+<p><em>Two findings from that pass are worth recording. The exercise in Grimoire's variables chapter that
+introduces two-variable predicates is, statement for statement, QED's section 23 notation drill — the game had
+moved it seven sections earlier without anyone noticing. And Grimoire's first group exercise is exactly QED
+24.3, a match that only appeared once QED's single <code>*</code> was allowed to read as either the generic
+operation or the group operation.</em></p>
+
+<h2>10. Audit and ship</h2>
+
+<p><em>The same review found and fixed a second real bug: the &quot;Unlock all&quot; control had a
+hand-written list of which mechanics to switch on, and that list had silently fallen behind when the last five
+chapters were added, so those five mechanics were dead whenever it was used. It is derived from the exercise
+data now, and the test suite checks every mechanic rather than a sample of three — which is how it rotted in
+the first place. The control itself stayed, on the view that a visitor who wants to see the later chapters
+should not have to solve twenty levels first.</em></p>
+
+<p><em>The documentation note from §4 was finally written. The app now carries a &quot;What this app is
+<em>not</em>&quot; section saying that this is not a Lean tutorial, that Lean's goal-modifying tactics are
+untapped by design, and that the generated proofs are not a model of idiomatic Lean — along with a pointer to
+the real Lean learning resources, and a note on the numbering and what it means for QED.</em></p>
+
+<p><em>What ships is 158 levels across 20 chapters, 20 mechanics, a live pseudo-Lean spellbook and an informal
+rendering beside it, formula and term benches, solved lemmas that become recipes, a pan-and-zoom map of the
+progression, opt-in local saving, and a fantasy mode. The engine core has 2565 tests, the interface 251, the
+prerequisite graph is checked against the derivation and proved sufficient for all 158 levels, and every one
+of the 158 emitted proofs compiles against core Lean with no Mathlib.</em></p>
+
+  </article>
+  <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
+</div>
+</body>
+</html>
