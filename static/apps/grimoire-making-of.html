@@ -510,6 +510,14 @@ should not have to solve twenty levels first.</em></p>
 untapped by design, and that the generated proofs are not a model of idiomatic Lean — along with a pointer to
 the real Lean learning resources, and a note on the numbering and what it means for QED.</em></p>
 
+<p><em>One addition came straight after launch. Each of the twenty tutorial levels introduces a mechanic
+the player has not seen, so each now carries a hint under the goal naming the first move to make &mdash; which
+potions to select and which recipe to brew &mdash; phrased in the fantasy vocabulary and swapped to plain
+wording along with everything else. The practice levels deliberately carry none. The hints are written against
+each level's scripted, Lean-verified proof, and the test suite checks that every one of them names a recipe or
+gesture that really exists and a hypothesis that really is among that level's givens, so a later rename cannot
+leave a hint quietly lying.</em></p>
+
 <p><em>What ships is 158 levels across 20 chapters, 20 mechanics, a live pseudo-Lean spellbook and an informal
 rendering beside it, formula and term benches, solved lemmas that become recipes, a pan-and-zoom map of the
 progression, opt-in local saving, and a fantasy mode. The engine core has 2565 tests, the interface 251, the

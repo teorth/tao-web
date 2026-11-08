@@ -325,7 +325,8 @@ applets:
     conjunction, through the deduction theorem, case analysis, the excluded middle and True and False, to the
     quantifiers, equality and rewriting, groups presented by their axioms, Peano arithmetic with induction,
     and naive set theory — ending at Russell's paradox and the fact that there is no largest natural
-    number. Levels you solve become recipes for later ones. A pan-and-zoom map shows which levels are open
+    number. Each chapter's opening level introduces its mechanic and carries a hint naming the first move
+    to make; levels you solve become recipes for later ones. A pan-and-zoom map shows which levels are open
     and why, and progress can optionally be saved in your browser. Every one of the 158 proofs the game
     generates has been checked to compile against core Lean. Not a Lean tutorial: Lean's goal-modifying
     tactics are deliberately untapped, since the point is to move forward from what you hold.

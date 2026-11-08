@@ -1081,16 +1081,16 @@
   var setV = function (n) { return varE(n, SET); };
   var EXERCISES = [
     // ---------- Chapter 1: Conjunction introduction ----------
-    { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], qed: '1.1', needs: ['and.intro'] },
+    { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], qed: '1.1', hint: 'Select the potions hA and hB, then brew And.intro to get A ∧ B. Select that and hC, brew it again, and the goal is yours.', needs: ['and.intro'] },
     { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), prereqs: ['1.1'], qed: '1.2', needs: [] },
 
     // ---------- Chapter 2: Conjunction elimination ----------
-    { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], qed: '2.1', needs: ['and.elim'] },
+    { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], qed: '2.1', hint: 'Take the conjunction apart first: select hAB and brew And.left, then select hAB again and brew And.right. Now select the two halves — in the order the goal wants them — and brew And.intro.', needs: ['and.elim'] },
     { id: '2.2', kind: 'lemma', leanName: 'And.assoc_left', chapter: 2, givens: [binding('hABC', AND(AND(A, B), C))], goal: AND(A, AND(B, C)), prereqs: ['2.1'], qed: '2.2(a)', needs: [] },
     { id: '2.3', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), prereqs: ['2.1'], qed: '2.2(b)', needs: [] },
 
     // ---------- Chapter 3: Disjunction, and building formulas ----------
-    { id: '3.1', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), prereqs: ['2.1'], qed: '3.1(a)', needs: ['or', 'formula'] },
+    { id: '3.1', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), prereqs: ['2.1'], qed: '3.1(a)', hint: 'A disjunction needs only one side proved; the other may be a bare formula. Select hA and the formula B and brew Or.inl for A ∨ B. Then select that together with the formula C and brew Or.inr.', needs: ['or', 'formula'] },
     { id: '3.2', kind: 'lemma', leanName: 'Or.idem', chapter: 3, givens: [binding('hA', A)], formulas: [A], goal: OR(A, A), prereqs: ['3.1'], qed: '3.1(b)', needs: [] },
 
     // ---------- Chapter 4: Assumptions and the deduction theorem ----------
@@ -1099,7 +1099,7 @@
     // number is higher. 4.2 and 4.3 then hang off it as optional side-branches: same shape, but 4.2 crafts
     // an ∧ before discharging and 4.3 uses a bulkier formula. Map rows come from DAG depth, not chapter,
     // so this reads correctly on the tree.
-    { id: '4.1', kind: 'lemma', leanName: 'Impl.idem', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, A), prereqs: ['3.1'], qed: '6.1(a)', needs: ['assume'] },
+    { id: '4.1', kind: 'lemma', leanName: 'Impl.idem', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, A), prereqs: ['3.1'], qed: '6.1(a)', hint: 'Nothing is given, so assume something. Right-click the formula A and choose Assume — a sub-proof opens holding hA : A. What you need is already inside it, so right-click hA and take the discharge it offers; the sub-proof closes as A → A.', needs: ['assume'] },
     { id: '4.2', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), prereqs: ['4.1'], qed: '4.1', qedNote: 'stated there with an assumption environment', needs: [] },
     { id: '4.3', kind: 'example', chapter: 4, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), prereqs: ['4.1'], qed: '5.1', qedNote: 'stated there with an assumption environment', needs: [] },
     // 4.4 (QED 5.2): two assumptions deep, and the inner goal is the inner assumption — the first time a
@@ -1117,7 +1117,7 @@
     // ---------- Chapter 5: Modus ponens ----------
     // 5.1 (QED 8.1a): modus ponens by itself — one craft. It introduces the `mp` capability, so it is now
     // the entry to Chapter 5 rather than 5.2 (implies_trans), which needs a sub-proof as well.
-    { id: '5.1', kind: 'example', chapter: 5, givens: [binding('hA', A), binding('hAB', IMPLIES(A, B))], formulas: [A, B], goal: B, prereqs: ['4.1'], qed: '8.1(a)', qedNote: 'modus ponens, stated there in assumption form', needs: ['mp'] },
+    { id: '5.1', kind: 'example', chapter: 5, givens: [binding('hA', A), binding('hAB', IMPLIES(A, B))], formulas: [A, B], goal: B, prereqs: ['4.1'], qed: '8.1(a)', qedNote: 'modus ponens, stated there in assumption form', hint: 'Select both potions, hAB and hA, and brew modus_ponens.', needs: ['mp'] },
     { id: '5.2', kind: 'lemma', leanName: 'implies_trans', chapter: 5, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['5.1'], qed: '8.2', needs: [] },
     { id: '5.3', kind: 'lemma', leanName: "And.elim'", chapter: 5, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(AND(A, B), C), prereqs: ['5.1'], qed: '8.4(a)', needs: [] },
     { id: '5.4', kind: 'lemma', leanName: 'And.elim_rev', chapter: 5, givens: [binding('hABC', IMPLIES(AND(A, B), C))], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['5.1'], qed: '8.4(b)', needs: [] },
@@ -1137,7 +1137,7 @@
     // Case analysis (∨ elimination), a WEB of QED §9 exercises. 6.1 introduces case_analysis; three
     // imp-lemma gateways (6.6/6.5/6.7) each unlock Chapter 7 (complete ANY path); associativity (6.8/6.9) and
     // distributivity (6.10–6.13) are optional sibling branches. Every one is solvable with BASE recipes only.
-    { id: '6.1', kind: 'example', chapter: 6, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), prereqs: ['5.1'], needs: ['case'] },
+    { id: '6.1', kind: 'example', chapter: 6, givens: [binding('hAC', IMPLIES(A, C)), binding('hBC', IMPLIES(B, C))], formulas: [A, B], goal: IMPLIES(OR(A, B), C), prereqs: ['5.1'], hint: 'Select both potions and brew case_analysis: if A gives C, and B gives C as well, then A ∨ B gives C.', needs: ['case'] },
     { id: '6.2', kind: 'lemma', leanName: "Or.symm'", chapter: 6, givens: [], formulas: [A, B], goal: IMPLIES(OR(A, B), OR(B, A)), prereqs: ['6.1'], qed: '9.1(a)', qedNote: 'the same law in implication form', needs: [] },
     // 6.3 is the hypothesis form of 6.2, mirroring And.comm' (2.1) for ∨. A one-move consequence of the
     // minted Or.symm', and in turn the lemma that makes 6.9 cheap (see the comment there).
@@ -1168,7 +1168,7 @@
     // Bi-implication (↔). 7.1 introduces Iff; symmetry (7.2) and transitivity (7.3) are the
     // MANDATORY spine (7.3 will unlock Ch 8 later); reflexivity (7.4) and the ↔-congruences (7.5–7.7,
     // QED 10.1b/d/f) are optional side-branches.
-    { id: '7.1', kind: 'example', chapter: 7, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1'], qed: '10.1(a)', needs: ['iff'] },
+    { id: '7.1', kind: 'example', chapter: 7, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1'], qed: '10.1(a)', hint: 'An ↔ holds two implications at once. Select hAB and hA and brew Iff.mp to travel along the forward one.', needs: ['iff'] },
     { id: '7.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 7, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), prereqs: ['7.1'], qed: '10.2(a)', needs: [] },
     { id: '7.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 7, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), prereqs: ['7.1'], qed: '10.2(b)', needs: [] },
     { id: '7.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 7, givens: [], formulas: [A], goal: IFF(A, A), prereqs: ['7.1'], qed: '10.2(c)', needs: [] },
@@ -1190,7 +1190,7 @@
 
     // ---------- Chapter 8: Negation and contradiction ----------
     // From a contradiction, anything (ex falso, via `absurd`). 8.1 intro; 8.2 optional sibling.
-    { id: '8.1', kind: 'example', chapter: 8, givens: [binding('hAnA', AND(A, NOT(A)))], formulas: [A, B], goal: B, prereqs: ['7.1'], qed: '11.1, 12.3(a)', needs: ['neg'] },
+    { id: '8.1', kind: 'example', chapter: 8, givens: [binding('hAnA', AND(A, NOT(A)))], formulas: [A, B], goal: B, prereqs: ['7.1'], qed: '11.1, 12.3(a)', hint: 'Pull the contradiction apart first — And.left and And.right on hAnA give you A and ¬ A. Then select both of those together with the formula B and brew absurd: from a contradiction, anything at all.', needs: ['neg'] },
     { id: '8.2', kind: 'example', chapter: 8, givens: [binding('hnAA', AND(NOT(A), A))], formulas: [A, B], goal: B, prereqs: ['8.1'], qed: '11.2, 12.3(b)', needs: [] },
     { id: '8.3', kind: 'lemma', leanName: "not_not_intro'", chapter: 8, givens: [binding('hA', A)], formulas: [A, NOT(A)], goal: NOT(NOT(A)), prereqs: ['8.1'], qed: '12.2(b)', needs: [] },
     { id: '8.4', kind: 'lemma', leanName: "mt'", chapter: 8, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(B)], goal: IMPLIES(NOT(B), NOT(A)), prereqs: ['8.1'], qed: '12.6(a)', needs: [] },
@@ -1219,7 +1219,7 @@
     // ---------- Chapter 9: The excluded middle ----------
     // Negation introduction (reductio) + excluded middle (classical). 9.1 introduces em; 8.3/9.2
     // are double-negation (intro via reductio, elim via em); 8.4 is the contrapositive.
-    { id: '9.1', kind: 'example', chapter: 9, givens: [], formulas: [A], goal: OR(A, NOT(A)), prereqs: ['8.1'], qed: '12.1(d)', qedNote: 'QED states the reversed form, ¬A ∨ A', needs: ['em'] },
+    { id: '9.1', kind: 'example', chapter: 9, givens: [], formulas: [A], goal: OR(A, NOT(A)), prereqs: ['8.1'], qed: '12.1(d)', qedNote: 'QED states the reversed form, ¬A ∨ A', hint: 'No potion is needed here. Select nothing but the formula A, and brew Classical.em.', needs: ['em'] },
     { id: '9.2', kind: 'lemma', leanName: 'not_not_elim', chapter: 9, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.1'], qed: '12.2(a)', needs: [] },
     { id: '9.3', kind: 'lemma', leanName: "by_cases'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, prereqs: ['9.1'], qed: '12.1(c)', qedNote: 'the excluded middle in case-analysis form, stated there with assumptions', needs: [] },
     // 9.4–9.5 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
@@ -1242,7 +1242,7 @@
     // ---------- Chapter 10: True and False ----------
     // True and False as first-class objects (the last propositional chapter). 10.1 introduces them;
     // then the ∨/∧ identities, and the capstone 8.15 = the very definition of negation, ¬A ↔ (A → False).
-    { id: '10.1', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: OR(TRUE(), A), prereqs: ['9.1'], qed: '13.2(b)', needs: ['tf'] },
+    { id: '10.1', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: OR(TRUE(), A), prereqs: ['9.1'], qed: '13.2(b)', hint: 'True.intro takes no ingredients at all — brew it with nothing selected. Then select that proof of True together with the formula A and brew Or.inl.', needs: ['tf'] },
     { id: '10.2', kind: 'example', chapter: 10, givens: [], formulas: [A, FALSE()], goal: IMPLIES(FALSE(), A), prereqs: ['10.1'], qed: '13.3(a)', needs: [] },
     { id: '10.3', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), prereqs: ['10.1'], qed: '13.3(b)', needs: [] },
     { id: '10.4', kind: 'lemma', leanName: "true_and'", chapter: 10, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), prereqs: ['10.1'], qed: '13.1(a)', needs: [] },
@@ -1254,7 +1254,7 @@
     // assumption); discharging a proof gives ∀ x : Ω, … . 11.1 (one variable, unary predicate) is the gentle entry;
     // 11.2 (two variables) is an optional side-quest. Ch 12 adds universal_instantiation (the ∀ analogue of MP).
     { id: '11.1', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [X],
-      goal: fa('X', IMPLIES(appE('P', [X]), appE('P', [X]))), prereqs: ['10.1'], qed: '17.1', needs: ['forall'] },
+      goal: fa('X', IMPLIES(appE('P', [X]), appE('P', [X]))), prereqs: ['10.1'], qed: '17.1', hint: 'Two sub-proofs, one inside the other. Right-click the gem X on the term bench and choose Introduce; inside that sub-proof X is arbitrary. Select X and use the P constructor to form P(X), then right-click that formula and Assume it. The statement you want is now in hand, so discharge twice: once to close the assumption into an arrow, once more to close the variable into a ∀.', needs: ['forall'] },
     { id: '11.2', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
       goal: FORALL({ name: 'x', sort: OMEGA }, FORALL({ name: 'y', sort: OMEGA }, IMPLIES(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), appE('Q', [varE('x', OMEGA), varE('y', OMEGA)])))), prereqs: ['11.1'], qed: '23.1(a)', needs: [] },
     // 11.3 (QED 16.1): excluded middle holds of every instance of a two-place predicate. Introduce both
@@ -1268,7 +1268,7 @@
     // ---------- Chapter 12: Universal instantiation ----------
     { id: '12.1', kind: 'example', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hpr', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hp', fa('X', appE('P', [X])))],
-      goal: fa('X', appE('R', [X])), prereqs: ['11.1'], needs: ['instantiate'] },
+      goal: fa('X', appE('R', [X])), prereqs: ['11.1'], hint: 'Introduce the gem X first. universal_instantiation is modus ponens for ∀: select hpr and X to get P(X) → R(X), then hp and X to get P(X). Brew modus_ponens on those two and discharge to put the ∀ back.', needs: ['instantiate'] },
     // 12.2 "Barbara singular": a term constant α : Ω is given in the context; instantiate hPQ at α, then modus ponens.
     // A LEMMA — minting `barbara` mints a higher-order recipe (P, Q are second-order metavars, α explicit) reusable for 12.3.
     { id: '12.2', kind: 'lemma', leanName: 'barbara', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }],
@@ -1303,7 +1303,7 @@
     // 13.1 introduces `exists` (obtain → instantiate → modus_ponens); 13.2 (ex falso) and 13.3 (∧-elim) are siblings.
     { id: '13.1', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, prereqs: ['12.1'], needs: ['exists'] },
+      goal: C, prereqs: ['12.1'], hint: 'An ∃ is no use until its witness has a name. Select hex and the unclaimed gem a and use the Obtain card — a joins the context along with a potion saying P(a). Then instantiate hpc at a and finish with modus_ponens.', needs: ['exists'] },
     { id: '13.2', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hnp', fa('X', NOT(appE('P', [X]))))],
       goal: C, prereqs: ['13.1'], needs: [] },
@@ -1318,7 +1318,7 @@
     // variable directly to the context, no ∃/witness hypothesis). 14.1: from ∀x, A (A not depending on x) deduce A —
     // provable only because Ω is inhabited (pick a witness, then instantiate). Minted as the reusable `forall_const'`.
     { id: '14.1', kind: 'lemma', leanName: "forall_const'", chapter: 14, sorts: [OMEGA], nonempty: [OMEGA], terms: [varE('a', OMEGA)],
-      givens: [binding('hA', fa('X', A))], goal: A, prereqs: ['13.1'], qed: '21.1', qedNote: 'QED’s "pull" for arbitrary variables', needs: ['pick'] },
+      givens: [binding('hA', fa('X', A))], goal: A, prereqs: ['13.1'], qed: '21.1', qedNote: 'QED’s "pull" for arbitrary variables', hint: 'To instantiate a ∀ you need something to instantiate it at, and nothing is given. Every sort in the game is nonempty, so select the gem a and use the Pick card to place an arbitrary inhabitant in the context. Then instantiate hA at it.', needs: ['pick'] },
 
     // ---------- Chapter 15: Existential introduction ----------
     // EXISTENTIAL INTRODUCTION: from a proof of P(t) and a witness term t, conclude ∃x, P(x). The witness
@@ -1326,7 +1326,7 @@
     // (e.g. Q(α,α) offers ∃x,Q(x,x) / ∃x,Q(x,α) / ∃x,Q(α,x) / ∃x,Q(α,α)). 15.1 introduces it; 15.2 is the ∀→∃ implication
     // (needs a witness, so pick one first — Chapter 14); 15.3 is the four-way choice exercise.
     { id: '15.1', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
-      givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), prereqs: ['14.1'], needs: ['exists_intro'] },
+      givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), prereqs: ['14.1'], hint: 'Select the potion hP and the term α, then brew Exists.intro. It offers every way of abstracting α out of P(α) — here there is only one, but choosing is the point.', needs: ['exists_intro'] },
     { id: '15.2', kind: 'lemma', leanName: 'exists_of_forall', chapter: 15, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), prereqs: ['15.1'], qed: '22.2', needs: [] },
     { id: '15.3', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
@@ -1408,7 +1408,7 @@
     { id: '16.1', kind: 'example', chapter: 16, sorts: [SET], terms: [setV('X'), setV('Y')],
       givens: [], formulas: [],
       goal: faS('X', SET, faS('Y', SET, IMPLIES(mem(setV('Y'), setV('X')), mem(setV('Y'), setV('X'))))),
-      prereqs: ['15.1'], qed: '23.1(b)', qedNote: 'the analogous exercise over a different relation', needs: ['sets'] },
+      prereqs: ['15.1'], qed: '23.1(b)', qedNote: 'the analogous exercise over a different relation', hint: 'The same shape as the ∀ tutorial, one level deeper and over a new sort. Introduce X, then Y, then form Y ∈ X and Assume it — and discharge three times.', needs: ['sets'] },
     // 16.2 (QED 23.2) Russell's paradox — an optional side-quest, disjoint from the algebra of ∪ and ∩:
     // it needs only membership, and it is where a set theory this naive is shown to break.
     { id: '16.2', kind: 'example', chapter: 16, sorts: [SET], terms: [],
@@ -1422,7 +1422,7 @@
     // the term bench on its own, because a 0-ary operation belongs to the sort rather than to the exercise.
     { id: '17.1', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [varE('x', MAGMA)],
       givens: [], formulas: [],
-      goal: faS('x', MAGMA, IMPLIES(appE('P', [appE('f', [varE('x', MAGMA)])]), appE('P', [appE('f', [varE('x', MAGMA)])]))), prereqs: ['16.1'], qed: '23.1(c)', qedNote: 'a predicate of a compound term, over a different operation', needs: ['ops'] },
+      goal: faS('x', MAGMA, IMPLIES(appE('P', [appE('f', [varE('x', MAGMA)])]), appE('P', [appE('f', [varE('x', MAGMA)])]))), prereqs: ['16.1'], qed: '23.1(c)', qedNote: 'a predicate of a compound term, over a different operation', hint: 'Introduce the gem x, then BUILD the term f(x) on the term bench. Use that to form P(f(x)), Assume it, and discharge twice.', needs: ['ops'] },
     { id: '17.2', kind: 'example', chapter: 17, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], terms: [],
       givens: [binding('h', faS('x', MAGMA, appE('P', [varE('x', MAGMA)])))], formulas: [],
       goal: appE('P', [appE('c', [])]), prereqs: ['17.1'], needs: [] },
@@ -1444,7 +1444,7 @@
     // WHICH occurrences move is part of the puzzle (18.4 is where that first bites).
     // Equality is also the one relation every sort shares, so these lemmas serve every later chapter.
     { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], consts: [cO('α')], terms: [alpha],
-      givens: [], formulas: [], goal: eq(alpha, alpha), prereqs: ['17.1'], needs: ['eq'] },
+      givens: [], formulas: [], goal: eq(alpha, alpha), prereqs: ['17.1'], hint: 'Select the term α and brew Eq.refl — everything equals itself. Its partner rw, which rewrites along an equation, arrives next.', needs: ['eq'] },
     // 18.2 lives here rather than in Chapter 17: it is an operations exercise, but the only way to move the
     // equation through `f` is `rw`, so it cannot open before the equality tutorial that introduces `rw`.
     { id: '18.2', kind: 'example', chapter: 18, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
@@ -1513,7 +1513,7 @@
     { id: '19.1', kind: 'example', chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
       givens: [binding('hL', faS('x', GRP, appE('EQ', [gmul(gv('α'), gv('x')), gv('x')]))),
                binding('hR', faS('x', GRP, appE('EQ', [gmul(gv('x'), gv('β')), gv('x')])))],
-      formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), prereqs: ['18.1'], qed: '24.3', needs: ['groups'] },
+      formulas: [], goal: appE('EQ', [gv('α'), gv('β')]), prereqs: ['18.1'], qed: '24.3', hint: 'Instantiate hL at β to get α · β = β, and hR at α to get α · β = α. Two equations sharing a left-hand side: select them and brew rw to rewrite one along the other, then choose α = β.', needs: ['groups'] },
     // 19.2: the inverse of the identity is the identity — the first proof that actually uses the axioms.
     { id: '19.2', kind: 'lemma', leanName: "inv_one'", chapter: 19, sorts: [GRP], consts: [], terms: [],
       givens: [], formulas: [], goal: appE('EQ', [ginv(g1), g1]), prereqs: ['19.1'], needs: [] },
@@ -1538,7 +1538,7 @@
     // equations give `a + 0` and `a + succ b`; everything on the LEFT has to be earned by induction.
     { id: '20.1', kind: 'lemma', leanName: "zero_add'", chapter: 20, sorts: [NAT], terms: [nv('n')],
       givens: [], formulas: [],
-      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), prereqs: ['19.1'], needs: ['induction'] },
+      goal: faS('a', NAT, appE('EQ', [nadd(n0, nv('a')), nv('a')])), prereqs: ['19.1'], hint: 'Induction wants a base case and a step. For the base, instantiate add_zero at 0 to get 0 + 0 = 0. For the step, introduce the gem n and Assume 0 + n = n, then reach 0 + succ n = succ n (instantiate add_succ at 0 and at n, then rw with the assumption) and discharge twice. Finally brew induction on the base and the step.', needs: ['induction'] },
     // 20.2: the other half of the asymmetry. `a + succ b` is definitional; `succ a + b` must be earned.
     { id: '20.2', kind: 'lemma', leanName: "succ_add'", chapter: 20, sorts: [NAT], terms: [nv('n')],
       givens: [], formulas: [],

@@ -155,6 +155,9 @@
   #mapsvg .node.solved rect { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
   #mapsvg .node.solved text { fill: var(--ink); }
   #mapsvg .node.cur rect { stroke-width: 2.5; }
+  #goal .hint { margin-top: .6rem; padding: .45rem .6rem; border-left: 3px solid var(--accent);
+    background: var(--accent-soft); border-radius: 0 4px 4px 0; font-size: .88rem; line-height: 1.45; }
+  #goal .hint .hintk { font-weight: 600; margin-right: .15rem; }
   #goal .prov { margin-top: .5rem; color: var(--muted); font-size: .82rem; }
   #goal .prov strong { font-weight: 600; color: var(--muted); }
 </style>
@@ -263,6 +266,9 @@
       <span class="nm">hAB</span> are auto-chosen but the objects and their types are kept typographically
       distinct. The Lean produced is deliberately plain, step-by-step <em>pseudo-Lean</em> — the point is to
       see the proof being built, not to write the slickest tactic.</p>
+    <p>The <strong>★ tutorial</strong> levels — 1.1, 2.1, and so on up to 20.1 — each introduce one new
+      mechanic, and each carries a <strong>hint</strong> under the goal naming the first move to make. The
+      practice levels in between carry none: by then the mechanic is yours.</p>
   </details>
 
   <details class="note" id="caveat">
@@ -356,7 +362,7 @@
   function scemoji() { return state.fantasy ? '📜 ' : ''; }   // scroll prefix for formulas (fantasy only)
   function T(k) { return TERMS[state.fantasy ? 'fantasy' : 'plain'][k]; }
   // when fantasy mode is OFF, swap the fantasy vocabulary out of any prose/tooltip (word-boundary, case-aware)
-  var VOCAB = [['potions', 'hypotheses'], ['potion', 'hypothesis'], ['recipes', 'rules'], ['recipe', 'rule'], ['ingredients', 'inputs'], ['ingredient', 'input'], ['spellbook', 'proof'], ['brewing', 'deriving'], ['brews', 'derives'], ['brew', 'derive'], ['crafting', 'building'], ['crafts', 'builds'], ['craft', 'build']];
+  var VOCAB = [['potions', 'hypotheses'], ['potion', 'hypothesis'], ['recipes', 'rules'], ['recipe', 'rule'], ['ingredients', 'inputs'], ['ingredient', 'input'], ['spellbook', 'proof'], ['brewing', 'deriving'], ['brews', 'derives'], ['brew', 'derive'], ['crafting', 'building'], ['crafts', 'builds'], ['craft', 'build'], ['gems', 'variables'], ['gem', 'variable']];
   function capw(w) { return w.charAt(0).toUpperCase() + w.slice(1); }
   function flavor(s) {
     if (state.fantasy) return s;
@@ -587,13 +593,18 @@
       ? '<div class="prov">Corresponds to <strong>QED ' + esc(state.ex.qed) + '</strong>'
         + (state.ex.qedNote ? ' — ' + esc(state.ex.qedNote) : '') + '</div>'
       : '';
+    // a tutorial brings a mechanic the player has never seen, so it also carries a hint: enough to
+    // get the first move made, not the solution. Only while unsolved -- afterwards it is just noise.
+    var hint = (state.ex.hint && !solved)
+      ? '<div class="hint"><span class="hintk">💡 Hint</span> ' + esc(flavor(state.ex.hint)) + '</div>'
+      : '';
     var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
     var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
       ? ' <span class="unlock">🗺️ unlocked on the map: ' + state.justUnlockedEx.map(function (id) { return '<code>' + esc(id) + '</code>'; }).join(', ') + '</span>' : '';
     var main = solved
       ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
-    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + prov;
+    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + hint + prov;
     // once solved, offer the next thing to do right where the player is looking (appended as a real
     // element, not markup, so it carries its own handler)
     if (solved) {
