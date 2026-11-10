@@ -10,7 +10,7 @@ book:
     publisher: Quanta Books
     first_published: 2026
     isbn: "978-0-374-62179-7"
-    note: "Hardcover, 128 pages; also available as e-book and audiobook. Distributed by Farrar, Straus and Giroux. To be published October 27, 2026. A UK edition, titled “Six Maths Essentials: How to Model the World”, is published the same day by Pelican (hardback, 96 pages, ISBN 978-0-241-82948-6; also an e-book)."
+    note: "Hardcover, 128 pages; also available as an e-book and a digital audio edition. Distributed by Farrar, Straus and Giroux; on sale November 10, 2026. The UK edition, titled “Six Maths Essentials: How to Model the World”, came out two weeks earlier, on October 27, 2026, from Pelican (hardback, 96 pages, ISBN 978-0-241-82948-6; also an e-book and an audio download)."
   links:
   - title: "Publisher (Quanta Books)"
     url: "https://www.quantabooks.org/books/six-math-essentials/"
@@ -20,4 +20,8 @@ book:
     url: "https://www.penguin.co.uk/books/482167/six-maths-essentials-by-tao-terence/9780241829486"
   - title: "Review by Karmela Padavic-Callaghan (New Scientist, October 21, 2026)"
     url: "https://www.newscientist.com/article/2594471-terence-taos-six-maths-essentials-opens-his-field-to-all-of-us"
+  - title: "Review (Publishers Weekly)"
+    url: "https://www.publishersweekly.com/9780374621797"
+  - title: "Review (Library Journal)"
+    url: "https://www.libraryjournal.com/review/six-math-essentials-100013537"
 editions: []
