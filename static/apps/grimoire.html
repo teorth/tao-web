@@ -75,8 +75,11 @@
   .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
   .spellhead { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
 
-  /* Fantasy mode: a decorative font on the chrome only (formulas/code stay legible) */
-  .wrap.fantasy h1, .wrap.fantasy h2.sec, .wrap.fantasy .deduction .arrow, .wrap.fantasy #goal .qed { font-family: 'Luminari', 'Papyrus', fantasy; letter-spacing: .01em; }
+  /* Fantasy mode: a decorative font on the chrome only (formulas/code stay legible). One stack, named
+     once: it lists only faces that ship with macOS or Windows, since the page loads nothing over the
+     network. The map's markers borrow it too, so the chrome and the territory are lettered alike. */
+  .wrap.fantasy { --fantasy-face: 'Luminari', 'Trattatello', 'Papyrus', fantasy; }
+  .wrap.fantasy h1, .wrap.fantasy h2.sec, .wrap.fantasy .deduction .arrow, .wrap.fantasy #goal .qed { font-family: var(--fantasy-face); letter-spacing: .01em; }
 
   .bench2 { margin-top: 1rem; }   /* the gem/scroll shelves sit inside the workbench column, under the potions */
   .fbar { display: flex; gap: .5rem; flex-wrap: wrap; align-items: center; }
@@ -146,15 +149,25 @@
   #mapsvg.grabbing { cursor: grabbing; }
   #mapsvg .edge { stroke: var(--line); stroke-width: 1.5; fill: none; }
   #mapsvg .edge.on { stroke: var(--accent); }
-  #mapsvg .node rect { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
+  /* `.box` rather than `rect`: in fantasy mode the same box is drawn as a jagged path instead */
+  #mapsvg .node .box { fill: var(--bg); stroke: var(--line); stroke-width: 1.5; }
   #mapsvg .node text { fill: var(--muted); font-family: var(--mono); font-size: 12px; text-anchor: middle; dominant-baseline: central; user-select: none; }
-  #mapsvg .node.locked rect { stroke-dasharray: 3 3; }
+  #mapsvg .node.locked .box { stroke-dasharray: 3 3; }
   #mapsvg .node.open { cursor: pointer; }
-  #mapsvg .node.open rect { stroke: var(--accent); fill: var(--accent-soft); }
+  #mapsvg .node.open .box { stroke: var(--accent); fill: var(--accent-soft); }
   #mapsvg .node.open text { fill: var(--ink); }
-  #mapsvg .node.solved rect { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
+  #mapsvg .node.solved .box { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
   #mapsvg .node.solved text { fill: var(--ink); }
-  #mapsvg .node.cur rect { stroke-width: 2.5; }
+  #mapsvg .node.cur .box { stroke-width: 2.5; }
+  /* Fantasy mode: the chart of a territory rather than a dependency graph -- rough-hewn markers,
+     joined by dotted trails, lettered in the same decorative hand as the rest of the chrome, over a
+     faint parchment wash. The jagged geometry itself is cut in the script. */
+  .wrap.fantasy #mapview { background-image: radial-gradient(135% 105% at 50% 0%, color-mix(in srgb, #c08a2e 10%, transparent), transparent 72%); }
+  .wrap.fantasy #mapsvg .edge { stroke-width: 1.7; stroke-linecap: round; stroke-dasharray: 1.6 4.4; }
+  .wrap.fantasy #mapsvg .edge.on { stroke-width: 2.1; stroke-dasharray: 3 3.8; }
+  .wrap.fantasy #mapsvg .node .box { stroke-width: 1.7; }
+  .wrap.fantasy #mapsvg .node.locked .box { stroke-dasharray: 2.5 3.5; }
+  .wrap.fantasy #mapsvg .node text { font-family: var(--fantasy-face); font-size: 13px; letter-spacing: .03em; }
   #goal .hint { margin-top: .6rem; padding: .45rem .6rem; border-left: 3px solid var(--accent);
     background: var(--accent-soft); border-radius: 0 4px 4px 0; font-size: .88rem; line-height: 1.45; }
   #goal .hint .hintk { font-weight: 600; margin-right: .15rem; }
@@ -838,15 +851,66 @@
       view.tx = cx - (cx - view.tx) * (ns / view.s); view.ty = cy - (cy - view.ty) * (ns / view.s);
       view.s = ns; apply();
     }
+    // ---- fantasy dressing: hewn-stone markers and winding trails ----
+    // Both shapes are jittered, and the jitter has to be STABLE: a map that re-cut its own coastline
+    // on every render -- and it re-renders after every craft -- would be unreadable. So the jitter
+    // comes from a hash of the node's (or edge's) own name rather than from Math.random, which also
+    // means the territory looks the same in every session and in every browser. Both are cached.
+    function rngOf(name) {
+      var x = 2166136261;
+      for (var i = 0; i < name.length; i++) { x ^= name.charCodeAt(i); x = Math.imul(x, 16777619); }
+      x = (x >>> 0) || 1;
+      return function () {   // xorshift32: small, deterministic, and plenty for a few pixels of wobble
+        x ^= x << 13; x >>>= 0; x ^= x >>> 17; x ^= x << 5; x >>>= 0; return x / 4294967296;
+      };
+    }
+    function f(p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }
+    var shapes = {}, trails = {};
+    function stoneShape(id) {   // the node box re-cut as a rough-hewn tablet, in absolute coordinates
+      if (shapes[id]) return shapes[id];
+      var p = pos[id], rnd = rngOf(id), J = 2.4, pts = [];
+      var x0 = p.x - NW / 2, y0 = p.y - NH / 2, x1 = p.x + NW / 2, y1 = p.y + NH / 2;
+      function side(ax, ay, bx, by, n) {   // n points along one side, each pushed off it a little
+        var dx = bx - ax, dy = by - ay, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+        for (var i = 0; i < n; i++) {
+          var t = i / n, o = (rnd() - 0.5) * 2 * J;
+          pts.push([ax + dx * t + nx * o, ay + dy * t + ny * o]);
+        }
+      }
+      side(x0, y0, x1, y0, 7); side(x1, y0, x1, y1, 2); side(x1, y1, x0, y1, 7); side(x0, y1, x0, y0, 2);
+      return shapes[id] = 'M' + pts.map(f).join('L') + 'Z';
+    }
+    function trailPath(a, b, key) {   // the straight edge, re-walked as a path that wanders and arrives
+      if (trails[key]) return trails[key];
+      var x1 = a.x, y1 = a.y + NH / 2, x2 = b.x, y2 = b.y - NH / 2;
+      var dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L;
+      var rnd = rngOf(key), n = 5, amp = Math.min(13, L * 0.2), pts = [[x1, y1]];
+      for (var i = 1; i < n; i++) {   // sin() tapers the wobble to nothing at both ends, so a trail
+        var t = i / n;                // still leaves one marker and reaches the next one squarely
+        var w = Math.sin(Math.PI * t) * amp * (rnd() - 0.5) * 2;
+        pts.push([x1 + dx * t + nx * w, y1 + dy * t + ny * w]);
+      }
+      pts.push([x2, y2]);
+      var d = 'M' + f(pts[0]);   // quadratic smoothing: each waypoint steers, each midpoint joins
+      for (var j = 1; j < pts.length - 1; j++)
+        d += 'Q' + f(pts[j]) + ' ' + f([(pts[j][0] + pts[j + 1][0]) / 2, (pts[j][1] + pts[j + 1][1]) / 2]);
+      return trails[key] = d + 'L' + f(pts[pts.length - 1]);
+    }
     function render() {
       var acc = accessible(), g = el.mapg;
       while (g.firstChild) g.removeChild(g.firstChild);
       G.EXERCISES.forEach(function (e) {
         (e.unlocks || []).forEach(function (u) {
           var a = pos[e.id], b = pos[u]; if (!a || !b) return;
-          var ln = document.createElementNS(NS, 'line');
-          ln.setAttribute('x1', a.x); ln.setAttribute('y1', a.y + NH / 2);
-          ln.setAttribute('x2', b.x); ln.setAttribute('y2', b.y - NH / 2);
+          var ln;
+          if (state.fantasy) {
+            ln = document.createElementNS(NS, 'path');
+            ln.setAttribute('d', trailPath(a, b, e.id + '>' + u));
+          } else {
+            ln = document.createElementNS(NS, 'line');
+            ln.setAttribute('x1', a.x); ln.setAttribute('y1', a.y + NH / 2);
+            ln.setAttribute('x2', b.x); ln.setAttribute('y2', b.y - NH / 2);
+          }
           ln.setAttribute('class', 'edge' + (acc[u] ? ' on' : ''));
           g.appendChild(ln);
         });
@@ -856,8 +920,16 @@
         var open = !!acc[e.id], done = !!state.solved[e.id];
         var node = document.createElementNS(NS, 'g');
         node.setAttribute('class', 'node ' + (done ? 'solved' : open ? 'open' : 'locked') + (state.ex && state.ex.id === e.id ? ' cur' : ''));
-        var r = document.createElementNS(NS, 'rect');
-        r.setAttribute('x', p.x - NW / 2); r.setAttribute('y', p.y - NH / 2); r.setAttribute('width', NW); r.setAttribute('height', NH); r.setAttribute('rx', 7);
+        var r;   // the tap target stays the same NW x NH box either way: the jitter is only a few pixels
+        if (state.fantasy) {
+          r = document.createElementNS(NS, 'path');
+          r.setAttribute('d', stoneShape(e.id));
+        } else {
+          r = document.createElementNS(NS, 'rect');
+          r.setAttribute('x', p.x - NW / 2); r.setAttribute('y', p.y - NH / 2);
+          r.setAttribute('width', NW); r.setAttribute('height', NH); r.setAttribute('rx', 7);
+        }
+        r.setAttribute('class', 'box');
         node.appendChild(r);
         var t = document.createElementNS(NS, 'text');
         t.setAttribute('x', p.x); t.setAttribute('y', p.y); t.textContent = open ? (e.id + (done ? ' ✓' : '')) : '🔒';
