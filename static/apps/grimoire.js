@@ -1082,7 +1082,7 @@
   var EXERCISES = [
     // ---------- Chapter 1: Conjunction introduction ----------
     { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], qed: '1.1', hint: 'Select the potions hA and hB, then brew And.intro to get A ∧ B. Select that and hC, brew it again, and the goal is yours.', needs: ['and.intro'] },
-    { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), prereqs: ['1.1'], qed: '1.2', needs: [] },
+    { id: '1.2', kind: 'lemma', leanName: 'And.idem', chapter: 1, givens: [binding('hA', A)], goal: AND(A, A), prereqs: ['1.1'], qed: '1.2', hint: 'And.intro needs two ingredients, but hA is the only potion here — so select it twice: shift-tap it for a second copy, or switch on Repeat-select and tap it again.', needs: [] },
 
     // ---------- Chapter 2: Conjunction elimination ----------
     { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], qed: '2.1', hint: 'Take the conjunction apart first: select hAB and brew And.left, then select hAB again and brew And.right. Now select the two halves — in the order the goal wants them — and brew And.intro.', needs: ['and.elim'] },

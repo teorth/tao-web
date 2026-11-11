@@ -240,7 +240,6 @@
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
         <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both A and B out of A ∧ B"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
         <button id="clearsel" type="button" title="Clear the current ingredient selection">Clear</button>
-        <span class="hint" id="seltip" style="margin:0">tip: Shift-tap adds a second copy of a potion</span>
       </div>
       <div id="deducehint" class="hint" style="margin-top:.5rem"></div>
 
@@ -319,9 +318,9 @@
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
              'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapcur', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
              'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
-             'lede', 'howto', 'seltip'];
+             'lede', 'howto'];
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
-  var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML, seltip: el.seltip.textContent };   // authored (fantasy) prose
+  var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML };   // authored (fantasy) prose
 
   var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
 
@@ -770,7 +769,6 @@
     el['formula-add'].textContent = T('formbtn'); el['term-add'].textContent = T('termbtn');
     el.lede.innerHTML = flavor(ORIG.lede);
     el.howto.innerHTML = flavor(ORIG.howto);
-    el.seltip.textContent = flavor(ORIG.seltip);
   }
   function renderFormulas() {
     el['formula-shelf'].innerHTML = state.formulas.map(function (e, i) {
