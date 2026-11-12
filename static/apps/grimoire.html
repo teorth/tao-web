@@ -74,6 +74,9 @@
   .seg button { border: 0; border-radius: 0; padding: .28rem .6rem; font: inherit; color: var(--muted); background: var(--panel); cursor: pointer; }
   .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
   .spellhead { display: flex; align-items: center; justify-content: space-between; gap: .5rem; flex-wrap: wrap; }
+  .spellctl { display: inline-flex; align-items: center; gap: .4rem; flex-wrap: wrap; }
+  .spellctl .exp { font: inherit; font-size: .85rem; color: var(--ink); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 6px; padding: .22rem .5rem; cursor: pointer; }
 
   /* Fantasy mode: a decorative font on the chrome only (formulas/code stay legible). One stack, named
      once: it lists only faces that ship with macOS or Windows, since the page loads nothing over the
@@ -158,6 +161,9 @@
   #mapsvg .node.open text { fill: var(--ink); }
   #mapsvg .node.solved .box { stroke: var(--ok, #2c9c4a); fill: color-mix(in srgb, var(--ok, #2c9c4a) 16%, transparent); }
   #mapsvg .node.solved text { fill: var(--ink); }
+  /* a solved level that matched the shortest proof we know gets a gold rim; one that BEAT it is gold through */
+  #mapsvg .node.matched .box { stroke: #c08a2e; stroke-width: 2.6; }
+  #mapsvg .node.record .box { stroke: #c08a2e; stroke-width: 2.6; fill: color-mix(in srgb, #c08a2e 32%, transparent); }
   #mapsvg .node.cur .box { stroke-width: 2.5; }
   /* Fantasy mode: the chart of a territory rather than a dependency graph -- rough-hewn markers,
      joined by dotted trails, lettered in the same decorative hand as the rest of the chrome, over a
@@ -172,6 +178,13 @@
     background: var(--accent-soft); border-radius: 0 4px 4px 0; font-size: .88rem; line-height: 1.45; }
   #goal .hint .hintk { font-weight: 600; margin-right: .15rem; }
   #goal .prov { margin-top: .5rem; color: var(--muted); font-size: .82rem; }
+  /* the move tally against the par for the level: quiet while playing, loud when the par falls */
+  #goal .score { margin-top: .5rem; color: var(--muted); font-size: .82rem; }
+  #goal .hintbtn { margin-top: .6rem; font: inherit; font-size: .85rem; color: var(--ink);
+    background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .28rem .55rem; cursor: pointer; }
+  #goal .record { display: block; margin-top: .5rem; padding: .45rem .6rem; font-size: .92rem; line-height: 1.5;
+    color: var(--ink); background: color-mix(in srgb, #c08a2e 22%, transparent); border: 1px solid #c08a2e; border-radius: 6px; }
+  #goal .matched { color: var(--ok, #2c9c4a); font-weight: 600; }
   #goal .prov strong { font-weight: 600; color: var(--muted); }
 </style>
 </head>
@@ -204,7 +217,7 @@
   </div>
 
   <details id="mapwrap">
-    <summary id="mapsum" title="The discovery tree — a level opens once ALL of the levels feeding into it are solved; ★ levels introduce a new mechanic and run in a single line, so they can be followed on their own">Map — progression tree</summary>
+    <summary id="mapsum" title="The discovery tree — a level opens once ALL of the levels feeding into it are solved; ★ levels introduce a new mechanic and run in a single line, so they can be followed on their own. Hover a level for the length of the shortest proof known and your own best; a gold rim means you matched it, gold through means you beat it.">Map — progression tree</summary>
     <div class="mapbar">
       <button id="mapzin" type="button" title="Zoom in">+</button>
       <button id="mapzout" type="button" title="Zoom out">&minus;</button>
@@ -264,7 +277,11 @@
     <div>
       <div class="spellhead">
         <h2 class="sec" id="spellHead" style="margin:0"></h2>
-        <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
+        <span class="spellctl">
+          <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
+          <button id="copyproof" class="exp" type="button" title="Copy the whole proof — the informal reading as comments, then the Lean — to the clipboard">⧉ Copy</button>
+          <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then the Lean, which compiles as it stands">⤓ Save</button>
+        </span>
       </div>
       <pre id="spellbook" class="lean"></pre>
     </div>
@@ -280,8 +297,15 @@
       distinct. The Lean produced is deliberately plain, step-by-step <em>pseudo-Lean</em> — the point is to
       see the proof being built, not to write the slickest tactic.</p>
     <p>The <strong>★ tutorial</strong> levels — 1.1, 2.1, and so on up to 20.1 — each introduce one new
-      mechanic, and each carries a <strong>hint</strong> under the goal naming the first move to make. The
-      practice levels in between carry none: by then the mechanic is yours.</p>
+      mechanic, and each carries a <strong>hint</strong> under the goal naming the first move to make. Every
+      practice level in between has one too, but keeps it behind a <strong>💡 Hint</strong> button: knowing
+      instinctively why something is true is not the same as seeing which moves will get you there, and the
+      hint says what the shape of the proof is without saying how long it runs.</p>
+    <p>Each level also shows the length of the <strong>shortest proof known</strong> to the game, in moves,
+      beside the count of the moves you have made. Matching it rims the level gold on the map; coming in
+      under it turns the level gold — and means you have found something better than the proof this game
+      was built around, which is worth telling me about. <strong>Copy</strong> and <strong>Save</strong>
+      under the spellbook export the proof, informal reading and Lean together.</p>
   </details>
 
   <details class="note" id="caveat">
@@ -315,6 +339,10 @@
       left to do. Some chapters are new, and about a fifth of the levels have no QED ancestor at all.</p>
   </details>
 
+  <p class="cap">Written up at
+    <a href="https://terrytao.wordpress.com/2026/11/11/lean-grimoire/">“Lean Grimoire”</a> (<em>What’s new</em>,
+    11 November 2026) — playtesting reports, and shorter proofs than the ones the game knows, are welcome in
+    the comments there.</p>
   <p class="cap">The applet source is released under the MIT license; the mathematical content is reserved.</p>
 </div>
 <div id="ctxmenu" hidden></div>
@@ -326,7 +354,7 @@
   'use strict';
   var G = window.Grimoire;
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
-             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
+             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
@@ -336,7 +364,9 @@
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
+  // Where to write in -- quoted in the how-to, in an export, and in the banner a record raises.
+  var BLOG = 'https://terrytao.wordpress.com/2026/11/11/lean-grimoire/';
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -432,6 +462,7 @@
     if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
     else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
+    state.hintOpen = false;   // asking for a hint is a decision about ONE level, not a setting
     renderAll();
   }
   // Abandon a sub-proof: back out to an ancestor, discarding what was crafted inside. Unlike discharging,
@@ -570,6 +601,10 @@
   function markSolved() {   // record the solve + which exercises it newly reveals on the map
     var before = accessible();
     state.solved[state.ex.id] = true;
+    // the shortest proof THIS player has found here, which is what the map reports and what the par is
+    // measured against. Re-solving only ever improves it, so a first, clumsy solve is held against nobody.
+    var len = G.proofLength(rootEnv()), prev = state.best[state.ex.id];
+    if (prev == null || len < prev) state.best[state.ex.id] = len;
     unlockCurrent();
     var after = accessible();
     state.justUnlockedEx = Object.keys(after).filter(function (id) { return !before[id]; }).sort();
@@ -582,6 +617,28 @@
   function rootEnv() { var e = state.env; while (e.parent) e = e.parent; return e; }
   function assumptionChain() { var out = [], e = state.env; while (e.parent) { out.unshift(e.assumption); e = e.parent; } return out; }
   function isSolved() { var r = rootEnv(); return r.bindings.some(function (b) { return G.exprEq(b.type, r.goal); }); }
+  // Every level carries a hint: enough to see the shape of the proof, never the proof itself. On a
+  // tutorial it stands open -- the mechanic is brand new, and teaching it is what the level is for. On a
+  // practice level it waits behind a button, so a player who wants to think it out first is not spoiled
+  // by a line of text they never asked to read. Either way, only while unsolved: after that it is noise.
+  function hintHTML(solved) {
+    if (!state.ex.hint || solved) return '';
+    var body = '<div class="hint"><span class="hintk">💡 Hint</span> ' + esc(flavor(WP(state.ex.hint))) + '</div>';
+    if (isTutorial(state.ex)) return body;
+    return state.hintOpen
+      ? body + '<button class="hintbtn" type="button" data-hint="0" title="Put the hint away again">Hide hint</button>'
+      : '<button class="hintbtn" type="button" data-hint="1" title="Show a hint for this level — what shape the proof takes, not how to type it out">💡 Hint</button>';
+  }
+  // The move tally against the par for the level: the length of the shortest proof the game knows, which
+  // is its scripted solution and NOT a proved minimum. A level with no scripted solution has no par, and
+  // then this stays silent rather than inventing one.
+  function scoreHTML() {
+    var len = G.proofLength(state.env), pr = G.par(state.ex.id), best = state.best[state.ex.id];
+    if (!pr) return '';
+    var bits = [len + ' move' + (len === 1 ? '' : 's') + ' so far', 'shortest known ' + pr];
+    if (best != null) bits.push('your best ' + best + (best < pr ? ' 🏆' : best === pr ? ' ✓' : ''));
+    return '<div class="score">⚖ ' + bits.join(' · ') + '</div>';
+  }
   function renderGoal() {
     if (state.env.parent) {   // inside a sub-environment
       el.goal.className = '';
@@ -599,7 +656,8 @@
             return body + '<button class="abandon" type="button" data-abandon="' + levels + '" title="' + esc(tip) + '" aria-label="' + esc(tip) + '">✕</button>';
           }).join(', then ');
         })() + '</div>' +
-        '<div>' + flavor('Craft here, then <strong>discharge</strong> a statement. Overall goal:') + ' <span class="ty">' + esc(R(rootEnv().goal)) + '</span></div>';
+        '<div>' + flavor('Craft here, then <strong>discharge</strong> a statement. Overall goal:') + ' <span class="ty">' + esc(R(rootEnv().goal)) + '</span></div>'
+        + hintHTML(false) + scoreHTML();
       return;
     }
     var solved = isSolved(), root = rootEnv();
@@ -618,18 +676,29 @@
       ? '<div class="prov">Corresponds to <strong>QED ' + esc(state.ex.qed) + '</strong>'
         + (state.ex.qedNote ? ' — ' + esc(WP(state.ex.qedNote)) : '') + '</div>'
       : '';
-    // a tutorial brings a mechanic the player has never seen, so it also carries a hint: enough to
-    // get the first move made, not the solution. Only while unsolved -- afterwards it is just noise.
-    var hint = (state.ex.hint && !solved)
-      ? '<div class="hint"><span class="hintk">💡 Hint</span> ' + esc(flavor(WP(state.ex.hint))) + '</div>'
-      : '';
+    var hint = hintHTML(solved);
+    // how this finished proof measures up against the par (see scoreHTML for what a par is)
+    var len = G.proofLength(root), pr = G.par(state.ex.id), best = state.best[state.ex.id];
+    var verdict = '';
+    if (solved && pr) {
+      verdict = len > pr ? ' <span class="score">The shortest proof known here takes ' + pr + '.</span>'
+        : len === pr ? ' <span class="matched">That matches the shortest proof known.</span>'
+        : '<span class="record">🏆 <strong>A new record.</strong> The shortest proof this game knows takes '
+          + pr + ' move' + (pr === 1 ? '' : 's') + ', so you have found something it does not. Please tell me about it:'
+          + ' <strong>Copy</strong> or <strong>Save</strong> the proof below and leave it in the comments on'
+          + ' <a href="' + BLOG + '">the blog post</a>.</span>';
+    }
+    var score = !solved ? scoreHTML()
+      : (pr && best != null && best < len)
+        ? '<div class="score">⚖ your best here: ' + best + ' move' + (best === 1 ? '' : 's') + '</div>'
+        : '';
     var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
     var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
       ? ' <span class="unlock">🗺️ unlocked on the map: ' + state.justUnlockedEx.map(function (id) { return '<code>' + esc(id) + '</code>'; }).join(', ') + '</span>' : '';
     var main = solved
-      ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + root.steps.length + ' step' + (root.steps.length === 1 ? '' : 's') + '.' + unlock + exUnlock
+      ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + len + ' move' + (len === 1 ? '' : 's') + '.' + verdict + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
-    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + hint + prov;
+    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + hint + score + prov;
     // once solved, offer the next thing to do right where the player is looking (appended as a real
     // element, not markup, so it carries its own handler)
     if (solved) {
@@ -827,6 +896,44 @@
     }
   }
 
+  // ---- export the proof ----
+  // One file carrying both readings: the informal proof as Lean comments, then the Lean itself, which
+  // compiles as it stands (core Lean, no Mathlib). So an export is at once something to read, something
+  // to check, and something to paste into a comment if it turns out to be shorter than the game's own.
+  // Written from the current view's options, less `words`: an exported Lean file is Lean.
+  function proofText() {
+    var ex = state.ex, len = G.proofLength(state.env), pr = G.par(ex.id), done = isSolved();
+    var head = ['-- Lean Grimoire \u2014 ' + (isTutorial(ex) ? 'tutorial' : 'exercise') + ' ' + ex.id + (ex.leanName ? '  (' + ex.leanName + ')' : ''),
+                '-- ' + BLOG,
+                '-- ' + (done ? 'Proved in ' : 'UNFINISHED \u2014 ') + len + ' move' + (len === 1 ? '' : 's') + (done ? '.' : ' so far.')
+                  + (pr ? '  The shortest proof the game knows takes ' + pr + '.' : '')
+                  // the one line a reader of the file should see first, since it is why it was sent
+                  + (done && pr && len < pr ? '  THIS ONE IS SHORTER.' : ''), '--'];
+    var informal = G.emitInformalLive(ex, state.env, { parens: state.parens }).split('\n').map(function (l) { return ('-- ' + l).replace(/\s+$/, ''); });
+    var imports = [];
+    G.leanImports(ex).forEach(function (i) { imports.push(i.imp); if (i.open) imports.push(i.open); });
+    return head.concat(informal, [''], imports, imports.length ? [''] : [],
+                       [G.leanPreamble(ex) + G.emitLive(ex, state.env, { parens: state.parens })]).join('\n') + '\n';
+  }
+  function flashBtn(btn, msg) {
+    var was = btn.textContent;
+    btn.textContent = msg;
+    setTimeout(function () { btn.textContent = was; }, 1400);
+  }
+  el.copyproof.addEventListener('click', function () {
+    var txt = proofText();
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(txt).then(function () { flashBtn(el.copyproof, 'copied \u2713'); }, function () { flashBtn(el.copyproof, 'copy blocked'); });
+    else flashBtn(el.copyproof, 'clipboard unavailable');
+  });
+  el.saveproof.addEventListener('click', function () {
+    var blob = new Blob([proofText()], { type: 'text/plain;charset=utf-8' });
+    var a = document.createElement('a'), url = URL.createObjectURL(blob);
+    a.href = url; a.download = 'grimoire-' + state.ex.id + '.lean';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 0);
+  });
+
   function applyTerms() {
     el.benchHead.textContent = T('bench'); el.recipesHead.textContent = T('recipes'); el.spellHead.textContent = T('spell');
     el.formulaHead.innerHTML = flavor(T('formula') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— type a formula, then tap it to use as an ingredient (e.g. for Or.inl)</span>');
@@ -857,8 +964,15 @@
   function renderAch() {
     var solved = Object.keys(state.solved), recipes = Object.keys(state.unlocked);
     el.achsum.textContent = 'Achievements — ' + solved.length + ' solved, ' + recipes.length + ' recipe' + (recipes.length === 1 ? '' : 's') + ' unlocked';
+    // how many of those solves came in at or under the par -- the standing the map colours report one by one
+    var matched = 0, records = 0;
+    solved.forEach(function (id) { var pr = G.par(id), b = state.best[id]; if (!pr || b == null) return; if (b < pr) records++; else if (b === pr) matched++; });
+    var standing = (matched || records)
+      ? '<div><strong>Against the shortest proofs known:</strong> ' + matched + ' matched'
+        + (records ? ', <strong>' + records + ' beaten 🏆</strong>' : '') + '</div>'
+      : '';
     el.ach.innerHTML =
-      '<div><strong>Exercises solved:</strong> ' + (solved.length ? solved.sort().map(esc).join(', ') : '—') + '</div>' +
+      '<div><strong>Exercises solved:</strong> ' + (solved.length ? solved.sort().map(esc).join(', ') : '—') + '</div>' + standing +
       '<div><strong>Recipes unlocked:</strong> ' + (recipes.length ? recipes.map(function (r) { return '<code>' + esc(r) + '</code>'; }).join(', ') : '—') + '</div>';
   }
   // ---- progression map: an SVG discovery tree with pan/zoom ----
@@ -972,8 +1086,11 @@
       G.EXERCISES.forEach(function (e) {
         var p = pos[e.id]; if (!p) return;
         var open = !!acc[e.id], done = !!state.solved[e.id];
+        var pr = G.par(e.id), bst = state.best[e.id];
         var node = document.createElementNS(NS, 'g');
-        node.setAttribute('class', 'node ' + (done ? 'solved' : open ? 'open' : 'locked') + (state.ex && state.ex.id === e.id ? ' cur' : ''));
+        var cls = 'node ' + (done ? 'solved' : open ? 'open' : 'locked') + (state.ex && state.ex.id === e.id ? ' cur' : '');
+        if (done && pr && bst != null && bst <= pr) cls += bst < pr ? ' record' : ' matched';
+        node.setAttribute('class', cls);
         var r;   // the tap target stays the same NW x NH box either way: the jitter is only a few pixels
         if (state.fantasy) {
           r = document.createElementNS(NS, 'path');
@@ -991,8 +1108,13 @@
         var ti = document.createElementNS(NS, 'title');
         // an AND-gate has to say WHY it is shut, or a locked node is just a mystery
         var miss = open ? [] : G.missingPrereqs(e.id, state.solved);
+        // what the level costs, and how the player has done against it: the number QED showed on hover
+        var sc = [];
+        if (pr) sc.push('shortest known ' + pr + ' move' + (pr === 1 ? '' : 's'));
+        if (bst != null) sc.push('your best ' + bst + (!pr ? '' : bst < pr ? ' — a record!' : bst === pr ? ' — matched' : ''));
         ti.textContent = open
-          ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + e.id + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : ''))
+          ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + e.id + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : '')
+             + (sc.length ? ' · ' + sc.join(' · ') : ''))
           : ('Locked — waiting on ' + (miss.length > 5 ? miss.slice(0, 5).join(', ') + ' and ' + (miss.length - 5) + ' more' : miss.join(', ')));
         node.appendChild(ti);
         g.appendChild(node);   // selection is handled by tap hit-testing in the pointerup handler
@@ -1037,7 +1159,7 @@
   function currentBlob() {
     var progress = {}; Object.keys(state.progress).forEach(function (k) { progress[k] = state.progress[k]; });
     if (state.ex) progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };   // capture the live board
-    return { v: 1, solved: state.solved, progress: progress, last: state.ex ? state.ex.id : null,
+    return { v: 1, solved: state.solved, progress: progress, best: state.best, last: state.ex ? state.ex.id : null,
              fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
   }
   function persist() { if (state.save) storageSet(JSON.stringify(currentBlob())); }
@@ -1053,6 +1175,15 @@
       }
     });
     state.progress = saved.progress || {};
+    state.best = saved.best || {};
+    // A solve recorded before the par table existed carries no length -- but the proof itself is sitting in
+    // `progress`, so read the length off that instead of showing the level as never measured.
+    Object.keys(state.solved).forEach(function (id) {
+      if (state.best[id] != null) return;
+      var pr = state.progress[id]; if (!pr || !pr.env) return;
+      var r = pr.env; while (r.parent) r = r.parent;
+      if (r.goal && (r.bindings || []).some(function (b) { return G.exprEq(b.type, r.goal); })) state.best[id] = G.proofLength(r);
+    });
     state.fantasy = saved.fantasy !== false;   // default on
     state.parens = (saved.parens === undefined) ? true : !!saved.parens;
     state.words = !!saved.words;
@@ -1232,6 +1363,8 @@
   el.nextunsolved.addEventListener('click', function () { var id = nextUnsolved(); if (id) loadExercise(id); });
   el.goal.addEventListener('click', function (ev) {
     var t = ev.target, k = t && t.getAttribute && t.getAttribute('data-abandon');
+    var h = t && t.getAttribute && t.getAttribute('data-hint');
+    if (h != null) { state.hintOpen = h === '1'; renderGoal(); return; }
     if (k) doAbandon(+k);
   });
   el.reset.addEventListener('click', resetExercise);
@@ -1371,6 +1504,7 @@
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); }, setWords: function (b) { state.words = b; renderAll(); },
     neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu, doAbandon: doAbandon,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
+    proofText: proofText, isSolved: isSolved, par: G.par, setHintOpen: function (b) { state.hintOpen = b; renderGoal(); },
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
 </script>
