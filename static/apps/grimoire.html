@@ -197,7 +197,7 @@
     <button id="undo" type="button" title="Undo the last step" disabled>Undo</button>
     <button id="reset" type="button" title="Discard this exercise's progress and start it over">Reset</button>
     <label title="Toggle between fantasy wording (potions, recipes, spellbook) and plain logic wording (hypotheses, rules, proof)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="fantasy" checked> Fantasy mode</label>
-    <label title="Show every sub-expression with explicit parentheses instead of relying on operator precedence" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="parens"> Explicit parentheses</label>
+    <label title="Show every sub-expression with explicit parentheses instead of relying on operator precedence. On by default — turn it off for the shorter, idiomatic form once Lean’s precedences are familiar (∧ and → both bind to the right)." style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="parens" checked> Explicit parentheses</label>
     <label title="Save your progress in this browser (local storage only — never sent over any network)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="save"> Save progress</label>
     <label title="Hide recipes and constructors that have no valid move for the current selection (useful once many are unlocked)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="hideinactive"> Hide inactive</label>
   </div>
@@ -335,7 +335,7 @@
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -1000,7 +1000,7 @@
     });
     state.progress = saved.progress || {};
     state.fantasy = saved.fantasy !== false;   // default on
-    state.parens = !!saved.parens;
+    state.parens = (saved.parens === undefined) ? true : !!saved.parens;
     state.hideInactive = saved.hideInactive !== false;   // default on
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
