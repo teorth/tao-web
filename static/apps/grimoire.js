@@ -960,11 +960,16 @@
   }
 
   // informal proof in the style of the original QED game (statements, not hypothesis labels)
+  // How an assumption or an arbitrary variable is announced. Shared, because the live view below has
+  // to word an OPEN sub-proof exactly as the finished one will be worded once it is discharged.
+  function informalBinder(b, opts) {
+    return b.kind === 'var' ? 'an arbitrary ' + b.name + ' : ' + b.sort : render(b.type, opts);
+  }
   function informalSteps(steps, opts) {
     var R = function (e) { return render(e, opts); }, out = [];
     steps.forEach(function (s) {
       if (s.kind === 'discharge') {
-        out.push('Introduce ' + s.levels.map(function (l) { return l.binder.kind === 'var' ? 'an arbitrary ' + l.binder.name + ' : ' + l.binder.sort : R(l.binder.type); }).join(', then ') + ':');
+        out.push('Introduce ' + s.levels.map(function (l) { return informalBinder(l.binder, opts); }).join(', then ') + ':');
         s.levels.forEach(function (l) { informalSteps(l.steps, opts).forEach(function (x) { out.push('  ' + x); }); });
         out.push(s.contra ? 'This is a contradiction, so we conclude ' + R(s.type) + '.'
                           : 'Discharging, we obtain ' + R(s.type) + '.');
@@ -979,12 +984,37 @@
     });
     return out;
   }
-  function emitInformal(ex, env, opts) {   // env = root
+  function informalHeader(ex, opts) {
     var R = function (e) { return render(e, opts); }, L = [];
     if (ex.givens.length) L.push('We are given ' + ex.givens.map(function (g) { return R(g.type); }).join(', ') + '.');
     L.push('We wish to prove ' + R(ex.goal) + '.');
+    return L;
+  }
+  function emitInformal(ex, env, opts) {   // env = root
+    var L = informalHeader(ex, opts);
     informalSteps(env.steps, opts).forEach(function (x) { L.push(x); });
     if (env.bindings.some(function (b) { return exprEq(b.type, env.goal); })) L.push('This is what we wished to prove.  ∎');
+    return L.join('\n');
+  }
+  // Live informal view, the counterpart of emitLive: the player may be working inside one or more open
+  // sub-proofs, under an assumption or under an arbitrary variable. A `discharge` STEP is only written
+  // into the parent once the sub-proof closes, so reading the root alone -- which is what this used to
+  // do -- showed nothing at all of the work in progress, while the Lean view showed it under a `sorry`.
+  // The open levels are therefore narrated here, in the same words the finished discharge will use,
+  // and closed with a line saying what is still owed; it plays the part Lean's `sorry` plays, and the
+  // pending conclusion is spelt with a `…` where Lean puts its `?a` metavariable -- which also saves
+  // the line from having to word "under this assumption" and "for this arbitrary variable" differently.
+  function emitInformalLive(ex, cur, opts) {
+    var chain = [], e = cur; while (e.parent) { chain.unshift(e); e = e.parent; }
+    var root = e;
+    if (!chain.length) return emitInformal(ex, root, opts);
+    var L = informalHeader(ex, opts);
+    informalSteps(root.steps, opts).forEach(function (x) { L.push(x); });
+    L.push('Introduce ' + chain.map(function (c) { return informalBinder(c.assumption, opts); }).join(', then ') + ':');
+    chain.forEach(function (c) { informalSteps(c.steps, opts).forEach(function (x) { L.push('  ' + x); }); });
+    var pending = binderChain(chain.map(function (c) { return c.assumption; }), varE('…'));
+    L.push('  (Not discharged yet: discharging will conclude ' + render(pending, opts) + '.)');
+    if (root.bindings.some(function (b) { return exprEq(b.type, root.goal); })) L.push('This is what we wished to prove.  ∎');
     return L.join('\n');
   }
 
@@ -1614,7 +1644,7 @@
     SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
-    leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal,
+    leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,

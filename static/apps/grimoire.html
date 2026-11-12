@@ -768,7 +768,7 @@
     var opts = { parens: state.parens };
     if (state.style === 'informal') {
       el.spellbook.className = '';
-      el.spellbook.innerHTML = esc(G.emitInformal(state.ex, rootEnv(), opts));
+      el.spellbook.innerHTML = esc(G.emitInformalLive(state.ex, state.env, opts));
     } else {
       el.spellbook.className = 'lean';
       el.spellbook.innerHTML = esc(G.leanPreamble(state.ex) + G.emitLive(state.ex, state.env, opts)).replace(/\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g, '<span class="kw">$1</span>');
