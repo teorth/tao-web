@@ -199,7 +199,7 @@
     <label title="Toggle between fantasy wording (potions, recipes, spellbook) and plain logic wording (hypotheses, rules, proof)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="fantasy" checked> Fantasy mode</label>
     <label title="Show every sub-expression with explicit parentheses instead of relying on operator precedence. On by default — turn it off for the shorter, idiomatic form once Lean’s precedences are familiar (∧ and → both bind to the right)." style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="parens" checked> Explicit parentheses</label>
     <label title="Save your progress in this browser (local storage only — never sent over any network)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="save"> Save progress</label>
-    <label title="Hide recipes and constructors that have no valid move for the current selection (useful once many are unlocked)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="hideinactive"> Hide inactive</label>
+    <label title="Hide recipes and constructors that have no valid move for the current selection — and, with nothing selected, the ones that no combination of ingredients on this bench could use at all (useful once many are unlocked)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="hideinactive"> Hide inactive</label>
   </div>
 
   <details id="mapwrap">
@@ -671,7 +671,11 @@
     verb = verb || T('brew');
     return '<button class="deduction" data-idx="' + i + '" title="' + esc(flavor(verb + ' ' + outStr +'  ·  ' + code)) + '"><span class="arrow">' + verb + ' →</span><span class="ty">' + esc(outStr) + '</span>  <code>' + esc(code) + '</code></button>';
   }
-  function renderRecipes() {
+  // Every card the panel can show, for whatever is selected right now. The card SEQUENCE depends only on
+  // the active capabilities and the unlocked recipes, never on the selection — the selection decides each
+  // card's `active` flag and its brew buttons. (reachableCards() below relies on that: it zips two runs.)
+  // Pushes the craftable brews into state.ded as a side effect, so the buttons can refer to them by index.
+  function buildCards() {
     var recipes = availableRecipes();
     state.ded = [];
     var proofByRecipe = {};
@@ -752,11 +756,38 @@
       });
     }
 
-    // Hiding only kicks in once something is selected. With an empty selection almost nothing is applicable,
-    // so hiding would blank the whole panel and leave a new player with no idea what recipes exist — the
-    // clutter this option targets is the long list of cards that do NOT apply to the selection you just made.
+    return cards;
+  }
+
+  // "Hide inactive" with an EMPTY selection. Every card is inactive then, so hiding on `active` alone
+  // would blank the panel; hiding nothing at all (what this used to do) made the option look broken,
+  // since the long dimmed list is exactly the clutter it promises to cut. So "inactive" means something
+  // stronger here: a card that cannot fire from ANYTHING on this bench, however the player selects. That
+  // is found by building the card list a second time with everything selected at once — each potion
+  // twice, since a recipe may want the same one in both slots, as And.idem does — and keeping whatever
+  // lit up. It over-approximates: ingredients that could never be combined are all offered together, so
+  // it errs towards showing a card rather than hiding one that would have been useful.
+  function reachableCards() {
+    var keep = { sel: state.sel, selF: state.selF, selT: state.selT, selV: state.selV, ded: state.ded }, probe;
+    state.sel = [];
+    state.env.bindings.forEach(function (b) { state.sel.push(b.name, b.name); });
+    state.selF = state.formulas.map(function (_, i) { return i; });
+    state.selT = state.terms.map(function (_, i) { return i; });
+    state.selV = (state.env.vars || []).map(function (v) { return v.name + ':' + v.sort; });
+    try { probe = buildCards(); } finally {
+      state.sel = keep.sel; state.selF = keep.selF; state.selT = keep.selT; state.selV = keep.selV; state.ded = keep.ded;
+    }
+    return probe;
+  }
+  function renderRecipes() {
+    var cards = buildCards();
     var anySel = state.sel.length || state.selF.length || state.selT.length || state.selV.length;
-    el.recipes.innerHTML = cards.filter(function (c) { return !state.hideInactive || !anySel || c.active; }).map(function (c) { return c.html; }).join('');
+    var show = cards.map(function (c) { return c.active; });
+    if (state.hideInactive && !anySel) {
+      var probe = reachableCards();
+      if (probe.length === cards.length) show = probe.map(function (c) { return c.active; });
+    }
+    el.recipes.innerHTML = cards.filter(function (c, i) { return !state.hideInactive || show[i]; }).map(function (c) { return c.html; }).join('');
     Array.prototype.forEach.call(el.recipes.querySelectorAll('.deduction'), function (btn) {
       btn.addEventListener('click', function () { doCraftIdx(+btn.getAttribute('data-idx')); });
     });
