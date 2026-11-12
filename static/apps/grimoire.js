@@ -93,6 +93,53 @@
   defSym({ name: 'EQ', arity: 2, fixity: 'infix', prec: 38, uni: '=', abbrev: ['\\eq', '\\equals'], resultSort: PROP, polyArgs: true });
   defSym({ name: 'MEM', arity: 2, fixity: 'infix', prec: 38, uni: '∈', abbrev: ['\\in', '\\mem'], argSorts: [SET, SET], resultSort: PROP, leanApp: 'mem' });
 
+  // ---------- words mode: the LOGICAL layer in English ----------
+  // A player who has never met ∧ can read the informal proof but not the statements it is about, which
+  // is a strange place to leave someone: the prose explains a line of symbols they cannot pronounce. So
+  // the logical layer -- connectives, quantifiers, True/False -- gets an English rendering, and the
+  // MATHEMATICAL layer (=, ∈, ≤, +, ·, ∪, ∩, ∗) keeps its ordinary school notation. Those symbols are
+  // not what makes a statement unreadable, and spelling them out ("x is a member of a union b") reads
+  // far worse than the symbols do. The Lean proof is never worded: it is the one place the player is
+  // meant to be reading real notation, and it is the thing they will paste into an editor.
+  var WORDS = { NOT: 'not', AND: 'and', OR: 'or', IMPLIES: 'implies', IFF: 'if and only if', TRUE: 'true', FALSE: 'false' };
+  var QWORDS = { forall: 'for all', exists: 'for some' };
+  // `X : Ω` is a typing judgement; in words it is just membership of the sort, which is what Ω means.
+  function varPhrase(name, sort, opts) { return name + ((opts && opts.words) ? ' in ' : ' : ') + sort; }
+  // Rule summaries on the recipe cards, hints, and the notes are hand-written strings carrying the same
+  // notation, and minted recipes build theirs with render() at unlock time, so there is nothing to pass
+  // an option to. They are transliterated instead -- crude, but these are short schematic lines, and it
+  // keeps one source of truth for each rule rather than a parallel English copy that can drift.
+  // ⊢ and ↦ become a separator rather than a word: the em dash does what the turnstile was doing, which
+  // is to say where the inputs stop and the result starts.
+  // A quantifier is transliterated two ways, because the prose uses the glyph both ways: binding a
+  // variable ('∀ x, P(x)' → 'for all x, P(x)') and as the NAME of the thing ('modus ponens for ∀' →
+  // 'modus ponens for “for all”'). The bound form is a one-letter variable, optionally with its sort,
+  // then a comma — which is what tells it apart from 'the ∀ tutorial, one level deeper'.
+  var QVAR = '([A-Za-z\\u0370-\\u03ff][0-9\']*(?:\\s*:\\s*[A-Za-z\\u0370-\\u03ff]+)?,)';
+  var TRANSLIT = [[/∧/g, 'and'], [/∨/g, 'or'], [/→/g, 'implies'], [/↔/g, 'if and only if'], [/¬ ?/g, 'not '],
+                  [/[⊢↦]/g, '— you get'],
+                  [new RegExp('∀ ' + QVAR, 'g'), 'for all $1'], [new RegExp('∃ ' + QVAR, 'g'), 'for some $1'],
+                  [/∀/g, '“for all”'], [/∃/g, '“for some”'], [/\bTrue\b/g, 'true'], [/\bFalse\b/g, 'false']];
+  function wordsRule(str) {
+    var s = String(str);
+    TRANSLIT.forEach(function (t) { s = s.replace(t[0], t[1]); });
+    return s.replace(/  +/g, ' ').replace(/^\s*— /, '');   // a nullary rule ('⊢ True') has no inputs to separate
+  }
+  // Words mode is an INPUT mode too, or it would be a strange half-measure: what the player reads on the
+  // shelf, they can type into the bench. Longest phrase first, so "if and only if" is not read as an
+  // "and". `in` is the sort separator only right after a quantifier ("for all x in Ω" → "∀ x : Ω"),
+  // since on its own it is far more likely to mean ∈ -- which the player types as `in` either way.
+  var WORD_IN = [[/\bif and only if\b/gi, '↔'], [/\biff\b/gi, '↔'], [/\bimplies\b/gi, '→'],
+                 [/\band\b/gi, '∧'], [/\bor\b/gi, '∨'], [/\bnot\b/gi, '¬'],
+                 [/\bfor (?:all|every|each)\b/gi, '∀'], [/\bfor some\b/gi, '∃'], [/\bthere (?:is|exists)\b/gi, '∃'],
+                 [/([∀∃]\s*[A-Za-zͰ-Ͽ][0-9']*)\s+in\s+/g, '$1 : '],
+                 [/\btrue\b/g, 'True'], [/\bfalse\b/g, 'False']];
+  function wordsToSymbols(str) {
+    var s = String(str);
+    WORD_IN.forEach(function (t) { s = s.replace(t[0], t[1]); });
+    return s;
+  }
+
   // ---------- Expr: {tag:'var',name,sort} | {tag:'app',sym,args,sort} | {tag:'binder',q,v,body,sort} ----------
   function varE(name, sort) { return { tag: 'var', name: name, sort: sort || PROP }; }
   function appE(symName, args) { return { tag: 'app', sym: symName, args: args || [], sort: SYMBOLS[symName].resultSort }; }
@@ -277,12 +324,20 @@
   // a sort may be written one way on the board and another in Lean (`Nat` vs the module's `Nat'`)
   function sortName(sn, lean) { return (lean && (SORTS[sn] || {}).lean) || sn; }
   function render(e, opts) {
-    var parens = !!(opts && opts.parens), lean = !!(opts && opts.lean);
+    var lean = !!(opts && opts.lean), words = !lean && !!(opts && opts.words);
+    var parens = !!(opts && opts.parens);
+    // English has no operator-precedence conventions to lean on: "A and B or C" is not ambiguous in Lean
+    // but it is to a reader, so a WORDED node always brackets. Only the worded ones, though: `x ∈ a or
+    // x ∈ b` needs the bracket around the `or`, not around each membership, which still reads by its
+    // ordinary precedence. The parens option, when the player has it on, brackets everything as before.
+    function bracket(e) { return parens || (words && (e.tag === 'binder' || !!WORDS[e.sym])); }
     function go(e, minPrec, top) {
       if (e.tag === 'var') return e.name;
       if (e.tag === 'binder') {
-        var str = (e.q === 'forall' ? '∀' : '∃') + ' ' + e.v.name + ' : ' + sortName(e.v.sort, lean) + ', ' + go(e.body, 0, false);
-        return (BINDER_PREC < minPrec || (parens && !top)) ? '(' + str + ')' : str;
+        var str = words
+          ? QWORDS[e.q] + ' ' + varPhrase(e.v.name, sortName(e.v.sort, false), opts) + ', ' + go(e.body, 0, false)
+          : (e.q === 'forall' ? '∀' : '∃') + ' ' + e.v.name + ' : ' + sortName(e.v.sort, lean) + ', ' + go(e.body, 0, false);
+        return (BINDER_PREC < minPrec || (bracket(e) && !top)) ? '(' + str + ')' : str;
       }
       var s = SYMBOLS[e.sym];
       // In Lean an application binds tighter than anything, so a nested one must be parenthesised:
@@ -293,17 +348,17 @@
         var la = s.leanApp + ' ' + e.args.map(function (a) { return go(a, 100, false); }).join(' ');
         return minPrec >= 100 ? '(' + la + ')' : la;
       }
-      if (s.fixity === 'atom') return s.uni;
+      if (s.fixity === 'atom') return (words && WORDS[e.sym]) || s.uni;
       if (s.fixity === 'app') {   // predicate application: `Q x y` in Lean, `Q(x, y)` on the board
         var args = e.args.map(function (a) { return go(a, lean ? 100 : 0, false); });
         if (!lean) return e.sym + '(' + args.join(', ') + ')';
         var ap = e.sym + (args.length ? ' ' + args.join(' ') : '');
         return minPrec >= 100 ? '(' + ap + ')' : ap;
       }
-      var str;
-      if (s.fixity === 'prefix') str = s.uni + ' ' + go(e.args[0], s.prec, false);
-      else str = go(e.args[0], s.assoc === 'left' ? s.prec : s.prec + 1, false) + ' ' + s.uni + ' ' + go(e.args[1], s.assoc === 'right' ? s.prec : s.prec + 1, false);
-      return (s.prec < minPrec || (parens && !top)) ? '(' + str + ')' : str;
+      var str, op = (words && WORDS[e.sym]) || s.uni;
+      if (s.fixity === 'prefix') str = op + ' ' + go(e.args[0], s.prec, false);
+      else str = go(e.args[0], s.assoc === 'left' ? s.prec : s.prec + 1, false) + ' ' + op + ' ' + go(e.args[1], s.assoc === 'right' ? s.prec : s.prec + 1, false);
+      return (s.prec < minPrec || (bracket(e) && !top)) ? '(' + str + ')' : str;
     }
     return (opts && opts.arg) ? go(e, 100, false) : go(e, 0, true);
   }
@@ -372,7 +427,8 @@
     }
   });
   // Chapter 6: case analysis (∨ elimination) — combine A → C and B → C into A ∨ B → C (emit an Or.elim lambda)
-  defRecipe({ id: 'case_analysis', leanName: 'case_analysis', chapter: 9, arity: 2, rule: 'a proof of A → C, and a proof of B → C ⊢ A ∨ B → C', informal: 'case analysis (disjunction elimination)',
+  defRecipe({ id: 'case_analysis', leanName: 'case_analysis', chapter: 9, arity: 2, rule: 'a proof of A → C, and a proof of B → C ⊢ A ∨ B → C',
+    ruleWords: 'a proof of A implies C, and a proof of B implies C — you get (A or B) implies C', informal: 'case analysis (disjunction elimination)',
     match: function (inp) {
       if (inp.length !== 2 || !allProofs(inp)) return [];
       var f = inp[0].type, g = inp[1].type;
@@ -433,7 +489,8 @@
   });
   // Chapter 12: universal instantiation — the ∀ counterpart of modus_ponens (specialize ∀x,P(x) at a term t → P(t),
   // emitting the Lean application `h t`). The second ingredient is a TERM (a non-proof of the bound variable's sort).
-  defRecipe({ id: 'universal_instantiation', leanName: 'universal_instantiation', chapter: 18, arity: 2, rule: 'a proof of ∀ x, P(x), and a term t ⊢ P(t)', informal: 'universal instantiation (specialization)',
+  defRecipe({ id: 'universal_instantiation', leanName: 'universal_instantiation', chapter: 18, arity: 2, rule: 'a proof of ∀ x, P(x), and a term t ⊢ P(t)',
+    ruleWords: 'a proof that P(x) holds for all x, and a term t — you get P(t)', informal: 'universal instantiation (specialization)',
     match: function (inp) {
       if (inp.length !== 2 || !inp[0].proof || inp[1].proof) return [];
       var h = inp[0].type, t = inp[1].type;
@@ -465,7 +522,8 @@
   // ∃-introduction: a proof of P(t) and a witness term t yield the finitely-many ∃ x, (P with some t's abstracted).
   // All share the Lean anonymous-constructor witness `⟨t, h⟩`; the `have`-type ascription disambiguates which body —
   // so the STEP records the concrete result (no lambda is ever shown to, or built by, the player).
-  defRecipe({ id: 'Exists.intro', leanName: 'Exists.intro', chapter: 22, arity: 2, rule: 'a proof of P(t), and a term t ⊢ ∃ x, P(x)', informal: 'existential introduction',
+  defRecipe({ id: 'Exists.intro', leanName: 'Exists.intro', chapter: 22, arity: 2, rule: 'a proof of P(t), and a term t ⊢ ∃ x, P(x)',
+    ruleWords: 'a proof of P(t), and a term t — you get: P(x) holds for some x', informal: 'existential introduction',
     match: function (inp) {
       if (inp.length !== 2 || !inp[0].proof || inp[1].proof) return [];
       var proof = inp[0], t = inp[1].type;
@@ -513,7 +571,8 @@
   // Both checks are first-order (substE + exprEq), so no higher-order unification is involved; this sits
   // beside `rw` and `Exists.intro`, which likewise sidestep it by structure rather than by search.
   defRecipe({ id: 'induction', leanName: 'induction', chapter: 26, arity: 2,
-    rule: 'a proof of P(0), and a proof of ∀ n, (P(n) → P(succ n)) ⊢ ∀ n, P(n)', informal: 'proof by induction',
+    rule: 'a proof of P(0), and a proof of ∀ n, (P(n) → P(succ n)) ⊢ ∀ n, P(n)',
+    ruleWords: 'a proof of P(0), and a proof that P(n) implies P(succ n) for every n — you get: P(n) holds for all n', informal: 'proof by induction',
     match: function (inp) {
       if (inp.length !== 2 || !inp[0].proof || !inp[1].proof) return [];
       var base = inp[0].type, step = inp[1].type;
@@ -624,12 +683,18 @@
     var constNames = {}; consts.forEach(function (c) { constNames[c.name] = 1; });
     var freeVars = freeVarsInOrder(concl, [], []).filter(function (v) { return !gvFree[v.name] && !constNames[v.name]; });   // conclusion vars not fixed by the givens → explicit inputs
     var c = consts.length, g = givens.length, f = freeVars.length, arity = c + g + f;
-    var rule = consts.map(function (x) { return 'term ' + x.name; })
-      .concat(givens.map(function (t) { return render(t); }))
-      .concat(freeVars.map(function (v) { return (v.sort === PROP ? 'formula ' : 'term ') + v.name; }))
-      .join(', ') + ' ⊢ ' + render(concl);
+    // the rule summary is built once, at unlock time, so both wordings are built here: transliterating
+    // the symbolic one would word the statements but leave their bracketing to Lean's precedences
+    var inputs = function (opts) {
+      return consts.map(function (x) { return 'term ' + x.name; })
+        .concat(givens.map(function (t) { return render(t, opts); }))
+        .concat(freeVars.map(function (v) { return (v.sort === PROP ? 'formula ' : 'term ') + v.name; }))
+        .join(', ');
+    };
+    var rule = inputs() + ' ⊢ ' + render(concl);
+    var ruleWords = (inputs({ words: true }) + ' — you get ' + render(concl, { words: true })).replace(/^\s*— /, '');
     return {
-      id: name, leanName: name, chapter: ex.chapter, arity: arity, minted: true, rule: rule, informal: 'the lemma ' + name,
+      id: name, leanName: name, chapter: ex.chapter, arity: arity, minted: true, rule: rule, ruleWords: ruleWords, informal: 'the lemma ' + name,
       match: function (inp) {
         if (inp.length !== arity) return [];
         var subst = {};
@@ -963,7 +1028,7 @@
   // How an assumption or an arbitrary variable is announced. Shared, because the live view below has
   // to word an OPEN sub-proof exactly as the finished one will be worded once it is discharged.
   function informalBinder(b, opts) {
-    return b.kind === 'var' ? 'an arbitrary ' + b.name + ' : ' + b.sort : render(b.type, opts);
+    return b.kind === 'var' ? 'an arbitrary ' + varPhrase(b.name, b.sort, opts) : render(b.type, opts);
   }
   function informalSteps(steps, opts) {
     var R = function (e) { return render(e, opts); }, out = [];
@@ -974,9 +1039,9 @@
         out.push(s.contra ? 'This is a contradiction, so we conclude ' + R(s.type) + '.'
                           : 'Discharging, we obtain ' + R(s.type) + '.');
       } else if (s.kind === 'obtain') {
-        out.push('Since ' + R(s.existType) + ', fix ' + s.varName + ' : ' + s.sort + ' with ' + R(s.witness) + '.');
+        out.push('Since ' + R(s.existType) + ', fix ' + varPhrase(s.varName, s.sort, opts) + ' with ' + R(s.witness) + '.');
       } else if (s.kind === 'pick') {
-        out.push('Pick ' + s.varName + ' : ' + s.sort + ' arbitrarily (the sort is nonempty).');
+        out.push('Pick ' + varPhrase(s.varName, s.sort, opts) + ' arbitrarily (the sort is nonempty).');
       } else {
         var rec = RECIPES[s.recipe];
         out.push('From ' + (s.froms || []).map(R).join(', ') + ' we deduce ' + R(s.type) + '  (' + (rec && rec.informal || s.recipe) + ').');
@@ -1198,7 +1263,7 @@
     // Bi-implication (↔). 7.1 introduces Iff; symmetry (7.2) and transitivity (7.3) are the
     // MANDATORY spine (7.3 will unlock Ch 8 later); reflexivity (7.4) and the ↔-congruences (7.5–7.7,
     // QED 10.1b/d/f) are optional side-branches.
-    { id: '7.1', kind: 'example', chapter: 7, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1'], qed: '10.1(a)', hint: 'An ↔ holds two implications at once. Select hAB and hA and brew Iff.mp to travel along the forward one.', needs: ['iff'] },
+    { id: '7.1', kind: 'example', chapter: 7, givens: [binding('hA', A), binding('hAB', IFF(A, B))], formulas: [A, B], goal: B, prereqs: ['6.1'], qed: '10.1(a)', hint: 'An equivalence holds two implications at once. Select hAB and hA and brew Iff.mp to travel along the forward one.', needs: ['iff'] },
     { id: '7.2', kind: 'lemma', leanName: "Iff.symm'", chapter: 7, givens: [binding('hAB', IFF(A, B))], formulas: [A, B], goal: IFF(B, A), prereqs: ['7.1'], qed: '10.2(a)', needs: [] },
     { id: '7.3', kind: 'lemma', leanName: "Iff.trans'", chapter: 7, givens: [binding('hAB', IFF(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IFF(A, C), prereqs: ['7.1'], qed: '10.2(b)', needs: [] },
     { id: '7.4', kind: 'lemma', leanName: "Iff.refl'", chapter: 7, givens: [], formulas: [A], goal: IFF(A, A), prereqs: ['7.1'], qed: '10.2(c)', needs: [] },
@@ -1333,7 +1398,7 @@
     // 13.1 introduces `exists` (obtain → instantiate → modus_ponens); 13.2 (ex falso) and 13.3 (∧-elim) are siblings.
     { id: '13.1', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hpc', fa('X', IMPLIES(appE('P', [X]), C)))],
-      goal: C, prereqs: ['12.1'], hint: 'An ∃ is no use until its witness has a name. Select hex and the unclaimed gem a and use the Obtain card — a joins the context along with a potion saying P(a). Then instantiate hpc at a and finish with modus_ponens.', needs: ['exists'] },
+      goal: C, prereqs: ['12.1'], hint: 'An existence statement is no use until its witness has a name. Select hex and the unclaimed gem a and use the Obtain card — a joins the context along with a potion saying P(a). Then instantiate hpc at a and finish with modus_ponens.', needs: ['exists'] },
     { id: '13.2', kind: 'example', chapter: 13, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)], formulas: [C],
       givens: [binding('hex', ee('x', appE('P', [xL]))), binding('hnp', fa('X', NOT(appE('P', [X]))))],
       goal: C, prereqs: ['13.1'], needs: [] },
@@ -1639,7 +1704,7 @@
     PROP: PROP, SYMBOLS: SYMBOLS,
     varE: varE, appE: appE, AND: AND, OR: OR, IMPLIES: IMPLIES, IFF: IFF, NOT: NOT, TRUE: TRUE, FALSE: FALSE,
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
-    expandAbbrevs: expandAbbrevs, parse: parse, render: render,
+    expandAbbrevs: expandAbbrevs, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
     SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,

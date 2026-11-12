@@ -198,6 +198,7 @@
     <button id="reset" type="button" title="Discard this exercise's progress and start it over">Reset</button>
     <label title="Toggle between fantasy wording (potions, recipes, spellbook) and plain logic wording (hypotheses, rules, proof)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="fantasy" checked> Fantasy mode</label>
     <label title="Show every sub-expression with explicit parentheses instead of relying on operator precedence. On by default — turn it off for the shorter, idiomatic form once Lean’s precedences are familiar (∧ and → both bind to the right)." style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="parens" checked> Explicit parentheses</label>
+    <label title="Say the logic in English everywhere except the Lean proof: “A and B”, “A implies B”, “for all X in Ω, P(X)”. The mathematics keeps its ordinary notation (=, ∈, +, ∪), and the Lean spellbook keeps its real syntax — switch it off whenever you want to read the symbols instead." style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="words"> Plain English</label>
     <label title="Save your progress in this browser (local storage only — never sent over any network)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="save"> Save progress</label>
     <label title="Hide recipes and constructors that have no valid move for the current selection — and, with nothing selected, the ones that no combination of ingredients on this bench could use at all (useful once many are unlocked)" style="display:inline-flex;align-items:center;gap:.35rem;cursor:pointer;color:var(--muted)"><input type="checkbox" id="hideinactive"> Hide inactive</label>
   </div>
@@ -251,7 +252,7 @@
       </div>
       <div class="selbar">
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
-        <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both A and B out of A ∧ B"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
+        <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both halves out of a conjunction"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
         <button id="clearsel" type="button" title="Clear the current ingredient selection">Clear</button>
       </div>
       <div id="deducehint" class="hint" style="margin-top:.5rem"></div>
@@ -327,7 +328,7 @@
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
              'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
-             'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'achwrap', 'achsum', 'ach', 'ctxmenu',
+             'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
              'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapcur', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
              'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
@@ -335,7 +336,7 @@
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML };   // authored (fantasy) prose
 
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -360,11 +361,22 @@
     'ops': 'operations and compound terms', 'eq': 'equality and rewriting',
     'groups': 'theories with axioms', 'induction': 'induction'
   };
-  function mechOf(ex) { return (ex.needs || []).map(function (c) { return MECH[c] || c; }).join(' + '); }
+  // three of the mechanics are NAMED after a symbol, so they need wording too
+  var MECH_WORDS = { 'forall': 'variables and “for all”', 'exists': '“for some” and obtaining a witness', 'exists_intro': 'proving “for some”' };
+  function mechOf(ex) { return (ex.needs || []).map(function (c) { return (state.words && MECH_WORDS[c]) || MECH[c] || c; }).join(' + '); }
   function isTutorial(ex) { return !!(ex && (ex.needs || []).length); }
 
   function esc(s) { return String(s).replace(/[&<>]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]; }); }
-  function R(e) { return G.render(e, { parens: state.parens }); }   // render with the current parenthesization mode
+  // Every statement the player SEES goes through here: the goal, the potions, the gems, the formula
+  // shelf, the brew buttons, the informal proof. The Lean spellbook is the one exception -- it builds
+  // its own options without `words`, since Lean is not English and the player will paste it into one.
+  function dispOpts() { return { parens: state.parens, words: state.words }; }
+  function R(e) { return G.render(e, dispOpts()); }
+  function VS(name, sort) { return G.varPhrase(name, sort, dispOpts()); }      // `X : Ω` / `X in Ω`
+  function RU(r) { return state.words ? (r.ruleWords || G.wordsRule(r.rule)) : r.rule; }   // a recipe's rule line
+  function QF() { return state.words ? '“for all”' : '∀'; }               // naming a quantifier in prose
+  function QS() { return state.words ? '“for some”' : '∃'; }
+  function WP(s) { return state.words ? G.wordsRule(s) : s; }                 // hand-written prose carrying notation
 
   var TERMS = {
     fantasy: { bench: 'Your bench — tap potions to select ingredients', recipes: 'Recipes', spell: 'Spellbook', formula: '📜 Scrolls', term: '💎 Gems', brew: 'brew', scribe: 'scribe', gemv: 'craft', obtain: 'unearth', pick: 'conjure', formbtn: 'Scribe scroll', termbtn: 'Craft gem', craft: 'Craft the goal:', qed: 'brewed', pick: 'Select ingredients above to see what you can brew.', none: 'No recipe applies to that selection — try different potions.' },
@@ -490,6 +502,7 @@
   function addTerm() {
     var raw = el['term-in'].value.trim();
     if (!raw) return;
+    if (state.words) raw = raw.replace(/^([A-Za-zͰ-Ͽ][\w']*)\s+in\s+/, '$1 : ');   // “a in Ω” declares a, as the shelf writes it
     var r = parseTerm(raw);
     if (!r.ok) { el['term-in'].classList.add('bad'); el['term-err'].textContent = r.error; return; }
     if (state.terms.some(function (t) { return G.exprEq(t, r.expr); })) { el['term-in'].value = ''; return; }
@@ -578,7 +591,7 @@
           return chain.map(function (a, i) {
             var levels = n - i;                       // abandoning an outer level discards the inner ones too
             var body = a.kind === 'var'
-              ? 'for arbitrary <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(a.sort) + '</span>'
+              ? 'for arbitrary <span class="nm">' + esc(a.name) + '</span> ' + (state.words ? 'in' : ':') + ' <span class="ty">' + esc(a.sort) + '</span>'
               : 'assuming <span class="nm">' + esc(a.name) + '</span> : <span class="ty">' + esc(R(a.type)) + '</span>';
             var tip = levels === 1
               ? 'Abandon this sub-proof — discard ' + a.name + ' and everything crafted inside it. Nothing is added to the proof.'
@@ -603,12 +616,12 @@
     // states it differently, which is usually its `[assuming A]` environment where we use an arrow.
     var prov = state.ex.qed
       ? '<div class="prov">Corresponds to <strong>QED ' + esc(state.ex.qed) + '</strong>'
-        + (state.ex.qedNote ? ' — ' + esc(state.ex.qedNote) : '') + '</div>'
+        + (state.ex.qedNote ? ' — ' + esc(WP(state.ex.qedNote)) : '') + '</div>'
       : '';
     // a tutorial brings a mechanic the player has never seen, so it also carries a hint: enough to
     // get the first move made, not the solution. Only while unsolved -- afterwards it is just noise.
     var hint = (state.ex.hint && !solved)
-      ? '<div class="hint"><span class="hintk">💡 Hint</span> ' + esc(flavor(state.ex.hint)) + '</div>'
+      ? '<div class="hint"><span class="hintk">💡 Hint</span> ' + esc(flavor(WP(state.ex.hint))) + '</div>'
       : '';
     var unlock = state.justUnlocked ? ' <span class="unlock">✨ new recipe unlocked: <code>' + esc(state.justUnlocked) + '</code></span>' : '';
     var exUnlock = (state.justUnlockedEx && state.justUnlockedEx.length)
@@ -647,8 +660,8 @@
     el.benchvars.innerHTML = '<span class="ctxlabel">' + (state.fantasy ? 'gems in hand' : 'in context') + ':</span> ' +
       vars.map(function (v) {
         var key = v.name + ':' + v.sort, c = countV(key);
-        return '<button class="gem' + (c > 0 ? ' sel' : '') + '" data-vkey="' + esc(key) + '" title="' + esc(flavor(v.name + ' : ' + v.sort + ' — a ' + (state.fantasy ? 'gem' : 'variable') + ' in the current context; click to select it as an ingredient (e.g. to instantiate a ∀ or build a predicate)')) + '">' +
-          gemoji() + '<span class="nm">' + esc(v.name) + '</span><span class="sep">:</span><span class="ty">' + esc(v.sort) + '</span>' + (c > 1 ? '<span class="count">×' + c + '</span>' : '') + '</button>';
+        return '<button class="gem' + (c > 0 ? ' sel' : '') + '" data-vkey="' + esc(key) + '" title="' + esc(flavor(VS(v.name, v.sort) + ' — a ' + (state.fantasy ? 'gem' : 'variable') + ' in the current context; click to select it as an ingredient (e.g. to instantiate a ' + QF() + ' statement or build a predicate)')) + '">' +
+          gemoji() + '<span class="nm">' + esc(v.name) + '</span><span class="sep">' + (state.words ? ' in ' : ':') + '</span><span class="ty">' + esc(v.sort) + '</span>' + (c > 1 ? '<span class="count">×' + c + '</span>' : '') + '</button>';
       }).join('');
     Array.prototype.forEach.call(el.benchvars.querySelectorAll('.gem'), function (btn) {
       btn.addEventListener('click', function (ev) { clickGemVar(btn.getAttribute('data-vkey'), ev.shiftKey); });
@@ -716,7 +729,7 @@
     // proof recipes
     recipes.forEach(function (r) {
       var brews = proofByRecipe[r.id] || [];
-      cards.push(card(r.leanName, r.rule, brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), b.lean); }).join(''), r.leanName + ' — ' + r.rule, r.minted));
+      cards.push(card(r.leanName, RU(r), brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), b.lean); }).join(''), r.leanName + ' — ' + RU(r), r.minted));
     });
     // assume / introduce / discharge / reductio
     var notIntroBrew = null;
@@ -730,20 +743,28 @@
     }
     if (hasCap('assume')) {
       var abody = assumeBrews.map(function (b) { return dedBtn(b.i, 'assume ' + R(b.f), 'intro'); }).join('') +
-        introBrews.map(function (b) { return dedBtn(b.i, 'introduce ' + b.t.name + ' : ' + b.t.sort, 'intro ' + b.t.name); }).join('') +
+        introBrews.map(function (b) { return dedBtn(b.i, 'introduce ' + VS(b.t.name, b.t.sort), 'intro ' + b.t.name); }).join('') +
         dischargeBrews.map(function (b) { return dedBtn(b.i, R(b.out), '↑' + b.level + ' discharge ' + b.name); }).join('') +
         (notIntroBrew ? dedBtn(notIntroBrew.i, R(notIntroBrew.out), notIntroBrew.tip) : '');
-      cards.push(card('Assume / Introduce / Discharge', 'assume A · intro x · discharge ⊢ A→B / ∀x,P · reductio ⊢ ¬A', !!abody, abody, 'Assume a formula (→) or introduce a variable (∀) to open a sub-proof; discharge a statement to close it into an implication or a ∀. In a sub-proof, a statement and its negation conclude ¬(the assumption) by reductio.'));
+      cards.push(card('Assume / Introduce / Discharge',
+        state.words ? 'assume A · introduce x · discharge — you get “A implies B” or “for all x, P(x)” · reductio — you get “not A”'
+                    : 'assume A · intro x · discharge ⊢ A→B / ∀x,P · reductio ⊢ ¬A',
+        !!abody, abody, state.words
+          ? 'Assume a formula (towards “implies”) or introduce a variable (towards “for all”) to open a sub-proof; discharge a statement to close it into an implication or a “for all”. In a sub-proof, a statement and its negation conclude that the assumption is false, by reductio.'
+          : 'Assume a formula (→) or introduce a variable (∀) to open a sub-proof; discharge a statement to close it into an implication or a ∀. In a sub-proof, a statement and its negation conclude ¬(the assumption) by reductio.'));
     }
     // ∃-elimination: a dedicated "Obtain" card (Chapter 19). Select an ∃ statement and an unclaimed variable name.
     if (hasCap('exists')) {
-      var obody = obtainBrews.map(function (b) { return dedBtn(b.i, 'fix ' + b.varName + ' : ' + b.sort + ', with ' + R(b.witness), 'obtain ⟨' + b.varName + ', h⟩', T('obtain')); }).join('');
-      cards.push(card('Obtain', '∃ x, P x  +  fresh a  ⊢  a : Ω,  P a', obtainBrews.length > 0, obody, 'From an existential statement and an UNCLAIMED variable name, place that variable in the context together with its witnessing hypothesis. The existential is kept (Lean copies it first). Select the ∃ potion and a fresh variable in the term bench.'));
+      var obody = obtainBrews.map(function (b) { return dedBtn(b.i, 'fix ' + VS(b.varName, b.sort) + ', with ' + R(b.witness), 'obtain ⟨' + b.varName + ', h⟩', T('obtain')); }).join('');
+      cards.push(card('Obtain',
+        state.words ? '“P(x) holds for some x”  +  a fresh name a  —  you get a in Ω, and P(a)' : '∃ x, P x  +  fresh a  ⊢  a : Ω,  P a',
+        obtainBrews.length > 0, obody, 'From a statement that something exists, and an UNCLAIMED variable name, place that variable in the context together with its witnessing hypothesis. The original statement is kept (Lean copies it first). Select the ' + QS() + ' potion and a fresh variable in the term bench.'));
     }
     // pick an arbitrary inhabitant of a nonempty sort (Chapter 21)
     if (hasCap('pick')) {
-      var pbody = pickBrews.map(function (b) { return dedBtn(b.i, 'pick ' + b.t.name + ' : ' + b.t.sort + ' arbitrarily', 'have ' + b.t.name + ' : ' + b.t.sort + ' := Classical.choice inferInstance', T('pick')); }).join('');
-      cards.push(card('Pick', 'nonempty Ω  ⊢  a : Ω', pickBrews.length > 0, pbody, 'Every sort is nonempty, so you can pick an arbitrary inhabitant. Select an UNCLAIMED variable in the term bench to place it directly in the context (no hypothesis, no ∀) — informally, “pick a : Ω arbitrarily”.'));
+      var pbody = pickBrews.map(function (b) { return dedBtn(b.i, 'pick ' + VS(b.t.name, b.t.sort) + ' arbitrarily', 'have ' + b.t.name + ' : ' + b.t.sort + ' := Classical.choice inferInstance', T('pick')); }).join('');
+      cards.push(card('Pick', state.words ? 'Ω is nonempty — you get some a in Ω' : 'nonempty Ω  ⊢  a : Ω',
+        pickBrews.length > 0, pbody, 'Every sort is nonempty, so you can pick an arbitrary inhabitant. Select an UNCLAIMED variable in the term bench to place it directly in the context (no hypothesis, no ' + QF() + ') — informally, “pick ' + VS('a', 'Ω') + ' arbitrarily”.'));
     }
     // formula constructors — one card each (dimmed when nothing valid is selected), so the palette is always visible
     if (hasCap('formula')) {
@@ -752,7 +773,7 @@
       formulaRecipeList().forEach(function (r) {
         if (r.cap && !hasCap(r.cap)) return;   // gated constructors appear only once their capability is active
         var brews = fByRecipe[r.id] || [];
-        cards.push(card(r.leanName, r.rule, brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), 'formula', T('scribe')); }).join(''), (state.fantasy ? 'Scribe a scroll' : 'Form a formula') + ' — ' + r.rule));
+        cards.push(card(r.leanName, RU(r), brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), 'formula', T('scribe')); }).join(''), (state.fantasy ? 'Scribe a scroll' : 'Form a formula') + ' — ' + RU(r)));
       });
     }
 
@@ -796,21 +817,23 @@
 
   // ---- render: spellbook (Lean or informal QED-style) ----
   function renderSpellbook() {
-    var opts = { parens: state.parens };
     if (state.style === 'informal') {
       el.spellbook.className = '';
-      el.spellbook.innerHTML = esc(G.emitInformalLive(state.ex, state.env, opts));
+      el.spellbook.innerHTML = esc(G.emitInformalLive(state.ex, state.env, dispOpts()));
     } else {
+      // the one view words mode leaves alone: this is real Lean, to be read as Lean and pasted into one
       el.spellbook.className = 'lean';
-      el.spellbook.innerHTML = esc(G.leanPreamble(state.ex) + G.emitLive(state.ex, state.env, opts)).replace(/\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g, '<span class="kw">$1</span>');
+      el.spellbook.innerHTML = esc(G.leanPreamble(state.ex) + G.emitLive(state.ex, state.env, { parens: state.parens })).replace(/\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g, '<span class="kw">$1</span>');
     }
   }
 
   function applyTerms() {
     el.benchHead.textContent = T('bench'); el.recipesHead.textContent = T('recipes'); el.spellHead.textContent = T('spell');
     el.formulaHead.innerHTML = flavor(T('formula') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— type a formula, then tap it to use as an ingredient (e.g. for Or.inl)</span>');
-    el.termHead.innerHTML = T('term') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (∀), or use it to build a predicate</span>';
+    el.termHead.innerHTML = T('term') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (towards ' + QF() + '), or use it to build a predicate</span>';
     el['formula-add'].textContent = T('formbtn'); el['term-add'].textContent = T('termbtn');
+    el['formula-in'].placeholder = state.words ? 'e.g.  A and (B and C)   — or \and for ∧, as the Lean proof writes it'
+                                               : 'e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab';
     el.lede.innerHTML = flavor(ORIG.lede);
     el.howto.innerHTML = flavor(ORIG.howto);
   }
@@ -1015,7 +1038,7 @@
     var progress = {}; Object.keys(state.progress).forEach(function (k) { progress[k] = state.progress[k]; });
     if (state.ex) progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };   // capture the live board
     return { v: 1, solved: state.solved, progress: progress, last: state.ex ? state.ex.id : null,
-             fantasy: state.fantasy, parens: state.parens, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
+             fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
   }
   function persist() { if (state.save) storageSet(JSON.stringify(currentBlob())); }
   function clearSaved() { storageDel(); }
@@ -1032,6 +1055,7 @@
     state.progress = saved.progress || {};
     state.fantasy = saved.fantasy !== false;   // default on
     state.parens = (saved.parens === undefined) ? true : !!saved.parens;
+    state.words = !!saved.words;
     state.hideInactive = saved.hideInactive !== false;   // default on
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
@@ -1113,8 +1137,8 @@
     el['term-shelf'].innerHTML = state.terms.map(function (e, i) {
       var c = countT(i);
       var issue = e.tag === 'var' ? null : contextIssue(e);   // a bare variable can always be intro'd, so is never greyed; a compound term needs its variables in context
-      var lbl = e.tag === 'var' ? (esc(e.name) + ' <span class="sort">: ' + esc(e.sort) + '</span>') : esc(R(e));
-      return '<button class="tchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-ti="' + i + '" title="' + esc(issue || flavor('variable ' + e.name + ' : ' + e.sort + ' — select to introduce it (∀) or to build a predicate; right-click to introduce or delete')) + '">' + gemoji() + lbl + (c > 1 ? ' <span class="sort">×' + c + '</span>' : '') + '</button>';
+      var lbl = e.tag === 'var' ? (esc(e.name) + ' <span class="sort">' + (state.words ? 'in ' : ': ') + esc(e.sort) + '</span>') : esc(R(e));
+      return '<button class="tchip' + (c > 0 ? ' sel' : '') + (issue ? ' dim' : '') + '" data-ti="' + i + '" title="' + esc(issue || flavor('variable ' + VS(e.name, e.sort) + ' — select to introduce it (towards ' + QF() + ') or to build a predicate; right-click to introduce or delete')) + '">' + gemoji() + lbl + (c > 1 ? ' <span class="sort">×' + c + '</span>' : '') + '</button>';
     }).join('');
     Array.prototype.forEach.call(el['term-shelf'].querySelectorAll('.tchip'), function (btn) {
       var i = +btn.getAttribute('data-ti');
@@ -1226,6 +1250,7 @@
   el.styleInformal.addEventListener('click', function () { setStyle('informal'); });
   el.autoclear.addEventListener('change', function () { state.autoclear = el.autoclear.checked; persist(); });
   el.parens.addEventListener('change', function () { state.parens = el.parens.checked; renderAll(); });
+  el.words.addEventListener('change', function () { state.words = el.words.checked; renderAll(); });
   el.hideinactive.addEventListener('change', function () { state.hideInactive = el.hideinactive.checked; renderRecipes(); });
 
   // right-click context menu (rename/delete a potion; delete a formula)
@@ -1307,6 +1332,7 @@
   function addFormula() {
     var raw = el['formula-in'].value.trim();
     if (!raw) return;
+    if (state.words) raw = G.wordsToSymbols(raw);     // in words mode, “A and B” parses as well as A ∧ B
     // the data variables in context (the gems) tell the parser their sorts, so `r ∈ r` reads r as a Set
     // element rather than as a propositional atom
     var ctx = {};
@@ -1331,7 +1357,8 @@
     }
     // the controls always mirror `state`, so each default is defined in exactly one place (the state
     // literal) rather than being duplicated as a `checked` attribute in the markup
-    el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.hideinactive.checked = state.hideInactive;
+    el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.words.checked = state.words;
+    el.hideinactive.checked = state.hideInactive;
     el.mapfollow.checked = state.mapFollow; el.autoclear.checked = state.autoclear; el.repeat.checked = state.repeat;
     el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
     el.styleLean.className = state.style === 'lean' ? 'on' : '';
@@ -1341,7 +1368,7 @@
   boot();
 
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, doObtain: doObtain, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
-    clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); },
+    clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); }, setWords: function (b) { state.words = b; renderAll(); },
     neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu, doAbandon: doAbandon,
     accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
