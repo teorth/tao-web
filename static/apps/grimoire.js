@@ -965,6 +965,21 @@
     });
     return out;
   }
+  // Everything a proof needs ahead of itself in order to compile ON ITS OWN. Lean 4 imports `Init` by
+  // itself, and every atom, predicate, abstract sort, operation and axiom is emitted as a `variable`
+  // declaration by `leanPreamble` below -- so for all but the concrete sorts this is empty, and the
+  // emitted proof needs no import at all. A concrete sort is the exception: its definitions go in whole,
+  // followed by the `open` the imported form would have needed anyway.
+  function leanPrelude(ex) {
+    var out = [];
+    (ex.sorts || []).forEach(function (sn) {
+      var d = SORTS[sn] || {};
+      if (!d.prelude) return;
+      out = out.concat(d.prelude, ['']);
+      if (d.open) out.push('open ' + d.open, '');
+    });
+    return out.join('\n');
+  }
   function leanPreamble(ex) {
     var lines = [];
     (ex.sorts || []).forEach(function (s) {
@@ -1162,6 +1177,66 @@
   var n0 = appE('nzero', []), nsucc = function (a) { return appE('succ', [a]); }, nadd = function (a, b) { return appE('add', [a, b]); };
   var nle = function (a, b) { return appE('le', [a, b]); };
   defSort({ name: NAT, kind: 'concrete', lean: "Nat'", module: 'Grimoire.Nat', open: "Grimoire Grimoire.Nat'",
+    // The module's SOURCE, carried here rather than only in a file beside the compile-check. An exported
+    // proof has to stand on its own: whoever receives it has no `Grimoire.Nat` to import, so `leanPrelude`
+    // writes these lines into the file in place of the import. `scratch/lean/check_emitted.js` writes the
+    // module out of them before it compiles, so there is one copy of this Lean and it cannot drift.
+    prelude: [
+      "/-",
+      "  Grimoire's `Nat` sort: a CONCRETE sort, modelled on core Lean's `Nat`.",
+      "",
+      "  Because it is modelled rather than axiomatised, every \"axiom\" of the Grimoire theory is a proved",
+      "  theorem here, so the theory is consistent by construction and the compile-check keeps its force.",
+      "  No Mathlib, no `Add`/`LE` typeclass, no `axiom` command.",
+      "-/",
+      "namespace Grimoire",
+      "",
+      "/-- `def`, not `abbrev`: semireducible, so core's `Add`/`LE`/`OfNat` instances do not apply and our own",
+      "    notation is unambiguous. -/",
+      "def Nat' : Type := Nat",
+      "",
+      "/-- Required before any Ω-lemma carrying `[Nonempty Ω]` can be used at this sort. -/",
+      "instance : Nonempty Nat' := ⟨Nat.zero⟩",
+      "",
+      "namespace Nat'",
+      "",
+      "def zero : Nat' := Nat.zero",
+      "def succ (a : Nat') : Nat' := Nat.succ a",
+      "def add (a b : Nat') : Nat' := Nat.add a b",
+      "/-- `a ≤ b` is DEFINED as \"b is a plus something\". That is what lets the order facts be derived in-game",
+      "    from the addition ladder — `le_refl` from `add_zero`, `le_trans` from `add_assoc` — rather than being",
+      "    handed over as further axioms. -/",
+      "def le (a b : Nat') : Prop := ∃ k : Nat', add a k = b",
+      "",
+      "scoped infixl:65 \" + \" => Grimoire.Nat'.add",
+      "scoped infix:50 \" ≤ \" => Grimoire.Nat'.le",
+      "",
+      "/-- The two defining equations of addition. Both hold definitionally on the model. -/",
+      "theorem add_zero (a : Nat') : add a zero = a := rfl",
+      "theorem add_succ (a b : Nat') : add a (succ b) = succ (add a b) := rfl",
+      "",
+      "/-- Induction, packaged so a Grimoire proof can cite it by name and let Lean infer the motive from the",
+      "    `have` ascription. Doing it here rather than emitting `Nat.rec` directly also hides the fact that",
+      "    `Nat'` is only definitionally a `Nat`. -/",
+      "theorem induction' {motive : Nat' → Prop} (base : motive zero)",
+      "    (step : ∀ n, motive n → motive (succ n)) : ∀ n, motive n :=",
+      "  fun n => Nat.rec base step n",
+      "",
+      "/-- Unfolding `≤`. The player uses this with Iff.mp / Iff.mpr, so `le_refl` and `le_trans` become",
+      "    exercises rather than axioms. -/",
+      "theorem le_def (a b : Nat') : le a b ↔ ∃ k : Nat', add a k = b := Iff.rfl",
+      "",
+      "/-- The one order fact that is NOT reachable from the addition ladder alone (it needs the successor to be",
+      "    injective and non-zero), so it stays a theorem of the module. -/",
+      "theorem not_succ_le (a : Nat') : ¬ le (succ a) a := by",
+      "  intro h",
+      "  obtain ⟨k, hk⟩ := h",
+      "  exact absurd (Nat.le.intro hk) (Nat.not_succ_le_self a)",
+      "",
+      "end Nat'",
+      "end Grimoire"
+    ],
+
     ops: [{ sym: 'nzero', lean: 'zero', type: [NAT] }, { sym: 'succ', lean: 'succ', type: [NAT, NAT] },
           { sym: 'add', lean: 'add', type: [NAT, NAT, NAT] }, { sym: 'le', lean: 'le', type: [NAT, NAT, PROP] }],
     axioms: [
@@ -1685,6 +1760,27 @@
       goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), prereqs: ['20.1'], qed: '23.3', qedNote: 'no largest natural number; QED carries the ordering axiom as a premise', hint: 'Assume there is a largest m and obtain it. Instantiating its property at succ(m) gives succ(m) ≤ m, which not_succ_le forbids.', needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
+  // Which level proves each minted lemma. A recipe a player holds is one of three things: a BASE recipe,
+  // which is Lean's own; a sort's AXIOM, which `leanPreamble` declares or the sort's prelude proves; or a
+  // MINTED LEMMA, which is a theorem the player proved on an earlier level -- and nothing in an exported
+  // file declares one of those unless that earlier proof travels with it.
+  var LEMMA_OWNER = {};
+  EXERCISES.forEach(function (e) { if (e.kind === 'lemma' && e.leanName) LEMMA_OWNER[e.leanName] = e.id; });
+  // the minted lemmas a proof applies, in first-use order, counting work inside sub-proofs and inside any
+  // sub-proof still open (an unfinished export carries its chain too)
+  function lemmaDeps(cur) {
+    var out = [], seen = {};
+    function walk(steps) {
+      steps.forEach(function (s) {
+        if (s.recipe && LEMMA_OWNER[s.recipe] && !seen[s.recipe]) { seen[s.recipe] = 1; out.push(s.recipe); }
+        if (s.kind === 'discharge') s.levels.forEach(function (lv) { walk(lv.steps); });
+      });
+    }
+    var chain = [], e = cur; while (e.parent) { chain.unshift(e); e = e.parent; }
+    walk(e.steps);
+    chain.forEach(function (c) { walk(c.steps); });
+    return out;
+  }
 
   // ---------- par: how long the canonical proof is ----------
   // The length, in moves (see `proofLength`), of the scripted solution of each level -- the same scripts
@@ -1759,7 +1855,7 @@
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
     expandAbbrevs: expandAbbrevs, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
-    SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports,
+    SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports, leanPrelude: leanPrelude,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
@@ -1769,7 +1865,7 @@
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
     obtain: obtain, obtainOptions: obtainOptions, isExists: isExists, pick: pick, enumAbstract: enumAbstract,
     FORMULA_RECIPES: FORMULA_RECIPES, formulaDeductions: formulaDeductions,
-    EXERCISES: EXERCISES, EX_BY_ID: EX_BY_ID,
+    EXERCISES: EXERCISES, EX_BY_ID: EX_BY_ID, LEMMA_OWNER: LEMMA_OWNER, lemmaDeps: lemmaDeps,
     PROGRESSION_START: PROGRESSION_START, TUTORIALS: TUTORIALS, RECIPE_CAP: RECIPE_CAP,
     accessibleSet: accessibleSet, activeCaps: activeCaps, missingPrereqs: missingPrereqs
   };

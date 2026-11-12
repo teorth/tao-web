@@ -280,7 +280,7 @@
         <span class="spellctl">
           <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
           <button id="copyproof" class="exp" type="button" title="Copy the whole proof — the informal reading as comments, then the Lean — to the clipboard">⧉ Copy</button>
-          <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then the Lean, which compiles as it stands">⤓ Save</button>
+          <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then Lean that compiles on its own — no import needed, and the proofs of the lemmas you built it from carried along with it">⤓ Save</button>
         </span>
       </div>
       <pre id="spellbook" class="lean"></pre>
@@ -305,7 +305,10 @@
       beside the count of the moves you have made. Matching it rims the level gold on the map; coming in
       under it turns the level gold — and means you have found something better than the proof this game
       was built around, which is worth telling me about. <strong>Copy</strong> and <strong>Save</strong>
-      under the spellbook export the proof, informal reading and Lean together.</p>
+      under the spellbook export the proof: the informal reading as comments, then Lean that compiles on
+      its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
+      here needs Mathlib — but solving a lemma mints it as a recipe, so a proof that uses one carries your
+      proof of that lemma along with it, and the chain can run deeper than the proof you just finished.</p>
   </details>
 
   <details class="note" id="caveat">
@@ -901,6 +904,35 @@
   // compiles as it stands (core Lean, no Mathlib). So an export is at once something to read, something
   // to check, and something to paste into a comment if it turns out to be shorter than the game's own.
   // Written from the current view's options, less `words`: an exported Lean file is Lean.
+  //
+  // "As it stands" has to be earned, and twice over. The game's compile-check compiles all 158 proofs as
+  // ONE file, so a proof there can lean on anything declared above it; a single exported proof has nothing
+  // above it at all. So the file carries, ahead of the proof: the definitions of any concrete sort it uses
+  // (`leanPrelude` -- there is no `import`, since Lean 4 takes `Init` by itself), and then every minted
+  // lemma the proof applies, proved, deepest first. Those proofs are the player's OWN, read back out of
+  // `state.progress`.
+  function rootOf(e) { while (e.parent) e = e.parent; return e; }
+  function solvedEnv(id) {   // the player's own finished proof of `id`, if this browser still has it
+    var pr = state.progress[id];
+    if (!pr || !pr.env) return null;
+    var r = rootOf(pr.env);
+    return (r.goal && (r.bindings || []).some(function (b) { return G.exprEq(b.type, r.goal); })) ? r : null;
+  }
+  // the lemmas to carry, in an order where each one's own lemmas come before it
+  function proofChain(env) {
+    var order = [], seen = {};
+    (function visit(en) {
+      G.lemmaDeps(en).forEach(function (name) {
+        var id = G.LEMMA_OWNER[name];
+        if (!id || seen[id]) return;
+        seen[id] = true;
+        var denv = solvedEnv(id);
+        if (denv) visit(denv);
+        order.push({ ex: G.EX_BY_ID[id], env: denv });
+      });
+    })(env);
+    return order;
+  }
   function proofText() {
     var ex = state.ex, len = G.proofLength(state.env), pr = G.par(ex.id), done = isSolved();
     var head = ['-- Lean Grimoire \u2014 ' + (isTutorial(ex) ? 'tutorial' : 'exercise') + ' ' + ex.id + (ex.leanName ? '  (' + ex.leanName + ')' : ''),
@@ -910,10 +942,33 @@
                   // the one line a reader of the file should see first, since it is why it was sent
                   + (done && pr && len < pr ? '  THIS ONE IS SHORTER.' : ''), '--'];
     var informal = G.emitInformalLive(ex, state.env, { parens: state.parens }).split('\n').map(function (l) { return ('-- ' + l).replace(/\s+$/, ''); });
-    var imports = [];
-    G.leanImports(ex).forEach(function (i) { imports.push(i.imp); if (i.open) imports.push(i.open); });
-    return head.concat(informal, [''], imports, imports.length ? [''] : [],
-                       [G.leanPreamble(ex) + G.emitLive(ex, state.env, { parens: state.parens })]).join('\n') + '\n';
+    var opts = { parens: state.parens };
+    var chain = proofChain(state.env);
+    // one prelude for every concrete sort anywhere in the file, not just in the proof at the end of it
+    var sorts = [];
+    chain.map(function (d) { return d.ex; }).concat([ex]).forEach(function (e) {
+      (e.sorts || []).forEach(function (sn) { if (sorts.indexOf(sn) < 0) sorts.push(sn); });
+    });
+    var body = [];
+    if (chain.length) {
+      body.push('-- Solving a lemma mints it as a recipe, so a proof that uses one needs that proof with');
+      body.push('-- it. ' + chain.length + ' of them, each as you proved it, deepest first.', '');
+      var gaps = 0;
+      chain.forEach(function (d) {
+        // Reset throws a solved level's proof away but keeps the recipe, so the odd link can be missing.
+        // It goes in as its statement with `sorry`, named, rather than being left out of the file silently.
+        body.push('-- ' + d.ex.id + (d.ex.leanName ? '  (' + d.ex.leanName + ')' : '')
+                  + (d.env ? '' : '  --  NOT IN THIS BROWSER ANY MORE: re-solve ' + d.ex.id + ' and export again'));
+        if (!d.env) gaps++;
+        body.push('section', G.leanPreamble(d.ex)
+          + (d.env ? G.emitLean(d.ex, d.env, opts) : G.leanHeader(d.ex, opts) + '\n  sorry'), 'end', '');
+      });
+      if (gaps) head.splice(3, 0, '-- ' + gaps + ' lemma' + (gaps === 1 ? '' : 's') + ' below could not be filled in, so this file still has a `sorry` in it.');
+      body.push('-- and the proof itself:', '');
+    }
+    var prelude = G.leanPrelude({ sorts: sorts });
+    return head.concat(informal, [''], prelude ? [prelude] : [],
+                       body, [G.leanPreamble(ex) + G.emitLive(ex, state.env, opts)]).join('\n') + '\n';
   }
   function flashBtn(btn, msg) {
     var was = btn.textContent;
