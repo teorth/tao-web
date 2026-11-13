@@ -1303,7 +1303,7 @@
     { id: '4.6', kind: 'lemma', leanName: "imp_const'", chapter: 4, givens: [binding('hC', C)], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['4.1'], qed: '6.2', hint: 'Nothing inside either sub-proof is used at all — hC was given before you started. Assume A, assume B, and discharge hC through both levels.', needs: [] },
     { id: '4.7', kind: 'example', chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, A)), prereqs: ['4.1'], qed: '7.1', hint: 'Assume A, then assume B inside it: A is still in hand in the inner sub-proof, and discharging it through both levels is the whole proof.', needs: [] },
     // 4.8 roots an OPTIONAL branch (4.8 → 5.6 → 5.7); the main Chapter-5 spine is 5.2 → 5.3 → 5.4 → 5.9.
-    { id: '4.8', kind: 'lemma', leanName: "And.symm'", chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, B), AND(B, A)), prereqs: ['4.1'], qed: '8.3', hint: 'Assume A ∧ B, pull out both halves inside the sub-proof, pair them the other way round, and discharge.', needs: [] },
+    { id: '4.8', kind: 'lemma', leanName: "And.symm'", chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(AND(A, B), AND(B, A)), prereqs: ['4.1'], qed: '8.3', hint: "And.comm' is a recipe already — you proved it back in 2.1. So assume A ∧ B, brew that once, and discharge: the whole middle of this proof is a lemma you hold.", needs: [] },
 
     // ---------- Chapter 5: Modus ponens ----------
     // 5.1 (QED 8.1a): modus ponens by itself — one craft. It introduces the `mp` capability, so it is now
@@ -1794,7 +1794,7 @@
     '1.1': 2, '1.2': 1,
     '2.1': 3, '2.2': 6, '2.3': 6,
     '3.1': 2, '3.2': 1,
-    '4.1': 2, '4.2': 3, '4.3': 2, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 5,
+    '4.1': 2, '4.2': 3, '4.3': 2, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
     '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 4, '5.8': 4, '5.9': 4, '5.10': 3, '5.11': 3,
     '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 17, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 18, '6.14': 2, '6.15': 3, '6.16': 3,
     '7.1': 1, '7.2': 7, '7.3': 9, '7.4': 3, '7.5': 4, '7.6': 9, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.12': 1, '7.13': 7, '7.14': 7,
@@ -1813,6 +1813,24 @@
     '20.1': 8, '20.2': 17, '20.3': 19, '20.4': 22, '20.5': 7, '20.6': 19, '20.7': 5,
   };
   function par(id) { return CANON[id] || null; }
+  // Where a par came from somebody else. The scripted solutions are the author's; when a player finds a
+  // shorter proof and sends it in, that proof BECOMES the scripted solution -- so the compile-check
+  // verifies it and the par still follows from a proof that is known to work -- and the credit is kept
+  // here. Hand-written, unlike CANON itself: `canon.js` cannot know who wrote a proof.
+  var CANON_CREDIT = {
+    '4.8': { who: 'an anonymous reader', date: '2026-11-12' }
+  };
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+  function longDate(iso) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : iso;
+  }
+  // 'an anonymous reader, 12 November 2026', or '' where the par is the author's own
+  function credit(id) {
+    var c = CANON_CREDIT[id];
+    return c ? c.who + ', ' + longDate(c.date) : '';
+  }
 
   // ---------- progression: accessible exercises + active capabilities from the solved set ----------
   // `unlocks` is the inverse of `prereqs`, built once here: the map draws it as edges and the UI uses it
@@ -1859,7 +1877,7 @@
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
-    proofLength: proofLength, CANON: CANON, par: par,
+    proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,

@@ -304,7 +304,8 @@
     <p>Each level also shows the length of the <strong>shortest proof known</strong> to the game, in moves,
       beside the count of the moves you have made. Matching it rims the level gold on the map; coming in
       under it turns the level gold — and means you have found something better than the proof this game
-      was built around, which is worth telling me about. <strong>Copy</strong> and <strong>Save</strong>
+      was built around, which is worth telling me about: a shorter proof that is sent in becomes the one
+      the game knows, and is credited beside the level it belongs to. <strong>Copy</strong> and <strong>Save</strong>
       under the spellbook export the proof: the informal reading as comments, then Lean that compiles on
       its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
       here needs Mathlib — but solving a lemma mints it as a recipe, so a proof that uses one carries your
@@ -638,7 +639,8 @@
   function scoreHTML() {
     var len = G.proofLength(state.env), pr = G.par(state.ex.id), best = state.best[state.ex.id];
     if (!pr) return '';
-    var bits = [len + ' move' + (len === 1 ? '' : 's') + ' so far', 'shortest known ' + pr];
+    var cr = G.credit(state.ex.id);
+    var bits = [len + ' move' + (len === 1 ? '' : 's') + ' so far', 'shortest known ' + pr + (cr ? ', found by ' + cr : '')];
     if (best != null) bits.push('your best ' + best + (best < pr ? ' 🏆' : best === pr ? ' ✓' : ''));
     return '<div class="score">⚖ ' + bits.join(' · ') + '</div>';
   }
@@ -684,8 +686,9 @@
     var len = G.proofLength(root), pr = G.par(state.ex.id), best = state.best[state.ex.id];
     var verdict = '';
     if (solved && pr) {
-      verdict = len > pr ? ' <span class="score">The shortest proof known here takes ' + pr + '.</span>'
-        : len === pr ? ' <span class="matched">That matches the shortest proof known.</span>'
+      var cr = G.credit(state.ex.id) ? ', found by ' + esc(G.credit(state.ex.id)) : '';
+      verdict = len > pr ? ' <span class="score">The shortest proof known here takes ' + pr + cr + '.</span>'
+        : len === pr ? ' <span class="matched">That matches the shortest proof known' + cr + '.</span>'
         : '<span class="record">🏆 <strong>A new record.</strong> The shortest proof this game knows takes '
           + pr + ' move' + (pr === 1 ? '' : 's') + ', so you have found something it does not. Please tell me about it:'
           + ' <strong>Copy</strong> or <strong>Save</strong> the proof below and leave it in the comments on'
@@ -938,7 +941,8 @@
     var head = ['-- Lean Grimoire \u2014 ' + (isTutorial(ex) ? 'tutorial' : 'exercise') + ' ' + ex.id + (ex.leanName ? '  (' + ex.leanName + ')' : ''),
                 '-- ' + BLOG,
                 '-- ' + (done ? 'Proved in ' : 'UNFINISHED \u2014 ') + len + ' move' + (len === 1 ? '' : 's') + (done ? '.' : ' so far.')
-                  + (pr ? '  The shortest proof the game knows takes ' + pr + '.' : '')
+                  + (pr ? '  The shortest proof the game knows takes ' + pr
+                          + (G.credit(ex.id) ? ', found by ' + G.credit(ex.id) : '') + '.' : '')
                   // the one line a reader of the file should see first, since it is why it was sent
                   + (done && pr && len < pr ? '  THIS ONE IS SHORTER.' : ''), '--'];
     var informal = G.emitInformalLive(ex, state.env, { parens: state.parens }).split('\n').map(function (l) { return ('-- ' + l).replace(/\s+$/, ''); });
@@ -1165,7 +1169,8 @@
         var miss = open ? [] : G.missingPrereqs(e.id, state.solved);
         // what the level costs, and how the player has done against it: the number QED showed on hover
         var sc = [];
-        if (pr) sc.push('shortest known ' + pr + ' move' + (pr === 1 ? '' : 's'));
+        if (pr) sc.push('shortest known ' + pr + ' move' + (pr === 1 ? '' : 's')
+                        + (G.credit(e.id) ? ', found by ' + G.credit(e.id) : ''));
         if (bst != null) sc.push('your best ' + bst + (!pr ? '' : bst < pr ? ' — a record!' : bst === pr ? ' — matched' : ''));
         ti.textContent = open
           ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + e.id + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : '')
