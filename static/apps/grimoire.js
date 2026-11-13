@@ -131,11 +131,12 @@
   // since on its own it is far more likely to mean ∈ -- which the player types as `in` either way.
   var WORD_IN = [[/\bif and only if\b/gi, '↔'], [/\biff\b/gi, '↔'], [/\bimplies\b/gi, '→'],
                  [/\band\b/gi, '∧'], [/\bor\b/gi, '∨'], [/\bnot\b/gi, '¬'],
-                 [/\bfor (?:all|every|each)\b/gi, '∀'], [/\bfor some\b/gi, '∃'], [/\bthere (?:is|exists)\b/gi, '∃'],
                  [/([∀∃]\s*[A-Za-zͰ-Ͽ][0-9']*)\s+in\s+/g, '$1 : '],
                  [/\btrue\b/g, 'True'], [/\bfalse\b/g, 'False']];
+  // The quantifier words come from `expandQuantWords`, which `parse` applies in every mode; this adds the
+  // rest of the English, and then reads `in` as the sort separator wherever a quantifier was just written.
   function wordsToSymbols(str) {
-    var s = String(str);
+    var s = expandQuantWords(str);
     WORD_IN.forEach(function (t) { s = s.replace(t[0], t[1]); });
     return s;
   }
@@ -201,13 +202,32 @@
   // ---------- \-abbreviation expander (Lean-IDE style), registry-driven ----------
   var ABBREV = {};
   Object.keys(SYMBOLS).forEach(function (k) { (SYMBOLS[k].abbrev || []).forEach(function (a) { ABBREV[a] = SYMBOLS[k].uni; }); });
+  // ∀ and ∃ are not operator SYMBOLS -- they bind a variable, so the parser handles them structurally
+  // rather than as entries in the registry -- but a player looking for them wants the same backslash
+  // shortcuts as everything else, and the same live expansion on space or Tab.
+  ABBREV['\\forall'] = '∀'; ABBREV['\\all'] = '∀';
+  ABBREV['\\exists'] = '∃'; ABBREV['\\ex'] = '∃';
   function expandAbbrevs(str) { return String(str).replace(/\\[a-zA-Z]+/g, function (m) { return ABBREV[m] !== undefined ? ABBREV[m] : m; }); }
+  // The WORDS, too, and in every mode. A player who has only met the symbol in the goal pane will try
+  // "exists x" or "for all x" long before finding \exists, and there is nothing else those words could
+  // mean in a formula here -- nothing in the game is named `exists`. `parse` runs this first, so the words
+  // work whether or not Plain English is switched on. "there exists" has to be tried before the bare
+  // "exists", or the "there" would be left stranded.
+  var QUANT_WORDS = [
+    [/\bfor\s+(?:all|every|each|any)\b/gi, '∀'], [/\bforall\b/gi, '∀'],
+    [/\bfor\s+some\b/gi, '∃'], [/\bthere\s+(?:exists|exist|is|are)\b/gi, '∃'], [/\bexists\b/gi, '∃']
+  ];
+  function expandQuantWords(str) { var t = String(str); QUANT_WORDS.forEach(function (q) { t = t.replace(q[0], q[1]); }); return t; }
 
   // ---------- parser: precedence climbing over the registry ----------
   // Only genuine operator CHARACTERS go here. An `app` symbol (a predicate P, an operation f) is written as
   // an identifier followed by its arguments, so registering its name as an operator character would stop it
   // ever tokenising as an identifier — which is exactly why `P(x)` could not be typed before.
   var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity !== 'atom' && s.fixity !== 'app') UNI_OP[s.uni] = k; });
+  // A nullary constant is DISPLAYED as its glyph but REGISTERED under an internal name -- `0` is `nzero`,
+  // `1` is `one` -- so the parser has to accept the glyph as well, or the board shows `0 + a = a` and then
+  // refuses to read it back.
+  var UNI_ATOM = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity === 'atom' && s.arity === 0) UNI_ATOM[s.uni] = k; });
   // Identifiers admit Greek letters, because the Ω-sorted constants the game hands out are α, β, γ …
   // (Ω itself is a sort name, never an identifier). Without this a player simply cannot type `α = β`.
   var IDENT_CH = /[A-Za-z0-9_'\u0370-\u03ff\u1f00-\u1fff]/;
@@ -216,7 +236,8 @@
     while (i < str.length) {
       var c = str[i];
       if (/\s/.test(c)) { i++; continue; }
-      if (c === '(' || c === ')' || c === ',') { toks.push({ t: c }); i++; continue; }
+      if (c === '(' || c === ')' || c === ',' || c === ':') { toks.push({ t: c }); i++; continue; }
+      if (c === '∀' || c === '∃') { toks.push({ t: 'quant', q: c === '∀' ? 'forall' : 'exists' }); i++; continue; }
       if (UNI_OP[c]) { toks.push({ t: 'op', sym: UNI_OP[c] }); i++; continue; }
       if (IDENT_CH.test(c)) {
         var j = i; while (j < str.length && IDENT_CH.test(str[j])) j++;
@@ -249,12 +270,39 @@
     }
     return null;
   }
+  // An exercise RE-DECLARES its predicate letters: Q is `Ω → Prop` on one level and `Ω → Ω → Prop` on
+  // another, and the registry can only carry one of those as a default. So a level's own signatures win,
+  // and unlike the registry's flexible default they are CHECKED -- `P(A)` with a formula where a term
+  // belongs is worth reporting, not quietly building into something that can never match anything.
+  function predSortError(name, sig, args) {
+    for (var i = 0; i < args.length; i++) {
+      var got = sortOf(args[i]);
+      if (got !== sig.argSorts[i])
+        return name + ' takes ' + sig.argSorts[i] + (sig.arity === 1 ? '' : ' as argument ' + (i + 1)) +
+               ', but got ' + (got === PROP ? 'a formula' : got);
+    }
+    return null;
+  }
   // `ctx` (optional) maps an identifier to its sort — the data variables currently in context (the gems).
   // Without it every identifier is a propositional atom, which is right for Chapters 1–10 but wrong the
   // moment a sort carries a relation: `r ∈ r` needs to know that r is a Set element, not a proposition.
-  function parse(str, ctx) {
-    var sortOfName = function (n) { return (ctx && ctx[n]) || PROP; };
-    var tk = tokenize(expandAbbrevs(str));
+  // `opts.sort` is the sort a quantifier binds at when the player writes none -- the exercise's own default
+  // sort, which is what `∀ x, P(x)` means nine times in ten. `opts.preds` is the exercise's predicate
+  // signatures; without them a level whose Q takes one argument will not accept `Q(α)`, because the
+  // registry's Q takes two.
+  function parse(str, ctx, opts) {
+    var defSortName = (opts && opts.sort) || OMEGA;
+    var preds = {};
+    ((opts && opts.preds) || []).forEach(function (pd) {
+      preds[pd.name] = { arity: pd.argSorts.length, argSorts: pd.argSorts, resultSort: pd.resultSort || PROP, fixity: 'app' };
+    });
+    var scope = {};   // variables bound by an enclosing ∀/∃; inside the body they shadow `ctx`
+    var sortOfName = function (n) { return scope[n] || (ctx && ctx[n]) || PROP; };
+    // Abbreviations FIRST: `\and` and `\forall` contain the words `and` and `forall`, so the word
+    // pass would turn them into `\∧` and `\∀` and strand the backslash. Then the English, which is
+    // read in EVERY mode -- nothing in a formula can be spelt `and` or `exists` but the connective and
+    // the quantifier, so accepting them costs nothing and leaves one rule fewer for a player to know.
+    var tk = tokenize(wordsToSymbols(expandAbbrevs(str)));
     if (tk.error) return { ok: false, error: tk.error };
     var toks = tk.toks, pos = 0;
     function peek() { return toks[pos]; }
@@ -276,8 +324,38 @@
     }
     function prefix() {
       var t = peek();
+      if (t && t.t === 'quant') { pos++; return binder(t.q); }
       if (t && t.t === 'op' && SYMBOLS[t.sym].fixity === 'prefix') { pos++; var a = expr(SYMBOLS[t.sym].prec); if (!a.ok) return a; return { ok: true, expr: appE(t.sym, [a.expr]) }; }
       return atom();
+    }
+    // `∀ x : Ω, body` -- one or more variables, an optional shared sort, a comma, then the body, which runs
+    // as far to the right as it will go, because a binder is looser than every connective. That is also how
+    // the renderer prints one, so what the board shows can be typed straight back in. Several variables
+    // under one quantifier nest with the last innermost, as in Lean.
+    function binder(q) {
+      var glyph = q === 'forall' ? '∀' : '∃', names = [];
+      while (toks[pos] && toks[pos].t === 'id') { names.push(toks[pos].name); pos++; }
+      if (!names.length) return { ok: false, error: 'name the variable ' + glyph + ' binds, as in “' + glyph + ' x, P(x)”' };
+      var sort = defSortName;
+      if (toks[pos] && toks[pos].t === ':') {
+        pos++;
+        var sn = toks[pos];
+        if (!sn || sn.t !== 'id') return { ok: false, error: 'expected a sort after “:”, as in “' + glyph + ' x : ' + defSortName + ', P(x)”' };
+        pos++;
+        sort = sn.name === 'Omega' ? OMEGA : sn.name;
+        if (!SORTS[sort]) return { ok: false, error: 'there is no sort “' + sn.name + '”' };
+      }
+      if (!toks[pos] || toks[pos].t !== ',') return { ok: false, error: 'put a comma after the variable: “' + glyph + ' ' + names.join(' ') + (sort === defSortName ? '' : ' : ' + sort) + ', …”' };
+      pos++;
+      var saved = names.map(function (n) { return scope[n]; });
+      names.forEach(function (n) { scope[n] = sort; });
+      var b = expr(0);
+      names.forEach(function (n, k) { if (saved[k] === undefined) delete scope[n]; else scope[n] = saved[k]; });
+      if (!b.ok) return b;
+      if (sortOf(b.expr) !== PROP) return { ok: false, error: 'a quantifier has to bind a formula, and “' + render(b.expr) + '” is a term' };
+      var e = b.expr;
+      for (var k2 = names.length - 1; k2 >= 0; k2--) e = (q === 'forall' ? FORALL : EXISTS)({ name: names[k2], sort: sort }, e);
+      return { ok: true, expr: e };
     }
     function atom() {
       var t = toks[pos++];
@@ -286,7 +364,7 @@
       if (t.t === 'id') {
         // `name(arg, …)` is an application of a registered symbol — a predicate (Q(x,y)) or an operation (f(x))
         if (toks[pos] && toks[pos].t === '(') {
-          var d = SYMBOLS[t.name];
+          var d = preds[t.name] || SYMBOLS[t.name];
           if (!d || d.fixity !== 'app') return { ok: false, error: '“' + t.name + '” is not a function or predicate' };
           pos++;
           var args = [];
@@ -301,13 +379,16 @@
               return { ok: false, error: 'expected “,” or “)” in the arguments of ' + t.name };
             }
           }
-          if (args.length !== d.arity) return { ok: false, error: t.name + ' takes ' + d.arity + ' argument' + (d.arity === 1 ? '' : 's') + ', but got ' + args.length };
-          var badA = argSortError(t.name, args);
+          if (args.length !== d.arity) return { ok: false, error: t.name + ' takes ' + d.arity + ' argument' + (d.arity === 1 ? '' : 's') + ' here, but got ' + args.length };
+          var badA = preds[t.name] ? predSortError(t.name, preds[t.name], args) : argSortError(t.name, args);
           if (badA) return { ok: false, error: badA };
           return { ok: true, expr: appE(t.name, args) };
         }
-        var d0 = SYMBOLS[t.name];
-        if (d0 && d0.arity === 0 && d0.fixity === 'atom') return { ok: true, expr: appE(t.name, []) };   // a sort's constant
+        // A name the CONTEXT knows wins over a registry constant spelt the same way: `c` is the magma's
+        // own constant on a magma level, but on a level over Set it is whatever that exercise called `c`.
+        var local = scope[t.name] || (ctx && ctx[t.name]);
+        var d0 = local ? null : (SYMBOLS[t.name] || SYMBOLS[UNI_ATOM[t.name]]);
+        if (d0 && d0.arity === 0 && d0.fixity === 'atom') return { ok: true, expr: appE(d0.name, []) };   // a sort's constant
         return { ok: true, expr: varE(t.name, sortOfName(t.name)) };
       }
       if (t.t === 'atom') return { ok: true, expr: appE(t.sym, []) };
@@ -1871,7 +1952,7 @@
     PROP: PROP, SYMBOLS: SYMBOLS,
     varE: varE, appE: appE, AND: AND, OR: OR, IMPLIES: IMPLIES, IFF: IFF, NOT: NOT, TRUE: TRUE, FALSE: FALSE,
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
-    expandAbbrevs: expandAbbrevs, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
+    expandAbbrevs: expandAbbrevs, expandQuantWords: expandQuantWords, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
     SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports, leanPrelude: leanPrelude,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,

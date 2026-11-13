@@ -98,6 +98,8 @@
   .tchip:hover { border-color: var(--accent); }
   .tchip.sel { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 2px var(--accent-soft) inset; }
   .tchip .sort { color: var(--muted); font-family: Georgia, serif; font-style: italic; font-size: .82rem; }
+  .symchip { font: inherit; font-size: 1rem; line-height: 1; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .18rem .5rem; cursor: pointer; }
+  .symchip:hover { border-color: var(--accent); }
   .sortchip { font: inherit; font-size: .82rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .05rem .45rem; cursor: pointer; font-family: Georgia, serif; font-style: italic; }
   .sortchip:hover { border-color: var(--accent); }
   .fchip { padding: .28rem .6rem; border: 1px dashed var(--line); border-radius: 6px; background: var(--panel); color: var(--ink); cursor: pointer; }
@@ -259,6 +261,7 @@
         <div class="fbar">
           <input id="formula-in" type="text" placeholder="e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab" aria-label="type a formula" title="Type a well-formed formula. Backslash shortcuts (\and, \or, \to, \not, …) expand to symbols on space/Tab. Enter or Add puts it on the bench.">
           <button id="formula-add" class="toolbar" type="button" style="padding:.4rem .7rem" title="Add the typed formula to the bench">Add</button>
+          <span id="formula-quant" hidden></span>
           <span id="formula-err"></span>
         </div>
         <div id="formula-shelf"></div>
@@ -296,6 +299,15 @@
       <span class="nm">hAB</span> are auto-chosen but the objects and their types are kept typographically
       distinct. The Lean produced is deliberately plain, step-by-step <em>pseudo-Lean</em> — the point is to
       see the proof being built, not to write the slickest tactic.</p>
+    <p>On the scroll shelf you can write any formula the level can use, with backslash shortcuts for the
+      symbols: <code>\and</code>, <code>\or</code>, <code>\to</code>, <code>\not</code>,
+      <code>\iff</code>, and from Chapter 11 <code>\forall</code> and <code>\exists</code>, each
+      expanding on space or Tab. A quantifier is written as Lean writes it — <code>∀ x : Ω, P(x)</code>, or
+      <code>∀ x, P(x)</code> to let the level's own sort be understood, or <code>∀ x y, Q(x, y)</code> for
+      two at once. The plain words work as well, whichever notation the rest of the page is showing:
+      <code>for all x, P(x)</code>, <code>exists x, P(x)</code>, <code>A and B</code>,
+      <code>A implies not B</code> all parse. The <strong>∀</strong> and <strong>∃</strong> buttons beside
+      the shelf type the glyphs for you once a level can use them.</p>
     <p>The <strong>★ tutorial</strong> levels — 1.1, 2.1, and so on up to 20.1 — each introduce one new
       mechanic, and each carries a <strong>hint</strong> under the goal naming the first move to make. Every
       practice level in between has one too, but keeps it behind a <strong>💡 Hint</strong> button: knowing
@@ -360,7 +372,7 @@
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
              'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
-             'formula-in', 'formula-add', 'formula-err', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
+             'formula-in', 'formula-add', 'formula-err', 'formula-quant', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
              'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapcur', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
              'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
@@ -529,7 +541,7 @@
     var ctx = {};
     ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
     (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
-    var r = G.parse(raw, ctx);
+    var r = G.parse(raw, ctx, { sort: sorts[0], preds: state.ex.preds });
     if (!r.ok) return r;
     if (G.sortOf(r.expr) === 'Prop') return { ok: false, error: 'that is a formula, not a term — scribe it on the scroll shelf instead' };
     return r;
@@ -537,7 +549,7 @@
   function addTerm() {
     var raw = el['term-in'].value.trim();
     if (!raw) return;
-    if (state.words) raw = raw.replace(/^([A-Za-zͰ-Ͽ][\w']*)\s+in\s+/, '$1 : ');   // “a in Ω” declares a, as the shelf writes it
+    raw = raw.replace(/^([A-Za-zͰ-Ͽ][\w']*)\s+in\s+/, '$1 : ');   // “a in Ω” declares a, as the shelf writes it
     var r = parseTerm(raw);
     if (!r.ok) { el['term-in'].classList.add('bad'); el['term-err'].textContent = r.error; return; }
     if (state.terms.some(function (t) { return G.exprEq(t, r.expr); })) { el['term-in'].value = ''; return; }
@@ -998,8 +1010,11 @@
     el.formulaHead.innerHTML = flavor(T('formula') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— type a formula, then tap it to use as an ingredient (e.g. for Or.inl)</span>');
     el.termHead.innerHTML = T('term') + ' <span style="text-transform:none;letter-spacing:0;font-weight:400">— name a variable, then select it to <strong>intro</strong> it (towards ' + QF() + '), or use it to build a predicate</span>';
     el['formula-add'].textContent = T('formbtn'); el['term-add'].textContent = T('termbtn');
-    el['formula-in'].placeholder = state.words ? 'e.g.  A and (B and C)   — or \and for ∧, as the Lean proof writes it'
-                                               : 'e.g.  (A \and B) \and C   — \and becomes ∧ on space/Tab';
+    el['formula-in'].placeholder = hasCap('forall')
+      ? (state.words ? 'e.g.  for all x, P(x) implies P(x)' : 'e.g.  ∀ x, (P(x) → P(x))   — or \\forall, or “for all”')
+      : (state.words ? 'e.g.  A and (B and C)   — or \\and for ∧, as the Lean proof writes it'
+                     : 'e.g.  (A \\and B) \\and C   — \\and becomes ∧ on space/Tab');
+    renderQuantChips();
     el.lede.innerHTML = flavor(ORIG.lede);
     el.howto.innerHTML = flavor(ORIG.howto);
   }
@@ -1496,6 +1511,25 @@
     state.selF = state.selF.filter(function (x) { return x !== i; }).map(function (x) { return x > i ? x - 1 : x; });
     renderFormulas(); renderRecipes();
   }
+  // ∀ and ∃ are on no keyboard, and the backslash shortcuts are only discoverable if you already know
+  // they exist -- so from Chapter 11, where a quantified formula first becomes worth writing, the two
+  // glyphs sit beside the Add button and type themselves.
+  function renderQuantChips() {
+    var on = hasCap('forall');
+    el['formula-quant'].hidden = !on;
+    if (!on) { el['formula-quant'].innerHTML = ''; return; }
+    var sort = availableSorts()[0];
+    var chips = [
+      ['∀', 'every', 'a statement about EVERY x, written “∀ x : ' + sort + ', P(x)” — the sort may be left out, and you can also type \\forall or just “for all”'],
+      ['∃', 'some', 'a statement that SOME x exists, written “∃ x : ' + sort + ', P(x)” — the sort may be left out, and you can also type \\exists or just “exists”']
+    ];
+    el['formula-quant'].innerHTML = chips.map(function (c) {
+      return '<button class="symchip" type="button" data-glyph="' + c[0] + '" title="' + esc('insert ' + c[0] + ' — ' + c[2]) + '" aria-label="' + esc('insert ' + c[0] + ', ' + c[1]) + '">' + c[0] + '</button>';
+    }).join(' ');
+    Array.prototype.forEach.call(el['formula-quant'].querySelectorAll('.symchip'), function (btn) {
+      btn.addEventListener('click', function () { pasteIntoFormula(btn.getAttribute('data-glyph') + ' '); });
+    });
+  }
   function pasteIntoFormula(text) {
     var inp = el['formula-in'], pos = (inp.selectionStart == null ? inp.value.length : inp.selectionStart), v = inp.value;
     inp.value = v.slice(0, pos) + text + v.slice(pos);
@@ -1525,13 +1559,14 @@
   function addFormula() {
     var raw = el['formula-in'].value.trim();
     if (!raw) return;
-    if (state.words) raw = G.wordsToSymbols(raw);     // in words mode, “A and B” parses as well as A ∧ B
     // the data variables in context (the gems) tell the parser their sorts, so `r ∈ r` reads r as a Set
     // element rather than as a propositional atom
     var ctx = {};
     ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
     (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
-    var r = G.parse(raw, ctx);
+    // the exercise's default sort (what `∀ x, …` binds at) and its predicate signatures (whose arities
+    // the registry's defaults do not always match)
+    var r = G.parse(raw, ctx, { sort: availableSorts()[0], preds: state.ex.preds });
     if (!r.ok) { el['formula-in'].classList.add('bad'); el['formula-err'].textContent = r.error; return; }
     state.formulas.push(r.expr);
     el['formula-in'].value = '';
