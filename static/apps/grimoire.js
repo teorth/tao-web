@@ -1359,7 +1359,7 @@
     // ---------- Chapter 2: Conjunction elimination ----------
     { id: '2.1', kind: 'lemma', leanName: "And.comm'", chapter: 2, givens: [binding('hAB', AND(A, B))], goal: AND(B, A), prereqs: ['1.1'], qed: '2.1', hint: 'Take the conjunction apart first: select hAB and brew And.left, then select hAB again and brew And.right. Now select the two halves — in the order the goal wants them — and brew And.intro.', needs: ['and.elim'] },
     { id: '2.2', kind: 'lemma', leanName: 'And.assoc_left', chapter: 2, givens: [binding('hABC', AND(AND(A, B), C))], goal: AND(A, AND(B, C)), prereqs: ['2.1'], qed: '2.2(a)', hint: 'Take hABC all the way down to A, B and C — And.left and And.right, then the same pair again on the half that is still a conjunction — and build it back up with the brackets the other way round.', needs: [] },
-    { id: '2.3', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), prereqs: ['2.1'], qed: '2.2(b)', hint: 'The mirror of the one before: break hABC down to its three atoms, then pair A with B first and hang C on the outside.', needs: [] },
+    { id: '2.3', kind: 'lemma', leanName: 'And.assoc_right', chapter: 2, givens: [binding('hABC', AND(A, AND(B, C)))], goal: AND(AND(A, B), C), prereqs: ['2.2'], qed: '2.2(b)', hint: "And.comm' and And.assoc_left are recipes by now, and alternating them walks the brackets across without an atom ever being touched: five single-ingredient brews. Breaking hABC down to A, B and C by hand and pairing them the other way round works too, and costs one move more.", needs: [] },
 
     // ---------- Chapter 3: Disjunction, and building formulas ----------
     { id: '3.1', kind: 'example', chapter: 3, givens: [binding('hA', A)], formulas: [B, C], goal: OR(C, OR(A, B)), prereqs: ['2.1'], qed: '3.1(a)', hint: 'A disjunction needs only one side proved; the other may be a bare formula. Select hA and the formula B and brew Or.inl for A ∨ B. Then select that together with the formula C and brew Or.inr.', needs: ['or', 'formula'] },
@@ -1373,7 +1373,7 @@
     // so this reads correctly on the tree.
     { id: '4.1', kind: 'lemma', leanName: 'Impl.idem', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, A), prereqs: ['3.1'], qed: '6.1(a)', hint: 'Nothing is given, so assume something. Right-click the formula A and choose Assume — a sub-proof opens holding hA : A. What you need is already inside it, so right-click hA and take the discharge it offers; the sub-proof closes as A → A.', needs: ['assume'] },
     { id: '4.2', kind: 'example', chapter: 4, givens: [], formulas: [A], goal: IMPLIES(A, AND(A, A)), prereqs: ['4.1'], qed: '4.1', qedNote: 'stated there with an assumption environment', hint: 'Assume A, and inside the sub-proof you have hA twice over. Brew the conjunction there, then discharge — the arrow appears when the sub-proof closes, not before.', needs: [] },
-    { id: '4.3', kind: 'example', chapter: 4, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), prereqs: ['4.1'], qed: '5.1', qedNote: 'stated there with an assumption environment', hint: 'The assumption you need is the whole left-hand side of the arrow, bracket for bracket. Assume it and it is already what you want, so discharge at once.', needs: [] },
+    { id: '4.3', kind: 'example', chapter: 4, givens: [], formulas: [A, B, C], goal: IMPLIES(OR(AND(A, B), C), OR(AND(A, B), C)), prereqs: ['4.1'], qed: '5.1', qedNote: 'stated there with an assumption environment', hint: 'The assumption you need is the whole left-hand side of the arrow, bracket for bracket: assume it, and it is already what you want, so discharge at once. There is a one-move way as well, because Impl.idem says exactly this at any formula at all — even one this big.', needs: [] },
     // 4.4 (QED 5.2): two assumptions deep, and the inner goal is the inner assumption — the first time a
     // sub-proof is opened inside a sub-proof. An optional leaf, like 4.3 itself.
     { id: '4.4', kind: 'example', chapter: 4, givens: [], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, A)), prereqs: ['4.1'], qed: '5.2', qedNote: 'stated there with an assumption environment', hint: 'Two arrows, two assumptions: assume B, then assume A inside it. A is then in hand, and one discharge through both levels closes both arrows.', needs: [] },
@@ -1423,7 +1423,7 @@
     { id: '6.6', kind: 'lemma', leanName: "Or.imp_left'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['6.5'], qed: '9.4(a)', hint: "Or.imp' maps both sides of a disjunction at once — and the side you want left alone is mapped by the identity implication, which Impl.idem brews from a bare formula.", needs: [] },
     { id: '6.7', kind: 'lemma', leanName: "Or.imp_right'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['6.5'], qed: '9.4(b)', hint: 'As the level before, with the identity implication on the left-hand side this time.', needs: [] },
     // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
-    { id: '6.8', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 6, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['6.1'], qed: '9.2(a)', hint: 'The long way round, and worth walking once: case-analyse hABC, and inside the A ∨ B case case-analyse again. Three leaves in all — A, B and C — and each has to be swung into A ∨ (B ∨ C) by hand.', needs: [] },
+    { id: '6.8', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 6, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['6.1'], qed: '9.2(a)', hint: 'The long way round, and worth walking once. Three leaves in all — A, B and C — and each has to be swung into A ∨ (B ∨ C) by hand: assume each in turn and discharge, and you hold three implications that all land in the same place. Two case analyses glue those into one implication out of (A ∨ B) ∨ C, and hABC fires it.', needs: [] },
     // 6.9 is reachable from BOTH 6.8 (Or.assoc_left) and 6.3 (Or.comm'), so both are in principle in hand
     // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
     { id: '6.9', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 6, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['6.3', '6.8'], qed: '9.2(b)', hint: "No assumptions at all this time. Or.comm' and Or.assoc_left are both recipes now, and alternating them walks the brackets across: five single-ingredient brews.", needs: [] },
@@ -1458,7 +1458,7 @@
     // other two glue it onto lemmas already minted (Or.idem/or_self_elim', And.assoc_left/right).
     { id: '7.12', kind: 'example', chapter: 7, givens: [binding('hAB', IMPLIES(A, B)), binding('hBA', IMPLIES(B, A))], formulas: [A, B], goal: IFF(A, B), prereqs: ['7.1'], qed: '10.3', qedNote: 'stated there with assumption environments', hint: 'Both implications are already given. One brew.', needs: [] },
     { id: '7.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 7, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), prereqs: ['3.2', '6.14', '7.1'], qed: '10.4', hint: "One implication each way, each from a recipe you already have: Or.idem going out, or_self_elim' coming back.", needs: [] },
-    { id: '7.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 7, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), prereqs: ['2.2', '2.3', '7.1'], qed: '10.5', hint: 'Both associativity lemmas are recipes now. Assume one side, apply the matching lemma, discharge; do it again the other way; glue with Iff.intro.', needs: [] },
+    { id: '7.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 7, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), prereqs: ['2.3', '7.1'], qed: '10.5', hint: 'Both associativity lemmas are recipes now. Assume one side, apply the matching lemma, discharge; do it again the other way; glue with Iff.intro.', needs: [] },
 
     // ---------- Chapter 8: Negation and contradiction ----------
     // From a contradiction, anything (ex falso, via `absurd`). 8.1 intro; 8.2 optional sibling.
@@ -1502,7 +1502,7 @@
     { id: '9.6', kind: 'lemma', leanName: "not_and_or'", chapter: 9, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), prereqs: ['9.3'], qed: '12.5(c)', hint: "by_cases' on A. If A holds, pair it with an assumed B to contradict hnAB, which gives ¬ B; if not, ¬ A is the other disjunct.", needs: [] },
     // 9.7–9.8 (QED 12.4a/b/c): implication as a disjunction. 9.8 is just the two halves glued with
     // Iff.intro, so it reuses them rather than reproving anything.
-    { id: '9.7', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), prereqs: ['9.3'], qed: '12.4(a)', hint: "by_cases' on A again: if A holds, hAB gives B; if not, ¬ A is the left disjunct.", needs: [] },
+    { id: '9.7', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), prereqs: ['6.3', '6.6', '9.1'], qed: '12.4(a)', hint: "Classical.em hands you A ∨ (¬ A) for nothing, and that is already half of what you want — so map it rather than splitting on it. Or.imp_left' replaces the A on its left, using hAB as the implication, and Or.comm' turns the result round. Three brews, no assumptions at all. (by_cases' on A works too, and costs five more.)", needs: [] },
     { id: '9.8', kind: 'lemma', leanName: "imp_iff_not_or'", chapter: 9, givens: [], formulas: [A, B, NOT(A), IMPLIES(A, B), OR(NOT(A), B)], goal: IFF(IMPLIES(A, B), OR(NOT(A), B)), prereqs: ['8.10', '9.7'], qed: '12.4(c)', hint: "Both halves are recipes already — not_or_of_imp' one way, imp_of_not_or' the other. Assume, apply, discharge, twice over, then Iff.intro.", needs: [] },
     // 9.9 (QED 12.2c): the ↔ form of double negation, from the two halves already minted (8.3, 9.2).
     { id: '9.9', kind: 'lemma', leanName: "not_not_iff'", chapter: 9, givens: [], formulas: [A, NOT(A), NOT(NOT(A))], goal: IFF(A, NOT(NOT(A))), prereqs: ['8.3', '9.2'], qed: '12.2(c)', hint: "not_not_intro' and not_not_elim are both recipes now. One assume-apply-discharge each, then glue them.", needs: [] },
@@ -1767,7 +1767,7 @@
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sinter(sinter(sv2('a'), sv2('b')), sv2('c')), sinter(sv2('a'), sinter(sv2('b'), sv2('c')))]),
-      prereqs: ['2.2', '2.3', '7.2', '7.5', '7.9', '18.1'], hint: 'The same route as union associativity, with mem_inter and the two And congruences.', needs: [] },
+      prereqs: ['2.3', '7.2', '7.5', '7.9', '18.1'], hint: 'The same route as union associativity, with mem_inter and the two And congruences.', needs: [] },
     // 18.13: the dual capstone — ∪ over ∩, from or_and_left' / or_and_left_rev.
     { id: '18.13', kind: 'lemma', leanName: "union_inter_distrib'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
@@ -1873,14 +1873,14 @@
   // against the solutions. Re-run it whenever an exercise or a solution changes.
   var CANON = {
     '1.1': 2, '1.2': 1,
-    '2.1': 3, '2.2': 6, '2.3': 6,
+    '2.1': 3, '2.2': 6, '2.3': 5,
     '3.1': 2, '3.2': 1,
-    '4.1': 2, '4.2': 3, '4.3': 2, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
+    '4.1': 2, '4.2': 3, '4.3': 1, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
     '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 4, '5.8': 4, '5.9': 4, '5.10': 3, '5.11': 3,
-    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 17, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 18, '6.14': 2, '6.15': 3, '6.16': 3,
+    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 18, '6.14': 2, '6.15': 3, '6.16': 3,
     '7.1': 1, '7.2': 7, '7.3': 9, '7.4': 3, '7.5': 4, '7.6': 9, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.12': 1, '7.13': 7, '7.14': 7,
     '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 11, '8.9': 11, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 3, '8.14': 2, '8.15': 11, '8.16': 3,
-    '9.1': 1, '9.2': 8, '9.3': 3, '9.4': 6, '9.5': 6, '9.6': 10, '9.7': 8, '9.8': 7, '9.9': 7, '9.10': 8,
+    '9.1': 1, '9.2': 8, '9.3': 3, '9.4': 6, '9.5': 6, '9.6': 10, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 8,
     '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 13, '10.6': 8,
     '11.1': 3, '11.2': 4, '11.3': 4, '11.4': 2, '11.5': 2,
     '12.1': 5, '12.2': 2, '12.3': 8, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 16, '12.8': 4,
@@ -1898,8 +1898,14 @@
   // shorter proof and sends it in, that proof BECOMES the scripted solution -- so the compile-check
   // verifies it and the par still follows from a proof that is known to work -- and the credit is kept
   // here. Hand-written, unlike CANON itself: `canon.js` cannot know who wrote a proof.
+  // The date is the first sighting; `also` names anyone who sent the same proof in independently after
+  // that. Four of the five below came out of one evening's comments on the blog post.
   var CANON_CREDIT = {
-    '4.8': { who: 'an anonymous reader', date: '2026-11-12' }
+    '2.3': { who: 'PistachioCake', date: '2026-11-12', also: ['an anonymous reader'] },
+    '4.3': { who: 'an anonymous reader', date: '2026-11-12', also: ['Jacob', 'Dario Bajo'] },
+    '4.8': { who: 'an anonymous reader', date: '2026-11-12' },
+    '6.8': { who: 'an anonymous reader', date: '2026-11-12', also: ['Kantian'] },
+    '9.7': { who: 'an anonymous reader', date: '2026-11-12' }
   };
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -1907,10 +1913,18 @@
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
     return m ? (+m[3]) + ' ' + MONTHS[+m[2] - 1] + ' ' + m[1] : iso;
   }
-  // 'an anonymous reader, 12 November 2026', or '' where the par is the author's own
+  // 'X and Y', 'X, Y and Z'
+  function nameList(ns) {
+    return ns.length < 2 ? (ns[0] || '')
+      : ns.slice(0, -1).join(', ') + ' and ' + ns[ns.length - 1];
+  }
+  // 'an anonymous reader on 12 November 2026, and independently by Jacob and Dario Bajo',
+  // or '' where the par is the author's own
   function credit(id) {
     var c = CANON_CREDIT[id];
-    return c ? c.who + ', ' + longDate(c.date) : '';
+    if (!c) return '';
+    return c.who + ' on ' + longDate(c.date) +
+      ((c.also || []).length ? ', and independently by ' + nameList(c.also) : '');
   }
 
   // ---------- progression: accessible exercises + active capabilities from the solved set ----------
