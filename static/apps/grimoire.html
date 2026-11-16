@@ -228,7 +228,7 @@
       <label title="Keep the map centered on the exercise you are working on (it re-centers when you advance)" style="display:inline-flex;align-items:center;gap:.3rem;cursor:pointer;color:var(--muted);font-size:.9rem"><input type="checkbox" id="mapfollow" checked> Follow current</label>
       <!-- Kept for players, not just for testing: a visitor who wants to see the later chapters
            should not have to solve twenty levels first. It reveals every exercise but solves none. -->
-      <button id="cheat" class="dev" type="button" title="Reveal every exercise at once, so you can look around — they still have to be solved, and nothing is marked as done">Unlock all</button>
+      <button id="cheat" class="dev" type="button" title="Reveal every exercise at once, so you can look around — they still have to be solved, and nothing is marked as done. Remembered between visits; asks before switching on.">Unlock all</button>
     </div>
     <div id="mapview"><svg id="mapsvg" xmlns="http://www.w3.org/2000/svg"><g id="mapg"></g></svg></div>
   </details>
@@ -1227,7 +1227,24 @@
   })();
   function renderMap() { MAP.render(); }
 
-  el.cheat.addEventListener('click', function () { state.cheat = !state.cheat; el.cheat.classList.toggle('on', state.cheat); renderAll(); });
+  // Unlocking everything is remembered like any other setting, so it survives a reload. Switching it ON
+  // asks first: not because revealing the levels does any harm, but because anything solved while it is
+  // on is recorded as solved like any other win, and there is no way back to the progression you had
+  // earned except by clearing the save. Switching it OFF needs no ceremony.
+  function setCheatOn(on) {
+    state.cheat = on; el.cheat.classList.toggle('on', on); renderAll();   // renderAll persists
+  }
+  el.cheat.addEventListener('click', function () {
+    if (state.cheat) { setCheatOn(false); return; }
+    showDialog('Unlock every level? They still have to be solved, but the order stops meaning anything'
+      + (state.save ? ' — and this is remembered between visits.' : '.')
+      + ' Anything you solve from here is recorded as solved just as it would be normally, so the '
+      + 'progression you have earned so far cannot be put back'
+      + (state.save ? ' except by clearing your saved progress (switch "Save progress" off).' : '.'), [
+      { label: 'Unlock all', primary: true, fn: function () { setCheatOn(true); } },
+      { label: 'Cancel', fn: function () {} }
+    ]);
+  });
 
   // ---- save progress (opt-in; browser local storage only, never sent over any network) ----
   var SAVE_KEY = 'grimoire.v2';   // v1 keyed progress by the old exercise numbers; the
@@ -1250,7 +1267,8 @@
     if (!only) Object.keys(state.progress).forEach(function (k) { progress[k] = liteProgress(state.progress[k]); });
     if (state.ex) progress[state.ex.id] = { env: state.env, formulas: state.formulas, terms: state.terms };   // the live board
     return { v: 1, solved: state.solved, progress: progress, best: state.best, last: state.ex ? state.ex.id : null,
-             fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
+             fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive,
+             mapFollow: state.mapFollow, autoclear: state.autoclear, cheat: state.cheat };
   }
   // If the browser's quota is full, drop every other level's half-finished work and try again with just
   // the solved set, the records and the board in front of the player — and if even that will not fit, say
@@ -1296,6 +1314,7 @@
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
     state.style = saved.style === 'informal' ? 'informal' : 'lean';
+    state.cheat = !!saved.cheat;   // off unless it was explicitly switched on, and confirmed, before
   }
 
   // consent (on enable) / acknowledgment (on disable) dialog
@@ -1619,6 +1638,7 @@
     el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.words.checked = state.words;
     el.hideinactive.checked = state.hideInactive;
     el.mapfollow.checked = state.mapFollow; el.autoclear.checked = state.autoclear; el.repeat.checked = state.repeat;
+    el.cheat.classList.toggle('on', state.cheat);
     el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
     el.styleLean.className = state.style === 'lean' ? 'on' : '';
     el.styleInformal.className = state.style === 'informal' ? 'on' : '';
@@ -1629,7 +1649,7 @@
   window.__grimoire = { G: G, state: state, el: el, loadExercise: loadExercise, doCraft: doCraft, doCraftIdx: doCraftIdx, selectedNames: selectedNames, clickSel: clickSel, clickFormula: clickFormula, clearSel: clearSel, ingredients: ingredients, availableRecipes: availableRecipes, renamePotion: renamePotion, deletePotion: deletePotion, deleteFormula: deleteFormula, pasteIntoFormula: pasteIntoFormula, doAssume: doAssume, doDischarge: doDischarge, doNotIntro: doNotIntro, doIntroVar: doIntroVar, doPick: doPick, doObtain: doObtain, addCraftedFormula: addCraftedFormula, rootEnv: rootEnv,
     clickTerm: clickTerm, clickGemVar: clickGemVar, selGemExprs: selGemExprs, addTerm: addTerm, deleteTerm: deleteTerm, selTermExprs: selTermExprs, appendSort: appendSort, pasteIntoTerm: pasteIntoTerm, setFantasy: setFantasy, setStyle: setStyle, setRepeat: function (b) { state.repeat = b; }, setParens: function (b) { state.parens = b; renderAll(); }, setWords: function (b) { state.words = b; renderAll(); },
     neighbour: neighbour, nextUnsolved: nextUnsolved, accList: accList, formulaMenu: formulaMenu, termMenu: termMenu, potionMenu: potionMenu, doAbandon: doAbandon,
-    accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { state.cheat = b; renderAll(); }, map: MAP, contextVars: contextVars, inContext: inContext,
+    accessible: accessible, caps: caps, hasCap: hasCap, setCheat: function (b) { setCheatOn(b); }, setCheatOn: setCheatOn, map: MAP, contextVars: contextVars, inContext: inContext,
     proofText: proofText, isSolved: isSolved, par: G.par, setHintOpen: function (b) { state.hintOpen = b; renderGoal(); },
     clickDialog: clickDialog, persist: persist, loadSaved: loadSaved, boot: boot, SAVE_KEY: SAVE_KEY };
 })();
