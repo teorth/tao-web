@@ -13,6 +13,7 @@ must have in order to reproduce a claim the site makes.
 | `canon.js` | measures the scripts; `CANON` in `grimoire.js` (the par the game shows) is derived from them. |
 | `prereqs.js` | instruments the scripts to see what each proof consumes, and derives the unlock graph. |
 | `order_audit.js` | three ordering questions `prereqs.js` does not ask (see its header). |
+| `file_record.js` | takes a record a reader pasted into the blog, replays it, and says what to file. |
 | `Grimoire/Nat.lean` | the concrete `Nat` sort's own Lean module, imported by the emitted proofs. |
 
 ```bash
@@ -21,6 +22,7 @@ node dev/grimoire/canon.js --patch    # print the CANON literal to paste back
 node dev/grimoire/prereqs.js --check  # does the unlock graph still match what the proofs consume?
 node dev/grimoire/order_audit.js      # can a level open before a lemma its par proof needs?
 node dev/grimoire/check_emitted.js    # emit everything and compile it (needs `lean` on PATH)
+node dev/grimoire/file_record.js comment.txt   # is this reader's proof really a record?
 ```
 
 Anything generated lands in `scratch/lean/`, which is gitignored — the sources are versioned, the build
@@ -33,9 +35,24 @@ from a proof that is known to work. With the scripts outside git, a record recor
 invisible to the other, and the laptop's copy drifted a week behind the desktop's. In git, a record
 recorded anywhere is a record everywhere, and `canon.js` can check the claim on any checkout.
 
-**The rule, when a reader sends in a shorter proof:** replace that level's script in `solutions.js`,
-run `canon.js --patch` and paste the literal into `grimoire.js`, add the finder to `CANON_CREDIT`, and
-run `check_emitted.js` so the new proof is compiled along with the rest. Then run **`order_audit.js`**.
+**When a reader sends in a shorter proof**, feed what they pasted to `file_record.js`. Since
+2026-11-16 the game ends a solved export with a line of its own moves —
+
+```
+-- grimoire-replay v1 7.4 W1siYyIsIkltcGwuaWRlbSIs…
+```
+
+— base64 so that a blog comment cannot curl a quote inside it, and holding the ingredients as parsed
+expressions rather than as text, so nothing has to be re-parsed without its sort context. The tool
+replays those moves through the engine from a fresh board: a claim is **checked, not believed** (it must
+reach the goal, and beat the current par), and then it prints the three things a record is — the script
+for `solutions.js`, the new `CANON` number, and a `CANON_CREDIT` line. Rewrite the generated script's
+expressions with the shorthands the file uses before committing; it comes out as raw data, which is
+correct and unreadable. Then `canon.js --patch`, `check_emitted.js`, `order_audit.js`, and the two node
+suites.
+
+A proof exported before 2026-11-16 carries no replay line, and has to be read and scripted by hand, as
+the first twenty records were. Asking the reader to press Copy again is usually quicker.
 
 **Three things a level carries, which are not the same thing (TT, 2026-11-16).**
 

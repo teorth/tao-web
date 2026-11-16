@@ -394,7 +394,7 @@
 
   // Where to write in -- quoted in the how-to, in an export, and in the banner a record raises.
   var BLOG = 'https://terrytao.wordpress.com/2026/11/11/lean-grimoire/';
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], moves: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -469,7 +469,7 @@
   }
 
   function saveProgress() {   // keep each exercise's work so switching away and back resumes it
-    if (state.ex) state.progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };
+    if (state.ex) state.progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms, moves: state.moves };
   }
   // context constants + variables to intro + every CONSTANT the sorts in play own (a 0-ary operation
   // belongs to the theory, not to the exercise, so it is simply there from the start)
@@ -489,8 +489,8 @@
     var p = state.progress[id];
     // `history` is absent from a restored save (it is not stored — see `liteProgress`), so undo starts
     // empty on a level resumed from a previous visit.
-    if (p) { state.env = p.env; state.history = p.history || []; state.formulas = p.formulas; state.terms = p.terms || []; }
-    else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
+    if (p) { state.env = p.env; state.history = p.history || []; state.formulas = p.formulas; state.terms = p.terms || []; state.moves = p.moves || []; }
+    else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); state.moves = []; }
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     state.hintOpen = false;   // asking for a hint is a decision about ONE level, not a setting
     renderAll();
@@ -503,12 +503,13 @@
     state.justUnlocked = null; state.justUnlockedEx = [];
     state.history.push(state.env);
     state.env = res.env;
+    logMove(['ab', levels]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     renderAll();
   }
   function resetExercise() {
     delete state.progress[state.ex.id];
-    state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex);
+    state.env = G.newEnv(state.ex); state.history = []; state.moves = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex);
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     renderAll();
   }
@@ -997,8 +998,15 @@
       body.push('-- and the proof itself:', '');
     }
     var prelude = G.leanPrelude({ sorts: sorts });
+    // A proof that beats the par has to become this level's scripted solution before the par can move,
+    // and reading that script back out of the prose is the slow part of taking a reader's record. So the
+    // moves travel with it: one line, base64 so that a blog comment cannot curl its quotes, which
+    // `dev/grimoire/file_record.js` replays through the engine to check the claim and write the script.
+    var replay = (done && state.moves && state.moves.length)
+      ? ['', '-- grimoire-replay v1 ' + ex.id + ' ' + G.encodeMoves(state.moves)]
+      : [];
     return head.concat(informal, [''], prelude ? [prelude] : [],
-                       body, [G.leanPreamble(ex) + G.emitLive(ex, state.env, opts)]).join('\n') + '\n';
+                       body, [G.leanPreamble(ex) + G.emitLive(ex, state.env, opts)], replay).join('\n') + '\n';
   }
   function flashBtn(btn, msg) {
     var was = btn.textContent;
@@ -1284,11 +1292,11 @@
   // over the scripted solutions, keeping the history turns 0.9 MB into 12.2 MB, with a single 48-move
   // level accounting for 2.6 MB of it. Undo stays in memory for the session; it does not survive a
   // reload, which is a small price for a save that fits.
-  function liteProgress(p) { return p ? { env: p.env, formulas: p.formulas, terms: p.terms } : p; }
+  function liteProgress(p) { return p ? { env: p.env, formulas: p.formulas, terms: p.terms, moves: p.moves } : p; }
   function currentBlob(opts) {
     var only = opts && opts.onlyCurrent, progress = {};
     if (!only) Object.keys(state.progress).forEach(function (k) { progress[k] = liteProgress(state.progress[k]); });
-    if (state.ex) progress[state.ex.id] = { env: state.env, formulas: state.formulas, terms: state.terms };   // the live board
+    if (state.ex) progress[state.ex.id] = { env: state.env, formulas: state.formulas, terms: state.terms, moves: state.moves };   // the live board
     return { v: 1, solved: state.solved, progress: progress, best: state.best, last: state.ex ? state.ex.id : null,
              fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive,
              mapFollow: state.mapFollow, autoclear: state.autoclear, cheat: state.cheat };
@@ -1435,10 +1443,20 @@
     var np = pos + text.length; if (inp.setSelectionRange) inp.setSelectionRange(np, np);
     inp.focus(); inp.classList.remove('bad'); el['term-err'].textContent = '';
   }
+  // Every move is logged as it is played, so a finished proof can say how it was made (G.replayMoves).
+  // An ingredient is logged as its binding name, or as the expression itself where there is no name.
+  function moveIng(x) {
+    if (typeof x === 'string') return x;
+    if (x && x.proof && x.name) return x.name;
+    return x && x.type ? x.type : x;
+  }
+  function logMove(m) { state.moves.push(m); }
+
   function doIntroVar(term) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     // the term carries its own sort: a Set variable must open as `X : Set`, not as `X : Ω`
     state.history.push(state.env); state.env = G.openVariable(state.env, { name: term.name, sort: term.sort || G.OMEGA });
+    logMove(['v', term.name, term.sort || G.OMEGA]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.selT = []; renderAll();
   }
 
@@ -1448,6 +1466,7 @@
     if (!res.ok) return;
     state.history.push(state.env);
     state.env = res.env;
+    logMove(['c', recipeId, (inputs || []).map(moveIng), which || null]);
     // keeping the selection lets you draw several statements from the same ingredients (both halves of an ∧, say)
     if (state.autoclear) { state.sel = []; state.selF = []; state.selT = []; state.selV = []; }
     if (res.solved) { markSolved(); }
@@ -1468,6 +1487,7 @@
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.pick(state.env, term.name, term.sort); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
+    logMove(['p', term.name, term.sort]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     renderAll();
   }
@@ -1475,6 +1495,7 @@
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.obtain(state.env, exist, varName); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
+    logMove(['ob', exist, varName]);
     // the obtained variable becomes a first-class term on the bench (so it can instantiate ∀, build predicates, …)
     if (!state.terms.some(function (e) { return e.tag === 'var' && e.name === r.variable.name && e.sort === r.variable.sort; }))
       state.terms.push(G.varE(r.variable.name, r.variable.sort));
@@ -1486,6 +1507,7 @@
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.notIntro(state.env, a, b); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
+    logMove(['n', moveIng(a), b ? moveIng(b) : null]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (r.solved) markSolved();
     renderAll();
@@ -1493,12 +1515,14 @@
   function doAssume(f) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     state.history.push(state.env); state.env = G.openAssumption(state.env, f);
+    logMove(['a', f]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; renderAll();
   }
   function doDischarge(name, level) {
     state.justUnlocked = null; state.justUnlockedEx = [];
     var r = G.discharge(state.env, name, level); if (!r.ok) return;
     state.history.push(state.env); state.env = r.env;
+    logMove(['d', name, level]);
     state.sel = []; state.selF = []; state.selT = []; state.selV = [];
     if (r.solved) { markSolved(); }
     renderAll();
@@ -1519,6 +1543,7 @@
   el.undo.addEventListener('click', function () {
     if (!state.history.length) return;
     state.env = state.history.pop();
+    state.moves.pop();
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     renderAll();
   });

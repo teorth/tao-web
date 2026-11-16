@@ -41,6 +41,7 @@ function solver(exId) {
   s.obtain = (existName, varName) => { const res = G.obtain(s.env, existName, varName); if (!res.ok) throw new Error(exId + ' obtain: ' + res.error); s.env = res.env; return res.binding.name; };
   s.pick = (varName) => { const res = G.pick(s.env, varName, OMEGA); if (!res.ok) throw new Error(exId + ' pick: ' + res.error); s.env = res.env; return varName; };
   s.ce = (r, target, ...ins) => { const res = G.craft(s.env, r, ins, target); if (!res.ok) throw new Error(exId + ' craft ' + r + ': ' + res.error); s.env = res.env; return res.binding.name; };
+  s.ab = (levels) => { const res = G.abandon(s.env, levels); if (!res.ok) throw new Error(exId + ' abandon: ' + res.error); s.env = res.env; return null; };   // back out of a sub-proof, discarding it
   return s;
 }
 // Both commutativity laws have identical shape, so they share one script: unfold `x ∈ a op b` on each side

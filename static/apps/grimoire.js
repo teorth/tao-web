@@ -1619,10 +1619,10 @@
     // (needs a witness, so pick one first — Chapter 14); 15.3 is the four-way choice exercise.
     { id: '15.1', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
       givens: [binding('hP', appE('P', [alpha]))], goal: ee('x', appE('P', [xL])), prereqs: ['14.1'], hint: 'Select the potion hP and the term α, then brew Exists.intro. It offers every way of abstracting α out of P(α) — here there is only one, but choosing is the point.', needs: ['exists_intro'] },
-    { id: '15.2', kind: 'lemma', leanName: 'exists_of_forall', chapter: 15, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
-      givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), prereqs: ['15.1'], qed: '22.2', hint: 'There is nothing to witness with, so pick an arbitrary inhabitant first, instantiate h there, and use that same variable as the witness.', needs: [] },
-    { id: '15.3', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
+    { id: '15.3', num: '15.2', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [{ name: 'α', sort: OMEGA }], terms: [alpha],
       givens: [binding('hQ', appE('Q', [alpha, alpha]))], goal: ee('x', appE('Q', [xL, xL])), prereqs: ['15.1'], hint: 'One brew: the goal abstracts both slots of Q(α, α) at once, and Exists.intro offers that among its choices.', needs: [] },
+    { id: '15.2', num: '15.3', kind: 'lemma', leanName: 'exists_of_forall', chapter: 15, sorts: [OMEGA], nonempty: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [varE('a', OMEGA)],
+      givens: [binding('h', fa('X', appE('P', [X])))], goal: ee('x', appE('P', [xL])), prereqs: ['15.1'], qed: '22.2', hint: 'There is nothing to witness with, so pick an arbitrary inhabitant first, instantiate h there, and use that same variable as the witness.', needs: [] },
     // rest of QED §22 (obtain + instantiate + ∃-intro + reductio). QED 22.6(c) (bound-variable renaming) does NOT
     // port — α-equivalence is automatic here. 15.4 = QED 22.1 (∃-intro into a conjunction, a real abstraction choice);
     // 15.5 = QED 22.3(a) quantifier De Morgan; 15.6/b = QED 22.4(a)/(b) syllogisms; 15.11/b = QED 22.6(a)/(b) swaps.
@@ -1737,14 +1737,14 @@
     // Equality is also the one relation every sort shares, so these lemmas serve every later chapter.
     { id: '18.1', kind: 'example', chapter: 18, sorts: [OMEGA], consts: [cO('α')], terms: [alpha],
       givens: [], formulas: [], goal: eq(alpha, alpha), prereqs: ['17.1'], hint: 'Select the term α and brew Eq.refl — everything equals itself. Its partner rw, which rewrites along an equation, arrives next.', needs: ['eq'] },
-    // 18.2 lives here rather than in Chapter 17: it is an operations exercise, but the only way to move the
-    // equation through `f` is `rw`, so it cannot open before the equality tutorial that introduces `rw`.
-    { id: '18.2', kind: 'example', chapter: 18, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
-      givens: [binding('hP', appE('P', [appE('f', [varE('α', MAGMA)])])), binding('hab', appE('EQ', [varE('α', MAGMA), varE('β', MAGMA)]))],
-      formulas: [], goal: appE('P', [appE('f', [varE('β', MAGMA)])]), prereqs: ['18.1'], qed: '24.2', qedNote: 'substitution under a function symbol', hint: 'rw rewrites along an equation, and it will reach inside a term: hab moves the α buried under f.', needs: [] },
-    { id: '18.3', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
+    { id: '18.3', num: '18.2', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hP', appE('P', [alpha])), binding('hab', eq(alpha, beta))],
       formulas: [], goal: appE('P', [beta]), prereqs: ['18.1'], hint: 'One rewrite of hP along hab.', needs: [] },
+    // 18.2 lives here rather than in Chapter 17: it is an operations exercise, but the only way to move the
+    // equation through `f` is `rw`, so it cannot open before the equality tutorial that introduces `rw`.
+    { id: '18.2', num: '18.3', kind: 'example', chapter: 18, sorts: [MAGMA], preds: [{ name: 'P', argSorts: [MAGMA], resultSort: PROP }], consts: [{ name: 'α', sort: MAGMA }, { name: 'β', sort: MAGMA }], terms: [varE('α', MAGMA), varE('β', MAGMA)],
+      givens: [binding('hP', appE('P', [appE('f', [varE('α', MAGMA)])])), binding('hab', appE('EQ', [varE('α', MAGMA), varE('β', MAGMA)]))],
+      formulas: [], goal: appE('P', [appE('f', [varE('β', MAGMA)])]), prereqs: ['18.1'], qed: '24.2', qedNote: 'substitution under a function symbol', hint: 'rw rewrites along an equation, and it will reach inside a term: hab moves the α buried under f.', needs: [] },
     // 18.4: Q(α,α) has TWO occurrences of α, so rewriting offers Q(β,α), Q(α,β) and Q(β,β) — pick one.
     { id: '18.4', kind: 'example', chapter: 18, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hQ', appE('Q', [alpha, alpha])), binding('hab', eq(alpha, beta))],
@@ -1863,6 +1863,86 @@
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
   // the number to SHOW for a level; `id` is the key, and they part company after a renumbering
   function exNum(e) { return (e && (e.num || e.id)) || ''; }
+
+  // ---------- the move log: a proof as the moves that made it ----------
+  // A record sent in by a reader has to become the scripted solution of its level before the par can
+  // move (dev/README.md), and until now that meant reading the informal proof and writing the script by
+  // hand. The game knows the moves exactly, so it can say them: every move is logged as it is played and
+  // travels with the exported proof, and `replayMoves` runs one back through the engine.
+  //
+  // A move is a short array, `[kind, …]`. An INGREDIENT is either a binding name (a string) or an
+  // expression (the parsed object itself, which is plain data and survives JSON exactly — no rendering
+  // and re-parsing, so no question of a term needing its sort context back).
+  //
+  //   ['c', recipe, [ingredients…], outputOrNull]   craft; `output` picks one result of a multi-output
+  //   ['a', formula]                                assume / open a sub-proof
+  //   ['d', name, levels]                           discharge
+  //   ['n', positive, negativeOrNull]               reductio
+  //   ['v', name, sort]                             introduce a variable
+  //   ['ob', existName, varName]                    obtain a witness
+  //   ['p', name, sort]                             pick an inhabitant
+  //   ['ab', levels]                                abandon a sub-proof
+  function b64encode(str) {
+    var utf8 = unescape(encodeURIComponent(str));
+    if (typeof btoa === 'function') return btoa(utf8);
+    return require('buffer').Buffer.from(str, 'utf8').toString('base64');
+  }
+  function b64decode(b64) {
+    if (typeof atob === 'function') return decodeURIComponent(escape(atob(b64)));
+    return require('buffer').Buffer.from(b64, 'base64').toString('utf8');
+  }
+  function encodeMoves(moves) { return b64encode(JSON.stringify(moves || [])); }
+  function decodeMoves(b64) {
+    try { var m = JSON.parse(b64decode(String(b64).replace(/\s+/g, ''))); return Array.isArray(m) ? m : null; }
+    catch (e) { return null; }
+  }
+  // Run a log back through the engine from a fresh board. Returns the finished environment, or the move
+  // that would not play — a reader's log is as untrusted as any other input, and the point of replaying
+  // is to find out whether it is a proof.
+  function replayMoves(exercise, moves) {
+    var env = newEnv(exercise), i, m, r;
+    var ing = function (x) { return typeof x === 'string' ? x : formulaIng(x); };
+    for (i = 0; i < (moves || []).length; i++) {
+      m = moves[i];
+      if (!m || !m.length) return { ok: false, error: 'move ' + (i + 1) + ' is empty' };
+      try {
+        switch (m[0]) {
+          case 'c':
+            r = craft(env, m[1], (m[2] || []).map(ing), m[3] || undefined);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (' + m[1] + '): ' + r.error };
+            env = r.env; break;
+          case 'a': env = openAssumption(env, m[1]); break;
+          case 'd':
+            r = discharge(env, m[1], m[2]);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (discharge): ' + r.error };
+            env = r.env; break;
+          case 'n':
+            r = notIntro(env, m[1], m[2] || null);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (reductio): ' + r.error };
+            env = r.env; break;
+          case 'v': env = openVariable(env, { name: m[1], sort: m[2] || OMEGA }); break;
+          case 'ob':
+            r = obtain(env, m[1], m[2]);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (obtain): ' + r.error };
+            env = r.env; break;
+          case 'p':
+            r = pick(env, m[1], m[2] || OMEGA);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (pick): ' + r.error };
+            env = r.env; break;
+          case 'ab':
+            r = abandon(env, m[1]);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (abandon): ' + r.error };
+            env = r.env; break;
+          default: return { ok: false, error: 'move ' + (i + 1) + ': unknown kind ' + JSON.stringify(m[0]) };
+        }
+      } catch (e) { return { ok: false, error: 'move ' + (i + 1) + ' threw: ' + e.message }; }
+    }
+    if (env.parent) return { ok: false, error: 'the log ends inside a sub-proof' };
+    var root = env;
+    if (!root.bindings.some(function (b) { return exprEq(b.type, root.goal); }))
+      return { ok: false, error: 'the log ends without the goal' };
+    return { ok: true, env: env, length: proofLength(env) };
+  }
 
   // ---------- the Lean 4 web playground ----------
   // https://live.lean-lang.org reads the code out of the URL FRAGMENT: `#code=<uri-encoded>` for plain
@@ -2032,6 +2112,7 @@
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
     proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
     playgroundURL: playgroundURL, PLAYGROUND: PLAYGROUND, PLAYGROUND_MAX: PLAYGROUND_MAX,
+    encodeMoves: encodeMoves, decodeMoves: decodeMoves, replayMoves: replayMoves,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,

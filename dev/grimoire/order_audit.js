@@ -76,17 +76,22 @@ G.EXERCISES.forEach(ex => {
 if (!b) console.log('   (none)');
 
 console.log('\nC. levels that drill a move their own predecessors already needed (a smell, not an error):\n');
-const trivial = G.EXERCISES.filter(e => uses[e.id] && [...uses[e.id]].every(r => isBase[r]) && G.CANON[e.id] <= 2);
+// A drill is a short level whose proof is nothing but base moves. It belongs right behind the tutorial
+// that teaches them; what is reported here is a drill sitting behind levels that ALREADY used the same
+// moves in anger. The tutorial itself does not count as one of those — being used there is the point.
+const isTut = {}; G.EXERCISES.forEach(e => { if ((e.needs || []).length) isTut[e.id] = true; });
+const trivial = G.EXERCISES.filter(e => uses[e.id] && uses[e.id].size
+  && [...uses[e.id]].every(r => isBase[r]) && G.CANON[e.id] <= 2 && !isTut[e.id]);
 let c = 0;
 trivial.forEach(ex => {
   const rs = [...uses[ex.id]];
-  if (!rs.length) return;
   const earlier = G.EXERCISES.filter(o => order[o.id] < order[ex.id] && o.chapter === ex.chapter
-    && uses[o.id] && rs.every(r => uses[o.id].has(r)));
+    && !isTut[o.id] && uses[o.id] && rs.every(r => uses[o.id].has(r)));
   if (earlier.length) {
     c++;
-    console.log('   %s (%s, par %d) drills %s, already used by %s',
-      ex.id.padEnd(6), ex.kind, G.CANON[ex.id], rs.join('+'), earlier.map(e => e.id).join(', '));
+    console.log('   %s (shown %s, par %d) drills %s — already used by %s',
+      ex.id.padEnd(6), G.exNum(ex).padEnd(5), G.CANON[ex.id], rs.join('+'),
+      earlier.map(e => G.exNum(e)).join(', '));
   }
 });
 if (!c) console.log('   (none)');
