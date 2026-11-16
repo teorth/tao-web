@@ -384,7 +384,7 @@
 
   // Where to write in -- quoted in the how-to, in an export, and in the banner a record raises.
   var BLOG = 'https://terrytao.wordpress.com/2026/11/11/lean-grimoire/';
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, hideInactive: true, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -477,7 +477,9 @@
     if (MAP && MAP.refollow) MAP.refollow();   // re-picking the current exercise should still re-centre the map
     state.ex = G.EX_BY_ID[id];
     var p = state.progress[id];
-    if (p) { state.env = p.env; state.history = p.history; state.formulas = p.formulas; state.terms = p.terms || []; }
+    // `history` is absent from a restored save (it is not stored — see `liteProgress`), so undo starts
+    // empty on a level resumed from a previous visit.
+    if (p) { state.env = p.env; state.history = p.history || []; state.formulas = p.formulas; state.terms = p.terms || []; }
     else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); }
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     state.hintOpen = false;   // asking for a hint is a decision about ONE level, not a setting
@@ -1231,15 +1233,41 @@
   var SAVE_KEY = 'grimoire.v2';   // v1 keyed progress by the old exercise numbers; the
                                  // renumbering makes those ids meaningless, so start fresh
   function storageGet() { try { return localStorage.getItem(SAVE_KEY); } catch (e) { return null; } }
-  function storageSet(v) { try { localStorage.setItem(SAVE_KEY, v); } catch (e) {} }
+  // Reports whether the write happened. It used to swallow the exception, which turned a full storage
+  // quota into silent data loss: every later save was a no-op, so solved levels simply stopped being
+  // recorded and the player had no way to know.
+  function storageSet(v) { try { localStorage.setItem(SAVE_KEY, v); return true; } catch (e) { return false; } }
   function storageDel() { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} }
-  function currentBlob() {
-    var progress = {}; Object.keys(state.progress).forEach(function (k) { progress[k] = state.progress[k]; });
-    if (state.ex) progress[state.ex.id] = { env: state.env, history: state.history, formulas: state.formulas, terms: state.terms };   // capture the live board
+  // What is worth storing of a level's work: the board as it stands, NOT the undo stack behind it.
+  // Each entry of `history` is a whole environment, and JSON expands the structure they share in memory
+  // into a separate copy apiece — so storing it costs O(moves^2) and dwarfs everything else. Measured
+  // over the scripted solutions, keeping the history turns 0.9 MB into 12.2 MB, with a single 48-move
+  // level accounting for 2.6 MB of it. Undo stays in memory for the session; it does not survive a
+  // reload, which is a small price for a save that fits.
+  function liteProgress(p) { return p ? { env: p.env, formulas: p.formulas, terms: p.terms } : p; }
+  function currentBlob(opts) {
+    var only = opts && opts.onlyCurrent, progress = {};
+    if (!only) Object.keys(state.progress).forEach(function (k) { progress[k] = liteProgress(state.progress[k]); });
+    if (state.ex) progress[state.ex.id] = { env: state.env, formulas: state.formulas, terms: state.terms };   // the live board
     return { v: 1, solved: state.solved, progress: progress, best: state.best, last: state.ex ? state.ex.id : null,
              fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive, mapFollow: state.mapFollow, autoclear: state.autoclear };
   }
-  function persist() { if (state.save) storageSet(JSON.stringify(currentBlob())); }
+  // If the browser's quota is full, drop every other level's half-finished work and try again with just
+  // the solved set, the records and the board in front of the player — and if even that will not fit, say
+  // so, once, instead of pretending the game is still saving.
+  function persist() {
+    if (!state.save) return true;
+    if (storageSet(JSON.stringify(currentBlob()))) { state.saveWarned = false; return true; }
+    if (storageSet(JSON.stringify(currentBlob({ onlyCurrent: true })))) { state.saveWarned = false; return true; }
+    if (!state.saveWarned) {
+      state.saveWarned = true;
+      showDialog('Your progress could not be saved: this browser has no room left for this page. '
+        + 'Solved levels and settings from earlier are still stored, but nothing new is being recorded. '
+        + 'Clearing site data for this page, or turning saving off and on again, will start a fresh save.',
+        [{ label: 'OK', primary: true, fn: function () {} }]);
+    }
+    return false;
+  }
   function clearSaved() { storageDel(); }
   function loadSaved() { var raw = storageGet(); if (!raw) return null; try { return JSON.parse(raw); } catch (e) { return null; } }
   function restore(saved) {
