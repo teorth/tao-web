@@ -283,6 +283,7 @@
         <span class="spellctl">
           <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
           <button id="copyproof" class="exp" type="button" title="Copy the whole proof — the informal reading as comments, then the Lean — to the clipboard">⧉ Copy</button>
+          <button id="playproof" class="exp" type="button" title="Open this proof in the Lean 4 web playground, where you can edit it and see what Lean itself says — including what happens when you break it. The code travels in the link's fragment, which your browser does not send to any server; the playground compiles it in your own browser.">↗ Playground</button>
           <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then Lean that compiles on its own — no import needed, and the proofs of the lemmas you built it from carried along with it">⤓ Save</button>
         </span>
       </div>
@@ -324,6 +325,15 @@
       its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
       here needs Mathlib — but solving a lemma mints it as a recipe, so a proof that uses one carries your
       proof of that lemma along with it, and the chain can run deeper than the proof you just finished.</p>
+    <p><strong>↗ Playground</strong> sends the same text to the
+      <a href="https://live.lean-lang.org/" target="_blank" rel="noopener">Lean 4 web playground</a>, which
+      is the real thing: Lean itself, compiled to run in your browser. That is the place to find out what
+      this game will not tell you — what Lean says when a proof is <em>wrong</em>. Move a bracket in a
+      statement, drop a hypothesis, swap <code>And.left</code> for <code>And.right</code>, and read the
+      error. Nothing here can be built malformed, by design; over there everything can, and the error
+      messages are half of what using a proof assistant actually is. The proof travels inside the link,
+      after the <code>#</code>, which browsers keep to themselves — it is not uploaded anywhere, and this
+      page still makes no network request of its own. It is also the one button that leaves the game.</p>
   </details>
 
   <details class="note" id="caveat">
@@ -372,7 +382,7 @@
   'use strict';
   var G = window.Grimoire;
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
-             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'wrap',
+             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'playproof', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-quant', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
@@ -1000,6 +1010,19 @@
     if (navigator.clipboard && navigator.clipboard.writeText)
       navigator.clipboard.writeText(txt).then(function () { flashBtn(el.copyproof, 'copied \u2713'); }, function () { flashBtn(el.copyproof, 'copy blocked'); });
     else flashBtn(el.copyproof, 'clipboard unavailable');
+  });
+  // Hand the finished proof to the Lean playground. This is the one place the game points outwards, and
+  // it is a navigation the player asks for: nothing is sent anywhere until they click, and the proof
+  // rides in the fragment, which stays in the browser.
+  el.playproof.addEventListener('click', function () {
+    var url = G.playgroundURL(proofText());
+    if (!url) {
+      showDialog('This proof is too long to travel in a link \u2014 the playground reads its code out of the '
+        + 'URL, and browsers will not carry one this big. Use Copy or Save instead, and paste it into '
+        + 'the playground yourself.', [{ label: 'OK', primary: true, fn: function () {} }]);
+      return;
+    }
+    if (window.open) window.open(url, '_blank', 'noopener');
   });
   el.saveproof.addEventListener('click', function () {
     var blob = new Blob([proofText()], { type: 'text/plain;charset=utf-8' });

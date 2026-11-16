@@ -1863,6 +1863,25 @@
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
   // the number to SHOW for a level; `id` is the key, and they part company after a renumbering
   function exNum(e) { return (e && (e.num || e.id)) || ''; }
+
+  // ---------- the Lean 4 web playground ----------
+  // https://live.lean-lang.org reads the code out of the URL FRAGMENT: `#code=<uri-encoded>` for plain
+  // text, or `#codez=<lz-string base64>` when its own compression setting is on. We write the plain
+  // form: the compressed one would mean carrying an LZ-string implementation for no gain in honesty.
+  //
+  // The fragment matters for more than tidiness. A browser never sends it to the server, and the
+  // playground compiles in the browser through WebAssembly — so a player's proof reaches live.lean-lang.org
+  // as a navigation, not as an upload, and this app still makes no network request of its own.
+  //
+  // A URL cannot hold an arbitrary amount, and percent-encoding roughly triples a proof full of ∧ and ∀.
+  // `playgroundURL` therefore returns null past a conservative cap rather than handing the browser a URL
+  // it may silently truncate; the caller says so out loud.
+  var PLAYGROUND = 'https://live.lean-lang.org/#code=';
+  var PLAYGROUND_MAX = 50000;   // characters of finished URL; Safari is the tightest of the mainstream
+  function playgroundURL(code) {
+    var url = PLAYGROUND + encodeURIComponent(String(code == null ? '' : code));
+    return url.length > PLAYGROUND_MAX ? null : url;
+  }
   // Which level proves each minted lemma. A recipe a player holds is one of three things: a BASE recipe,
   // which is Lean's own; a sort's AXIOM, which `leanPreamble` declares or the sort's prelude proves; or a
   // MINTED LEMMA, which is a theorem the player proved on an earlier level -- and nothing in an exported
@@ -2012,6 +2031,7 @@
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
     proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
+    playgroundURL: playgroundURL, PLAYGROUND: PLAYGROUND, PLAYGROUND_MAX: PLAYGROUND_MAX,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
