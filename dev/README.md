@@ -35,6 +35,15 @@ recorded anywhere is a record everywhere, and `canon.js` can check the claim on 
 
 **The rule, when a reader sends in a shorter proof:** replace that level's script in `solutions.js`,
 run `canon.js --patch` and paste the literal into `grimoire.js`, add the finder to `CANON_CREDIT`, and
-run `check_emitted.js` so the new proof is compiled along with the rest. Then run **`prereqs.js --check`**:
-a shorter proof often reaches back for a lemma from another chapter, and unless the unlock graph is
-updated to match, the level can open before the par on display is reachable.
+run `check_emitted.js` so the new proof is compiled along with the rest. Then run **`order_audit.js`**.
+
+**What a par is allowed to depend on (TT, 2026-11-16).** A shorter proof often reaches back into an
+earlier chapter for something slicker than the route its level was built around. The level does **not**
+have to wait for those lemmas: par is the shortest proof the game knows, not the shortest reachable from
+what this level opened with, and a player who met the helper on the way will see the shorter route.
+What must hold is that every such helper is minted **earlier in the list**, so working through in order
+gets you there. That is section A of `order_audit.js`, and it is the check that matters when a record
+lands. `prereqs.js --check` still reports those levels, now as "par leans on them, which the ordering
+rule permits", and fails only on a missing *mechanic* gate; `prereqs.js --verify` replays every level as
+a player who has solved exactly its prerequisites, and lists the pars that are out of reach at opening
+without counting them as faults.
