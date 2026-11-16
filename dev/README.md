@@ -50,6 +50,20 @@ bump, no migration. Two invariants keep it honest, both checked by `grimoire_tes
 same direction as the array (otherwise the numbering would imply a dependency order the game does not
 have), and no level waits on one that comes after it.
 
+Chapter 7 is the worked example (2026-11-16). A reader pointed out that 7.12 — a one-brew `Iff.intro`
+drill — sat ten levels after the exercises that already needed the move. Its entry moved to just behind
+the chapter's tutorial and the chapter's `num`s shifted up, so it now reads 7.2 and the rest run on from
+there. **No id changed**, so every saved game still points at the board it was playing:
+
+| shown as | 7.1 | 7.2 | 7.3 | 7.4 | 7.5 | 7.6 | 7.7 | 7.8 | 7.9 | 7.10 | 7.11 | 7.12 | 7.13 | 7.14 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| id | 7.1 | **7.12** | 7.2 | 7.3 | 7.4 | 7.5 | 7.6 | 7.7 | 7.8 | 7.9 | 7.10 | 7.11 | 7.13 | 7.14 |
+
+**When a reader quotes a number, translate it.** An exported proof is headed with the `num`, and the
+comments on the blog post quote whatever the game showed at the time — so a record for "exercise 7.5"
+belongs under `CANON_CREDIT['7.4']`, and a record posted before 16 November 2026 uses the old numbering
+altogether. The id is what every table is keyed by; the number is just what the player saw.
+
 **What a par is allowed to depend on (TT, 2026-11-16).** A shorter proof often reaches back into an
 earlier chapter for something slicker than the route its level was built around. The level does **not**
 have to wait for those lemmas: par is the shortest proof the game knows, not the shortest reachable from
