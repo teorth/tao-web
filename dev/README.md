@@ -11,11 +11,15 @@ must have in order to reproduce a claim the site makes.
 | `solutions.js` | one script per level: how that exercise is proved, in the engine's move language. |
 | `check_emitted.js` | solves every level, emits the Lean, compiles the lot with core Lean (no Mathlib). |
 | `canon.js` | measures the scripts; `CANON` in `grimoire.js` (the par the game shows) is derived from them. |
+| `prereqs.js` | instruments the scripts to see what each proof consumes, and derives the unlock graph. |
+| `order_audit.js` | three ordering questions `prereqs.js` does not ask (see its header). |
 | `Grimoire/Nat.lean` | the concrete `Nat` sort's own Lean module, imported by the emitted proofs. |
 
 ```bash
 node dev/grimoire/canon.js            # does grimoire.js's par table still match the scripts?
 node dev/grimoire/canon.js --patch    # print the CANON literal to paste back
+node dev/grimoire/prereqs.js --check  # does the unlock graph still match what the proofs consume?
+node dev/grimoire/order_audit.js      # can a level open before a lemma its par proof needs?
 node dev/grimoire/check_emitted.js    # emit everything and compile it (needs `lean` on PATH)
 ```
 
@@ -31,4 +35,6 @@ recorded anywhere is a record everywhere, and `canon.js` can check the claim on 
 
 **The rule, when a reader sends in a shorter proof:** replace that level's script in `solutions.js`,
 run `canon.js --patch` and paste the literal into `grimoire.js`, add the finder to `CANON_CREDIT`, and
-run `check_emitted.js` so the new proof is compiled along with the rest.
+run `check_emitted.js` so the new proof is compiled along with the rest. Then run **`prereqs.js --check`**:
+a shorter proof often reaches back for a lemma from another chapter, and unless the unlock graph is
+updated to match, the level can open before the par on display is reachable.
