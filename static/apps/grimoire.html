@@ -451,7 +451,7 @@
       if (!acc[ex.id]) return;
       var o = document.createElement('option');
       o.value = ex.id;
-      o.textContent = (isTutorial(ex) ? '★ ' : '') + 'Exercise ' + ex.id
+      o.textContent = (isTutorial(ex) ? '★ ' : '') + 'Exercise ' + G.exNum(ex)
         + (isTutorial(ex) ? ' — new: ' + mechOf(ex) : (ex.leanName ? ' — ' + ex.leanName : ''));
       el.exsel.appendChild(o);
     });
@@ -954,7 +954,7 @@
   }
   function proofText() {
     var ex = state.ex, len = G.proofLength(state.env), pr = G.par(ex.id), done = isSolved();
-    var head = ['-- Lean Grimoire \u2014 ' + (isTutorial(ex) ? 'tutorial' : 'exercise') + ' ' + ex.id + (ex.leanName ? '  (' + ex.leanName + ')' : ''),
+    var head = ['-- Lean Grimoire \u2014 ' + (isTutorial(ex) ? 'tutorial' : 'exercise') + ' ' + G.exNum(ex) + (ex.leanName ? '  (' + ex.leanName + ')' : ''),
                 '-- ' + BLOG,
                 '-- ' + (done ? 'Proved in ' : 'UNFINISHED \u2014 ') + len + ' move' + (len === 1 ? '' : 's') + (done ? '.' : ' so far.')
                   + (pr ? '  The shortest proof the game knows takes ' + pr
@@ -977,8 +977,8 @@
       chain.forEach(function (d) {
         // Reset throws a solved level's proof away but keeps the recipe, so the odd link can be missing.
         // It goes in as its statement with `sorry`, named, rather than being left out of the file silently.
-        body.push('-- ' + d.ex.id + (d.ex.leanName ? '  (' + d.ex.leanName + ')' : '')
-                  + (d.env ? '' : '  --  NOT IN THIS BROWSER ANY MORE: re-solve ' + d.ex.id + ' and export again'));
+        body.push('-- ' + G.exNum(d.ex) + (d.ex.leanName ? '  (' + d.ex.leanName + ')' : '')
+                  + (d.env ? '' : '  --  NOT IN THIS BROWSER ANY MORE: re-solve ' + G.exNum(d.ex) + ' and export again'));
         if (!d.env) gaps++;
         body.push('section', G.leanPreamble(d.ex)
           + (d.env ? G.emitLean(d.ex, d.env, opts) : G.leanHeader(d.ex, opts) + '\n  sorry'), 'end', '');
@@ -1004,7 +1004,7 @@
   el.saveproof.addEventListener('click', function () {
     var blob = new Blob([proofText()], { type: 'text/plain;charset=utf-8' });
     var a = document.createElement('a'), url = URL.createObjectURL(blob);
-    a.href = url; a.download = 'grimoire-' + state.ex.id + '.lean';
+    a.href = url; a.download = 'grimoire-' + G.exNum(state.ex) + '.lean';
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(function () { URL.revokeObjectURL(url); }, 0);
   });
@@ -1181,7 +1181,7 @@
         r.setAttribute('class', 'box');
         node.appendChild(r);
         var t = document.createElementNS(NS, 'text');
-        t.setAttribute('x', p.x); t.setAttribute('y', p.y); t.textContent = open ? (e.id + (done ? ' ✓' : '')) : '🔒';
+        t.setAttribute('x', p.x); t.setAttribute('y', p.y); t.textContent = open ? (G.exNum(e) + (done ? ' ✓' : '')) : '🔒';
         node.appendChild(t);
         var ti = document.createElementNS(NS, 'title');
         // an AND-gate has to say WHY it is shut, or a locked node is just a mystery
@@ -1192,7 +1192,7 @@
                         + (G.credit(e.id) ? ', found by ' + G.credit(e.id) : ''));
         if (bst != null) sc.push('your best ' + bst + (!pr ? '' : bst < pr ? ' — a record!' : bst === pr ? ' — matched' : ''));
         ti.textContent = open
-          ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + e.id + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : '')
+          ? ((isTutorial(e) ? 'Tutorial ' : 'Exercise ') + G.exNum(e) + (isTutorial(e) ? ' — new: ' + mechOf(e) : (e.leanName ? ' — ' + e.leanName : '')) + (done ? ' (solved)' : '')
              + (sc.length ? ' · ' + sc.join(' · ') : ''))
           : ('Locked — waiting on ' + (miss.length > 5 ? miss.slice(0, 5).join(', ') + ' and ' + (miss.length - 5) + ' more' : miss.join(', ')));
         node.appendChild(ti);

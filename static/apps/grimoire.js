@@ -1357,6 +1357,20 @@
   function eeS(name, sort, body) { return EXISTS({ name: name, sort: sort }, body); }
   function mem(a, b) { return appE('MEM', [a, b]); }
   var setV = function (n) { return varE(n, SET); };
+  // A level carries three pieces of metadata that happen to coincide today, and must not be assumed to:
+  //
+  //   `id`      the stable tag. It keys saved progress, CANON, CANON_CREDIT, prereqs and the map, so it
+  //             must never be reused for a different level or a reader's save starts pointing at the
+  //             wrong board. Nothing about it is for the player to read.
+  //   `num`     the number the player sees, defaulting to `id` while the two agree. Renumbering a
+  //             chapter means setting this, NOT touching ids — which is what keeps old saves valid.
+  //   position  where the level sits in this array: the linear order that par legality is read against.
+  //             A proof may lean on a lemma from any EARLIER level (see dev/README.md); allowing a later
+  //             one would let two levels prove each other. There is no field for it — moving a level in
+  //             the order means moving its entry here.
+  //
+  // The invariant tying the last two together: `num` runs in the same direction as the array, so the
+  // numbering a player reads really does tell them what may depend on what. `grimoire_test.js` checks it.
   var EXERCISES = [
     // ---------- Chapter 1: Conjunction introduction ----------
     { id: '1.1', kind: 'example', chapter: 1, givens: [binding('hA', A), binding('hB', B), binding('hC', C)], goal: AND(AND(A, B), C), prereqs: [], qed: '1.1', hint: 'Select the potions hA and hB, then brew And.intro to get A ∧ B. Select that and hC, brew it again, and the goal is yours.', needs: ['and.intro'] },
@@ -1847,6 +1861,8 @@
       goal: NOT(eeS('m', NAT, faS('n', NAT, nle(nv('n'), nv('m'))))), prereqs: ['20.1'], qed: '23.3', qedNote: 'no largest natural number; QED carries the ordering axiom as a premise', hint: 'Assume there is a largest m and obtain it. Instantiating its property at succ(m) gives succ(m) ≤ m, which not_succ_le forbids.', needs: [] },
   ];
   var EX_BY_ID = {}; EXERCISES.forEach(function (e) { EX_BY_ID[e.id] = e; });
+  // the number to SHOW for a level; `id` is the key, and they part company after a renumbering
+  function exNum(e) { return (e && (e.num || e.id)) || ''; }
   // Which level proves each minted lemma. A recipe a player holds is one of three things: a BASE recipe,
   // which is Lean's own; a sort's AXIOM, which `leanPreamble` declares or the sort's prelude proves; or a
   // MINTED LEMMA, which is a theorem the player proved on an earlier level -- and nothing in an exported
@@ -1995,7 +2011,7 @@
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
-    proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit,
+    proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,

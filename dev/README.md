@@ -37,6 +37,19 @@ recorded anywhere is a record everywhere, and `canon.js` can check the claim on 
 run `canon.js --patch` and paste the literal into `grimoire.js`, add the finder to `CANON_CREDIT`, and
 run `check_emitted.js` so the new proof is compiled along with the rest. Then run **`order_audit.js`**.
 
+**Three things a level carries, which are not the same thing (TT, 2026-11-16).**
+
+| | what it is | who reads it | may it change? |
+|---|---|---|---|
+| `id` | the stable tag | saved progress, `CANON`, `CANON_CREDIT`, `prereqs`, the map | **never** — reuse it and a reader's save points at the wrong board |
+| `num` | the number shown, defaulting to `id` | the player: dropdown, map, exported proof, filename | freely |
+| position in `EXERCISES` | the linear order | par legality, navigation, the derivation tools | freely, by moving the entry |
+
+So renumbering a chapter is `num` plus a reordering of the array, and old saves keep working — no key
+bump, no migration. Two invariants keep it honest, both checked by `grimoire_test.js`: `num` runs in the
+same direction as the array (otherwise the numbering would imply a dependency order the game does not
+have), and no level waits on one that comes after it.
+
 **What a par is allowed to depend on (TT, 2026-11-16).** A shorter proof often reaches back into an
 earlier chapter for something slicker than the route its level was built around. The level does **not**
 have to wait for those lemmas: par is the shortest proof the game knows, not the shortest reachable from
