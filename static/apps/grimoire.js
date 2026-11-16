@@ -74,7 +74,7 @@
   // Lean function name; `star` is infix on the board but a function in Lean, like ∈.
   defSym({ name: 'c', arity: 0, fixity: 'atom', uni: 'c', resultSort: MAGMA });
   defSym({ name: 'f', arity: 1, fixity: 'app', argSorts: [MAGMA], resultSort: MAGMA, uni: 'f' });
-  defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
+  defSym({ name: 'star', arity: 2, fixity: 'infix', prec: 60, assoc: 'left', uni: '∗', ascii: ['*'], abbrev: ['\\star', '\\ast'], argSorts: [MAGMA, MAGMA], resultSort: MAGMA, leanApp: 'star' });
   // Chapter 18: set operations. Both are infix on the board and plain functions in Lean.
   defSym({ name: 'union', arity: 2, fixity: 'infix', prec: 65, assoc: 'left', uni: '∪', abbrev: ['\\union', '\\cup'], argSorts: [SET, SET], resultSort: SET, leanApp: 'union' });
   defSym({ name: 'inter', arity: 2, fixity: 'infix', prec: 70, assoc: 'left', uni: '∩', abbrev: ['\\inter', '\\cap'], argSorts: [SET, SET], resultSort: SET, leanApp: 'inter' });
@@ -223,7 +223,13 @@
   // Only genuine operator CHARACTERS go here. An `app` symbol (a predicate P, an operation f) is written as
   // an identifier followed by its arguments, so registering its name as an operator character would stop it
   // ever tokenising as an identifier — which is exactly why `P(x)` could not be typed before.
-  var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) { var s = SYMBOLS[k]; if (s.fixity !== 'atom' && s.fixity !== 'app') UNI_OP[s.uni] = k; });
+  // A symbol may also declare `ascii` aliases — single characters a player is likely to reach for when
+  // the glyph is not on the keyboard. ∗ (U+2217) is the case that came up: everyone types the ordinary
+  // asterisk, and “unexpected character” is a poor answer to that.
+  var UNI_OP = {}; Object.keys(SYMBOLS).forEach(function (k) {
+    var s = SYMBOLS[k]; if (s.fixity === 'atom' || s.fixity === 'app') return;
+    UNI_OP[s.uni] = k; (s.ascii || []).forEach(function (a) { UNI_OP[a] = k; });
+  });
   // A nullary constant is DISPLAYED as its glyph but REGISTERED under an internal name -- `0` is `nzero`,
   // `1` is `one` -- so the parser has to accept the glyph as well, or the board shows `0 + a = a` and then
   // refuses to read it back.
@@ -1869,8 +1875,10 @@
   // It is the SHORTEST KNOWN proof, not a proved minimum: a player who comes in under par has found
   // something we did not, which the game says so out loud and asks them to write in about.
   //
-  // DERIVED, not hand-written: `node scratch/canon.js --patch` prints this literal and `--check` diffs it
-  // against the solutions. Re-run it whenever an exercise or a solution changes.
+  // DERIVED, not hand-written: `node dev/grimoire/canon.js --patch` prints this literal, and running it
+  // with no argument diffs it against the scripted solutions in `dev/grimoire/solutions.js`. Re-run it
+  // whenever an exercise or a solution changes. (Those scripts moved into the repo on 2026-11-16, so a
+  // reader's record recorded on one machine is a record on every machine — see `dev/README.md`.)
   var CANON = {
     '1.1': 2, '1.2': 1,
     '2.1': 3, '2.2': 6, '2.3': 5,
@@ -1886,7 +1894,7 @@
     '12.1': 5, '12.2': 2, '12.3': 5, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 16, '12.8': 4,
     '13.1': 3, '13.2': 3, '13.3': 4, '13.4': 4,
     '14.1': 2,
-    '15.1': 1, '15.2': 3, '15.3': 1, '15.4': 2, '15.5': 11, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 12, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 9, '15.18': 9, '15.19': 9, '15.20': 7, '15.21': 19,
+    '15.1': 1, '15.2': 3, '15.3': 1, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 12, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 9, '15.18': 9, '15.19': 9, '15.20': 7, '15.21': 19,
     '16.1': 4, '16.2': 7,
     '17.1': 3, '17.2': 1, '17.3': 1, '17.4': 1,
     '18.1': 1, '18.2': 1, '18.3': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 8, '18.8': 17, '18.9': 17, '18.10': 48, '18.11': 34, '18.12': 34, '18.13': 40,

@@ -1367,7 +1367,8 @@
   }
   function doIntroVar(term) {
     state.justUnlocked = null; state.justUnlockedEx = [];
-    state.history.push(state.env); state.env = G.openVariable(state.env, { name: term.name, sort: G.OMEGA });
+    // the term carries its own sort: a Set variable must open as `X : Set`, not as `X : Ω`
+    state.history.push(state.env); state.env = G.openVariable(state.env, { name: term.name, sort: term.sort || G.OMEGA });
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.selT = []; renderAll();
   }
 
