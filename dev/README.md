@@ -23,8 +23,8 @@ node dev/grimoire/order_audit.js      # can a level open before a lemma its par 
 node dev/grimoire/check_emitted.js    # emit everything and compile it (needs `lean` on PATH)
 ```
 
-Both write their generated files into `scratch/lean/`, which is gitignored — the sources are versioned,
-the build artifacts are not.
+Anything generated lands in `scratch/lean/`, which is gitignored — the sources are versioned, the build
+artifacts are not.
 
 **Why these moved here (2026-11-16).** They used to live in the gitignored `scratch/`, mirrored between
 machines through Dropbox. That was survivable while the solutions were the author's own, but readers now
