@@ -19,6 +19,21 @@ const { G } = require('./solutions.js');
 
 const RE = /--\s*grimoire-replay\s+v(\d+)\s+(\S+)\s+([A-Za-z0-9+/=\s]+?)(?:\n\s*\n|\n--|$)/g;
 
+// A reader's proof may lean on any lemma minted EARLIER IN THE LIST (dev/README.md's par rule), and a
+// replay from a fresh board starts with only the BASE recipes in the registry — so stock it first, the
+// way canon.js does as it walks the list. Without this, every submission that applies a minted lemma
+// replays as `unknown recipe` and reads as a forgery: the tool's own tests only ever replayed a
+// base-recipe proof (2.1), so the gap sat here unnoticed until five records arrived at once.
+const ORDER = {}; G.EXERCISES.forEach((e, i) => { ORDER[e.id] = i; });
+const IS_BASE = {}; G.BASE_RECIPES.forEach(r => { IS_BASE[r.id] = true; });
+function stockRecipes(id) {
+  Object.keys(G.RECIPES).forEach(k => { if (!IS_BASE[k]) delete G.RECIPES[k]; });
+  G.EXERCISES.forEach(e => {
+    if (ORDER[e.id] < ORDER[id] && e.kind === 'lemma' && e.leanName && !G.RECIPES[e.leanName])
+      G.RECIPES[e.leanName] = G.recipeFromExercise(e);
+  });
+}
+
 // Every replay line in a pasted comment, checked. `parOf` is injectable so the tests can ask what the
 // tool would say about a level whose par it does not actually hold.
 function assess(text, parOf) {
@@ -34,6 +49,7 @@ function assess(text, parOf) {
     if (!ex) { r.verdict = 'no level has the id ' + id; out.push(r); continue; }
     const moves = G.decodeMoves(b64);
     if (!moves) { r.verdict = 'the replay line is not readable — it may have been truncated in the paste'; out.push(r); continue; }
+    stockRecipes(id);
     const res = G.replayMoves(ex, moves);
     if (!res.ok) { r.verdict = 'NOT A PROOF: ' + res.error; out.push(r); continue; }
     const p = par(id);
@@ -73,7 +89,7 @@ function scriptFor(id, moves) {
   return "  '" + id + "': s => {\n    " + lines.join('\n    ') + '\n  },';
 }
 
-if (require.main !== module) { module.exports = { assess, scriptFor, RE }; return; }
+if (require.main !== module) { module.exports = { assess, scriptFor, stockRecipes, RE }; return; }
 
 const argv = process.argv.slice(2);
 const asJson = argv.includes('--json');

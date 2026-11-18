@@ -17,6 +17,7 @@ must have in order to reproduce a claim the site makes.
 | `grimoire_test.js` | the core suite: the engine with no DOM in sight. |
 | `grimoire_smoke.js` | the UI suite: `grimoire.html` driven against a fake DOM, in Node. |
 | `check_exports.js` | compiles each *export* on its own — a different guarantee from `check_emitted.js`. |
+| `perf.js` | what a click costs on a long proof, and how that scales with the bench. |
 | `Grimoire/Nat.lean` | the concrete `Nat` sort's own Lean module, imported by the emitted proofs. |
 
 ```bash
@@ -30,6 +31,7 @@ node dev/grimoire/file_record.js comment.txt   # is this reader's proof really a
 node dev/grimoire/grimoire_test.js    # the core suite
 node dev/grimoire/grimoire_smoke.js   # the UI suite, against a fake DOM
 node dev/grimoire/check_exports.js    # does each export compile ALONE?  (--all for all 158)
+node dev/grimoire/perf.js 18.10 --ladder  # what does a click cost in a late chapter?
 ```
 
 The two suites are the quality bar: every change to the game is checked against them, and they are what
@@ -63,7 +65,26 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them.
+why the counts are written down here and in the commit that moves them. **As of 2026-11-18: core
+4810, smoke 371.**
+
+**What the suites could not have caught (2026-11-18).** Two readers reported Chrome eating gigabytes
+and crawling from 18.8 on. Nothing was wrong with those levels: the recipe panel's “hide inactive”
+option, which is on by default, decides whether to dim a card by building the card list a second time
+with *everything on the bench selected at once* — and the brew search then enumerated every ordered
+tuple of that selection for every recipe in the book, building the whole list of orderings before
+trying the first. A 28-step proof in chapter 18 is 60 ingredients against 105 recipes: **927 million
+tuples, materialised, on every render with nothing selected.** It now walks them lazily, skips what a
+recipe's declared `slots` rule out, abandons a prefix its `prefix` test says cannot be completed, and
+asks for FIRST brews only when all it needs is whether a card lights up. Same answers — a brute-force
+oracle in the core suite enumerates every ordering and demands the search agree, for all 114 recipes.
+
+The lesson for the suites: a test suite checks what the code *answers*, and this was a bug about what
+it *costs*. So the guard that went in with the fix counts matcher calls rather than milliseconds —
+under 400k for a forty-potion bench, where the old search would have walked billions — and `perf.js`
+is there to be run by hand when a chapter grows. Note what it has to set up to see the problem at all:
+a player's real board has every lemma they have proved UNLOCKED AS A RECIPE, and with `state.unlocked`
+left empty the search runs over 19 recipes instead of 105 and the blow-up is invisible.
 
 The test suites followed a day later, for the same reason and a sharper one: the laptop's copies had
 drifted a week behind the game and reported **142 failures** that were all stale assertions — hints had
@@ -90,6 +111,15 @@ suites.
 
 A proof exported before 2026-11-16 carries no replay line, and has to be read and scripted by hand, as
 the first twenty records were. Asking the reader to press Copy again is usually quicker.
+
+A trap worth knowing about, since it bit on the first batch the tool was really used on (2026-11-18):
+the replay starts from a fresh board, and a fresh board holds only the BASE recipes — so a submission
+that applies a lemma the reader had minted came back as `NOT A PROOF: unknown recipe Or.imp_left'`,
+which reads exactly like a forgery. Five genuine records in a row said that. `file_record.js` now stocks
+the registry first with every lemma owned by a level EARLIER IN THE LIST, which is what the par rule
+allows a record to lean on anyway; the tool's own tests had only ever replayed a base-recipe proof (2.1),
+which is why the gap sat there unnoticed. If a submission ever fails on a recipe name again, check that
+before doubting the reader.
 
 **Three things a level carries, which are not the same thing (TT, 2026-11-16).**
 

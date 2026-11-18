@@ -318,8 +318,9 @@
       beside the count of the moves you have made. Matching it rims the level gold on the map; coming in
       under it turns the level gold — and means you have found something better than the proof this game
       was built around, which is worth telling me about: a shorter proof that is sent in becomes the one
-      the game knows, and is credited beside the level it belongs to. Several of the lengths below are a
-      reader’s rather than mine already, and one of them cut a proof from eight moves to three.
+      the game knows, and is credited beside the level it belongs to. Twenty-seven of the lengths below are a
+      reader’s rather than mine already — one cut a proof from eight moves to three, and another did a
+      congruence in five moves where I had taken eight.
       <strong>Copy</strong> and <strong>Save</strong>
       under the spellbook export the proof: the informal reading as comments, then Lean that compiles on
       its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
@@ -790,11 +791,13 @@
   // the active capabilities and the unlocked recipes, never on the selection — the selection decides each
   // card's `active` flag and its brew buttons. (reachableCards() below relies on that: it zips two runs.)
   // Pushes the craftable brews into state.ded as a side effect, so the buttons can refer to them by index.
-  function buildCards() {
+  // `firstOnly` is for the reachability probe below, which reads nothing but each card's `active` flag:
+  // one brew per recipe settles that, and looking for only the first is enormously cheaper.
+  function buildCards(firstOnly) {
     var recipes = availableRecipes();
     state.ded = [];
     var proofByRecipe = {};
-    G.deductions(state.env, ingredients(), recipes).forEach(function (d) {
+    G.deductions(state.env, ingredients(), recipes, firstOnly ? { firstOnly: true } : null).forEach(function (d) {
       var i = state.ded.length; state.ded.push({ action: 'proof', d: d });
       (proofByRecipe[d.recipeId] = proofByRecipe[d.recipeId] || []).push({ i: i, out: d.output, lean: d.lean });
     });
@@ -803,7 +806,7 @@
     if (state.env.parent) state.sel.forEach(function (n) {
       G.dischargeOptions(state.env, n).forEach(function (o) { var i = state.ded.length; state.ded.push({ action: 'discharge', proofName: n, level: o.level, output: o.output }); dischargeBrews.push({ i: i, name: n, level: o.level, out: o.output }); });
     });
-    var formulaBrews = G.formulaDeductions(formulaPool(), state.formulas, formulaRecipeList()).filter(function (d) { return !FCAP[d.recipeId] || hasCap(FCAP[d.recipeId]); }).map(function (d) { var i = state.ded.length; state.ded.push({ action: 'formula', output: d.output }); return { i: i, out: d.output, recipeId: d.recipeId }; });
+    var formulaBrews = G.formulaDeductions(formulaPool(), state.formulas, formulaRecipeList(), firstOnly ? { firstOnly: true } : null).filter(function (d) { return !FCAP[d.recipeId] || hasCap(FCAP[d.recipeId]); }).map(function (d) { var i = state.ded.length; state.ded.push({ action: 'formula', output: d.output }); return { i: i, out: d.output, recipeId: d.recipeId }; });
     // ∀-introduction: a selected variable (not already in context) opens a sub-env where it is free
     var cvNow = contextVars();
     var introBrews = hasCap('forall') ? selTermExprs().filter(function (t) { return t.tag === 'var' && !cvNow[t.name + ':' + t.sort]; }).map(function (t) { var i = state.ded.length; state.ded.push({ action: 'intro_var', term: t }); return { i: i, t: t }; }) : [];
@@ -890,6 +893,11 @@
   // twice, since a recipe may want the same one in both slots, as And.idem does — and keeping whatever
   // lit up. It over-approximates: ingredients that could never be combined are all offered together, so
   // it errs towards showing a card rather than hiding one that would have been useful.
+  //
+  // It is also, inevitably, the most expensive thing the app does, since “everything at once” is the
+  // largest selection there is: it asks the brew search for every ordered tuple of every potion on a
+  // bench that a late chapter's recipe book is a hundred lemmas long. So it asks for FIRST brews only,
+  // and the search walks its tuples lazily and skips those a recipe's slots rule out (see `eachTuple`).
   function reachableCards() {
     var keep = { sel: state.sel, selF: state.selF, selT: state.selT, selV: state.selV, ded: state.ded }, probe;
     state.sel = [];
@@ -897,7 +905,7 @@
     state.selF = state.formulas.map(function (_, i) { return i; });
     state.selT = state.terms.map(function (_, i) { return i; });
     state.selV = (state.env.vars || []).map(function (v) { return v.name + ':' + v.sort; });
-    try { probe = buildCards(); } finally {
+    try { probe = buildCards(true); } finally {
       state.sel = keep.sel; state.selF = keep.selF; state.selT = keep.selT; state.selV = keep.selV; state.ded = keep.ded;
     }
     return probe;

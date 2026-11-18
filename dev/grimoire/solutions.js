@@ -159,15 +159,16 @@ const SOL = {
     const hac = s.a(AND(A, C)); const ha2 = s.c('And.left', hac); const hc = s.c('And.right', hac); const bc2 = s.c('Or.inr', hc, F(B)); const p2 = s.c('And.intro', ha2, bc2); const iAC = s.d(p2, 1);
     const imp = s.c('case_analysis', iAB, iAC); s.c('modus_ponens', imp, 'hABC');
   },
+  // A RECORD (13, was 15): the same two nested case splits, but each one closed with the minted Or.elim'
+  // in a single move instead of case_analysis followed by modus ponens.
   '6.13': s => {
     const hab = s.c('And.left', 'hABC');
     const hac = s.c('And.right', 'hABC');
     s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(AND(B, C))), 1);
     const hb = s.a(B);
     s.a(C); const bc = s.c('And.intro', hb, 'hC'); const iC = s.d(s.c('Or.inr', bc, F(A)), 1);
-    const gotB = s.c('modus_ponens', s.c('case_analysis', iA, iC), hac);
-    const iB = s.d(gotB, 1);
-    s.c('modus_ponens', s.c('case_analysis', iA, iB), hab);
+    const iB = s.d(s.c("Or.elim'", hac, iA, iC), 1);
+    s.c("Or.elim'", hab, iA, iB);
   },
   '7.1': s => { s.c('Iff.mp', 'hAB', 'hA'); },
   '7.2': s => { s.a(B); const a = s.c('Iff.mpr', 'hAB', 'hB'); const iBA = s.d(a, 1); s.a(A); const b = s.c('Iff.mp', 'hAB', 'hA'); const iAB = s.d(b, 1); s.c('Iff.intro', iBA, iAB); },
@@ -216,16 +217,13 @@ const SOL = {
     const got = s.c("or_self_elim'", aa);
     s.n(got, nA);
   },
-  // 12.12: assume A ∧ B, case-analyse ¬A ∨ ¬B down to ¬B, then contradict the B half of the assumption.
+  // 12.12. A RECORD (8, was 9): assume A ∧ B, double-negate each half, and De Morgan the pair back up
+  // into ¬((¬A) ∨ (¬B)) — which is exactly what contradicts the given. No case analysis at all.
   '8.9': s => {
     const hab = s.a(AND(A, B));
-    const a = s.c('And.left', hab), b = s.c('And.right', hab);
-    const nB = s.a(NOT(B));
-    const nA1 = s.c('absurd', b, nB, F(NOT(A)));
-    const imp = s.d(nA1, 1);
-    const nn = s.c("Or.imp_right'", 'hnAonB', imp);
-    const nA = s.c("or_self_elim'", nn);
-    s.n(a, nA);
+    const nna = s.c("not_not_intro'", s.c('And.left', hab));
+    const nnb = s.c("not_not_intro'", s.c('And.right', hab));
+    s.n('hnAonB', s.c("not_or_intro'", s.c('And.intro', nna, nnb)));
   },
   // 12.13 (classical): split on A via the minted by_cases'. If A holds, ¬B follows by reductio against ¬(A ∧ B).
   // 10.8: assume the left side, push it through the ↔, discharge — the implication inside a ↔
@@ -282,22 +280,23 @@ const SOL = {
     const i2 = s.d(s.c('not_not_elim', s.a(NOT(NOT(A)))), 1);
     s.c('Iff.intro', i1, i2);
   },
-  // 12.21 Peirce: if ¬A, then A → B holds vacuously, and the hypothesis turns that into A — contradiction-free
+  // 12.21 Peirce. A RECORD (6, was 8): suppose ¬A. Then the hypothesis cannot take an A → B (mt_apply'),
+  // and yet ¬A hands you one (imp_of_not_or' on (¬A) ∨ B) — so ¬¬A, and A. A reductio, not a case split.
   '9.10': s => {
-    const i1 = s.c('Impl.idem', F(A));
     const hna = s.a(NOT(A));
-    const imp = s.d(s.c('absurd', s.a(A), hna, F(B)), 1);       // A → B
-    const i2 = s.d(s.c('modus_ponens', 'hPA', imp), 1);         // ¬A → A
-    s.c("by_cases'", i1, i2);
+    const nimp = s.c("mt_apply'", 'hPA', hna);                            // ¬(A → B)
+    const imp = s.c("imp_of_not_or'", s.c('Or.inl', hna, F(B)));          // A → B
+    s.c('not_not_elim', s.n(imp, nimp));
   },
   // 12.22 resolution: ¬A ∨ C is really A → C (12.15), and then it is just Or.imp_left' (9.4)
   '8.14': s => { s.c("Or.imp_left'", 'hAB', s.c("imp_of_not_or'", 'hnAC')); },
+  // A RECORD (7, was 10): one reductio gives B → ¬A, and then excluded middle on B is MAPPED through it
+  // by Or.imp_left' rather than split on — so the ¬B case needs no sub-proof of its own.
   '9.6': s => {
-    const ha = s.a(A);
-    const nb = s.n(s.c('And.intro', ha, s.a(B)), 'hnAB');
-    const i1 = s.d(s.c('Or.inr', nb, F(NOT(A))), 1);
-    const i2 = s.d(s.c('Or.inl', s.a(NOT(A)), F(NOT(B))), 1);
-    s.c("by_cases'", i1, i2);
+    const hb = s.a(B), ha = s.a(A);
+    const nA = s.n(s.c('And.intro', ha, hb), 'hnAB');     // inside B: ¬A, against the given ¬(A ∧ B)
+    const iBA = s.d(nA, 1);                               // B → ¬A
+    s.c("Or.imp_left'", s.c('Classical.em', F(B)), iBA);  // (B ∨ ¬B) becomes (¬A) ∨ (¬B)
   },
   '10.1': s => { const t = s.c('True.intro'); s.c('Or.inl', t, F(A)); },
   '10.2': s => { const f = s.a(FALSE()); const a = s.c('False.elim', f, F(A)); s.d(a, 1); },
@@ -307,14 +306,14 @@ const SOL = {
     const hta = s.a(AND(TRUE(), A)); const a = s.c('And.right', hta); const iB = s.d(a, 1);
     s.c('Iff.intro', iF, iB);
   },
+  // A RECORD (11, was 13): the A → A half comes from the minted Impl.idem rather than from assuming A and
+  // discharging it, and Or.elim' consumes the disjunction directly instead of case_analysis + modus ponens.
   '10.5': s => {
-    const ha0 = s.a(A); const oa = s.c('Or.inr', ha0, F(FALSE())); const iF = s.d(oa, 1);
+    const ha = s.a(A); const iF = s.d(s.c('Or.inr', ha, F(FALSE())), 1);           // A → False ∨ A
     const hfa = s.a(OR(FALSE(), A));
-    const hf = s.a(FALSE()); const a1 = s.c('False.elim', hf, F(A)); const iFalse = s.d(a1, 1);
-    const ha1 = s.a(A); const iA = s.d(ha1, 1);
-    const imp = s.c('case_analysis', iFalse, iA); const gotA = s.c('modus_ponens', imp, hfa);
-    const iB = s.d(gotA, 1);
-    s.c('Iff.intro', iF, iB);
+    const hf = s.a(FALSE()); const iFalse = s.d(s.c('False.elim', hf, F(A)), 1);   // False → A
+    const gotA = s.c("Or.elim'", hfa, iFalse, s.c('Impl.idem', F(A)));
+    s.c('Iff.intro', iF, s.d(gotA, 1));
   },
   '8.15': s => {
     const na = s.a(NOT(A));
@@ -339,22 +338,25 @@ const SOL = {
   },
   // 16.2: introduce both variables, then excluded middle on Q(x, y), then discharge through both
   '11.3': s => { s.v('x'); s.v('y'); s.d(s.c('Classical.em', F(Q(xO, yO))), 2); },
-  // 18.7: a hypothesis not mentioning X crosses the ∀ in both directions
+  // 18.7: a hypothesis not mentioning X crosses the ∀ in both directions.
+  // A RECORD (13, was 16): each half closes its three open levels — the variable, the assumption A, and
+  // the hypothesis — with ONE discharge, where the old script stepped out of them one at a time.
   '12.7': s => {
-    const h1 = s.a(IMPLIES(A, fa('X', Pp(X))));
-    s.v('X'); const hA = s.a(A);
-    const px = s.c('universal_instantiation', s.c('modus_ponens', h1, hA), F(X));
-    const i1 = s.d(s.d(px, 2), 1);
-    const h2 = s.a(fa('X', IMPLIES(A, Pp(X))));
-    const hA2 = s.a(A);
+    const h1 = s.a(fa('X', IMPLIES(A, Pp(X))));
+    const hA = s.a(A);
     s.v('X');
-    const px2 = s.c('modus_ponens', s.c('universal_instantiation', h2, F(X)), hA2);
-    const i2 = s.d(s.d(s.d(px2, 1), 1), 1);
-    s.c('Iff.intro', i1, i2);
+    const i1 = s.d(s.c('modus_ponens', s.c('universal_instantiation', h1, F(X)), hA), 3);
+    const h2 = s.a(IMPLIES(A, fa('X', Pp(X))));
+    s.v('X');
+    const hA2 = s.a(A);
+    const i2 = s.d(s.c('universal_instantiation', s.c('modus_ponens', h2, hA2), F(X)), 3);
+    s.c('Iff.intro', i2, i1);   // the goal states the →∀ side first
   },
   '11.2': s => { s.v('x'); s.v('y'); const hq = s.a(Q(xO, yO)); s.d(hq, 3); },
   '11.1': s => { s.v('X'); const h = s.a(Pp(X)); s.d(h, 2); },
-  '11.4': s => { const h = s.a(G.FORALL({ name: 'X', sort: OMEGA }, G.FORALL({ name: 'Y', sort: OMEGA }, Q(X, Y)))); s.d(h, 1); },
+  // A RECORD (1, was 2): no need to assume the antecedent and discharge it — Impl.idem IS this statement,
+  // at the formula (∀ X, ∀ Y, Q(X, Y)). A minted lemma applies to a compound formula as readily as to an atom.
+  '11.4': s => { s.c('Impl.idem', F(fa('X', fa('Y', Q(X, Y))))); },
   '12.1': s => { s.v('X'); const i1 = s.c('universal_instantiation', 'hpr', F(X)); const i2 = s.c('universal_instantiation', 'hp', F(X)); const r = s.c('modus_ponens', i1, i2); s.d(r, 1); },
   '11.5': s => { s.v('X'); s.d('hA', 1); },
   '12.3': s => {
@@ -769,22 +771,27 @@ const SOL = {
   '18.5': s => { s.ce('rw', Eq(beta, alpha), s.c('Eq.refl', F(alpha)), 'hab'); },
   // 24.5 transitivity: rewrite β in `α = β` along `β = γ`
   '18.6': s => { s.ce('rw', Eq(alpha, gamma), 'hab', 'hbc'); },
-  // 24.6 congruence: forwards by rewriting, backwards by first flipping the equation with the minted Eq.symm'
+  // 24.6 congruence. A RECORD (5, was 8), and a lovely one: assume P(α) and discharge it at once, which
+  // costs two moves and buys P(α) → P(α). Now rewriting along α = β gives EITHER direction, depending on
+  // which occurrence of α you rewrite — so both halves of the ↔ come from that one implication, and the
+  // backwards direction never needs the equation flipped. Eq.symm' goes unused here.
   '18.7': s => {
-    const i1 = s.d(s.ce('rw', Pp(beta), s.a(Pp(alpha)), 'hab'), 1);
-    const ba = s.c("Eq.symm'", F(alpha), F(beta), 'hab');   // a minted lemma takes its consts as explicit terms
-    const i2 = s.d(s.ce('rw', Pp(alpha), s.a(Pp(beta)), ba), 1);
-    s.c('Iff.intro', i1, i2);
+    const refl = s.d(s.a(Pp(alpha)), 1);                                  // P(α) → P(α)
+    const fwd = s.ce('rw', IMPLIES(Pp(alpha), Pp(beta)), refl, 'hab');    // rewrite the α on the right
+    const bwd = s.ce('rw', IMPLIES(Pp(beta), Pp(alpha)), refl, 'hab');    // and the one on the left
+    s.c('Iff.intro', fwd, bwd);
   },
   // 22.10 (QED 22.8): ∀(P→¬Q),∀(¬Q→R),¬∃(R∧S) ⊢ ∀(P→¬S)
+  // A RECORD (11, was 12): instantiate both ∀s at X and chain them with implies_trans into P(X) → R(X)
+  // BEFORE assuming P(X), which saves one modus ponens; and one two-level discharge closes the rest.
   '15.10': s => {
-    s.v('X'); const hp = s.a(Pp(X));
-    const nQ = s.c('modus_ponens', s.c('universal_instantiation', 'hPnQ', F(X)), hp);
-    const rX = s.c('modus_ponens', s.c('universal_instantiation', 'hnQR', F(X)), nQ);
+    s.v('X');
+    const pr = s.c('implies_trans', s.c('universal_instantiation', 'hPnQ', F(X)),
+                                    s.c('universal_instantiation', 'hnQR', F(X)));   // P(X) → R(X)
+    const rX = s.c('modus_ponens', pr, s.a(Pp(X)));
     const hs = s.a(Sp(X));
     const ex = s.ce('Exists.intro', EE('x', AND(Rp(xO), Sp(xO))), s.c('And.intro', rX, hs), F(X));
-    const nS = s.n(ex, 'hnrs');
-    s.d(s.d(nS, 1), 1);
+    s.d(s.n(ex, 'hnrs'), 2);
   },
   // 22.11 not_exists_forall_not: ¬∃X,P X ⊢ ∀X,¬P X (a directional De Morgan half — mints a reusable recipe)
   '15.13': s => {

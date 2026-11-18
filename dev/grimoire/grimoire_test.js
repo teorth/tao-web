@@ -1322,5 +1322,142 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   eq(G.EX_BY_ID['16.2'].qed, '23.2', "Russell's paradox is QED 23.2");
 }
 
+// ---------- the brew search: a pruned, lazy walk that may not lose a single brew ----------
+// `deductions` used to build every ordering of the selected ingredients up front and try them all. The
+// reachability probe behind "hide inactive" selects EVERY potion at once, so on a long proof in a late
+// chapter that was a billion tuples, materialised, on every render: two readers reported Chrome eating
+// gigabytes and crawling from 18.8 on. It now walks the tuples lazily, skips those a recipe's `slots`
+// rule out, and abandons a prefix its `prefix` test says cannot be completed.
+//
+// All three are OPTIMISATIONS, and the one thing they must never do is hide a brew the player had. So
+// the test is a brute-force oracle: enumerate every ordering, call the matcher directly, and demand the
+// same answer. If a filter is ever wrong, this is what says so.
+{
+  const F = G.formulaIng, X = G.varE('X', G.OMEGA);
+  const EQo = (x, y) => G.appE('EQ', [x, y]);
+  const bench = [
+    G.binding('h1', AND(A, B)), G.binding('h2', IMPLIES(A, B)), G.binding('h3', A),
+    G.binding('h4', NOT(A)), G.binding('h5', OR(A, B)), G.binding('h6', IFF(A, B)),
+    G.binding('h7', IMPLIES(B, C)), G.binding('h8', G.FORALL({ name: 'X', sort: G.OMEGA }, G.appE('P', [X]))),
+    G.binding('h9', EQo(G.varE('α', G.OMEGA), G.varE('β', G.OMEGA))),
+  ];
+  const env = { bindings: bench, vars: [{ name: 'α', sort: G.OMEGA }, { name: 'β', sort: G.OMEGA }],
+                goal: null, steps: [], parent: null, assumption: null, depth: 0 };
+  const ings = bench.map(b => G.proofIng(b)).concat([F(C), F(A), F(X)]);
+
+  // the oracle: every ordering of distinct ingredients, no pruning, no early exit
+  function perms(arr, k) {
+    if (k === 0) return [[]];
+    const out = [];
+    arr.forEach((x, i) => perms(arr.slice(0, i).concat(arr.slice(i + 1)), k - 1).forEach(p => out.push([x].concat(p))));
+    return out;
+  }
+  const show = d => d.recipeId + ' ⊢ ' + render(d.output);
+  function brute(recipes, pool) {
+    const out = [];
+    recipes.forEach(r => perms(pool, r.arity).forEach(inp => r.match(inp, env).forEach(c => {
+      if (env.bindings.some(b => exprEq(b.type, c.output))) return;
+      out.push(r.id + ' ⊢ ' + render(c.output));
+    })));
+    return Array.from(new Set(out)).sort();
+  }
+
+  // every base recipe, and every lemma the game mints, against the oracle
+  const minted = G.EXERCISES.filter(e => e.kind === 'lemma' && e.leanName).map(e => G.recipeFromExercise(e));
+  eq(minted.length, 95, 'the game mints 95 lemma recipes (the rest of the 158 levels are examples)');
+  ok(minted.some(r => r.arity >= 4), 'some of them take four or more ingredients');
+  let checked = 0, lost = [];
+  [G.BASE_RECIPES, minted].forEach(group => group.forEach(r => {
+    // the oracle is factorial, so give the widest recipes a shorter bench
+    const pool = r.arity >= 4 ? ings.slice(0, 6) : ings;
+    const want = brute([r], pool);
+    const got = Array.from(new Set(G.deductions(env, pool, [r]).map(show))).sort();
+    if (want.join('|') !== got.join('|')) lost.push(r.id + ': oracle ' + want.length + ', search ' + got.length);
+    checked++;
+  }));
+  ok(lost.length === 0, 'the pruned search finds exactly what brute force finds, for all ' + checked
+     + ' recipes' + (lost.length ? ' — lost: ' + lost.slice(0, 5).join('; ') : ''));
+
+  // `firstOnly` (what the probe asks for) must agree about WHETHER a recipe fires -- that is the only
+  // thing read off it, and a card dimmed by mistake is a brew the player cannot see.
+  let disagreed = [];
+  [G.BASE_RECIPES, minted].forEach(group => group.forEach(r => {
+    const pool = r.arity >= 4 ? ings.slice(0, 6) : ings;
+    const full = G.deductions(env, pool, [r]).length;
+    const first = G.deductions(env, pool, [r], { firstOnly: true }).length;
+    if ((full > 0) !== (first > 0) || first > 1) disagreed.push(r.id + ' (' + full + '/' + first + ')');
+  }));
+  ok(disagreed.length === 0, 'firstOnly fires exactly when the full search does, at most once'
+     + (disagreed.length ? ' — ' + disagreed.slice(0, 5).join('; ') : ''));
+
+  // the slot filters and the prefix test are NECESSARY conditions: whatever the matcher accepts, they pass
+  let unsound = [];
+  [G.BASE_RECIPES, minted].forEach(group => group.forEach(r => {
+    if (!r.slots && !r.prefix) return;
+    const pool = r.arity >= 4 ? ings.slice(0, 6) : ings;
+    perms(pool, r.arity).forEach(inp => {
+      if (!r.match(inp, env).length) return;
+      inp.forEach((x, i) => { if (r.slots && r.slots[i] && !r.slots[i](x)) unsound.push(r.id + ' slot ' + i); });
+      if (r.prefix) for (let d = 0; d < inp.length; d++) if (!r.prefix(inp, d)) unsound.push(r.id + ' prefix ' + d);
+    });
+  }));
+  ok(unsound.length === 0, 'no slot filter or prefix test rejects a tuple the matcher accepts'
+     + (unsound.length ? ' — ' + Array.from(new Set(unsound)).slice(0, 5).join('; ') : ''));
+
+  // the formula bench has the same firstOnly contract
+  const fpool = [A, B, C, AND(A, B), OR(A, B)];
+  const fFull = G.formulaDeductions(fpool, [], G.FORMULA_RECIPES);
+  const fFirst = G.formulaDeductions(fpool, [], G.FORMULA_RECIPES, { firstOnly: true });
+  ok(fFull.length > 20, 'the formula constructors offer plenty from a five-formula pool (' + fFull.length + ')');
+  eq(fFirst.length, Array.from(new Set(fFull.map(d => d.recipeId))).length,
+     'firstOnly keeps exactly one formula brew per constructor');
+
+  // ---- eachTuple itself ----
+  eq(G.eachTuple([1, 2, 3], 0, null, () => { }), false, 'arity 0 visits the empty tuple once');
+  let seen = [];
+  G.eachTuple(['a', 'b', 'c'], 2, null, t => { seen.push(t.join('')); });
+  eq(seen.join(' '), 'ab ac ba bc ca cb', 'ordered pairs of DISTINCT ingredients, every one of them');
+  let n = 0;
+  G.eachTuple([1, 2, 3, 4], 2, null, () => { n++; return n === 3; });
+  eq(n, 3, 'returning true stops the walk');
+  let kept = [];
+  G.eachTuple([1, 2, 3], 2, null, t => { kept.push(t); });
+  ok(kept.every(t => t === kept[0]), 'the tuple is ONE reused buffer — a caller that keeps it must copy');
+  ok(G.deductions(env, ings, [G.RECIPES['And.intro']]).every((d, i, all) => i === 0 || d.inputs !== all[0].inputs),
+     'and `deductions` does copy: its brews do not all share one inputs array');
+  // a slot filter cuts the walk, and only where it says
+  let tried = 0;
+  G.eachTuple([1, 2, 3, 4], 2, [x => x % 2 === 0, null], t => { tried++; });
+  eq(tried, 6, 'a filter on the first slot alone leaves 2 × 3 tuples');
+
+  // The call the probe actually makes: every potion on a long bench offered twice, against the whole
+  // recipe book. Nominally that is 927 MILLION tuples at 28 potions and 5.8 BILLION at 40, which the
+  // old walk built as arrays before trying the first one. The guard is on work done rather than on the
+  // clock, so it means the same thing on any machine.
+  {
+    const big = [];
+    for (let i = 0; i < 40; i++) big.push(G.binding('p' + i,
+      i % 3 === 0 ? AND(A, varE('B' + i)) : i % 3 === 1 ? IMPLIES(A, varE('B' + i)) : OR(A, varE('B' + i))));
+    const bigEnv = { bindings: big, vars: [], goal: null, steps: [], parent: null, assumption: null, depth: 0 };
+    const twice = [];
+    big.forEach(b => { twice.push(G.proofIng(b)); twice.push(G.proofIng(b)); });
+    let calls = 0;
+    const counted = G.BASE_RECIPES.concat(minted).map(r => Object.assign({}, r, {
+      match: function (inp, e) { calls++; return r.match(inp, e); }
+    }));
+    const brews = G.deductions(bigEnv, twice, counted, { firstOnly: true });
+    ok(brews.length > 0, 'a forty-potion bench does offer brews (' + brews.length + ')');
+    ok(calls < 400000, 'and finding them costs under 400k matcher calls, not a billion tuples (' + calls + ')');
+  }
+
+  // the head test underneath the slot filters
+  ok(G.headCompatible(A, AND(B, C)), 'a metavariable is compatible with anything');
+  ok(G.headCompatible(AND(A, B), AND(B, C)) && !G.headCompatible(AND(A, B), OR(B, C)),
+     'a conjunction template wants a conjunction');
+  ok(!G.headCompatible(G.FORALL({ name: 'X', sort: G.OMEGA }, A), G.EXISTS({ name: 'X', sort: G.OMEGA }, A)),
+     'a ∀ template does not take an ∃');
+  ok(G.headCompatible(G.appE('P', [X]), AND(A, B)), 'a predicate metavariable P(X) is compatible with anything');
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

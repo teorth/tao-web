@@ -550,6 +550,8 @@
   // Chapter 8: from a contradiction (a proof of A and a proof of ¬A) anything follows (emits Lean `absurd`).
   // (`absurd hA hnA : B` hides the underlying `False`, which the game does not surface until Chapter 10.)
   defRecipe({ id: 'absurd', leanName: 'absurd', chapter: 11, arity: 3, rule: 'a proof of A, a proof of ¬A, and a formula B ⊢ B', informal: 'from a contradiction, anything',
+    // the one arity-3 base recipe, so the one whose tuple walk is worth pruning: two proofs and a formula
+    slots: [function (x) { return !!x.proof; }, function (x) { return !!x.proof && x.type.tag === 'app' && x.type.sym === 'NOT'; }, function (x) { return !x.proof; }],
     match: function (inp) {
       if (inp.length !== 3 || !inp[0].proof || !inp[1].proof || inp[2].proof || sortOf(inp[2].type) !== PROP) return [];
       return exprEq(inp[1].type, NOT(inp[0].type)) ? [{ output: inp[2].type, lean: 'absurd ' + inp[0].name + ' ' + inp[1].name }] : [];
@@ -780,14 +782,37 @@
     };
     var rule = inputs() + ' ⊢ ' + render(concl);
     var ruleWords = (inputs({ words: true }) + ' — you get ' + render(concl, { words: true })).replace(/^\s*— /, '');
+    function attempt(inp, k) {   // the subst after unifying slots 0..k-1, or null if they cannot stand together
+      var subst = {}, i, j;
+      for (i = 0; i < c && i < k; i++) { var ti = inp[i]; if (ti.proof || !sortMatch(consts[i].sort, sortOf(ti.type), subst)) return null; subst[consts[i].name] = ti.type; }
+      for (i = 0; i < g && c + i < k; i++) { var pi = inp[c + i]; if (!pi.proof || !unifyHO(givens[i], pi.type, subst, {})) return null; }
+      for (j = 0; j < f && c + g + j < k; j++) {
+        var xi = inp[c + g + j];
+        if (xi.proof || !sortMatch(freeVars[j].sort, sortOf(xi.type), subst)) return null;
+        if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return null;
+        subst[freeVars[j].name] = xi.type;
+      }
+      return subst;
+    }
+    // What each slot must be, as a necessary condition the brew search can prune on: a term, then one
+    // proof per given (whose statement must at least have the given's top-level shape), then a formula
+    // or term per free variable of the conclusion. Read off the very same consts/givens/freeVars that
+    // `attempt` reads, so the two cannot drift apart.
+    var slots = consts.map(function () { return function (x) { return !x.proof; }; })
+      .concat(givens.map(function (t) { return function (x) { return x.proof && headCompatible(t, x.type); }; }))
+      .concat(freeVars.map(function () { return function (x) { return !x.proof; }; }));
     return {
       id: name, leanName: name, chapter: ex.chapter, arity: arity, minted: true, rule: rule, ruleWords: ruleWords, informal: 'the lemma ' + name,
+      slots: slots,
+      // Unify the first `k` slots and nothing else, so a half-built tuple can be judged. The brew search
+      // calls this as it places each ingredient: once the first given has pinned its metavariables the
+      // next one is nearly ground, which is the difference between a search tree of thousands of nodes
+      // and one of billions. Reading the SAME consts/givens/freeVars as the full match keeps them in step.
+      prefix: function (inp, d) { return !!attempt(inp, d + 1); },
       match: function (inp) {
         if (inp.length !== arity) return [];
-        var subst = {};
-        for (var i = 0; i < c; i++) { var ti = inp[i]; if (ti.proof || !sortMatch(consts[i].sort, sortOf(ti.type), subst)) return []; subst[consts[i].name] = ti.type; }
-        for (var i = 0; i < g; i++) { var pi = inp[c + i]; if (!pi.proof || !unifyHO(givens[i], pi.type, subst, {})) return []; }
-        for (var j = 0; j < f; j++) { var xi = inp[c + g + j]; if (xi.proof || !sortMatch(freeVars[j].sort, sortOf(xi.type), subst)) return []; if (subst[freeVars[j].name] && !exprEq(subst[freeVars[j].name], xi.type)) return []; subst[freeVars[j].name] = xi.type; }
+        var subst = attempt(inp, arity);
+        if (!subst) return [];
         for (var p in predMetas) if (!subst[p]) return [];           // DETERMINACY GUARD: every predicate metavar must be pinned down
         // A lemma proved inside a theory was emitted with `include <ops and axioms> in`, which makes those
         // section variables EXPLICIT parameters of the theorem. So a use site must pass them — by name,
@@ -931,30 +956,69 @@
     return { ok: true, env: withEnv(env, { vars: env.vars.concat([v]), steps: env.steps.concat([step]) }), variable: v };
   }
 
-  // all distinct new statements the current selection can craft (recipes × orderings), for the UI
-  function kperms(arr, k) {
-    if (k === 0) return [[]];
-    var res = [];
-    for (var i = 0; i < arr.length; i++) {
-      var rest = arr.slice(0, i).concat(arr.slice(i + 1));
-      kperms(rest, k - 1).forEach(function (p) { res.push([arr[i]].concat(p)); });
+  // ---------- the brew search ----------
+  // Every ordered k-tuple of DISTINCT ingredients, handed to `fn` one at a time in a single reused
+  // buffer; `fn` returning true stops the walk. `slots[d]`, when a recipe declares one, is a NECESSARY
+  // condition on slot d, so a hopeless branch is cut before the tuple is built.
+  //
+  // This replaced `kperms`, which built the whole list of orderings before trying the first one. The
+  // list is k-permutations of the ingredients: with every potion on the bench offered twice (what the
+  // “hide inactive” probe below does) a 28-step proof is 60 ingredients, so one arity-3 recipe meant
+  // 205,320 throwaway arrays — times a hundred-odd minted lemmas in a late chapter's recipe book, on
+  // every render. That is what two readers reported as Chrome eating gigabytes and crawling on 18.8.
+  // `prefix(tuple, d)`, when a recipe offers one, says whether the slots filled SO FAR can still be
+  // completed — so an impossible prefix is abandoned instead of being extended into every deeper slot.
+  function eachTuple(arr, k, slots, fn, prefix) {
+    if (k === 0) return !!fn([]);
+    var tuple = new Array(k), used = new Array(arr.length), i;
+    for (i = 0; i < arr.length; i++) used[i] = 0;
+    function go(d) {
+      var f = slots && slots[d], j, last = d + 1 === k;
+      for (j = 0; j < arr.length; j++) {
+        if (used[j] || (f && !f(arr[j]))) continue;
+        tuple[d] = arr[j];
+        if (!last && prefix && !prefix(tuple, d)) continue;
+        used[j] = 1;
+        var stop = last ? !!fn(tuple) : go(d + 1);
+        used[j] = 0;
+        if (stop) return true;
+      }
+      return false;
     }
-    return res;
+    return go(0);
   }
+  // A necessary condition for the template `tmpl` to unify with `expr`, read off their top nodes alone:
+  // the very first test unifyHO makes, hoisted out so a slot filter can use it. It must stay an
+  // UNDER-approximation — never reject a pair the matcher would have accepted.
+  function headCompatible(tmpl, expr) {
+    if (tmpl.tag === 'var') return true;                      // a metavariable: anything may go here
+    if (tmpl.tag === 'binder') return expr.tag === 'binder' && expr.q === tmpl.q;
+    if (isPredMeta(tmpl.sym)) return true;                    // second-order metavariable P(…)
+    return expr.tag === 'app' && expr.sym === tmpl.sym && expr.args.length === tmpl.args.length;
+  }
+  // all distinct new statements the current selection can craft (recipes × orderings), for the UI.
   // ingredients: proof-binding names and/or ingredient objects (formulas). recipes: which recipes to try.
-  function deductions(env, ingredients, recipes) {
+  // `opts.firstOnly` keeps just the first brew of each recipe — enough to know whether its card lights up,
+  // and it skips both the rest of the walk and the rendering of dedupe keys.
+  function deductions(env, ingredients, recipes, opts) {
     var ings = (ingredients || []).map(function (x) { if (typeof x === 'string') { var b = byName(env, x); return b ? proofIng(b) : null; } return x; }).filter(Boolean);
-    var list = recipes || BASE_RECIPES, res = [], seen = {};
+    var list = recipes || BASE_RECIPES, res = [], seen = {}, firstOnly = !!(opts && opts.firstOnly);
     list.forEach(function (r) {
-      kperms(ings, r.arity).forEach(function (inp) {
-        r.match(inp, env).forEach(function (c) {
+      eachTuple(ings, r.arity, r.slots, function (inp) {
+        var cands = r.match(inp, env), stop = false;
+        cands.forEach(function (c) {
+          if (stop) return;
           if (env.bindings.some(function (b) { return exprEq(b.type, c.output); })) return;   // already crafted
-          // key includes the OUTPUT so a multi-output recipe (∃-introduction) offers each distinct result separately
-          var key = r.id + '|' + inp.map(function (i) { return i.proof ? i.name : 'φ:' + render(i.type); }).join(',') + '|' + render(c.output);
-          if (seen[key]) return; seen[key] = 1;
-          res.push({ recipeId: r.id, inputs: inp, output: c.output, lean: c.lean });
+          if (!firstOnly) {
+            // key includes the OUTPUT so a multi-output recipe (∃-introduction) offers each distinct result separately
+            var key = r.id + '|' + inp.map(function (i) { return i.proof ? i.name : 'φ:' + render(i.type); }).join(',') + '|' + render(c.output);
+            if (seen[key]) return; seen[key] = 1;
+          }
+          res.push({ recipeId: r.id, inputs: inp.slice(), output: c.output, lean: c.lean });   // the tuple buffer is reused: copy it
+          if (firstOnly) stop = true;
         });
-      });
+        return stop;
+      }, r.prefix);
     });
     return res;
   }
@@ -984,18 +1048,22 @@
         make: function () { return appE(p.name, Array.prototype.slice.call(arguments)); } };
     });
   }
-  // `pool` is a list of exprs (each carrying its .sort); each recipe consumes inputs of its `argSort` (default Prop)
-  function formulaDeductions(pool, existing, recipes) {
-    var res = [], seen = {}, list = recipes || FORMULA_RECIPES;
+  // `pool` is a list of exprs (each carrying its .sort); each recipe consumes inputs of its `argSort`
+  // (default Prop). `opts.firstOnly`, as in `deductions`, keeps one brew per constructor: the dedupe key
+  // is a RENDERED formula, and rendering every pair drawn from a long bench is what the reachability
+  // probe spent most of its time on once the tuple walk itself stopped being the problem.
+  function formulaDeductions(pool, existing, recipes, opts) {
+    var res = [], seen = {}, list = recipes || FORMULA_RECIPES, firstOnly = !!(opts && opts.firstOnly);
     list.forEach(function (r) {
       var argSort = r.argSort || PROP;
       var cands = (pool || []).filter(function (e) { return r.arity === 0 || sortOf(e) === argSort; });
-      kperms(cands, r.arity).forEach(function (inp) {
+      eachTuple(cands, r.arity, null, function (inp) {
         var out = r.make.apply(null, inp);
         if ((existing || []).some(function (e) { return exprEq(e, out); })) return;
+        if (firstOnly) { res.push({ recipeId: r.id, inputs: inp.slice(), output: out }); return true; }
         var key = r.id + '|' + inp.map(function (e) { return render(e); }).join(',');
         if (seen[key]) return; seen[key] = 1;
-        res.push({ recipeId: r.id, inputs: inp, output: out });
+        res.push({ recipeId: r.id, inputs: inp.slice(), output: out });   // the tuple buffer is reused: copy it
       });
     });
     return res;
@@ -1450,7 +1518,7 @@
     { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', hint: 'Case-analyse hABC. The A case proves both halves of the goal at once; the B ∧ C case splits and swings each half in separately.', needs: [] },
     { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', hint: 'Split hABC first, so A is in hand throughout, then case-analyse the disjunction: each case pairs A with what it has and swings the result into the goal.', needs: [] },
     { id: '6.12', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 6, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['6.1'], qed: '9.3(c)', hint: 'Case-analyse hABC. Both cases carry A, and the other half of each only needs swinging into B ∨ C.', needs: [] },
-    { id: '6.13', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 6, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['6.1'], qed: '9.3(d)', hint: 'Split hABC into A ∨ B and A ∨ C, then case-analyse A ∨ B. The A case is immediate; the B case needs a second case analysis, on A ∨ C, inside it.', needs: [] },
+    { id: '6.13', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 6, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['6.1'], qed: '9.3(d)', hint: "Split hABC into A ∨ B and A ∨ C, then case-analyse A ∨ B. The A case is immediate; the B case needs a second case analysis, on A ∨ C, inside it. Each of those closes in a single move if you reach for Or.elim' rather than case_analysis followed by a modus ponens.", needs: [] },
     // 6.14 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
     { id: '6.14', kind: 'lemma', leanName: "or_self_elim'", chapter: 6, givens: [binding('hAA', OR(A, A))], formulas: [A], goal: A, prereqs: ['6.4'], qed: '9.1(b)', hint: "Both sides of A ∨ A prove A, so Or.elim' will take the identity implication twice — Impl.idem brews it from the formula A.", needs: [] },
     { id: '6.15', kind: 'lemma', leanName: "Or.mono_left'", chapter: 6, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, C, OR(A, C)], goal: IMPLIES(OR(A, C), OR(B, C)), prereqs: ['6.6'], qed: '9.5(b)', hint: "Assume A ∨ C, brew Or.imp_left' with hAB, discharge.", needs: [] },
@@ -1495,7 +1563,7 @@
     // and it reuses the minted `by_cases'` (9.3) to do the split.
     { id: '8.7', kind: 'lemma', leanName: "not_or'", chapter: 8, givens: [binding('hnAB', NOT(OR(A, B)))], formulas: [A, B], goal: AND(NOT(A), NOT(B)), prereqs: ['8.1'], qed: '12.5(a)', hint: 'Each half needs its own reductio: assume A, swing it into A ∨ B, contradict hnAB. Then the same with B on the other side, and pair the two negations.', needs: [] },
     { id: '8.8', kind: 'lemma', leanName: "not_or_intro'", chapter: 8, givens: [binding('hnAnB', AND(NOT(A), NOT(B)))], formulas: [A, B, OR(A, B)], goal: NOT(OR(A, B)), prereqs: ['8.1'], qed: '12.5(d)', hint: 'Assume A ∨ B and case-analyse it down to B — the A case goes through absurd, the B case is immediate. That B then contradicts the ¬ B half of hnAnB.', needs: [] },
-    { id: '8.9', kind: 'lemma', leanName: "not_and_of_not_or'", chapter: 8, givens: [binding('hnAonB', OR(NOT(A), NOT(B)))], formulas: [A, B, AND(A, B), NOT(A), NOT(B)], goal: NOT(AND(A, B)), prereqs: ['8.1'], qed: '12.5(b)', hint: 'Assume A ∧ B. Case-analyse hnAonB down to ¬ B (the ¬ A case is absurd against the A half), and that contradicts the B half.', needs: [] },
+    { id: '8.9', kind: 'lemma', leanName: "not_and_of_not_or'", chapter: 8, givens: [binding('hnAonB', OR(NOT(A), NOT(B)))], formulas: [A, B, AND(A, B), NOT(A), NOT(B)], goal: NOT(AND(A, B)), prereqs: ['8.1'], qed: '12.5(b)', hint: "Assume A ∧ B. Each half of it gives a double negative through not_not_intro', and not_or_intro' turns that pair into the denial of a disjunction — which is precisely what hnAonB asserts. No case analysis anywhere. (Case-analysing hnAonB down to ¬ B also works, and costs one more.)", needs: [] },
     { id: '8.10', kind: 'lemma', leanName: "imp_of_not_or'", chapter: 8, givens: [binding('hnAB', OR(NOT(A), B))], formulas: [A, B, NOT(A)], goal: IMPLIES(A, B), prereqs: ['6.4', '8.1'], qed: '12.4(b)', hint: "Or.elim' on hnAB, with one implication per branch: ¬ A gives B through absurd under an assumed A, and B gives B by Impl.idem.", needs: [] },
     // 8.11–8.13 (QED 12.6b/c/d): the contrapositive family. All three are corollaries of the minted mt'
     // (8.4) — two or three moves each, rather than a fresh reductio every time.
@@ -1519,7 +1587,7 @@
     { id: '9.4', kind: 'example', chapter: 9, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(B, NOT(B))))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.2'], hint: 'Assume ¬ A; hnAcon then hands you a contradiction, so the sub-proof closes as ¬ (¬ A). not_not_elim strips the two negations.', needs: [] },
     { id: '9.5', kind: 'example', chapter: 9, givens: [binding('hnAcon', IMPLIES(NOT(A), AND(NOT(B), B)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.2'], hint: 'As the level before, with the halves of the contradiction the other way round.', needs: [] },
     // (`not_and'` is already declared by core Lean's Init, so this one is `not_and_or'` — cf. Mathlib's not_and_or.)
-    { id: '9.6', kind: 'lemma', leanName: "not_and_or'", chapter: 9, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), prereqs: ['9.3'], qed: '12.5(c)', hint: "by_cases' on A. If A holds, pair it with an assumed B to contradict hnAB, which gives ¬ B; if not, ¬ A is the other disjunct.", needs: [] },
+    { id: '9.6', kind: 'lemma', leanName: "not_and_or'", chapter: 9, givens: [binding('hnAB', NOT(AND(A, B)))], formulas: [A, B, NOT(A), NOT(B)], goal: OR(NOT(A), NOT(B)), prereqs: ['9.3'], qed: '12.5(c)', hint: "Assume B, then A, and pair them into the A ∧ B that hnAB forbids: that reductio gives ¬ A, and discharging gives B → ¬ A. Now Classical.em on B costs nothing, and Or.imp_left' maps its left half through that implication — so the ¬ B case needs no sub-proof at all. (by_cases' on A works too, and costs three more.)", needs: [] },
     // 9.7–9.8 (QED 12.4a/b/c): implication as a disjunction. 9.8 is just the two halves glued with
     // Iff.intro, so it reuses them rather than reproving anything.
     { id: '9.7', kind: 'lemma', leanName: "not_or_of_imp'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A, B, NOT(A)], goal: OR(NOT(A), B), prereqs: ['6.3', '6.6', '9.1'], qed: '12.4(a)', hint: "Classical.em hands you A ∨ (¬ A) for nothing, and that is already half of what you want — so map it rather than splitting on it. Or.imp_left' replaces the A on its left, using hAB as the implication, and Or.comm' turns the result round. Three brews, no assumptions at all. (by_cases' on A works too, and costs five more.)", needs: [] },
@@ -1529,7 +1597,7 @@
     // 9.10 (QED 12.7) Peirce's law, the classical capstone: split on A with by_cases'; in the ¬A case a
     // vacuous A → B feeds the hypothesis. 8.14 (QED 12.8) is resolution, and falls out of 8.10 + Or.imp_left'.
     // (core Lean's Init already declares `peirce'`, hence `peirce_law'` — cf. the not_and' collision at 9.6)
-    { id: '9.10', kind: 'lemma', leanName: "peirce_law'", chapter: 9, givens: [binding('hPA', IMPLIES(IMPLIES(A, B), A))], formulas: [A, B, NOT(A)], goal: A, prereqs: ['9.3'], qed: '12.7', hint: "by_cases' on A. If A holds there is nothing to do. If not, A → B holds vacuously through absurd, and hPA turns that into A.", needs: [] },
+    { id: '9.10', kind: 'lemma', leanName: "peirce_law'", chapter: 9, givens: [binding('hPA', IMPLIES(IMPLIES(A, B), A))], formulas: [A, B, NOT(A)], goal: A, prereqs: ['9.3'], qed: '12.7', hint: "Suppose ¬ A. Then hPA cannot take an A → B — mt_apply' says so — and yet ¬ A hands you one: Or.inl builds the disjunction and imp_of_not_or' turns it into A → B. That contradiction gives ¬ ¬ A, which not_not_elim finishes. (by_cases' on A works too, and costs two more.)", needs: [] },
 
     // ---------- Chapter 10: True and False ----------
     // True and False as first-class objects (the last propositional chapter). 10.1 introduces them;
@@ -1538,7 +1606,7 @@
     { id: '10.2', kind: 'example', chapter: 10, givens: [], formulas: [A, FALSE()], goal: IMPLIES(FALSE(), A), prereqs: ['10.1'], qed: '13.3(a)', hint: 'Assume False, and False.elim will produce anything at all, the goal included. Then discharge.', needs: [] },
     { id: '10.3', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), prereqs: ['10.1'], qed: '13.3(b)', hint: 'Assume A, brew True.intro from nothing, discharge. The assumption is never used, which is the point.', needs: [] },
     { id: '10.4', kind: 'lemma', leanName: "true_and'", chapter: 10, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), prereqs: ['10.1'], qed: '13.1(a)', hint: 'Forwards, assume A and pair it with True.intro. Backwards, assume True ∧ A and take its right half.', needs: [] },
-    { id: '10.5', kind: 'lemma', leanName: "false_or'", chapter: 10, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['10.1'], qed: '13.1(b)', hint: 'Forwards is one swing with Or.inr. Backwards, assume False ∨ A and case-analyse it: the False branch goes through False.elim, the A branch is immediate.', needs: [] },
+    { id: '10.5', kind: 'lemma', leanName: "false_or'", chapter: 10, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['10.1'], qed: '13.1(b)', hint: "Forwards is one swing with Or.inr. Backwards, assume False ∨ A: False.elim covers the False branch, Impl.idem states the A branch without assuming anything at all, and Or.elim' then consumes the disjunction in a single move.", needs: [] },
     { id: '10.6', kind: 'lemma', leanName: "iff_true_imp'", chapter: 10, givens: [], formulas: [A, TRUE(), IMPLIES(TRUE(), A)], goal: IFF(A, IMPLIES(TRUE(), A)), prereqs: ['10.1'], qed: '13.3(c)', hint: 'Forwards, assume A and then assume True on top of it, and discharge A through both levels. Backwards, feed True.intro to the assumed arrow.', needs: [] },
 
     // ---------- Chapter 11: Variables and the universal quantifier ----------
@@ -1554,7 +1622,7 @@
     { id: '11.3', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [], terms: [varE('x', OMEGA), varE('y', OMEGA)],
       goal: fa('x', fa('y', OR(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]), NOT(appE('Q', [varE('x', OMEGA), varE('y', OMEGA)]))))), prereqs: ['11.1'], qed: '16.1', qedNote: 'stated there with free variables held arbitrary', hint: 'Introduce both variables, then brew Classical.em at the formula Q(x, y) inside — no assumption is needed at all. Discharge twice.', needs: [] },
     { id: '11.4', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], givens: [], formulas: [fa('X', fa('Y', appE('Q', [X, Y])))],
-      goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), prereqs: ['11.1'], qed: '17.2', hint: 'The whole quantified statement is on the formula shelf. Assume it and it is already what the arrow needs, so discharge.', needs: [] },
+      goal: IMPLIES(fa('X', fa('Y', appE('Q', [X, Y]))), fa('X', fa('Y', appE('Q', [X, Y])))), prereqs: ['11.1'], qed: '17.2', hint: 'The whole quantified statement is on the formula shelf, and this is Impl.idem — which applies to a compound formula as readily as to an atom. One move. (Assuming it and discharging says the same thing in two.)', needs: [] },
     { id: '11.5', kind: 'example', chapter: 11, sorts: [OMEGA], preds: [], terms: [X], givens: [binding('hA', A)], goal: fa('X', A), prereqs: ['11.1'], qed: '18.2(a)', hint: 'A is proved already and says nothing about X, so introduce X, leave hA alone, and discharge: a ∀ over a statement that ignores its own variable.', needs: [] },
 
     // ---------- Chapter 12: Universal instantiation ----------
@@ -1583,7 +1651,7 @@
     // 12.5/12.6 are the ∀-over-∧ pair, a DIFFERENT statement — QED's 18.6 had no counterpart until now.
     { id: '12.7', kind: 'lemma', leanName: "forall_imp_comm'", chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [], formulas: [A, fa('X', appE('P', [X])), IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))],
-      goal: IFF(IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))), prereqs: ['12.1'], qed: '18.6', hint: 'Four sub-proofs in all. Forwards, assume the arrow, introduce X, assume A, instantiate. Backwards, assume the quantified statement, assume A, and introduce X inside that — the order of those inner two is what makes the discharges come out right.', needs: [] },
+      goal: IFF(IMPLIES(A, fa('X', appE('P', [X]))), fa('X', IMPLIES(A, appE('P', [X])))), prereqs: ['12.1'], qed: '18.6', hint: 'Three levels open on each side: the potion you assume, the assumption A, and the variable X. Instantiate and apply inside, and then ONE discharge can close all three at once — reach up three levels rather than stepping out of them one at a time. The order you open the inner two in is what decides whether the ∀ or the arrow ends up outermost.', needs: [] },
     { id: '12.8', kind: 'lemma', leanName: 'forall_dne', chapter: 12, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hdn', fa('X', NOT(NOT(appE('P', [X])))))], goal: fa('X', appE('P', [X])), prereqs: ['9.2', '12.1'], hint: 'Introduce X, instantiate hdn there, and not_not_elim strips the negations. Discharge.', needs: [] },
 
@@ -1647,7 +1715,7 @@
     // 15.10 = QED 22.8: a ∀-goal syllogism combining instantiation, chaining and an inner reductio
     { id: '15.10', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPnQ', fa('X', IMPLIES(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hnQR', fa('X', IMPLIES(NOT(appE('Q', [X])), appE('R', [X])))), binding('hnrs', NOT(ee('X', AND(appE('R', [X]), appE('S', [X])))))],
-      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['15.1'], qed: '22.8', hint: 'Introduce X and assume P(X); the two quantified potions carry it to R(X). Then assume S(X), build the forbidden existence statement, and contradict hnrs — two discharges put the arrow and the ∀ back.', needs: [] },
+      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['15.1'], qed: '22.8', hint: 'Introduce X, instantiate hPnQ and hnQR at it, and chain the two arrows with implies_trans before assuming anything: that is P(X) → R(X) in one potion, and one modus ponens cheaper than carrying P(X) through both. Then assume P(X) for R(X), assume S(X), build the forbidden existence statement and contradict hnrs; a single discharge up two levels puts the arrow and the ∀ back.', needs: [] },
     { id: '15.11', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [binding('h', ee('Y', ee('X', appE('Q', [X, Y]))))], goal: ee('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['15.1'], qed: '22.6(a)', hint: 'Obtain twice, once from each layer, then witness the goal in the other order: the inner existence statement first, then the outer.', needs: [] },
     { id: '15.12', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
@@ -1758,7 +1826,7 @@
     // 18.7: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
     { id: '18.7', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hab', eq(alpha, beta))], formulas: [appE('P', [alpha]), appE('P', [beta])],
-      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['18.5'], hint: "Forwards is a rewrite under an assumption. Backwards needs the equation the other way round, which the Eq.symm' you have just proved supplies — note that a minted lemma asks for its constants as terms.", needs: [] },
+      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['18.5'], hint: "Assume P(α) and discharge it immediately: two moves, and what you hold is P(α) → P(α). Now rewriting along hab gives EITHER direction of the ↔, according to which occurrence of α you rewrite — so both halves come out of that one implication and the equation never has to be flipped. (Doing it with the Eq.symm' you have just proved costs three more, and is worth seeing once: a minted lemma asks for its constants as terms.)", needs: [] },
     // SETS. Two sets are equal when they have the same members, so each law below
     // is the propositional law of Chapter 2 or 6, transported through membership by extensionality.
     { id: '18.8', kind: 'lemma', leanName: "union_comm'", chapter: 18, sorts: [SET],
@@ -2000,19 +2068,19 @@
     '3.1': 2, '3.2': 1,
     '4.1': 2, '4.2': 3, '4.3': 1, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
     '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 4, '5.8': 4, '5.9': 4, '5.10': 3, '5.11': 3,
-    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 15, '6.14': 2, '6.15': 3, '6.16': 3,
-    '7.1': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.12': 1, '7.13': 7, '7.14': 7,
-    '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 9, '8.9': 9, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 2, '8.14': 2, '8.15': 10, '8.16': 3,
-    '9.1': 1, '9.2': 6, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 10, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 8,
-    '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 13, '10.6': 8,
-    '11.1': 3, '11.2': 4, '11.3': 4, '11.4': 2, '11.5': 2,
-    '12.1': 5, '12.2': 2, '12.3': 5, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 16, '12.8': 4,
+    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
+    '7.1': 1, '7.12': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.13': 7, '7.14': 7,
+    '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 9, '8.9': 8, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 2, '8.14': 2, '8.15': 10, '8.16': 3,
+    '9.1': 1, '9.2': 6, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 7, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 6,
+    '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 11, '10.6': 8,
+    '11.1': 3, '11.2': 4, '11.3': 4, '11.4': 1, '11.5': 2,
+    '12.1': 5, '12.2': 2, '12.3': 5, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 13, '12.8': 4,
     '13.1': 3, '13.2': 3, '13.3': 4, '13.4': 4,
     '14.1': 2,
-    '15.1': 1, '15.2': 3, '15.3': 1, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 12, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 9, '15.18': 9, '15.19': 9, '15.20': 7, '15.21': 19,
+    '15.1': 1, '15.3': 1, '15.2': 3, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 11, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 9, '15.18': 9, '15.19': 9, '15.20': 7, '15.21': 19,
     '16.1': 4, '16.2': 7,
     '17.1': 3, '17.2': 1, '17.3': 1, '17.4': 1,
-    '18.1': 1, '18.2': 1, '18.3': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 8, '18.8': 17, '18.9': 17, '18.10': 48, '18.11': 34, '18.12': 34, '18.13': 40,
+    '18.1': 1, '18.3': 1, '18.2': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 5, '18.8': 17, '18.9': 17, '18.10': 48, '18.11': 34, '18.12': 34, '18.13': 40,
     '19.1': 3, '19.2': 3, '19.3': 18, '19.4': 12, '19.5': 18,
     '20.1': 8, '20.2': 17, '20.3': 19, '20.4': 22, '20.5': 7, '20.6': 19, '20.7': 5,
   };
@@ -2028,22 +2096,29 @@
     '4.3': { who: 'an anonymous reader', date: '2026-11-12', also: ['Jacob', 'Dario Bajo', 'Ram Anvesh Reddy'] },
     '4.8': { who: 'an anonymous reader', date: '2026-11-12' },
     '6.8': { who: 'an anonymous reader', date: '2026-11-12', also: ['Kantian'] },
-    '6.13': { who: 'qwq zty', date: '2026-11-16' },
+    '6.13': { who: 'an anonymous reader', date: '2026-11-18' },   // 13, taking it off qwq zty's 15
     '7.4': { who: 'an anonymous reader', date: '2026-11-14', also: ['qwq zty'] },
     '7.6': { who: 'qwq zty', date: '2026-11-16' },
     '8.8': { who: 'qwq zty', date: '2026-11-16' },
-    '8.9': { who: 'qwq zty', date: '2026-11-16' },
+    '8.9': { who: 'petrov', date: '2026-11-17' },                 // 8, taking it off qwq zty's 9
     '8.13': { who: 'qwq zty', date: '2026-11-16' },
     '8.15': { who: 'qwq zty', date: '2026-11-16' },
     '9.2': { who: 'qwq zty', date: '2026-11-16' },
     '9.3': { who: 'qwq zty', date: '2026-11-16' },
+    '9.6': { who: 'Leaving Leaves', date: '2026-11-17' },
     '9.7': { who: 'an anonymous reader', date: '2026-11-12' },
+    '9.10': { who: 'Leaving Leaves', date: '2026-11-17' },
+    '10.5': { who: 'Leaving Leaves', date: '2026-11-17' },
+    '11.4': { who: 'Leaving Leaves', date: '2026-11-17' },
     '12.3': { who: 'an anonymous reader', date: '2026-11-16' },
+    '12.7': { who: 'Leaving Leaves', date: '2026-11-17' },
     '15.5': { who: 'Giovanni Barbarino', date: '2026-11-14' },
     '15.6': { who: 'Giovanni Barbarino', date: '2026-11-14' },
     '15.7': { who: 'Giovanni Barbarino', date: '2026-11-14' },
+    '15.10': { who: 'Leaving Leaves', date: '2026-11-17' },
     '15.15': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '15.16': { who: 'Giovanni Barbarino', date: '2026-11-14' }
+    '15.16': { who: 'Giovanni Barbarino', date: '2026-11-14' },
+    '18.7': { who: 'Leaving Leaves', date: '2026-11-17' }
   };
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2107,7 +2182,7 @@
     expandAbbrevs: expandAbbrevs, expandQuantWords: expandQuantWords, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
     SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports, leanPrelude: leanPrelude,
-    RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
+    RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, eachTuple: eachTuple, headCompatible: headCompatible, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
     proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
