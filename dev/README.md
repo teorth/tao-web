@@ -14,6 +14,8 @@ must have in order to reproduce a claim the site makes.
 | `prereqs.js` | instruments the scripts to see what each proof consumes, and derives the unlock graph. |
 | `order_audit.js` | three ordering questions `prereqs.js` does not ask (see its header). |
 | `file_record.js` | takes a record a reader pasted into the blog, replays it, and says what to file. |
+| `grimoire_test.js` | the core suite: the engine with no DOM in sight. |
+| `grimoire_smoke.js` | the UI suite: `grimoire.html` driven against a fake DOM, in Node. |
 | `Grimoire/Nat.lean` | the concrete `Nat` sort's own Lean module, imported by the emitted proofs. |
 
 ```bash
@@ -23,17 +25,31 @@ node dev/grimoire/prereqs.js --check  # does the unlock graph still match what t
 node dev/grimoire/order_audit.js      # can a level open before a lemma its par proof needs?
 node dev/grimoire/check_emitted.js    # emit everything and compile it (needs `lean` on PATH)
 node dev/grimoire/file_record.js comment.txt   # is this reader's proof really a record?
+
+node dev/grimoire/grimoire_test.js    # the core suite
+node dev/grimoire/grimoire_smoke.js   # the UI suite, against a fake DOM
 ```
+
+The two suites are the quality bar: every change to the game is checked against them, and they are what
+makes the engine safe to refactor. Run both before committing, with `canon.js` and `order_audit.js`;
+`check_emitted.js` as well when a solution or an exercise changed.
 
 Anything generated lands in `scratch/lean/`, which is gitignored — the sources are versioned, the build
 artifacts are not.
 
-**Why these moved here (2026-11-16).** They used to live in the gitignored `scratch/`, mirrored between
-machines through Dropbox. That was survivable while the solutions were the author's own, but readers now
+**Why these moved here (2026-11-16, and the test suites on 2026-11-17).** They used to live in the
+gitignored `scratch/`, mirrored between machines through Dropbox. That was survivable while the solutions were the author's own, but readers now
 send in shorter proofs: a record *becomes* the script for its level, so the par the game shows follows
 from a proof that is known to work. With the scripts outside git, a record recorded on one machine was
 invisible to the other, and the laptop's copy drifted a week behind the desktop's. In git, a record
 recorded anywhere is a record everywhere, and `canon.js` can check the claim on any checkout.
+
+The test suites followed a day later, for the same reason and a sharper one: the laptop's copies had
+drifted a week behind the game and reported **142 failures** that were all stale assertions — hints had
+moved to every level, explicit parentheses had become the default — which is worse than no suite at all,
+because it trains you to ignore the output. A suite that ships with the code it tests cannot drift from
+it. Nothing about them needs a scratch directory: each finds `static/apps/grimoire.js` by walking up
+from its own location, so they run from wherever they sit inside the repo.
 
 **When a reader sends in a shorter proof**, feed what they pasted to `file_record.js`. Since
 2026-11-16 the game ends a solved export with a line of its own moves —
