@@ -191,6 +191,81 @@ ok(render(AND(A, AND(B, C)), { parens: true }) === 'A ∧ (B ∧ C)', 'explicit-
 ok(render(AND(A, AND(B, C))) === 'A ∧ B ∧ C', 'default stays minimal');
 ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexOf('A ∧ (B ∧ C)') >= 0, 'emitLean honours the parens option');
 
+// ---------- words mode: the logical layer in English ----------
+// The point of the option is that a player who cannot read ∧ can still read the goal, so what it must
+// get right is (a) only the LOGIC is worded -- the mathematics keeps its school notation -- and (b) the
+// Lean view is never touched, since that is the one thing the player is meant to read as notation.
+{
+  const W = { words: true };
+  eq(render(AND(A, B), W), 'A and B', 'conjunction');
+  eq(render(OR(A, B), W), 'A or B', 'disjunction');
+  eq(render(IMPLIES(A, B), W), 'A implies B', 'implication');
+  eq(render(G.IFF(A, B), W), 'A if and only if B', 'bi-implication');
+  eq(render(NOT(A), W), 'not A', 'negation');
+  eq(render(G.TRUE(), W) + '/' + render(G.FALSE(), W), 'true/false', 'True and False');
+  eq(render(G.FORALL({ name: 'X', sort: G.OMEGA }, G.appE('P', [varE('X', G.OMEGA)])), W),
+     'for all X in Ω, P(X)', 'a ∀ names its sort with `in`, which is what Ω means');
+  eq(render(G.EXISTS({ name: 'x', sort: G.OMEGA }, G.appE('P', [varE('x', G.OMEGA)])), W),
+     'for some x in Ω, P(x)', 'and ∃ reads the same way');
+  // English has no precedence conventions, so a worded operand brackets even with the parens option off
+  eq(render(AND(A, AND(B, C)), W), 'A and (B and C)', 'nested connectives bracket without being asked');
+  eq(render(OR(NOT(A), B), W), '(not A) or B', 'so does a negation inside a disjunction');
+  // ...but ONLY the worded ones: the mathematics still reads by its ordinary precedence
+  {
+    let mem = function (x, a) { return G.appE('MEM', [varE(x, G.SET), varE(a, G.SET)]); };
+    eq(render(OR(mem('x', 'a'), mem('x', 'b')), W), 'x ∈ a or x ∈ b',
+       'a relation is left alone -- bracketing every membership would read worse than the symbols do');
+    eq(render(OR(mem('x', 'a'), mem('x', 'b')), { words: true, parens: true }), '(x ∈ a) or (x ∈ b)',
+       'and the parens option still brackets everything, as it says it does');
+  }
+  // the Lean emitter must be deaf to the option, whatever is passed through to it
+  ok(G.emitLean(EX_BY_ID['4.2'], newEnv(EX_BY_ID['4.2']), { words: true, parens: true }).indexOf('A → (A ∧ A)') >= 0,
+     'the Lean view is never worded, even when the option is handed to it');
+  eq(render(AND(A, B), { words: true, lean: true }), 'A ∧ B', 'nor is anything else rendered FOR Lean');
+}
+{
+  // the informal narration words its scaffolding too, or the proof would read half in English
+  let v = G.openVariable(newEnv(EX_BY_ID['11.1']), { name: 'X', sort: G.OMEGA });
+  const L = G.emitInformalLive(EX_BY_ID['11.1'], v, { words: true }).split('\n');
+  eq(L[1], 'Introduce an arbitrary X in Ω:', 'an introduced variable is announced in English');
+  eq(L[2], '  (Not discharged yet: discharging will conclude for all X in Ω, ….)', 'as is what is owed');
+}
+{
+  // RULE summaries are hand-written strings (and minted ones are built at unlock time), so they are
+  // transliterated. ⊢ becomes the dash that was doing its work.
+  eq(G.wordsRule('A, B ⊢ A ∧ B'), 'A, B — you get A and B', 'a rule line transliterates');
+  eq(G.wordsRule('⊢ True'), 'you get true', 'a nullary rule has no inputs to separate');
+  // the quantifier glyph is used both as a binder and as a NAME, and both readings have to work
+  eq(G.wordsRule('a proof of ∀ x, P(x)'), 'a proof of for all x, P(x)', 'as a binder');
+  eq(G.wordsRule('modus ponens for ∀'), 'modus ponens for “for all”', 'as a name');
+  eq(G.wordsRule('the ∀ tutorial, one level deeper'), 'the “for all” tutorial, one level deeper',
+     'a trailing comma does not make a word into a bound variable');
+  // no hint, note or QED note may be left holding a symbol the mode promises to remove
+  let left = [];
+  G.EXERCISES.forEach(function (e) {
+    [e.hint, e.note, e.qedNote].forEach(function (t) {
+      if (t && /[∧∨→↔¬⊢∀∃↦]/.test(G.wordsRule(t))) left.push(e.id);
+    });
+  });
+  eq(left.join(','), '', 'every authored hint and note transliterates completely');
+  // a minted recipe carries both wordings, built from the statement rather than transliterated
+  {
+    let rc = G.recipeFromExercise(EX_BY_ID['4.2']);
+    eq(rc.rule, 'formula A ⊢ A → A ∧ A', 'the symbolic rule of a minted lemma');
+    eq(rc.ruleWords, 'formula A — you get A implies (A and A)', 'and its English one, bracketed as English needs');
+  }
+}
+{
+  // what the player READS they can also TYPE: the words go back to symbols before parsing
+  const roundTrip = function (str) { const r = G.parse(G.wordsToSymbols(str), {}); return r.ok ? render(r.expr, { parens: true }) : 'FAIL: ' + r.error; };
+  eq(roundTrip('A and (B and C)'), 'A ∧ (B ∧ C)', 'typed English parses');
+  eq(roundTrip('not A or B'), '(¬ A) ∨ B', 'so does a negation');
+  eq(roundTrip('A if and only if B'), 'A ↔ B', 'and the longest phrase wins over the `and` inside it');
+  eq(roundTrip('A implies not B'), 'A → (¬ B)', 'and `implies`');
+  eq(G.wordsToSymbols('x \\in a'), 'x \\in a', '`in` on its own is left alone -- it means ∈ far more often');
+  eq(G.wordsToSymbols('for all x in Ω, P(x)'), '∀ x : Ω, P(x)', 'but right after a quantifier it is the sort separator');
+}
+
 // ---------- Chapter 4: sub-environments / deduction theorem ----------
 {
   let e = newEnv(EX_BY_ID['4.2']);                       // ⊢ A → A ∧ A
@@ -228,6 +303,56 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   let live = G.emitLive(EX_BY_ID['4.7'], s2);
   ok(/A → B → \?a/.test(live) && /intro hA/.test(live) && /intro hB/.test(live) && /sorry/.test(live), 'live view shows the open ?a subproof');
 }
+// ---------- the informal (QED-style) narration ----------
+// The informal view used to be emitted from the ROOT environment, so while the player was inside an
+// open sub-proof it showed nothing of the work done under the assumption -- the Lean view showed it
+// all along, under a `sorry`. emitInformalLive narrates the open levels too, and the invariant worth
+// holding on to is that the open narration is what the finished one will say, minus the last line:
+// a player who keeps the informal view open watches the proof being written, rather than watching
+// nothing happen and then everything appear at once.
+{
+  let e = newEnv(EX_BY_ID['4.2']);                        // ⊢ A → A ∧ A
+  eq(G.emitInformalLive(EX_BY_ID['4.2'], e), G.emitInformal(EX_BY_ID['4.2'], e),
+     'with no sub-proof open, the live narration is the plain one');
+
+  let sub = craft(G.openAssumption(e, varE('A')), 'And.intro', ['hA', 'hA']).env;
+  const open = G.emitInformalLive(EX_BY_ID['4.2'], sub).split('\n');
+  eq(open[0], 'We wish to prove A → A ∧ A.', 'the header survives inside a sub-proof');
+  eq(open[1], 'Introduce A:', 'the open assumption is announced');
+  ok(/From A, A we deduce A ∧ A/.test(open[2]), 'and the work done under it is narrated: ' + open[2]);
+  eq(open[3], '  (Not discharged yet: discharging will conclude A → ….)',
+     'with a closing line in the part Lean plays with `sorry`');
+  eq(open.length, 4, 'and nothing else');
+
+  const fin = G.emitInformal(EX_BY_ID['4.2'], G.discharge(sub, 'hAA', 1).env).split('\n');
+  ok(open.slice(0, 3).every(function (l, i) { return fin[i] === l; }),
+     'every line of the open narration but the last is already what the finished one says');
+  ok(/^Discharging, we obtain A → A ∧ A\.$/.test(fin[3]) && /∎/.test(fin[4]),
+     'and the discharge replaces that last line');
+}
+{
+  // the same for a free variable, which the player introduces rather than assumes
+  let v = G.openVariable(newEnv(EX_BY_ID['11.1']), { name: 'X', sort: G.OMEGA });
+  const L = G.emitInformalLive(EX_BY_ID['11.1'], v).split('\n');
+  eq(L[1], 'Introduce an arbitrary X : Ω:', 'an introduced variable is announced as arbitrary');
+  eq(L[2], '  (Not discharged yet: discharging will conclude ∀ X : Ω, ….)',
+     'and the pending conclusion is a ∀, not an implication');
+  // nested: a variable and then an assumption, in one open chain
+  let s2 = G.openAssumption(v, G.appE('P', [varE('X', G.OMEGA)]));
+  const M = G.emitInformalLive(EX_BY_ID['11.1'], s2).split('\n');
+  eq(M[1], 'Introduce an arbitrary X : Ω, then P(X):', 'a mixed chain is announced in one line');
+  eq(M[2], '  (Not discharged yet: discharging will conclude ∀ X : Ω, P(X) → ….)',
+     'and the pending conclusion threads both binders');
+}
+{
+  // work already finished at the root stays visible while a sub-proof is open
+  let r = craft(newEnv(EX_BY_ID['1.1']), 'And.intro', ['hA', 'hB']).env;
+  const L = G.emitInformalLive(EX_BY_ID['1.1'], G.openAssumption(r, varE('C'))).split('\n');
+  eq(L[0], 'We are given A, B, C.', 'the givens are still stated');
+  ok(/we deduce A ∧ B/.test(L[2]), 'the root-level deduction is still narrated: ' + L[2]);
+  eq(L[3], 'Introduce C:', 'and the open sub-proof follows it');
+}
+
 // ---------- formula-crafting recipes ----------
 {
   let fd = G.formulaDeductions([varE('A'), varE('B')], []);
@@ -963,111 +1088,221 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   eq(misfiled.join(','), '', 'each level sits in the chapter of the last mechanic it needs');
 }
 
-// ---------- tutorial hints ----------
-// Hints are prose, and prose rots: a recipe gets renamed and the hint quietly lies. So every hint has
-// to name something that actually exists -- a recipe in the registry, or one of the sub-proof gestures
-// the interface offers -- and the mechanic-bearing levels are exactly the ones that have hints.
+// ---------- hints ----------
+// EVERY level carries a hint now. A tutorial shows its hint under the goal, since the mechanic is new and
+// teaching it is what the level is for; a practice level keeps the hint behind a button, so a player who
+// wants to think first is not spoiled by text they never asked to read.
+//
+// Hints are prose, and prose rots: a recipe gets renamed and the hint quietly lies. So anything in a hint
+// that LOOKS like code -- a dotted name, a snake_case name, a name ending in a prime -- has to be a recipe
+// or axiom that really exists, and any hypothesis name has to be one the level really gives. The h-words of
+// ordinary English are listed out, so that a typo cannot hide among them.
 {
   var names = {};
   G.BASE_RECIPES.forEach(function (r) { names[r.id] = true; });
   Object.keys(G.RECIPE_CAP).forEach(function (r) { names[r] = true; });
-  var GESTURES = ['Assume', 'Introduce', 'discharge', 'Discharge', 'Obtain', 'Pick'];
-
-  // Hints used to be a tutorial-only affair; since "a hint on every level" they are universal, and the
-  // tutorials' are the ones that must name the mechanic being taught (checked just below).
-  // the move log: a finished proof can say how it was made, and the engine can check the claim
-  (function () {
-    var moves = [['c', 'And.left', ['hAB'], null], ['c', 'And.right', ['hAB'], null],
-                 ['c', 'And.intro', ['hB', 'hA'], null]];
-    var r = G.replayMoves(G.EX_BY_ID['2.1'], moves);
-    ok(r.ok, 'a log of three crafts replays into a proof of 2.1');
-    eq(r.length, 3, 'and is measured at the length the game would show');
-    var enc = G.encodeMoves(moves);
-    ok(/^[A-Za-z0-9+/=]+$/.test(enc), 'the encoding is base64, so a blog comment cannot curl a quote in it');
-    eq(JSON.stringify(G.decodeMoves(enc)), JSON.stringify(moves), 'and decodes back to the same moves');
-    eq(G.decodeMoves('not base64 at all'), null, 'mangled input decodes to nothing rather than throwing');
-    eq(G.decodeMoves(G.encodeMoves(['nonsense'])) [0], 'nonsense', 'decoding does not vet the moves');
-    // an untrusted log is replayed, not believed
-    ok(!G.replayMoves(G.EX_BY_ID['2.1'], [['c', 'And.left', ['hAB'], null]]).ok, 'a log that stops short is not a proof');
-    ok(!G.replayMoves(G.EX_BY_ID['2.1'], [['c', 'And.left', ['nope'], null]]).ok, 'nor is one that names a potion that is not there');
-    ok(!G.replayMoves(G.EX_BY_ID['2.1'], [['zzz']]).ok, 'nor is one with a move the engine does not know');
-    ok(/sub-proof/.test(G.replayMoves(G.EX_BY_ID['4.1'], [['a', G.varE('A')]]).error),
-       'a log that ends inside a sub-proof says so');
-    // the expressions ride as data, so a term keeps its sort without anything having to re-parse it
-    var withExpr = [['c', 'Or.inl', ['hA', { tag: 'var', name: 'B', sort: 'Prop' }], null]];
-    eq(JSON.stringify(G.decodeMoves(G.encodeMoves(withExpr))), JSON.stringify(withExpr),
-       'an expression ingredient survives the round trip exactly');
-  })();
-
-  // the Lean playground link: live.lean-lang.org reads `#code=<uri-encoded>` out of the fragment,
-  // splitting the fragment on '&' and then on '=' — so both characters have to survive encoded, or the
-  // code would be truncated at the first one.
-  (function () {
-    var code = 'theorem t (A B : Prop) (h : A \u2227 B) : B \u2227 A := by\n  exact \u27e8h.2, h.1\u27e9\n';
-    var url = G.playgroundURL(code);
-    ok(url.indexOf('https://live.lean-lang.org/#code=') === 0, 'the link points at the playground');
-    ok(url.indexOf('#') > 0 && url.indexOf('?') < 0,
-       'the code rides in the fragment, which a browser never sends to the server');
-    eq(decodeURIComponent(url.split('#code=')[1]), code, 'and decodes back to exactly the proof');
-    var tricky = G.playgroundURL('a = b & c');
-    ok(tricky.indexOf('%3D') > 0 && tricky.indexOf('%26') > 0, "'=' and '&' are encoded, not left raw");
-    eq(decodeURIComponent(tricky.split('#code=')[1]), 'a = b & c', 'so a proof containing them survives');
-    eq(G.playgroundURL('x'.repeat(G.PLAYGROUND_MAX)), null, 'past the cap it returns null rather than a truncated link');
-    ok(G.playgroundURL('') !== null && G.playgroundURL(null) !== null, 'an empty proof still gives a link');
-  })();
-
-  // id / number / position are three different things (see the note above EXERCISES). These are the
-  // invariants that let a chapter be renumbered, or a level moved in the order, without a save migration.
-  (function () {
-    var ids = {}, nums = {};
-    G.EXERCISES.forEach(function (e) {
-      ok(!ids[e.id], 'id ' + e.id + ' is used once');
-      ids[e.id] = true;
-      var n = G.exNum(e);
-      ok(!nums[n], 'the number ' + n + ' is shown for one level only');
-      nums[n] = true;
-    });
-    ok(G.EXERCISES.every(function (e) { return G.exNum(e) === (e.num || e.id); }),
-       'exNum shows `num` where there is one, and the id otherwise');
-    // the numbering runs in the same direction as the array, so "you may lean on earlier levels" means
-    // the same thing to a player reading numbers as it does to the par audit reading positions
-    var pos = {}; G.EXERCISES.forEach(function (e, i) { pos[e.id] = i; });
-    var prev = null, bad = [];
-    G.EXERCISES.forEach(function (e) {
-      var n = G.exNum(e).split('.').map(Number);
-      if (prev && (n[0] < prev[0] || (n[0] === prev[0] && n[1] <= prev[1]))) bad.push(G.exNum(e));
-      prev = n;
-    });
-    eq(bad.length, 0, 'the numbers a player sees run in array order' + (bad.length ? ' (out of step at ' + bad.join(', ') + ')' : ''));
-    var fwd = [];
-    G.EXERCISES.forEach(function (e) {
-      (e.prereqs || []).forEach(function (p2) { if (pos[p2] > pos[e.id]) fwd.push(e.id + '<-' + p2); });
-    });
-    eq(fwd.length, 0, 'no level waits on one that comes after it' + (fwd.length ? ': ' + fwd.join(', ') : ''));
-  })();
-
-  eq(G.EXERCISES.filter(function (e) { return e.hint; }).length, G.EXERCISES.length, 'every level carries a hint');
-  G.EXERCISES.forEach(function (e) {
-    ok(typeof e.hint === 'string' && e.hint.length > 20, e.id + ': the hint says something');
+  G.EXERCISES.forEach(function (e) { if (e.leanName) names[e.leanName] = true; });        // minted lemmas
+  Object.keys(G.SORTS).forEach(function (sn) {                                            // a theory's axioms
+    (G.SORTS[sn].axioms || []).forEach(function (a) { names[a.name] = true; });
   });
-  G.TUTORIALS.forEach(function (id) {
-    var h = G.EX_BY_ID[id].hint;
-    ok(!!h, id + ' has a hint');
+  var GESTURES = ['Assume', 'assume', 'Introduce', 'introduce', 'discharge', 'Discharge',
+                  'Obtain', 'obtain', 'Pick', 'pick', 'witness', 'shift-tap', 'Repeat-select'];
+  // ordinary English that the hypothesis-name pattern also catches
+  var ENGLISH = ['half', 'halves', 'hand', 'hands', 'hang', 'happens', 'has', 'hats', 'have',
+                 'here', 'hold', 'holding', 'holds', 'how', 'however', 'hypotheses', 'hypothesis'];
+  // names a hint may use that the PROOF creates rather than the level giving them
+  var MADE = { '4.1': ['hA'], '4.2': ['hA'] };
+  var HINTED_OPEN = G.TUTORIALS.concat(['1.2']);   // the hints shown without being asked for
+  // a name is mentioned only when it stands on its own -- `ext` inside "next" is not a mention
+  function mentions(h, nm) {
+    for (var i = h.indexOf(nm); i >= 0; i = h.indexOf(nm, i + 1)) {
+      var b = i === 0 ? '' : h.charAt(i - 1), a = h.charAt(i + nm.length);
+      if (!/[A-Za-z0-9_]/.test(b) && !/[A-Za-z0-9_]/.test(a)) return true;
+    }
+    return false;
+  }
+
+  eq(G.EXERCISES.filter(function (e) { return e.hint; }).length, G.EXERCISES.length,
+     'every level carries a hint');
+  HINTED_OPEN.forEach(function (id) {
+    ok(!!G.EX_BY_ID[id].hint, id + ' shows its hint openly, so it must have one');
+  });
+  G.EXERCISES.forEach(function (e) {
+    var h = e.hint;
     if (!h) return;
-    var named = Object.keys(names).filter(function (r) { return h.indexOf(r) >= 0; });
-    var gestured = GESTURES.filter(function (g) { return h.indexOf(g) >= 0; });
+    // a hint that walks the player through the whole proof is not a hint
+    ok(h.length < 600, e.id + ': the hint stays short (' + h.length + ' chars)');
+    // the hypothesis names it uses are really given (or really made by the proof)
+    (h.match(/\bh[A-Za-z]+\b/g) || []).forEach(function (nm) {
+      if (ENGLISH.indexOf(nm) >= 0 || (MADE[e.id] || []).indexOf(nm) >= 0) return;
+      ok(e.givens.some(function (g) { return g.name === nm; }),
+         e.id + ': the hint names the given ' + nm);
+    });
+    // everything in it that looks like code is a name the game actually has
+    var code = (h.match(/[A-Za-z][A-Za-z0-9_]*(?:[._][A-Za-z0-9_]+)+'?|\b[a-z]+'/g) || []);
+    code.forEach(function (tok) {
+      ok(!!names[tok], e.id + ': the hint names the real recipe or axiom ' + tok);
+    });
+  });
+  // an openly shown hint has to get the player moving, so it names a recipe or a gesture outright
+  HINTED_OPEN.forEach(function (id) {
+    var h = G.EX_BY_ID[id].hint;
+    if (!h) return;
+    var named = Object.keys(names).filter(function (r) { return mentions(h, r); });
+    var gestured = GESTURES.filter(function (g) { return mentions(h, g); });
     ok(named.length + gestured.length > 0,
        id + ': its hint names a real recipe or gesture (found ' +
        (named.concat(gestured).join(', ') || 'NOTHING') + ')');
-    // a hint that walks the player through the whole proof is not a hint
-    ok(h.length < 600, id + ': the hint stays short (' + h.length + ' chars)');
-    // the given hypotheses it names must really be among the givens
-    (h.match(/h[A-Za-z]+/g) || []).forEach(function (nm) {
-      if (nm === 'hypotheses' || nm === 'hypothesis') return;
-      ok(G.EX_BY_ID[id].givens.some(function (g) { return g.name === nm; }),
-         id + ': the hint names the given ' + nm);
+  });
+  // the fantasy vocabulary is what `flavor()` translates, so a hint written in plain words would simply
+  // stay plain in fantasy mode -- every hint that talks about doing something should use the game's words
+  var FANTASY = ['potion', 'potions', 'recipe', 'recipes', 'brew', 'brews', 'gem', 'gems',
+                 'ingredient', 'ingredients', 'craft', 'crafts', 'spellbook'];
+  var plain = ['hypothesis', 'hypotheses', 'rule', 'rules', 'derive', 'derives', 'variable', 'variables',
+               'input', 'inputs', 'build', 'builds', 'proof'];
+  G.EXERCISES.forEach(function (e) {
+    // "induction hypothesis" is the standard name for the thing and reads correctly in either mode
+    var h = e.hint.replace(/induction hypothesis/g, '');
+    plain.forEach(function (w) {
+      if (w === 'proof' || w === 'build' || w === 'builds' || w === 'variable' || w === 'variables') return;   // ordinary English too
+      ok(!mentions(h, w), e.id + ': the hint uses the fantasy word, not the plain one (' + w + ')');
     });
   });
+  ok(G.EXERCISES.filter(function (e) { return FANTASY.some(function (w) { return mentions(e.hint, w); }); }).length > 20,
+     'the hints do use the game vocabulary, which plain mode then translates');
+}
+
+// ---------- typing a quantifier ----------
+// A reader could not write a quantified formula on the scroll shelf at all: the parser had no binders, so
+// ∃ and \exists and "exists" were each an error, and from Chapter 11 on the shelf could not express the
+// statements its own level was about. Three ways in are offered, because a player will reach for whichever
+// they already know -- the glyph, the backslash shortcut, or the English.
+{
+  const P1 = [{ name: 'P', argSorts: [G.OMEGA] }];
+  const pq = function (str, opts) {
+    const r = G.parse(str, (opts && opts.ctx) || {}, { sort: (opts && opts.sort) || G.OMEGA, preds: (opts && opts.preds) || P1 });
+    return r.ok ? render(r.expr, { parens: true }) : 'ERROR: ' + r.error;
+  };
+  eq(pq('∀ x : Ω, P(x)'), '∀ x : Ω, P(x)', 'the glyph with an explicit sort');
+  eq(pq('∀ x, P(x)'), '∀ x : Ω, P(x)', 'and without one: the sort is the exercise\'s own');
+  eq(pq('∃ x, P(x)'), '∃ x : Ω, P(x)', '∃ likewise');
+  eq(pq('\\forall x, P(x)'), '∀ x : Ω, P(x)', 'the backslash shortcut, as for every other symbol');
+  eq(pq('\\exists x, P(x)'), '∃ x : Ω, P(x)', 'and for ∃');
+  eq(pq('\\all x, P(x)') + '/' + pq('\\ex x, P(x)'), '∀ x : Ω, P(x)/∃ x : Ω, P(x)', 'and the short forms Lean also takes');
+  // the words, in EVERY mode: a player who has only seen the symbol in the goal pane types what they read
+  eq(pq('for all x, P(x)'), '∀ x : Ω, P(x)', '“for all”');
+  eq(pq('forall x, P(x)'), '∀ x : Ω, P(x)', '“forall” as one word');
+  eq(pq('exists x, P(x)'), '∃ x : Ω, P(x)', '“exists” -- the one the reader tried');
+  eq(pq('there exists x, P(x)'), '∃ x : Ω, P(x)', '“there exists”, with the “there” not left stranded');
+  eq(pq('for some x, P(x)'), '∃ x : Ω, P(x)', '“for some”');
+  eq(pq('for every x, P(x)'), '∀ x : Ω, P(x)', 'and the other words for the same thing');
+  // shape: a binder is looser than every connective, and binds as far right as it can -- as Lean reads it
+  eq(pq('∀ x, P(x) → P(x)'), '∀ x : Ω, (P(x) → P(x))', 'the body runs to the end of the formula');
+  eq(pq('(∀ x, P(x)) → P(a)', { ctx: { a: G.OMEGA } }), '(∀ x : Ω, P(x)) → P(a)',
+     'so a quantifier used as an operand needs its brackets, exactly as the board prints them');
+  eq(pq('∀ x y, Q(x, y)', { preds: [{ name: 'Q', argSorts: [G.OMEGA, G.OMEGA] }] }),
+     '∀ x : Ω, (∀ y : Ω, Q(x, y))', 'several variables under one quantifier nest, last innermost');
+  eq(pq('∀ x, ∃ y, Q(x, y)', { preds: [{ name: 'Q', argSorts: [G.OMEGA, G.OMEGA] }] }),
+     '∀ x : Ω, (∃ y : Ω, Q(x, y))', 'and they alternate freely');
+  // over another sort, where the default sort is that sort and `∈` has to typecheck
+  eq(pq('∀ x, x ∈ a', { sort: G.SET, ctx: { a: G.SET } }), '∀ x : Set, (x ∈ a)',
+     'the bound variable takes the sort, so the relation typechecks inside the body');
+  eq(pq('∀ x : Set, (x ∈ a)', { sort: G.OMEGA, ctx: { a: G.SET } }), '∀ x : Set, (x ∈ a)',
+     'and an explicit sort overrides the default');
+  // what it says when it cannot read one
+  ok(/name the variable ∀ binds/.test(pq('∀ , P(x)')), 'a quantifier with no variable says so');
+  ok(/put a comma after the variable/.test(pq('∀ x P(x)')), 'a missing comma says so');
+  ok(/no sort “Thing”/.test(pq('∀ x : Thing, P(x)')), 'an unknown sort is named');
+  ok(/has to bind a formula/.test(pq('∀ x, f(x)', { sort: 'M' })), 'a quantifier over a term, not a formula, is refused');
+  // an exercise re-declares its predicate letters, and the registry's default arity is not always right
+  eq(pq('Q(a)', { ctx: { a: G.OMEGA }, preds: [{ name: 'Q', argSorts: [G.OMEGA] }] }), 'Q(a)',
+     'a one-argument Q on a level that declares one, though the registry keeps two');
+  ok(/Q takes 2 arguments here/.test(pq('Q(a)', { ctx: { a: G.OMEGA }, preds: [{ name: 'Q', argSorts: [G.OMEGA, G.OMEGA] }] })),
+     'and two where the level says two');
+  ok(/P takes Ω, but got a formula/.test(pq('P(A)')), 'an exercise signature is CHECKED, so a formula where a term belongs is reported');
+  // the English is read in every mode, and the backslash shortcuts survive the word pass that reads it
+  eq(pq('A and B'), 'A ∧ B', 'the connective words parse too, with Plain English off');
+  eq(pq('A implies not B'), 'A → (¬ B)', 'and so do the rest of them');
+  eq(pq('A \\and B'), 'A ∧ B', '`\\and` is expanded BEFORE the words are read, so its own `and` survives');
+  eq(pq('\\forall x, P(x)'), '∀ x : Ω, P(x)', 'and `\\forall` likewise');
+  // a nullary constant is shown as a glyph and registered under a name; both have to read
+  eq(pq('0 + a', { sort: G.NAT, ctx: { a: G.NAT } }), '0 + a', 'the glyph of a nullary constant parses');
+  eq(pq('c ∈ a', { sort: G.SET, ctx: { c: G.SET, a: G.SET } }), 'c ∈ a',
+     'and a context variable spelt like a registry constant is the context\'s, not the registry\'s');
+}
+
+// ---------- everything the board shows can be typed back in ----------
+// The one invariant that would have caught the reader's complaint on its own: take every statement the
+// game ever displays -- goals, givens, the formulas it starts a level with -- render it as the player sees
+// it, and read it back. 43 of these carry a quantifier, and before binders existed every one of them was
+// a formula the game could show and the player could not write.
+{
+  var failed = [];
+  G.EXERCISES.forEach(function (e) {
+    var ctx = {};
+    (e.consts || []).forEach(function (c) { ctx[c.name] = c.sort; });
+    (e.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
+    var opts = { sort: (e.sorts && e.sorts[0]) || G.OMEGA, preds: e.preds };
+    [e.goal].concat(e.givens.map(function (g) { return g.type; }), e.formulas || []).forEach(function (t) {
+      var txt = render(t, { parens: true });
+      var r = G.parse(txt, ctx, opts);
+      if (!r.ok) failed.push(e.id + ': ' + txt + ' -> ' + r.error);
+      else if (!exprEq(r.expr, t)) failed.push(e.id + ': ' + txt + ' -> ' + render(r.expr, { parens: true }));
+    });
+  });
+  eq(failed.slice(0, 4).join(' | '), '', 'every statement the game displays parses back to itself');
+  var quantified = G.EXERCISES.filter(function (e) { return JSON.stringify(e.goal).indexOf('"binder"') >= 0; });
+  ok(quantified.length > 40, quantified.length + ' levels have a quantified goal, so this is not a corner case');
+}
+
+// ---------- par, and whose proof it is ----------
+// CANON is derived from the scripted solutions (`scratch/canon.js --check`), so nothing here re-derives
+// it. What is NOT derivable is who wrote a proof: when a reader sends in a shorter one it becomes the
+// scripted solution, and CANON_CREDIT records the credit by hand. So that table is what needs guarding.
+{
+  eq(Object.keys(G.CANON).length, G.EXERCISES.length, 'every level has a par');
+  G.EXERCISES.forEach(function (e) {
+    ok(G.par(e.id) > 0, e.id + ': its par is a positive number of moves');
+  });
+  Object.keys(G.CANON).forEach(function (id) {
+    ok(!!G.EX_BY_ID[id], id + ': in CANON and a real level');
+  });
+  Object.keys(G.CANON_CREDIT).forEach(function (id) {
+    var c = G.CANON_CREDIT[id];
+    ok(!!G.EX_BY_ID[id], id + ': credited and a real level');
+    ok(!!c.who && /^\d{4}-\d{2}-\d{2}$/.test(c.date), id + ': the credit names someone and an ISO date');
+    ok(G.credit(id).indexOf(c.who + ' on ') === 0 &&
+       / \d{1,2} [A-Z][a-z]+ \d{4}(, and independently by .+)?$/.test(G.credit(id)),
+       id + ': and reads as "' + G.credit(id) + '"');
+    // whoever found it first is not also listed as having found it independently afterwards
+    (c.also || []).forEach(function (w) {
+      ok(w !== c.who, id + ': ' + w + ' is credited once, not twice');
+      ok(G.credit(id).indexOf(w) > 0, id + ': and ' + w + ' is named too');
+    });
+  });
+  eq(G.credit('4.7'), '', 'a par of the author\'s own is credited to nobody');
+  // The records readers have sent in, each adopted as the scripted solution and compile-checked.
+  // 4.8: three moves where the game had five, by applying the lemma 2.1 mints.
+  eq(G.par('4.8'), 3, '4.8 holds the submitted record');
+  eq(G.credit('4.8'), 'an anonymous reader on 12 November 2026', 'and says who found it');
+  ok(G.EX_BY_ID['4.8'].hint.indexOf("And.comm'") >= 0,
+     'and its hint points at the lemma that route turns on, not at the longer one');
+  // 2.3: five, by alternating the two lemmas of chapter 2 instead of taking the conjunction apart
+  eq(G.par('2.3'), 5, '2.3 holds the submitted record');
+  eq(G.credit('2.3'), 'PistachioCake on 12 November 2026, and independently by an anonymous reader',
+     'and credits both who sent it');
+  // 4.3: one, because Impl.idem already says A → A at any formula at all
+  eq(G.par('4.3'), 1, '4.3 holds the submitted record');
+  ok(G.EX_BY_ID['4.3'].hint.indexOf('Impl.idem') >= 0, 'and its hint admits the one-move route');
+  // 6.8: fourteen, by building the three branch implications without nesting them
+  eq(G.par('6.8'), 14, '6.8 holds the submitted record');
+  // 9.7: three where the game had eight — the largest saving sent in
+  eq(G.par('9.7'), 3, '9.7 holds the submitted record');
+  ok(G.EX_BY_ID['9.7'].hint.indexOf("Or.imp_left'") >= 0, 'and its hint maps the excluded middle');
+  // every level a reader holds is one the hint should not be talking past: the hint names a recipe the
+  // record actually uses, so following it does not cost moves the par does not allow for
+  ok(Object.keys(G.CANON_CREDIT).length >= 5,
+     Object.keys(G.CANON_CREDIT).length + ' levels are held by readers');
 }
 
 // ---------- the QED correspondence ----------

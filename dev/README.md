@@ -16,6 +16,7 @@ must have in order to reproduce a claim the site makes.
 | `file_record.js` | takes a record a reader pasted into the blog, replays it, and says what to file. |
 | `grimoire_test.js` | the core suite: the engine with no DOM in sight. |
 | `grimoire_smoke.js` | the UI suite: `grimoire.html` driven against a fake DOM, in Node. |
+| `check_exports.js` | compiles each *export* on its own — a different guarantee from `check_emitted.js`. |
 | `Grimoire/Nat.lean` | the concrete `Nat` sort's own Lean module, imported by the emitted proofs. |
 
 ```bash
@@ -28,11 +29,16 @@ node dev/grimoire/file_record.js comment.txt   # is this reader's proof really a
 
 node dev/grimoire/grimoire_test.js    # the core suite
 node dev/grimoire/grimoire_smoke.js   # the UI suite, against a fake DOM
+node dev/grimoire/check_exports.js    # does each export compile ALONE?  (--all for all 158)
 ```
 
 The two suites are the quality bar: every change to the game is checked against them, and they are what
 makes the engine safe to refactor. Run both before committing, with `canon.js` and `order_audit.js`;
-`check_emitted.js` as well when a solution or an exercise changed.
+`check_emitted.js` as well when a solution or an exercise changed, and `check_exports.js` when the
+export or a concrete sort's module changed. The last is a **different** guarantee: `check_emitted.js`
+puts all 158 proofs in one file, where a proof may lean on anything declared above it, while an export
+is one file sent to one person — so it has to carry the concrete sorts and the whole chain of minted
+lemmas with it, and only `check_exports.js` compiles it with nothing above it.
 
 Anything generated lands in `scratch/lean/`, which is gitignored — the sources are versioned, the build
 artifacts are not.
@@ -43,6 +49,21 @@ send in shorter proofs: a record *becomes* the script for its level, so the par 
 from a proof that is known to work. With the scripts outside git, a record recorded on one machine was
 invisible to the other, and the laptop's copy drifted a week behind the desktop's. In git, a record
 recorded anywhere is a record everywhere, and `canon.js` can check the claim on any checkout.
+
+**What the suites' move cost, found the next day — read this before trusting a green run.** They had
+drifted in *both* directions at once: the laptop's copy tracked the current engine but came from a
+lineage predating the hint/par/export/quantifier work, while the desktop's had those sections and was
+stale about everything else. The laptop's was the copy committed, so ten sections went missing — six
+from the core suite (`words mode`, `the informal narration`, `hints`, which had been superseded by a
+158-level version and came back as the old 21-level `tutorial hints`, `typing a quantifier`,
+`everything the board shows can be typed back in`, `par, and whose proof it is`) and four from the
+smoke suite (`Plain English`, `par`, `export`, `writing a quantifier`). **The suite still passed**,
+because absent tests do not fail; the only trace was the pass count, 3128/311 where the other copy
+reported 4747/353. They were spliced back on 2026-11-17 and all of them passed against the current
+engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
+
+So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
+why the counts are written down here and in the commit that moves them.
 
 The test suites followed a day later, for the same reason and a sharper one: the laptop's copies had
 drifted a week behind the game and reported **142 failures** that were all stale assertions — hints had

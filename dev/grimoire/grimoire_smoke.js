@@ -558,6 +558,157 @@ ok(A.state.ex.id === exNow, 'a tap on empty map space selects nothing');
   ok((G.EX_BY_ID[id].unlocks || []).length === 0, id + ' is a leaf: nothing waits on it');
   ok((G.EX_BY_ID[id].needs || []).length === 0, id + ' is practice, not a tutorial');
 });
+// ---- "Plain English": the logic worded everywhere EXCEPT the Lean proof ----
+// The feedback this answers: the informal proof reads beautifully, but the statements it is about are
+// still a row of symbols, so a player who has never met ∧ cannot read what they are proving.
+ok(A.state.words === false && get('words').checked === false, 'it starts off -- the symbols are the default');
+A.loadExercise('4.2'); A.clearSel();                   // ⊢ A → (A ∧ A)
+A.setStyle('informal');
+var symGoal = strip(get('goal').innerHTML), symLean = (A.setStyle('lean'), strip(get('spellbook').innerHTML));
+A.el.words.checked = true; A.el.words.fire('change');
+ok(A.state.words === true, 'the checkbox sets the mode');
+ok(/A implies \(A and A\)/.test(strip(get('goal').innerHTML)), 'the goal is said in English');
+ok(!/[∧→]/.test(strip(get('goal').innerHTML)) && /[∧→]/.test(symGoal), 'and the connectives are gone from it');
+ok(strip(get('spellbook').innerHTML) === symLean, 'the Lean spellbook is untouched -- it is still Lean');
+A.setStyle('informal');
+ok(/We wish to prove A implies \(A and A\)\./.test(strip(get('spellbook').innerHTML)), 'the informal proof is worded too');
+A.setStyle('lean');
+// the recipe cards: the rule line of a base recipe, and of a hand-written card
+ok(/A, B — you get A and B/.test(strip(get('recipes').innerHTML)), 'a recipe states its rule in English');
+ok(!/⊢/.test(strip(get('recipes').innerHTML)), 'and no turnstile survives in the panel');
+// a variable and its sort: `X : Ω` is a typing judgement, which in English is just being in Ω
+A.loadExercise('12.1'); A.clearSel();
+ok(/for all X in Ω, \(P\(X\) implies R\(X\)\)/.test(strip(get('bench').innerHTML)),
+   'a quantified hypothesis reads as English on the bench');
+ok(/introduces universal instantiation/.test(strip(get('goal').innerHTML)), 'the mechanic name needs no wording');
+A.loadExercise('13.1'); A.clearSel();
+ok(/“for some” and obtaining a witness/.test(strip(get('goal').innerHTML)),
+   'but a mechanic NAMED after a symbol is worded');
+ok(!/[∀∃]/.test(strip(get('goal').innerHTML)), 'so the goal pane holds no quantifier glyph at all');
+// what the player reads, the player can type
+A.loadExercise('4.2'); A.clearSel();
+get('formula-in').value = 'A and (A and A)';
+A.el['formula-add'].fire('click');
+ok(A.state.formulas.length > 0 && G.render(A.state.formulas[A.state.formulas.length - 1], { parens: true }) === 'A ∧ (A ∧ A)',
+   'typed English parses into the formula it says');
+ok(/A and \(A and A\)/.test(strip(get('formula-shelf').innerHTML)), 'and comes back worded on the shelf');
+// the parens option keeps its own job: it still governs the Lean the player will paste
+A.setParens(false);
+A.setStyle('lean');
+ok(/A → A ∧ A/.test(strip(get('spellbook').innerHTML)), 'with words ON, the parens option still shapes the Lean');
+A.setParens(true);
+A.el.words.checked = false; A.el.words.fire('change');
+ok(/A → \(A ∧ A\)/.test(strip(get('goal').innerHTML)), 'switching it off brings the symbols straight back');
+
+// fantasy theme: terms are 💎 gems, formulas are 📜 scrolls; the emojis vanish in plain mode
+A.setFantasy(true);
+A.loadExercise('11.2'); A.el['term-in'].value = 'g'; A.addTerm();
+ok(/💎/.test(get('term-shelf').innerHTML) && /💎/.test(get('termHead').innerHTML), 'fantasy: terms shown as 💎 gems (chip + header)');
+A.loadExercise('3.1');
+ok(/📜/.test(get('formula-shelf').innerHTML) && /📜/.test(get('formulaHead').innerHTML), 'fantasy: formulas shown as 📜 scrolls (chip + header)');
+A.setFantasy(false);
+ok(!/📜/.test(get('formula-shelf').innerHTML) && /Formula bench/.test(get('formulaHead').innerHTML), 'plain: no scroll emoji, header reads Formula bench');
+A.loadExercise('11.2');
+ok(!/💎/.test(get('term-shelf').innerHTML) && /Term bench/.test(get('termHead').innerHTML), 'plain: no gem emoji, header reads Term bench');
+A.setFantasy(true);
+
+// distinct create-verbs: brew/derive potions, scribe/form scrolls, craft/build gems
+A.setFantasy(true); A.loadExercise('3.1'); A.clearSel();
+ok(get('formula-add').textContent === 'Scribe scroll' && get('term-add').textContent === 'Craft gem', 'fantasy create-buttons: Scribe scroll / Craft gem');
+A.clickFormula(0); A.clickFormula(1);
+ok(/scribe →/.test(get('recipes').innerHTML), 'fantasy: a formula-constructor brew uses the verb "scribe"');
+A.setFantasy(false);
+ok(get('formula-add').textContent === 'Form formula' && get('term-add').textContent === 'Build term', 'plain create-buttons: Form formula / Build term');
+ok(/form →/.test(get('recipes').innerHTML) && !/scribe →/.test(get('recipes').innerHTML), 'plain: a formula-constructor brew uses the verb "form"');
+A.setFantasy(true);
+
+
+// turning the cheat back off restores the progression restriction (only solved-derived exercises)
+A.setCheat(false);
+ok(!A.accessible()['5.9'], 'clearing the cheat re-locks exercises that were never reached');
+ok(A.accessible()['1.1'] && A.accessible()['1.2'], 'the start and its genuinely-unlocked successor stay accessible');
+
+// map "Follow current" re-centers the view when the exercise changes
+get('mapwrap').open = true;
+A.el.mapfollow.checked = true; A.el.mapfollow.fire('change');
+ok(A.state.mapFollow === true, 'the map Follow-current checkbox toggles state.mapFollow');
+A.loadExercise('1.1'); var vtx = A.map.view.tx, vty = A.map.view.ty;
+A.loadExercise('1.2');
+ok(A.map.view.tx !== vtx || A.map.view.ty !== vty, 'Follow-current re-centers the map when the exercise changes');
+A.el.mapfollow.checked = false; A.el.mapfollow.fire('change'); get('mapwrap').open = false;
+A.map.view.tx = 0; A.map.view.ty = 0; A.map.view.s = 1;   // reset to identity for the tap hit-test below
+
+// tapping an unlocked node on the map selects that exercise (hit-test in the pointerup handler)
+A.loadExercise('1.1');            // 1.2 is accessible (1.1 solved earlier)
+var p12 = A.map.pos['1.2'];
+A.el.mapsvg.fire('pointerdown', { clientX: p12.x, clientY: p12.y, pointerId: 1 });
+A.el.mapsvg.fire('pointerup', { clientX: p12.x, clientY: p12.y, pointerId: 1 });
+ok(A.state.ex.id === '1.2', 'tapping an unlocked node on the map loads that exercise');
+// a tap on empty space selects nothing
+A.loadExercise('1.1'); var exNow = A.state.ex.id;
+A.el.mapsvg.fire('pointerdown', { clientX: 3, clientY: 3, pointerId: 1 });
+A.el.mapsvg.fire('pointerup', { clientX: 3, clientY: 3, pointerId: 1 });
+ok(A.state.ex.id === exNow, 'a tap on empty map space selects nothing');
+
+// the map's fantasy dressing: plain mode draws rectangles joined by straight lines, fantasy mode
+// draws the same boxes as jagged paths joined by wandering trails -- and the jitter must be STABLE,
+// since the map re-renders after every craft.
+function mapKids(tag, cls) {
+  return get('mapg').children.filter(function (c) {
+    return c.tagName === tag && (cls == null || (c.getAttribute('class') || '').indexOf(cls) >= 0);
+  });
+}
+var wasF = A.state.fantasy;
+A.setFantasy(false);
+ok(mapKids('rect', 'box').length === 0,
+   'the node boxes sit inside their node groups, not loose on the layer');
+var plainNodes = get('mapg').children.filter(function (c) { return c.tagName === 'g'; });
+ok(plainNodes.length === G.EXERCISES.length, 'one node group per exercise');
+ok(plainNodes.every(function (n) {
+  return n.children.some(function (c) { return c.tagName === 'rect' && c.getAttribute('class') === 'box'; });
+}), 'in plain mode each node box is a rect');
+ok(mapKids('line').length > 0 && mapKids('path').length === 0, 'and the edges are straight lines');
+
+A.setFantasy(true);
+var fNodes = get('mapg').children.filter(function (c) { return c.tagName === 'g'; });
+var boxes = fNodes.map(function (n) {
+  return n.children.filter(function (c) { return c.tagName === 'path' && c.getAttribute('class') === 'box'; })[0];
+});
+ok(boxes.every(Boolean), 'in fantasy mode each node box is a path instead');
+ok(mapKids('path', 'edge').length > 0 && mapKids('line').length === 0,
+   'and every edge is a trail path');
+// the outline is jagged -- many straight segments, closed -- and it stays within a couple of pixels
+// of the box the tap hit-test uses, so a marker is still where it looks
+var d11 = boxes[0].getAttribute('d');
+ok(/^M[-\d.,]+(L[-\d.,]+){10,}Z$/.test(d11), 'the outline is a closed run of straight cuts: ' + d11.slice(0, 40));
+var pts = d11.replace(/^M|Z$/g, '').split('L').map(function (q) { return q.split(',').map(Number); });
+var p11 = A.map.pos[G.EXERCISES[0].id];
+ok(pts.every(function (q) { return Math.abs(q[0] - p11.x) < 78 / 2 + 3 && Math.abs(q[1] - p11.y) < 30 / 2 + 3; }),
+   'and never strays more than 3px outside the tap target');
+// a trail leaves one marker and arrives squarely at the next, wandering in between
+var tr = mapKids('path', 'edge')[0].getAttribute('d');
+ok(/^M[-\d.,]+(Q[-\d.,]+ [-\d.,]+)+L[-\d.,]+$/.test(tr), 'a trail is a smoothed run of waypoints');
+var ends = [tr.slice(1).split('Q')[0], tr.split('L').pop()].map(function (q) { return q.split(',').map(Number); });
+var e0 = G.EXERCISES.filter(function (e) { return (e.unlocks || []).length; })[0];
+var a0 = A.map.pos[e0.id], b0 = A.map.pos[e0.unlocks[0]];
+ok(Math.abs(ends[0][0] - a0.x) < 0.1 && Math.abs(ends[0][1] - (a0.y + 15)) < 0.1 &&
+   Math.abs(ends[1][0] - b0.x) < 0.1 && Math.abs(ends[1][1] - (b0.y - 15)) < 0.1,
+   'its two ends are exactly the two markers it joins');
+ok(/Q/.test(tr) && tr !== 'M' + a0.x.toFixed(1) + ',' + (a0.y + 15).toFixed(1), 'and it wanders in between');
+// stability: re-rendering (which happens after every craft) must redraw the identical territory
+A.loadExercise('1.1');
+var again = get('mapg').children.filter(function (c) { return c.tagName === 'g'; })[0]
+  .children.filter(function (c) { return c.tagName === 'path'; })[0].getAttribute('d');
+ok(again === d11, 'the same marker is cut the same way on every render');
+A.setFantasy(wasF);
+
+// Chapters 4–7 are pure deduction-theorem practice, so they all hang straight off the assume tutorial
+// (6.1a) and can be done in any order, or skipped entirely on the way to the next mechanic.
+['4.2', '4.3', '4.4', '4.5', '4.6', '4.7'].forEach(function (id) {
+  ok(G.EX_BY_ID[id].prereqs.join(',') === '4.1', id + ' hangs directly off the assume tutorial');
+  ok((G.EX_BY_ID[id].unlocks || []).length === 0, id + ' is a leaf: nothing waits on it');
+  ok((G.EX_BY_ID[id].needs || []).length === 0, id + ' is practice, not a tutorial');
+});
 // ---- the two kinds of level are visible to the player ----
 var wasFantasy = A.state.fantasy;
 A.setCheat(true);                 // reveal every level so any one can be loaded
@@ -939,6 +1090,159 @@ ok(get('term-in').classList.contains('bad') && /not a term/.test(get('term-err')
 get('term-in').value = 'g(c)'; A.el['term-in'].fire('input'); A.el['term-add'].fire('click');
 ok(get('term-in').classList.contains('bad') && /not a function/.test(get('term-err').textContent),
    'an unknown operation is reported rather than silently ignored');
+
+console.log(pass + ' passed, ' + fail + ' failed');
+process.exit(fail ? 1 : 0);
+
+// ---- par: the shortest proof the game knows, and what the player has managed ----
+// The number QED used to show on hover. It is the length of the scripted solution, so it is a target
+// that can be MISSED and can also be BEATEN -- and beating it is the one thing the game asks to hear about.
+A.loadExercise('1.2'); A.el.reset.fire('click');          // hA ⊢ A ∧ A, par 1
+ok(A.par('1.2') === 1 && A.par('2.2') === 6, 'every level has a par, read off its scripted solution');
+ok(/shortest known 1/.test(strip(get('goal').innerHTML)), 'the goal pane names the par while you play');
+ok(/0 moves so far/.test(strip(get('goal').innerHTML)), 'and counts the moves made so far');
+A.doCraft('And.intro', ['hA', 'hA']);
+ok(A.isSolved() && A.state.best['1.2'] === 1, 'solving it records the length of the proof found');
+ok(/matches the shortest proof known/.test(strip(get('goal').innerHTML)), 'and says that it matched par');
+// a longer second proof must not overwrite a shorter first one
+A.el.reset.fire('click');
+A.doCraft('And.intro', ['hA', 'hA']);
+ok(A.state.best['1.2'] === 1, 'a re-solve only ever improves the record');
+// coming in UNDER par raises the banner, with the blog post to write to
+A.state.best['1.2'] = 1;
+G.CANON['1.2'] = 2;                                        // pretend the game only knew a 2-move proof
+A.el.reset.fire('click');
+A.doCraft('And.intro', ['hA', 'hA']);
+ok(/A new record/.test(strip(get('goal').innerHTML)), 'beating the par is announced');
+ok(/terrytao\.wordpress\.com\/2026\/11\/11\/lean-grimoire/.test(get('goal').innerHTML),
+   'and the announcement links the blog post to send it to');
+G.CANON['1.2'] = 1;
+// the map says all of this on hover, and colours the stone it belongs to
+A.loadExercise('1.2');
+const tips = [], nodes = get('mapg').children;
+nodes.forEach(n => n.children.forEach(c => { if (c.textContent) tips.push(c.textContent); }));
+ok(tips.some(t => /shortest known 1 move/.test(t)), 'a map node reports the par on hover');
+ok(tips.some(t => /your best 1 .* matched/.test(t)), 'and how the player has done against it');
+ok(nodes.some(n => / matched/.test(n.getAttribute('class') || '')),
+   'a level solved at par is marked on the map');
+
+// ---- export: one file with the informal reading as comments and the Lean below it ----
+const txt = A.proofText();
+ok(/^-- Lean Grimoire \u2014 lemma|^-- Lean Grimoire \u2014 (exercise|tutorial) 1\.2/.test(txt.split('\n')[0]),
+   'the export names the level it came from');
+ok(/^-- https:\/\/terrytao\.wordpress\.com/m.test(txt), 'and carries the link to write to');
+ok(/-- Proved in 1 move\./.test(txt) && /shortest proof the game knows takes 1/.test(txt),
+   'and states the length beside the par');
+ok(/^-- We wish to prove/m.test(txt), 'the informal proof is there, commented out');
+ok(/^theorem And\.idem/m.test(txt) && /^  exact /m.test(txt), 'and the Lean proof is there as Lean');
+ok(txt.split('\n').filter(l => l && !/^(--|$)/.test(l)).every(l => !/^-- /.test(l)),
+   'nothing of the prose leaks out of the comments');
+// both buttons work on it
+// node 22 defines `navigator` itself, as a getter -- a plain assignment to it is silently dropped
+Object.defineProperty(global, 'navigator', { configurable: true,
+  value: { clipboard: { writeText: t => { global.__copied = t; return { then: (f) => (f(), {}) }; } } } });
+let downloaded = null;   // the save-progress section already binds the obvious name at top level
+global.Blob = function (parts) { this.parts = parts; downloaded = parts[0]; };
+global.URL = { createObjectURL: () => 'blob:x', revokeObjectURL: () => {} };
+global.setTimeout = (fn) => 0;
+global.document.body = makeEl('BODY');
+A.el.copyproof.fire('click');
+ok(global.__copied === txt, 'Copy puts the whole proof on the clipboard');
+A.el.saveproof.fire('click');
+ok(downloaded === txt, 'Save hands the same text to the download');
+// A proof that applies a MINTED lemma cites a theorem that exists nowhere in Lean, so the export has to
+// carry that proof too, deepest first. (`check_emitted.js` never catches this: it compiles all 158 proofs
+// as ONE file, where every lemma is already declared above. `check_exports.js` compiles them one by one.)
+A.loadExercise('5.8'); A.el.reset.fire('click');          // hAB : A \u2227 B, hAC : A \u2192 C \u22a2 C \u2227 B
+const nm = () => A.state.env.bindings[A.state.env.bindings.length - 1].name;
+A.doCraft('And.left', ['hAB']); const d8a = nm();
+A.doCraft('modus_ponens', ['hAC', d8a]); const d8c = nm();
+A.doCraft('And.right', ['hAB']); const d8b = nm();
+A.doCraft('And.intro', [d8c, d8b]);
+ok(A.isSolved() && !!G.RECIPES["And.imp_left'"], 'solving 5.8 mints And.imp_left\' as a recipe');
+A.loadExercise('5.10'); A.el.reset.fire('click');         // and 5.10 is that recipe, once, under an assumption
+A.doAssume(G.AND(G.varE('A'), G.varE('C')));
+A.doCraft("And.imp_left'", [A.state.env.assumption.name, 'hAB']);
+A.doDischarge(nm(), 1);
+ok(A.isSolved(), '5.10 is solved through the minted lemma');
+const dep = A.proofText();
+ok(/-- 5\.8  \(And\.imp_left'\)/.test(dep), 'the export names the lemma it had to carry');
+ok(/^theorem And\.imp_left'/m.test(dep), 'and carries it as a real theorem, not a bare reference');
+ok(dep.indexOf("theorem And.imp_left'") < dep.indexOf("theorem And.mono_left'"),
+   'the carried lemma comes BEFORE the proof that uses it, as Lean requires');
+ok(!/\bsorry\b/.test(dep), 'and the whole file is free of sorry');
+ok(!/^import /m.test(dep), 'an export never needs an import: Lean 4 takes Init by itself');
+// Reset throws a solved level's proof away but keeps its recipe, so a link in the chain can be missing.
+// It has to be reported in the file, not quietly dropped -- that would leave an export that cannot compile.
+delete A.state.progress['5.8'];
+const gap = A.proofText();
+ok(/NOT IN THIS BROWSER ANY MORE: re-solve 5\.8/.test(gap), 'a missing link is named where it belongs');
+ok(/could not be filled in, so this file still has a `sorry` in it/.test(gap), 'and in the header');
+ok(/^theorem And\.imp_left'[^\n]*\n  sorry$/m.test(gap), 'its statement still stands, with a sorry under it');
+// Chapter 20's naturals are a CONCRETE sort, modelled in a Lean module rather than axiomatised. Nobody
+// receiving the file has that module, so its definitions go in whole instead of being imported.
+A.loadExercise('20.5');
+const nat = A.proofText();
+ok(!/^import /m.test(nat), 'a Nat level exports no import either');
+ok(/^def Nat' : Type := Nat$/m.test(nat) && /^theorem not_succ_le/m.test(nat),
+   'the sort is defined in the file, out of the source grimoire.js carries');
+ok(/^open Grimoire Grimoire\.Nat'$/m.test(nat), 'followed by the open the import form would have needed');
+ok(G.leanPrelude(G.EX_BY_ID['1.1']) === '' && G.leanPrelude(G.EX_BY_ID['18.8']) === '',
+   'an abstract sort needs no prelude at all -- leanPreamble declares it as variables');
+
+// ---- writing a quantifier on the scroll shelf ----
+// A reader could not do this at all: the parser had no binders, so ∃, \exists and "exists" were each an
+// error, and from Chapter 11 the shelf could not express the statements its own level was about.
+A.setCheat(true);
+A.loadExercise('12.1');                                   // hpr : ∀ X, (P(X) → R(X)), hp : ∀ X, P(X)
+ok(A.hasCap('forall') && get('formula-quant').hidden === false,
+   'from Chapter 11 the ∀/∃ buttons are there');
+ok(/data-glyph="∀"/.test(get('formula-quant').innerHTML) && /data-glyph="∃"/.test(get('formula-quant').innerHTML),
+   'both glyphs, each as a button');
+ok(/∀/.test(get('formula-in').placeholder), 'and the placeholder stops advertising only the connectives');
+// A lone backslash in a JS string literal is EATEN: '\\and' is the word "and", and '\\forall' is a
+// form feed plus "orall". So a shortcut the interface tells the player to type has to survive being
+// written down as a string -- which the placeholder had not done since the day it was written.
+ok(/\\forall/.test(get('formula-in').placeholder), 'and it keeps the backslash on \\forall');
+ok(/\\forall/.test(get('formula-quant').innerHTML) && /\\exists/.test(get('formula-quant').innerHTML),
+   'as do the hover texts on the two buttons');
+// ...and nowhere in the wiring script may one of these be written with a single backslash, because a
+// JS string literal eats it: '\\and' is the word "and" and '\\forall' is a form feed plus "orall".
+// The formula placeholder had been advising "and becomes ∧ on space/Tab" since the day it was written.
+const loneBS = scripts[0].match(/(?:^|[^\\])\\(?:and|or|to|not|iff|forall|exists|true|false|all|ex)\b/g) || [];
+ok(loneBS.length === 0,
+   'every backslash shortcut in the script is doubled, so it survives as a string (found ' + loneBS.join(', ') + ')');
+// the button types the glyph at the cursor, which is the whole point: it is on no keyboard
+get('formula-in').value = ''; get('formula-in').selectionStart = 0;
+A.pasteIntoFormula('∀ ');
+ok(get('formula-in').value === '∀ ', 'the button inserts the glyph where the cursor is');
+// and the statement the level HANDS you can now be written out by hand
+const hp = G.byName(A.state.env, 'hp').type;
+get('formula-in').value = '∀ X, P(X)';
+A.el['formula-add'].fire('click');
+ok(G.exprEq(A.state.formulas[A.state.formulas.length - 1], hp),
+   'typing "∀ X, P(X)" gives exactly the hypothesis the level starts with');
+get('formula-in').value = 'for all X, P(X) implies R(X)';
+A.el['formula-add'].fire('click');
+ok(G.exprEq(A.state.formulas[A.state.formulas.length - 1], G.byName(A.state.env, 'hpr').type),
+   'and the English reads the same way, Plain English mode or not');
+// the exact thing the reader tried, on the level where it is wanted
+A.loadExercise('13.1');                                   // hex : ∃ x : Ω, P(x)
+get('formula-in').value = 'exists x, P(x)';
+A.el['formula-add'].fire('click');
+ok(G.exprEq(A.state.formulas[A.state.formulas.length - 1], G.byName(A.state.env, 'hex').type),
+   '"exists x, P(x)" is read as the existential the level is about');
+get('formula-in').value = '\\exists y, P(y)';
+A.el['formula-add'].fire('click');
+const ey = A.state.formulas[A.state.formulas.length - 1];
+ok(ey.tag === 'binder' && ey.q === 'exists' && ey.v.name === 'y', 'and so is the backslash form');
+// a formula it cannot read says why, and nothing lands on the shelf
+const shelfWas = A.state.formulas.length;
+get('formula-in').value = '∀ x P(x)';
+A.el['formula-add'].fire('click');
+ok(A.state.formulas.length === shelfWas && /comma/.test(get('formula-err').textContent),
+   'a quantifier without its comma is refused, with the reason');
+A.setCheat(false);
 
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
