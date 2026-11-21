@@ -890,12 +890,14 @@ ok(A.isSolved(), '2.1 is solved');
 (function () {
   var r = G.replayMoves(G.EX_BY_ID['2.1'], A.state.moves);
   ok(r.ok && r.length === A.state.moves.length, 'the log replays into the same proof from a fresh board');
-  var line = /-- grimoire-replay v1 (\S+) (\S+)/.exec(A.proofText());
-  ok(!!line, 'a solved proof exports a replay line');
-  ok(line[1] === '2.1', 'headed with the id, not the number — it is what the tables are keyed by');
-  var back = G.decodeMoves(line[2]);
-  ok(JSON.stringify(back) === JSON.stringify(A.state.moves), 'carrying exactly the moves that were played');
-  ok(G.replayMoves(G.EX_BY_ID['2.1'], back).ok, 'which replay into a proof');
+  var read = G.readReplayLine(A.proofText());
+  ok(!!read, 'a solved proof exports a replay line');
+  ok(read && read.version === 2, 'in the compact form, which is what fits in a comment box');
+  ok(read && read.id === '2.1', 'headed with the id, not the number — it is what the tables are keyed by');
+  ok(read && JSON.stringify(read.moves) === JSON.stringify(A.state.moves), 'carrying exactly the moves that were played');
+  ok(read && G.replayMoves(G.EX_BY_ID['2.1'], read.moves).ok, 'which replay into a proof');
+  ok(A.proofText().indexOf('grimoire-replay v2 2.1 c And.left hAB') >= 0,
+     'and the line can be read by eye, which base64 could not be');
 })();
 // Tidying the bench is a move too. It has to be logged, or a replay of the log names the wrong potions
 // (and measures the tidied-away brews as if they were still in the proof) -- which is how a reader's
@@ -1326,6 +1328,34 @@ A.loadExercise('17.2');
      'on the magma it is still the theory\'s own constant');
   ok(G.symbolOwner('c') === 'M' && G.symbolOwner('succ') === 'Nat' && G.symbolOwner('AND') === null,
      'symbolOwner says which theory a symbol belongs to, and null for the logical ones');
+})();
+
+// ---- "Copy record": the few hundred characters that carry a claim ----
+// The whole export carries the Lean and every lemma the proof leans on; for a deep level that is hundreds
+// of lines, and a reader with a shorter 18.10 found the blog would not take a comment that long. So the
+// button offering just the moves appears exactly when there is a record to send.
+(function () {
+  A.loadExercise('1.2'); A.el.reset.fire('click');      // hA ⊢ A ∧ A, par 1
+  A.doCraft('And.intro', ['hA', 'hA']);
+  ok(A.isSolved(), '1.2 is solved');
+  ok(A.el.copyrecord.hidden, 'matching the par is not a record, so the button stays away');
+  var was = G.CANON['1.2'];
+  G.CANON['1.2'] = 5;                                    // pretend the game knows only a longer proof
+  A.loadExercise('2.1'); A.loadExercise('1.2');          // re-render the banner
+  ok(!A.el.copyrecord.hidden, 'beating it brings the button out');
+  // node 22 defines `navigator` itself, as a getter -- a plain assignment to it is silently dropped
+  Object.defineProperty(global, 'navigator', { configurable: true,
+    value: { clipboard: { writeText: t => { global.__copied = t; return { then: (f) => (f(), {}) }; } } } });
+  A.el.copyrecord.fire('click');
+  var txt = global.__copied;
+  ok(/^-- Lean Grimoire — 1\.2 in 1 move \(the shortest it knows takes 5\)/.test(txt),
+     'it copies a header saying what is claimed: ' + String(txt).split(/\n/)[0]);
+  var read = G.readReplayLine(txt);
+  ok(read && read.id === '1.2' && G.replayMoves(G.EX_BY_ID['1.2'], read.moves).ok,
+     'and the line under it replays into the proof');
+  ok(txt.length < 200, 'the whole thing is short enough to paste anywhere (' + txt.length + ' chars)');
+  ok(txt.indexOf('theorem') < 0, 'with none of the Lean, which is what made the export too long');
+  G.CANON['1.2'] = was;
 })();
 
 A.setCheat(false);

@@ -17,7 +17,30 @@
 const fs = require('fs');
 const { G } = require('./solutions.js');
 
-const RE = /--\s*grimoire-replay\s+v(\d+)\s+(\S+)\s+([A-Za-z0-9+/=\s]+?)(?:\n\s*\n|\n--|$)/g;
+// What a blog comment does to the line, before anything tries to read it: WordPress turns the leading
+// `--` into an em or en dash, and curls a plain `'` into ’. (The v2 line has no quotes in it at all,
+// which is half of why it exists; the Lean around it still does.)
+function normalise(text) {
+  return String(text == null ? '' : text)
+    .replace(/[\u2013\u2014]\s*(?=grimoire-replay)/g, '-- ')
+    .replace(/(^|\n)\s*[\u2013\u2014]\s*(?=grimoire-replay)/g, '$1-- ');
+}
+// Every replay line in the paste. v1 is base64 and may have been wrapped, so its payload gathers the
+// base64-looking lines that follow; v2 is one line of s-expressions and ends where the line does.
+function replayLines(text) {
+  const lines = normalise(text).split(/\r?\n/);
+  const out = [];
+  for (let i = 0; i < lines.length; i++) {
+    const m = /--\s*grimoire-replay\s+v(\d+)\s+(\S+)\s+(.*)$/.exec(lines[i]);
+    if (!m) continue;
+    let payload = m[3];
+    if (+m[1] === 1) {
+      while (i + 1 < lines.length && /^[A-Za-z0-9+/=]+$/.test(lines[i + 1].trim())) payload += lines[++i].trim();
+    }
+    out.push({ version: +m[1], id: m[2], payload: payload.trim() });
+  }
+  return out;
+}
 
 // A reader's proof may lean on any lemma minted EARLIER IN THE LIST (dev/README.md's par rule), and a
 // replay from a fresh board starts with only the BASE recipes in the registry — so stock it first, the
@@ -39,19 +62,17 @@ function stockRecipes(id) {
 function assess(text, parOf) {
   const par = parOf || (id => G.par(id));
   const out = [];
-  let m;
-  RE.lastIndex = 0;
-  while ((m = RE.exec(text)) !== null) {
-    const v = +m[1], id = m[2], b64 = m[3].replace(/\s+/g, '');
+  replayLines(text).forEach(line => {
+    const v = line.version, id = line.id;
     const ex = G.EX_BY_ID[id];
     const r = { id: id, version: v, shownAs: ex ? G.exNum(ex) : null };
-    if (v !== 1) { r.verdict = 'unknown replay version ' + v; out.push(r); continue; }
-    if (!ex) { r.verdict = 'no level has the id ' + id; out.push(r); continue; }
-    const moves = G.decodeMoves(b64);
-    if (!moves) { r.verdict = 'the replay line is not readable — it may have been truncated in the paste'; out.push(r); continue; }
+    if (v !== 1 && v !== 2) { r.verdict = 'unknown replay version ' + v; out.push(r); return; }
+    if (!ex) { r.verdict = 'no level has the id ' + id; out.push(r); return; }
+    const moves = v === 1 ? G.decodeMoves(line.payload) : G.decodeMovesText(line.payload);
+    if (!moves) { r.verdict = 'the replay line is not readable — it may have been truncated in the paste'; out.push(r); return; }
     stockRecipes(id);
     const res = G.replayMoves(ex, moves);
-    if (!res.ok) { r.verdict = 'NOT A PROOF: ' + res.error; out.push(r); continue; }
+    if (!res.ok) { r.verdict = 'NOT A PROOF: ' + res.error; out.push(r); return; }
     const p = par(id);
     Object.assign(r, { length: res.length, par: p, moves: moves, record: p != null && res.length < p });
     r.verdict = p == null ? 'proves it in ' + res.length + ' (this level has no par yet)'
@@ -59,7 +80,7 @@ function assess(text, parOf) {
       : res.length === p ? 'matches the par of ' + p + ' — nothing to record'
       : 'longer than the par of ' + p + ' (' + res.length + ') — nothing to record';
     out.push(r);
-  }
+  });
   return out;
 }
 
@@ -89,7 +110,7 @@ function scriptFor(id, moves) {
   return "  '" + id + "': s => {\n    " + lines.join('\n    ') + '\n  },';
 }
 
-if (require.main !== module) { module.exports = { assess, scriptFor, stockRecipes, RE }; return; }
+if (require.main !== module) { module.exports = { assess, scriptFor, stockRecipes, replayLines, normalise }; return; }
 
 const argv = process.argv.slice(2);
 const asJson = argv.includes('--json');
@@ -100,7 +121,7 @@ const out = assess(text);
 if (!out.length) {
   console.log('No replay line in that text.\n');
   console.log('A record carries one, written by the game at the end of the exported proof:');
-  console.log('    -- grimoire-replay v1 7.4 W1siYyIsIkltcGwuaWRlbSIs…\n');
+  console.log('    -- grimoire-replay v2 7.4 c Impl.idem (v A Prop) ; c And.intro hAA hAA\n');
   console.log('A proof exported before 2026-11-16 has none — those have to be read and scripted by hand,');
   console.log('as the first twenty records were. If the reader still has the level solved in their');
   console.log('browser, asking them to press Copy again is quicker than reconstructing it.');

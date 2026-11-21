@@ -1499,5 +1499,98 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   ok(!bad.ok && /delete hA/.test(bad.error), 'a log cannot delete a given, and says which move tried');
 }
 
+// ---------- the replay line a reader has to paste ----------
+// v1 was base64'd JSON, with every expression spelled out in full and a `sort` on every node. A reader
+// who found a shorter 18.10 could not post it: the blog refused the comment for length, and that proof's
+// line alone ran to 6.5 KB. v2 writes the moves as s-expressions -- about four times shorter, no quotes
+// in it to be curled by a comment box, and legible. v1 lines must go on working: records were posted in it.
+{
+  const X = G.varE('X', G.OMEGA);
+  const moves = [
+    ['c', 'Or.inl', ['hA', B], null],
+    ['c', 'Exists.intro', ['hP', X], G.EXISTS({ name: 'x', sort: G.OMEGA }, G.appE('P', [G.varE('x', G.OMEGA)]))],
+    ['a', AND(A, NOT(B))],
+    ['d', 'hAB', 2],
+    ['n', 'hA', 'hnA'],
+    ['n', 'hFalse', null],
+    ['v', 'X', 'Ω'],
+    ['ob', 'hex', 'b'],
+    ['p', 'a', 'Ω'],
+    ['ab', 1],
+    ['ren', 'hAB2', 'conj'],
+    ['del', 'hAB3'],
+  ];
+  const text = G.encodeMovesText(moves);
+  ok(JSON.stringify(G.decodeMovesText(text)) === JSON.stringify(moves),
+     'every kind of move survives the compact encoding exactly');
+  ok(text.indexOf('"') < 0 && text.indexOf("'") < 0, 'and it contains no quotes for a comment box to curl');
+  ok(/^c Or\.inl hA \(v B Prop\)/.test(text), 'a potion is named, a formula is written out: ' + text.slice(0, 40));
+  ok(text.length * 3 < G.encodeMoves(moves).length * 2, 'it is substantially shorter than the base64 JSON ('
+     + text.length + ' against ' + G.encodeMoves(moves).length + ')');
+
+  // the line itself, in both versions
+  const line = G.replayLine('2.1', moves);
+  const read = G.readReplayLine(line);
+  ok(read && read.version === 2 && read.id === '2.1', 'the line says which version and which level');
+  ok(read && JSON.stringify(read.moves) === JSON.stringify(moves), 'and carries the moves back');
+  const old = G.readReplayLine('-- grimoire-replay v1 2.1 ' + G.encodeMoves(moves));
+  ok(old && old.version === 1 && JSON.stringify(old.moves) === JSON.stringify(moves),
+     'a v1 line still reads: a record posted in it must go on working');
+  ok(G.readReplayLine('nothing here') === null, 'a line that is not a replay line reads as nothing');
+  ok(G.readReplayLine('-- grimoire-replay v9 2.1 xx').moves === null, 'and a version from the future is refused');
+  // the blog curls a leading `--` into an em dash; the tool that reads these normalises before it asks
+  ok(G.readReplayLine('  -- grimoire-replay v2 2.1 ' + text) !== null, 'leading space is fine');
+
+  // Every scripted solution's log, through the encoding and back. This is the test that matters: the
+  // encoder has to be exact for the real corpus, not just for a hand-made list.
+  const SOLS = require('./solutions.js');
+  let drift = [], biggest = 0;
+  G.EXERCISES.forEach(function (ex) {
+    if (ex.kind === 'lemma' && ex.leanName && !G.RECIPES[ex.leanName]) G.RECIPES[ex.leanName] = G.recipeFromExercise(ex);
+  });
+  G.EXERCISES.forEach(function (ex) {
+    if (!SOLS.SOL[ex.id]) return;
+    const sv = SOLS.solver(ex.id), log = [];
+    const mi = x => (typeof x === 'string' ? x : (x && x.proof && x.name ? x.name : (x && x.type ? x.type : x)));
+    const rc = sv.c, rce = sv.ce, ra = sv.a, rd = sv.d, rn = sv.n, rv = sv.v, rob = sv.obtain, rp = sv.pick, rab = sv.ab;
+    sv.c = (r, ...i) => { log.push(['c', r, i.map(mi), null]); return rc(r, ...i); };
+    sv.ce = (r, t, ...i) => { log.push(['c', r, i.map(mi), t]); return rce(r, t, ...i); };
+    sv.a = f => { log.push(['a', f]); return ra(f); };
+    sv.d = (n, k) => { log.push(['d', n, k]); return rd(n, k); };
+    sv.n = (a, b) => { log.push(['n', mi(a), b ? mi(b) : null]); return rn(a, b); };
+    sv.v = (n, so) => { log.push(['v', n, so || G.OMEGA]); return rv(n, so); };
+    sv.obtain = (e2, v) => { log.push(['ob', e2, v]); return rob(e2, v); };
+    sv.pick = v => { log.push(['p', v, G.OMEGA]); return rp(v); };
+    sv.ab = l => { log.push(['ab', l]); return rab(l); };
+    SOLS.SOL[ex.id](sv);
+    const l2 = G.replayLine(ex.id, log), r2 = G.readReplayLine(l2);
+    if (!r2 || JSON.stringify(r2.moves) !== JSON.stringify(log)) { drift.push(ex.id + ': round trip'); return; }
+    const rep = G.replayMoves(ex, r2.moves);
+    if (!rep.ok) drift.push(ex.id + ': ' + rep.error);
+    biggest = Math.max(biggest, l2.length);
+  });
+  ok(drift.length === 0, 'all 158 logs survive the line and replay from it'
+     + (drift.length ? ' -- ' + drift.slice(0, 4).join('; ') : ''));
+  ok(biggest < 3000, 'and the longest line any level produces fits in a comment box (' + biggest + ' chars)');
+}
+
+// ---------- a potion's name must not depend on when it was brewed ----------
+// A binding is named after its own statement, and a statement whose substitution has to avoid capture
+// renames the bound variable. That rename used a GLOBAL counter, so the same proof played twice gave
+// `b'1` one time and `b'3` the next -- and a replay of a reader's log then could not resolve the names.
+// Six chapter-18 levels were affected, 18.10 among them, which is the proof a reader was trying to send.
+{
+  const P = (t) => G.appE('P', [t]), Q = (a, b) => G.appE('Q', [a, b]);
+  const b = G.varE('b', G.OMEGA);
+  const tmpl = G.FORALL({ name: 'b', sort: G.OMEGA }, Q(G.varE('a', G.OMEGA), G.varE('b', G.OMEGA)));
+  const once = G.substE(tmpl, 'a', G.OMEGA, b);
+  const twice = G.substE(tmpl, 'a', G.OMEGA, b);
+  ok(render(once) === render(twice), 'the same substitution gives the same name every time: ' + render(once));
+  ok(/b'1/.test(render(once)), "and it is the first index free, not a counter: " + render(once));
+  // an index already taken is stepped over
+  const tmpl2 = G.FORALL({ name: 'b', sort: G.OMEGA }, Q(G.varE("b'1", G.OMEGA), G.varE('b', G.OMEGA)));
+  ok(/b'2/.test(render(G.substE(tmpl2, "b'1", G.OMEGA, b))), 'a name already in use is stepped over');
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

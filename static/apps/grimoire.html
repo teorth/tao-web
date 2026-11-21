@@ -284,6 +284,7 @@
           <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
           <button id="copyproof" class="exp" type="button" title="Copy the whole proof — the informal reading as comments, then the Lean — to the clipboard">⧉ Copy</button>
           <button id="playproof" class="exp" type="button" title="Open this proof in the Lean 4 web playground, where you can edit it and see what Lean itself says — including what happens when you break it. The code travels in the link's fragment, which your browser does not send to any server; the playground compiles it in your own browser.">↗ Playground</button>
+          <button id="copyrecord" class="exp" type="button" hidden title="Copy JUST the line that carries your moves — a few hundred characters, short enough for a comment box. It is all I need to replay the proof and check it; the Lean is for you. Use this if a shorter proof you have found is too long to post.">⚑ Copy record</button>
           <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then Lean that compiles on its own — no import needed, and the proofs of the lemmas you built it from carried along with it">⤓ Save</button>
         </span>
       </div>
@@ -384,7 +385,7 @@
   'use strict';
   var G = window.Grimoire;
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
-             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'playproof', 'wrap',
+             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'copyrecord', 'playproof', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-quant', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
@@ -734,8 +735,11 @@
         : '<span class="record">🏆 <strong>A new record.</strong> The shortest proof this game knows takes '
           + pr + ' move' + (pr === 1 ? '' : 's') + ', so you have found something it does not. Please tell me about it:'
           + ' <strong>Copy</strong> or <strong>Save</strong> the proof below and leave it in the comments on'
-          + ' <a href="' + BLOG + '">the blog post</a>.</span>';
+          + ' <a href="' + BLOG + '">the blog post</a> — or, if that is too long to post,'
+          + ' <strong>Copy record</strong>, which is the few hundred characters I actually need.</span>';
     }
+    // that button is for exactly this moment, so it appears with it
+    el.copyrecord.hidden = !(solved && pr && len < pr);
     var score = !solved ? scoreHTML()
       : (pr && best != null && best < len)
         ? '<div class="score">⚖ your best here: ' + best + ' move' + (best === 1 ? '' : 's') + '</div>'
@@ -1022,10 +1026,12 @@
     var prelude = G.leanPrelude({ sorts: sorts });
     // A proof that beats the par has to become this level's scripted solution before the par can move,
     // and reading that script back out of the prose is the slow part of taking a reader's record. So the
-    // moves travel with it: one line, base64 so that a blog comment cannot curl its quotes, which
-    // `dev/grimoire/file_record.js` replays through the engine to check the claim and write the script.
+    // moves travel with it, in one line that `dev/grimoire/file_record.js` replays through the engine to
+    // check the claim and write the script. It used to be base64'd JSON; a reader with a shorter 18.10
+    // could not post it, because that line alone ran to 6.5 KB and the blog refused the comment. The
+    // compact form is about four times shorter, has no quotes in it to be curled, and can be read by eye.
     var replay = (done && state.moves && state.moves.length)
-      ? ['', '-- grimoire-replay v1 ' + ex.id + ' ' + G.encodeMoves(state.moves)]
+      ? ['', G.replayLine(ex.id, state.moves)]
       : [];
     return head.concat(informal, [''], prelude ? [prelude] : [],
                        body, [G.leanPreamble(ex) + G.emitLive(ex, state.env, opts)], replay).join('\n') + '\n';
@@ -1040,6 +1046,21 @@
     if (navigator.clipboard && navigator.clipboard.writeText)
       navigator.clipboard.writeText(txt).then(function () { flashBtn(el.copyproof, 'copied \u2713'); }, function () { flashBtn(el.copyproof, 'copy blocked'); });
     else flashBtn(el.copyproof, 'clipboard unavailable');
+  });
+  // Just the moves. The whole export carries the Lean and every lemma the proof leans on, which for a
+  // deep level runs to hundreds of lines -- too long for a comment box, as a reader found. This is the
+  // part that is actually checkable: a header saying what it claims, and the line that proves it.
+  function recordText() {
+    var n = G.proofLength(rootEnv());
+    return '-- Lean Grimoire \u2014 ' + G.exNum(state.ex) + ' in ' + n + ' move' + (n === 1 ? '' : 's')
+      + ' (the shortest it knows takes ' + G.par(state.ex.id) + ')\n'
+      + G.replayLine(state.ex.id, state.moves) + '\n';
+  }
+  el.copyrecord.addEventListener('click', function () {
+    var txt = recordText();
+    if (navigator.clipboard && navigator.clipboard.writeText)
+      navigator.clipboard.writeText(txt).then(function () { flashBtn(el.copyrecord, 'copied \u2713'); }, function () { flashBtn(el.copyrecord, 'copy blocked'); });
+    else flashBtn(el.copyrecord, 'clipboard unavailable');
   });
   // Hand the finished proof to the Lean playground. This is the one place the game points outwards, and
   // it is a navigation the player asks for: nothing is sent anywhere until they click, and the proof

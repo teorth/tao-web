@@ -71,7 +71,7 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-21: core 4900, smoke 427.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-21: core 4915, smoke 436.**
 
 **And the second way a suite loses coverage, found 2026-11-21.** The sections spliced back on the
 17th went in *after* the smoke suite's `console.log` and `process.exit` — so `par`, `export` and
@@ -125,7 +125,17 @@ suites.
 A proof exported before 2026-11-16 carries no replay line, and has to be read and scripted by hand, as
 the first twenty records were. Asking the reader to press Copy again is usually quicker.
 
-A trap worth knowing about, since it bit on the first batch the tool was really used on (2026-11-18):
+The line itself is **v2** since 2026-11-21: the moves as s-expressions rather than base64'd JSON, about
+four times shorter and legible, because a reader with a shorter 18.10 could not post the export at all —
+the blog refused the comment, and that proof's replay line alone was 6.5 KB. The longest any level now
+produces is about 2 KB, and the game has a **Copy record** button that copies the header and that line
+and nothing else. v1 lines still read: records were posted in that format. The filer also normalises what
+a comment box does to a pasted line (a leading `--` curled into an em dash, base64 wrapped across lines),
+so the raw text of a blog comment can be fed to it as it stands.
+
+Two traps worth knowing about, both of which bit on real submissions:
+
+(1) On the first batch the tool was really used on (2026-11-18):
 the replay starts from a fresh board, and a fresh board holds only the BASE recipes — so a submission
 that applies a lemma the reader had minted came back as `NOT A PROOF: unknown recipe Or.imp_left'`,
 which reads exactly like a forgery. Five genuine records in a row said that. `file_record.js` now stocks
@@ -133,6 +143,14 @@ the registry first with every lemma owned by a level EARLIER IN THE LIST, which 
 allows a record to lean on anyway; the tool's own tests had only ever replayed a base-recipe proof (2.1),
 which is why the gap sat there unnoticed. If a submission ever fails on a recipe name again, check that
 before doubting the reader.
+
+(2) A potion is named after its own statement, so anything that changes which names are in use changes
+what a later move's ingredient names mean. Two things did that silently: `deletePotion`/`renamePotion`
+were not logged at all (fixed 2026-11-21 — they are `['del', name]` and `['ren', old, new]` moves now),
+and capture-avoiding substitution picked its fresh name from a GLOBAL counter, so the same proof played
+twice gave `b'1` one time and `b'3` the next. The second made six chapter-18 levels unreplayable — 18.10
+among them, which is the proof the reader above was trying to send. **If a submission fails on a NAME,
+suspect the pipeline before the reader.**
 
 **Three things a level carries, which are not the same thing (TT, 2026-11-16).**
 

@@ -183,7 +183,14 @@
     if (e.tag === 'binder') {
       if (e.v.name === name && e.v.sort === sort) return e;                       // shadowed by this binder
       if (freeIn(repl, e.v.name, e.v.sort)) {                                     // would capture → α-rename the binder
-        var fresh = e.v.name + "'" + (++GENSYM), fv = { name: fresh, sort: e.v.sort };
+        // The new name is the first index this substitution has no use for — NOT a global counter.
+        // A binding is named after its own statement, so a global counter made the name of a potion
+        // depend on how much had been proved before it: `b'1` in one session and `b'3` in the next,
+        // which a replay of a reader's log cannot reproduce. Six chapter-18 levels were affected,
+        // 18.10 among them — the very proof a reader was trying to send (2026-11-21).
+        var taken = varsInto(e, varsInto(repl, {}));
+        var k = 1; while (taken[e.v.name + "'" + k]) k++;
+        var fresh = e.v.name + "'" + k, fv = { name: fresh, sort: e.v.sort };
         var body1 = substE(e.body, e.v.name, e.v.sort, varE(fresh, e.v.sort));
         return { tag: 'binder', q: e.q, v: fv, body: substE(body1, name, sort, repl), sort: PROP };
       }
@@ -1992,6 +1999,85 @@
     try { var m = JSON.parse(b64decode(String(b64).replace(/\s+/g, ''))); return Array.isArray(m) ? m : null; }
     catch (e) { return null; }
   }
+
+  // ---------- the compact replay line (v2) ----------
+  // v1 was JSON, base64'd: every expression carried `tag`, `sym`, `args` and a `sort` on every node, and
+  // base64 then added a third again. A reader with a shorter 18.10 could not post it — the blog refused
+  // the comment for length (2026-11-19), and that proof's line alone was 7.4 KB.
+  //
+  // v2 writes the same moves as s-expressions:
+  //     (v NAME SORT)              a variable
+  //     (a SYM ARG…)               an application  — the sort of an application follows from the symbol
+  //     (b forall NAME SORT BODY)  a binder
+  // An ingredient that starts with `(` is an expression; anything else is a potion's name. There are no
+  // quotes anywhere in it, which is what base64 was protecting against, so it travels as plain text and
+  // can be read by eye. About four times shorter, and v1 lines still decode: a record posted before this
+  // must go on working.
+  function sexp(e) {
+    if (!e || typeof e !== 'object') return '?';
+    if (e.tag === 'var') return '(v ' + e.name + ' ' + e.sort + ')';
+    if (e.tag === 'binder') return '(b ' + e.q + ' ' + e.v.name + ' ' + e.v.sort + ' ' + sexp(e.body) + ')';
+    return '(a ' + e.sym + (e.args || []).map(function (x) { return ' ' + sexp(x); }).join('') + ')';
+  }
+  // one pass, left to right; `toks` is the whole line split on whitespace and parens
+  function readSexp(toks, i) {
+    if (toks[i] !== '(') return null;
+    var kind = toks[i + 1], e, j;
+    if (kind === 'v') { if (toks[i + 4] !== ')') return null; return { expr: varE(toks[i + 2], toks[i + 3]), next: i + 5 }; }
+    if (kind === 'b') {
+      var body = readSexp(toks, i + 5);
+      if (!body || toks[body.next] !== ')') return null;
+      return { expr: { tag: 'binder', q: toks[i + 2], v: { name: toks[i + 3], sort: toks[i + 4] }, body: body.expr, sort: PROP }, next: body.next + 1 };
+    }
+    if (kind !== 'a') return null;
+    var args = []; j = i + 3;
+    while (toks[j] === '(') { var a = readSexp(toks, j); if (!a) return null; args.push(a.expr); j = a.next; }
+    if (toks[j] !== ')') return null;
+    return { expr: appE(toks[i + 2], args), next: j + 1 };
+  }
+  function encodeMovesText(moves) {
+    var ing = function (x) { return typeof x === 'string' ? x : sexp(x); };
+    return (moves || []).map(function (m) {
+      switch (m[0]) {
+        case 'c': return ['c', m[1]].concat((m[2] || []).map(ing)).join(' ') + (m[3] ? ' = ' + sexp(m[3]) : '');
+        case 'a': return 'a ' + sexp(m[1]);
+        case 'n': return 'n ' + ing(m[1]) + (m[2] ? ' ' + ing(m[2]) : '');
+        default: return m.map(function (x) { return x === null || x === undefined ? '' : String(x); }).join(' ').trim();
+      }
+    }).join(' ; ');
+  }
+  function decodeMovesText(text) {
+    var out = [];
+    var parts = String(text == null ? '' : text).split(';');
+    for (var k = 0; k < parts.length; k++) {
+      var toks = parts[k].replace(/\(/g, ' ( ').replace(/\)/g, ' ) ').split(/\s+/).filter(Boolean);
+      if (!toks.length) continue;
+      var kind = toks[0], i = 1, items = [], target = null, r;
+      while (i < toks.length) {
+        if (toks[i] === '=') { r = readSexp(toks, i + 1); if (!r) return null; target = r.expr; i = r.next; continue; }
+        if (toks[i] === '(') { r = readSexp(toks, i); if (!r) return null; items.push(r.expr); i = r.next; continue; }
+        items.push(toks[i]); i++;
+      }
+      if (kind === 'c') out.push(['c', items[0], items.slice(1), target]);
+      else if (kind === 'a') out.push(['a', items[0]]);
+      else if (kind === 'n') out.push(['n', items[0], items.length > 1 ? items[1] : null]);
+      else if (kind === 'd') out.push(['d', items[0], +items[1]]);
+      else if (kind === 'ab') out.push(['ab', +items[0]]);
+      else if (kind === 'v' || kind === 'p' || kind === 'ob' || kind === 'ren') out.push([kind, items[0], items[1]]);
+      else if (kind === 'del') out.push(['del', items[0]]);
+      else return null;
+    }
+    return out;
+  }
+  // What the export writes, and what a reader pastes back. v1 (base64 JSON) is still read.
+  var REPLAY_RE = /--\s*grimoire-replay\s+v(\d+)\s+(\S+)\s+([^\n]+)/;
+  function replayLine(id, moves) { return '-- grimoire-replay v2 ' + id + ' ' + encodeMovesText(moves); }
+  function readReplayLine(line) {
+    var m = REPLAY_RE.exec(String(line || ''));
+    if (!m) return null;
+    var moves = +m[1] === 1 ? decodeMoves(m[3]) : +m[1] === 2 ? decodeMovesText(m[3]) : null;
+    return moves ? { version: +m[1], id: m[2], moves: moves } : { version: +m[1], id: m[2], moves: null };
+  }
   // Run a log back through the engine from a fresh board. Returns the finished environment, or the move
   // that would not play — a reader's log is as untrusted as any other input, and the point of replaying
   // is to find out whether it is a proof.
@@ -2233,6 +2319,8 @@
     proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
     playgroundURL: playgroundURL, PLAYGROUND: PLAYGROUND, PLAYGROUND_MAX: PLAYGROUND_MAX,
     encodeMoves: encodeMoves, decodeMoves: decodeMoves, replayMoves: replayMoves,
+    encodeMovesText: encodeMovesText, decodeMovesText: decodeMovesText,
+    replayLine: replayLine, readReplayLine: readReplayLine, REPLAY_RE: REPLAY_RE,
     openAssumption: openAssumption, discharge: discharge, dischargeOptions: dischargeOptions, abandon: abandon, implChain: implChain,
     notIntro: notIntro, notIntroOption: notIntroOption,
     OMEGA: OMEGA, FORALL: FORALL, EXISTS: EXISTS, openVariable: openVariable, binderChain: binderChain, predRecipes: predRecipes, substE: substE,
