@@ -318,9 +318,10 @@
       beside the count of the moves you have made. Matching it rims the level gold on the map; coming in
       under it turns the level gold — and means you have found something better than the proof this game
       was built around, which is worth telling me about: a shorter proof that is sent in becomes the one
-      the game knows, and is credited beside the level it belongs to. Twenty-seven of the lengths below are a
-      reader’s rather than mine already — one cut a proof from eight moves to three, and another did a
-      congruence in five moves where I had taken eight.
+      the game knows, and is credited beside the level it belongs to. Thirty-nine of the lengths below are a
+      reader’s rather than mine already — a quarter of the game. One cut a proof from eight moves to
+      three, another did a congruence in five where I had taken eight, and a third proved that the
+      inverse of an inverse is the thing itself in five moves against my twelve.
       <strong>Copy</strong> and <strong>Save</strong>
       under the spellbook export the proof: the informal reading as comments, then Lean that compiles on
       its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
@@ -546,10 +547,18 @@
   // Two shapes are accepted. A bare NEW name (optionally `name : Sort`) declares a variable — that is how a
   // player names something to introduce. Anything else is parsed as a TERM built from the sort's operations,
   // e.g. `f(c)` or `f(c) ∗ c`, with the sorts of the gems in context supplying the identifiers' sorts.
+  // A name is taken only by a symbol THIS exercise is over: the registry is global, so the magma's
+  // constant `c` would otherwise be a taken name on a level about Nat — and a player who names a gem `c`
+  // there got `c : M`, which no Nat recipe accepts (reported on 20.4, 2026-11-20).
+  function nameTaken(name) {
+    if (!G.SYMBOLS[name]) return false;
+    var owner = G.symbolOwner(name);
+    return !owner || availableSorts().indexOf(owner) >= 0;
+  }
   function parseTerm(raw) {
     var sorts = availableSorts();
     var m = raw.match(/^\s*([A-Za-z\u0370-\u03ff][A-Za-z0-9_'\u0370-\u03ff]*)\s*(?::\s*([^\s]+)\s*)?$/);
-    if (m && !G.SYMBOLS[m[1]]) {
+    if (m && !nameTaken(m[1])) {
       var sort = m[2] ? (m[2] === 'Omega' ? G.OMEGA : m[2]) : sorts[0];
       if (sorts.indexOf(sort) < 0) return { ok: false, error: 'this exercise has no sort “' + sort + '” — it uses ' + sorts.join(', ') };
       return { ok: true, expr: G.varE(m[1], sort) };
@@ -557,7 +566,7 @@
     var ctx = {};
     ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
     (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
-    var r = G.parse(raw, ctx, { sort: sorts[0], preds: state.ex.preds });
+    var r = G.parse(raw, ctx, { sort: sorts[0], preds: state.ex.preds, sorts: sorts });
     if (!r.ok) return r;
     if (G.sortOf(r.expr) === 'Prop') return { ok: false, error: 'that is a formula, not a term — scribe it on the scroll shelf instead' };
     return r;
@@ -620,7 +629,12 @@
   function availableRecipes() {
     var cp = caps();
     var list = G.BASE_RECIPES.filter(function (r) { var need = G.RECIPE_CAP[r.id]; return !need || cp[need]; });   // gate base recipes by capability
-    Object.keys(state.unlocked).forEach(function (id) { if (id !== state.ex.leanName && state.unlocked[id].arity > 0) list.push(state.unlocked[id]); });
+    // Every lemma the player has proved, whatever its arity. A CLOSED statement -- no premises and no
+    // free variables, like ∀ a : Nat, 0 + a = a -- mints a recipe of arity 0, and those used to be
+    // filtered out here. Eight lemmas were therefore unusable, among them the whole chapter-20 ladder:
+    // 20.3 is MEANT to be proved with the zero_add' of 20.1, and its par was unreachable in the game
+    // while being perfectly reachable in the scripted solution (reported 2026-11-20).
+    Object.keys(state.unlocked).forEach(function (id) { if (id !== state.ex.leanName) list.push(state.unlocked[id]); });
     return list;
   }
   function unlockCurrent() {
@@ -1605,12 +1619,14 @@
     var nn = window.prompt('Rename ' + name + ' to:', name);
     if (nn == null) return; nn = nn.trim();
     if (!nn || G.byName(state.env, nn)) return;
-    state.history.push(state.env); state.env = G.rename(state.env, name, nn); state.sel = []; renderAll();
+    state.history.push(state.env); logMove(['ren', name, nn]);
+    state.env = G.rename(state.env, name, nn); state.sel = []; renderAll();
   }
   function deletePotion(name) {
     var r = G.deleteBinding(state.env, name);
     if (!r.ok) { el.deducehint.textContent = r.error; return; }
-    state.history.push(state.env); state.env = r.env; state.sel = state.sel.filter(function (n) { return n !== name; }); renderAll();
+    state.history.push(state.env); logMove(['del', name]);
+    state.env = r.env; state.sel = state.sel.filter(function (n) { return n !== name; }); renderAll();
   }
   function deleteFormula(i) {
     state.formulas = state.formulas.filter(function (_, j) { return j !== i; });
@@ -1670,9 +1686,10 @@
     var ctx = {};
     ((state.env && state.env.vars) || []).forEach(function (v) { ctx[v.name] = v.sort; });
     (state.terms || []).forEach(function (t) { if (t.tag === 'var') ctx[t.name] = t.sort; });
-    // the exercise's default sort (what `∀ x, …` binds at) and its predicate signatures (whose arities
-    // the registry's defaults do not always match)
-    var r = G.parse(raw, ctx, { sort: availableSorts()[0], preds: state.ex.preds });
+    // the exercise's default sort (what `∀ x, …` binds at), its predicate signatures (whose arities
+    // the registry's defaults do not always match), and the sorts it is over — so another theory's
+    // operations are ordinary names here, as they are on the term bench
+    var r = G.parse(raw, ctx, { sort: availableSorts()[0], preds: state.ex.preds, sorts: availableSorts() });
     if (!r.ok) { el['formula-in'].classList.add('bad'); el['formula-err'].textContent = r.error; return; }
     state.formulas.push(r.expr);
     el['formula-in'].value = '';

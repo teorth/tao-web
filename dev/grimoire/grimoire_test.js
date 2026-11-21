@@ -1459,5 +1459,45 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   ok(G.headCompatible(G.appE('P', [X]), AND(A, B)), 'a predicate metavariable P(X) is compatible with anything');
 }
 
+// ---------- the move log: tidying the bench is part of the proof ----------
+// A crafted potion is named after its own statement, so tidying one away frees its name for the next
+// brew to take. Renames and deletes therefore have to be IN the log: replay it without them and every
+// later ingredient name can mean a different potion, and the measured length is wrong too.
+//
+// This is not hypothetical. A reader's 19.4 (five moves against a par of twelve, 2026-11-21) came back
+// as `Eq.symm': that recipe does not apply to those ingredients` -- indistinguishable from a forgery --
+// because they had tidied one unused potion away and the export did not say so.
+{
+  const synth = { id: 'synth', kind: 'example', chapter: 6, formulas: [A, B],
+                  givens: [G.binding('hA', A), G.binding('hB', B)], goal: AND(A, B) };
+  const tidy = [
+    ['c', 'Or.inl', ['hA', B], null],      // hAB : A ∨ B  -- a brew that led nowhere
+    ['del', 'hAB'],                        // tidied away, and its name falls free
+    ['c', 'And.intro', ['hA', 'hB'], null],// hAB : A ∧ B  -- the name comes back, meaning something else
+    ['c', 'And.left', ['hAB'], null],      // so THIS reads the conjunction
+  ];
+  const r = G.replayMoves(synth, tidy);
+  ok(r.ok, 'a log that records the tidying replays' + (r.ok ? '' : ': ' + r.error));
+  eq(r.length, 2, 'and measures only the moves still standing in the proof');
+
+  // the same log with the delete dropped, which is what the game used to export
+  const naive = tidy.filter(m => m[0] !== 'del');
+  const r2 = G.replayMoves(synth, naive);
+  ok(!r2.ok && /And\.left/.test(r2.error),
+     'drop it and a later move reaches for the wrong potion entirely (' + (r2.error || 'it still passed!') + ')');
+
+  // a rename moves a name too, and the log carries that as well
+  const renamed = G.replayMoves(synth, [['c', 'And.intro', ['hA', 'hB'], null], ['ren', 'hAB', 'conj'],
+                                        ['c', 'And.left', ['conj'], null]]);
+  ok(renamed.ok, 'a rename replays, and the new name is what later moves use'
+     + (renamed.ok ? '' : ': ' + renamed.error));
+  ok(!G.replayMoves(synth, [['c', 'And.intro', ['hA', 'hB'], null], ['c', 'And.left', ['conj'], null]]).ok,
+     'without it that name is unknown');
+
+  // deleting something a later step was brewed from is refused, as it is in the game
+  const bad = G.replayMoves(synth, [['c', 'And.intro', ['hA', 'hB'], null], ['del', 'hA']]);
+  ok(!bad.ok && /delete hA/.test(bad.error), 'a log cannot delete a given, and says which move tried');
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

@@ -296,8 +296,26 @@
   // sort, which is what `∀ x, P(x)` means nine times in ten. `opts.preds` is the exercise's predicate
   // signatures; without them a level whose Q takes one argument will not accept `Q(α)`, because the
   // registry's Q takes two.
+  // Which THEORY a symbol belongs to, or null for the logical connectives and the predicate
+  // metavariables, which are everywhere. The registry of symbols is global while a level is over one or
+  // two sorts, so without this `c` — the magma's constant — is a taken name on a level about Nat, and a
+  // player who names a gem `c` gets `c : M` and cannot finish (reported on 20.4, 2026-11-20).
+  function symbolOwner(name) {
+    var owner = null;
+    Object.keys(SORTS).forEach(function (sn) {
+      (SORTS[sn].ops || []).forEach(function (o) { if (o.sym === name) owner = sn; });
+    });
+    return owner;
+  }
   function parse(str, ctx, opts) {
     var defSortName = (opts && opts.sort) || OMEGA;
+    // `opts.sorts` — the sorts this exercise is over — keeps the other theories' operations out of the
+    // way: with it, a name they own is just a name here. Without it every symbol in the registry counts,
+    // which is the right default for the tests and the tools.
+    var inPlay = function (name) {
+      var owner = symbolOwner(name);
+      return !owner || !(opts && opts.sorts) || opts.sorts.indexOf(owner) >= 0;
+    };
     var preds = {};
     ((opts && opts.preds) || []).forEach(function (pd) {
       preds[pd.name] = { arity: pd.argSorts.length, argSorts: pd.argSorts, resultSort: pd.resultSort || PROP, fixity: 'app' };
@@ -370,7 +388,7 @@
       if (t.t === 'id') {
         // `name(arg, …)` is an application of a registered symbol — a predicate (Q(x,y)) or an operation (f(x))
         if (toks[pos] && toks[pos].t === '(') {
-          var d = preds[t.name] || SYMBOLS[t.name];
+          var d = preds[t.name] || (inPlay(t.name) ? SYMBOLS[t.name] : null);
           if (!d || d.fixity !== 'app') return { ok: false, error: '“' + t.name + '” is not a function or predicate' };
           pos++;
           var args = [];
@@ -393,7 +411,7 @@
         // A name the CONTEXT knows wins over a registry constant spelt the same way: `c` is the magma's
         // own constant on a magma level, but on a level over Set it is whatever that exercise called `c`.
         var local = scope[t.name] || (ctx && ctx[t.name]);
-        var d0 = local ? null : (SYMBOLS[t.name] || SYMBOLS[UNI_ATOM[t.name]]);
+        var d0 = local || !inPlay(t.name) ? null : (SYMBOLS[t.name] || SYMBOLS[UNI_ATOM[t.name]]);
         if (d0 && d0.arity === 0 && d0.fixity === 'atom') return { ok: true, expr: appE(d0.name, []) };   // a sort's constant
         return { ok: true, expr: varE(t.name, sortOfName(t.name)) };
       }
@@ -1483,9 +1501,9 @@
     { id: '5.4', kind: 'lemma', leanName: 'And.elim_rev', chapter: 5, givens: [binding('hABC', IMPLIES(AND(A, B), C))], formulas: [A, B], goal: IMPLIES(A, IMPLIES(B, C)), prereqs: ['5.1'], qed: '8.4(b)', hint: 'The reverse: assume A, assume B, pair them into A ∧ B, and that is what hABC consumes. One discharge through both levels.', needs: [] },
     { id: '5.5', kind: 'lemma', leanName: 'implies_swap', chapter: 5, givens: [binding('hABC', IMPLIES(A, IMPLIES(B, C)))], formulas: [A, B], goal: IMPLIES(B, IMPLIES(A, C)), prereqs: ['5.1'], qed: '8.4(c)', hint: 'Assume B first and A second — the goal fixes that order — then apply hABC to A and the result to B.', needs: [] },   // optional leaf
     { id: '5.6', kind: 'lemma', leanName: 'implies_and_self', chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(A, B)), prereqs: ['5.1'], qed: '8.5(a)', hint: 'Assume A; hAB turns it into B, and A is still in hand to pair with.', needs: [] },
-    { id: '5.7', kind: 'lemma', leanName: "implies_and_self'", chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(B, A)), prereqs: ['5.1'], qed: '8.5(b)', hint: 'As the one before, but the goal wants the pair the other way round.', needs: [] },   // optional leaf
+    { id: '5.7', kind: 'lemma', leanName: "implies_and_self'", chapter: 5, givens: [binding('hAB', IMPLIES(A, B))], formulas: [A], goal: IMPLIES(A, AND(B, A)), prereqs: ['5.1'], qed: '8.5(b)', hint: "As the one before, but the goal wants the pair the other way round — and implies_and_self already gives A → A ∧ B in one brew. And.symm' is the flip as an implication, implies_trans glues the two, and no sub-proof is needed at all.", needs: [] },   // optional leaf
     { id: '5.8', kind: 'lemma', leanName: "And.imp_left'", chapter: 5, givens: [binding('hAB', AND(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [], goal: AND(C, B), prereqs: ['5.1'], qed: '8.6(a)', hint: 'Take A out of hAB, push it along hAC to C, and pair that with the B half of hAB.', needs: [] },
-    { id: '5.9', kind: 'lemma', leanName: "And.imp_right'", chapter: 5, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), prereqs: ['5.1'], qed: '8.6(b)', hint: 'Take B out of hAB, push it along hBC to C, and pair the A half of hAB with that.', needs: [] },
+    { id: '5.9', kind: 'lemma', leanName: "And.imp_right'", chapter: 5, givens: [binding('hAB', AND(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [], goal: AND(A, C), prereqs: ['5.1'], qed: '8.6(b)', hint: "Turn hAB round with And.comm', improve the half that is now on the left with the And.imp_left' you have just proved, and turn it back. A sandwich — nothing has to be taken apart. (Taking B out, pushing it along hBC and pairing it with the A half also works, and costs one more.)", needs: [] },
     // 5.10–6.16 (QED 9.5a–d): the congruence/monotonicity family — an implication A → B may be applied inside
     // either slot of a ∧ or a ∨. Each is the IMPLICATION form of a hypothesis-form lemma already minted
     // (5.8/5.9 for ∧, 6.6/6.7 for ∨), so each is just assume, apply, discharge. The `mono` names are because
@@ -1506,7 +1524,7 @@
     // 6.5 is the GENERAL two-implication form, so 6.6 and 6.7 are corollaries of it (take the other
     // implication to be the identity, i.e. the minted Impl.idem). It therefore sits before them and
     // unlocks them, giving a two-move alternate route in addition to the from-scratch one via 6.2.
-    { id: '6.5', kind: 'lemma', leanName: "Or.imp'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), prereqs: ['6.1'], qed: '9.4(c)', hint: 'One sub-proof per case: assume A, cross hAC to C, swing it into C ∨ D; assume B, cross hBD to D, swing that in. case_analysis joins them, modus_ponens applies the result to hAB.', needs: [] },
+    { id: '6.5', kind: 'lemma', leanName: "Or.imp'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C)), binding('hBD', IMPLIES(B, D))], formulas: [A, B, C, D], goal: OR(C, D), prereqs: ['6.1'], qed: '9.4(c)', hint: "One sub-proof per case: assume A, cross hAC to C, swing it into C ∨ D; assume B, cross hBD to D, swing that in. Then Or.elim' takes hAB and both cases together in a single brew — case_analysis builds the implication instead, and then needs a modus_ponens to apply it, which costs one more.", needs: [] },
     // three Chapter-7 gateways (Or.imp family — QED 9.4a/c/b): completing any one unlocks §10
     { id: '6.6', kind: 'lemma', leanName: "Or.imp_left'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['6.5'], qed: '9.4(a)', hint: "Or.imp' maps both sides of a disjunction at once — and the side you want left alone is mapped by the identity implication, which Impl.idem brews from a bare formula.", needs: [] },
     { id: '6.7', kind: 'lemma', leanName: "Or.imp_right'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['6.5'], qed: '9.4(b)', hint: 'As the level before, with the identity implication on the left-hand side this time.', needs: [] },
@@ -1515,9 +1533,9 @@
     // 6.9 is reachable from BOTH 6.8 (Or.assoc_left) and 6.3 (Or.comm'), so both are in principle in hand
     // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
     { id: '6.9', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 6, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['6.3', '6.8'], qed: '9.2(b)', hint: "No assumptions at all this time. Or.comm' and Or.assoc_left are both recipes now, and alternating them walks the brackets across: five single-ingredient brews.", needs: [] },
-    { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', hint: 'Case-analyse hABC. The A case proves both halves of the goal at once; the B ∧ C case splits and swings each half in separately.', needs: [] },
-    { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', hint: 'Split hABC first, so A is in hand throughout, then case-analyse the disjunction: each case pairs A with what it has and swings the result into the goal.', needs: [] },
-    { id: '6.12', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 6, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['6.1'], qed: '9.3(c)', hint: 'Case-analyse hABC. Both cases carry A, and the other half of each only needs swinging into B ∨ C.', needs: [] },
+    { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', hint: "Case-analyse hABC. The A case proves both halves of the goal at once; the B ∧ C case splits and swings each half in separately. Close with Or.elim', which consumes hABC and both cases in one brew, rather than case_analysis and a modus_ponens.", needs: [] },
+    { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', hint: "Split hABC first, so A is in hand throughout, then case-analyse the disjunction: each case pairs A with what it has and swings the result into the goal. Or.elim' is the cheaper close, by one brew, over case_analysis and a modus_ponens.", needs: [] },
+    { id: '6.12', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 6, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['6.1'], qed: '9.3(c)', hint: "Case-analyse hABC. Both cases carry A, and the other half of each only needs swinging into B ∨ C. Close with Or.elim' rather than case_analysis and a modus_ponens.", needs: [] },
     { id: '6.13', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 6, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['6.1'], qed: '9.3(d)', hint: "Split hABC into A ∨ B and A ∨ C, then case-analyse A ∨ B. The A case is immediate; the B case needs a second case analysis, on A ∨ C, inside it. Each of those closes in a single move if you reach for Or.elim' rather than case_analysis followed by a modus ponens.", needs: [] },
     // 6.14 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
     { id: '6.14', kind: 'lemma', leanName: "or_self_elim'", chapter: 6, givens: [binding('hAA', OR(A, A))], formulas: [A], goal: A, prereqs: ['6.4'], qed: '9.1(b)', hint: "Both sides of A ∨ A prove A, so Or.elim' will take the identity implication twice — Impl.idem brews it from the formula A.", needs: [] },
@@ -1545,7 +1563,7 @@
     { id: '7.11', num: '7.12', kind: 'lemma', leanName: "imp_congr_right'", chapter: 7, givens: [binding('hAB', IMPLIES(A, B)), binding('hBC', IFF(B, C))], formulas: [A, B, C], goal: IMPLIES(A, C), prereqs: ['5.2', '7.8'], qed: '10.1(g)', hint: "Turn hBC into an implication with Iff.imp', then chain it onto hAB with implies_trans.", needs: [] },
     // 7.12–7.14 (QED 10.3, 10.4, 10.5): building a ↔ rather than using one. 7.12 is Iff.intro bare; the
     // other two glue it onto lemmas already minted (Or.idem/or_self_elim', And.assoc_left/right).
-    { id: '7.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 7, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), prereqs: ['3.2', '6.14', '7.1'], qed: '10.4', hint: "One implication each way, each from a recipe you already have: Or.idem going out, or_self_elim' coming back.", needs: [] },
+    { id: '7.13', kind: 'lemma', leanName: "or_self_iff'", chapter: 7, givens: [], formulas: [A, OR(A, A)], goal: IFF(A, OR(A, A)), prereqs: ['3.2', '6.14', '7.1'], qed: '10.4', hint: "Or.idem gets you out, under an assumed A. Coming back, Impl.idem states A → A for nothing — and case_analysis will take that as BOTH cases of A ∨ A, so there is no second sub-proof to open. (or_self_elim' does the same job and costs one more.)", needs: [] },
     { id: '7.14', kind: 'lemma', leanName: "and_assoc_iff'", chapter: 7, givens: [], formulas: [A, B, C, AND(AND(A, B), C), AND(A, AND(B, C))], goal: IFF(AND(AND(A, B), C), AND(A, AND(B, C))), prereqs: ['2.3', '7.1'], qed: '10.5', hint: 'Both associativity lemmas are recipes now. Assume one side, apply the matching lemma, discharge; do it again the other way; glue with Iff.intro.', needs: [] },
 
     // ---------- Chapter 8: Negation and contradiction ----------
@@ -1606,7 +1624,7 @@
     { id: '10.2', kind: 'example', chapter: 10, givens: [], formulas: [A, FALSE()], goal: IMPLIES(FALSE(), A), prereqs: ['10.1'], qed: '13.3(a)', hint: 'Assume False, and False.elim will produce anything at all, the goal included. Then discharge.', needs: [] },
     { id: '10.3', kind: 'example', chapter: 10, givens: [], formulas: [A], goal: IMPLIES(A, TRUE()), prereqs: ['10.1'], qed: '13.3(b)', hint: 'Assume A, brew True.intro from nothing, discharge. The assumption is never used, which is the point.', needs: [] },
     { id: '10.4', kind: 'lemma', leanName: "true_and'", chapter: 10, givens: [], formulas: [A, TRUE(), AND(TRUE(), A)], goal: IFF(A, AND(TRUE(), A)), prereqs: ['10.1'], qed: '13.1(a)', hint: 'Forwards, assume A and pair it with True.intro. Backwards, assume True ∧ A and take its right half.', needs: [] },
-    { id: '10.5', kind: 'lemma', leanName: "false_or'", chapter: 10, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['10.1'], qed: '13.1(b)', hint: "Forwards is one swing with Or.inr. Backwards, assume False ∨ A: False.elim covers the False branch, Impl.idem states the A branch without assuming anything at all, and Or.elim' then consumes the disjunction in a single move.", needs: [] },
+    { id: '10.5', kind: 'lemma', leanName: "false_or'", chapter: 10, givens: [], formulas: [A, FALSE(), OR(FALSE(), A)], goal: IFF(A, OR(FALSE(), A)), prereqs: ['10.1'], qed: '13.1(b)', hint: "Forwards is one swing with Or.inr. Backwards, you never have to assume False ∨ A at all: False.elim gives the False branch, Impl.idem gives the A branch for nothing, and case_analysis builds (False ∨ A) → A straight out of those two.", needs: [] },
     { id: '10.6', kind: 'lemma', leanName: "iff_true_imp'", chapter: 10, givens: [], formulas: [A, TRUE(), IMPLIES(TRUE(), A)], goal: IFF(A, IMPLIES(TRUE(), A)), prereqs: ['10.1'], qed: '13.3(c)', hint: 'Forwards, assume A and then assume True on top of it, and discharge A through both levels. Backwards, feed True.intro to the assumed arrow.', needs: [] },
 
     // ---------- Chapter 11: Variables and the universal quantifier ----------
@@ -1715,7 +1733,7 @@
     // 15.10 = QED 22.8: a ∀-goal syllogism combining instantiation, chaining and an inner reductio
     { id: '15.10', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }, { name: 'S', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPnQ', fa('X', IMPLIES(appE('P', [X]), NOT(appE('Q', [X]))))), binding('hnQR', fa('X', IMPLIES(NOT(appE('Q', [X])), appE('R', [X])))), binding('hnrs', NOT(ee('X', AND(appE('R', [X]), appE('S', [X])))))],
-      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['15.1'], qed: '22.8', hint: 'Introduce X, instantiate hPnQ and hnQR at it, and chain the two arrows with implies_trans before assuming anything: that is P(X) → R(X) in one potion, and one modus ponens cheaper than carrying P(X) through both. Then assume P(X) for R(X), assume S(X), build the forbidden existence statement and contradict hnrs; a single discharge up two levels puts the arrow and the ∀ back.', needs: [] },
+      goal: fa('X', IMPLIES(appE('P', [X]), NOT(appE('S', [X])))), prereqs: ['15.1'], qed: '22.8', hint: 'Introduce X and assume P(X). Then barbara — which instantiates a ∀-arrow AND applies it, in one brew — carries you along hPnQ and then hnQR to R(X) in two. Assume S(X), build the forbidden existence statement and contradict hnrs; a single discharge up two levels puts the arrow and the ∀ back.', needs: [] },
     { id: '15.11', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
       givens: [binding('h', ee('Y', ee('X', appE('Q', [X, Y]))))], goal: ee('X', ee('Y', appE('Q', [X, Y]))), prereqs: ['15.1'], qed: '22.6(a)', hint: 'Obtain twice, once from each layer, then witness the goal in the other order: the inner existence statement first, then the outer.', needs: [] },
     { id: '15.12', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'Q', argSorts: [OMEGA, OMEGA], resultSort: PROP }], terms: [X, Y],
@@ -1742,16 +1760,16 @@
       goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.4(e)', hint: 'Obtain the witness, carry its P half across hPR, and keep the ¬ Q half as it stands.', needs: [] },
     { id: '15.17', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hRP', fa('X', IMPLIES(appE('R', [X]), appE('P', [X])))), binding('hex', ee('X', appE('R', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(b)', hint: 'Obtain the witness and carry it across hRP to P. For the ¬ Q half, assume Q there and contradict hnpq.', needs: [] },
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(b)', hint: 'Obtain the witness, and let barbara carry it across hRP to P in a single brew. For the ¬ Q half, assume Q there and contradict hnpq.', needs: [] },
     { id: '15.18', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hnrq', NOT(ee('X', AND(appE('R', [X]), appE('Q', [X]))))), binding('hex', ee('X', appE('R', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['15.1'], qed: '22.5(c)', hint: 'Obtain the witness. For the ¬ P half, assume P there, push it along hPQ, build the forbidden existence statement and contradict hnrq.', needs: [] },
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('P', [X])))), prereqs: ['15.1'], qed: '22.5(c)', hint: 'Obtain the witness. For the ¬ P half, assume P there, let barbara push it along hPQ in one brew, build the forbidden existence statement and contradict hnrq.', needs: [] },
     { id: '15.19', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hnpq', NOT(ee('X', AND(appE('P', [X]), appE('Q', [X]))))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(d)', qedNote: 'the Felapton syllogism; QED arranges the premises differently', hint: 'Obtain the witness and carry it across hPR for the R half; for the ¬ Q half, assume Q there and contradict hnpq.', needs: [] },
+      goal: ee('X', AND(appE('R', [X]), NOT(appE('Q', [X])))), prereqs: ['15.1'], qed: '22.5(d)', qedNote: 'the Felapton syllogism; QED arranges the premises differently', hint: 'Obtain the witness and let barbara carry it across hPR for the R half; for the ¬ Q half, assume Q there and contradict hnpq.', needs: [] },
     { id: '15.20', kind: 'example', chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }, { name: 'R', argSorts: [OMEGA], resultSort: PROP }], terms: [X],
       givens: [binding('hPQ', fa('X', IMPLIES(appE('P', [X]), appE('Q', [X])))), binding('hPR', fa('X', IMPLIES(appE('P', [X]), appE('R', [X])))), binding('hex', ee('X', appE('P', [X])))],
-      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['15.1'], qed: '22.5(e)', hint: 'One witness serves both halves: obtain it, and apply each quantified potion to it in turn.', needs: [] },
+      goal: ee('X', AND(appE('R', [X]), appE('Q', [X]))), prereqs: ['15.1'], qed: '22.5(e)', hint: 'One witness serves both halves: obtain it, and let barbara apply each quantified potion to it in turn — instantiating and applying together, one brew each.', needs: [] },
     // 15.21 = QED 22.7: two independent existentials may be merged into a nested one, and split back out.
     // The ∧ never mixes the witnesses, which is exactly why both directions go through.
     { id: '15.21', kind: 'lemma', leanName: "exists_and_iff'", chapter: 15, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }, { name: 'Q', argSorts: [OMEGA], resultSort: PROP }], terms: [X, Y],
@@ -1886,7 +1904,7 @@
       formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), prereqs: ['18.5', '19.1'], qed: '24.4', qedNote: 'the cancellation law; QED carries the group axioms as premises', hint: "What you want is to multiply h on the left by inv(α), and rewriting is how that is done: β = 1 · β = (inv(α) · α) · β = inv(α) · (α · β), then h, then back down the same ladder to γ. Eq.symm' turns an equation round whenever a rewrite needs it the other way.", needs: [] },
     // 19.4 (QED 24.6): the inverse is an involution. A pure chain of rewrites through the axioms.
     { id: '19.4', kind: 'lemma', leanName: "inv_inv'", chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }], terms: [gv('α')],
-      givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), prereqs: ['18.5', '19.1'], qed: '24.6', qedNote: 'the inverse is an involution; QED carries the group axioms as premises', hint: 'The same ladder as cancellation, and shorter: α = 1 · α = (inv(inv(α)) · inv(α)) · α = inv(inv(α)) · (inv(α) · α) = inv(inv(α)) · 1 = inv(inv(α)).', needs: [] },
+      givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), prereqs: ['18.5', '19.1'], qed: '24.6', qedNote: 'the inverse is an involution; QED carries the group axioms as premises', hint: "Do not unfold the group — cancel. Both inv(α) · inv(inv(α)) and inv(α) · α are 1, so flip one of them with Eq.symm' and rewrite to put the two equations together; then mul_left_cancel' strikes the inv(α) off the front of both sides. Five brews. (The ladder α = 1 · α = (inv(inv(α)) · inv(α)) · α = … also works, and costs seven more.)", needs: [] },
     // 19.5 (QED 24.5): the inverse of a product reverses it. The chapter's capstone — it shows that
     // (α·β)·(inv β·inv α) = 1, matches that against (α·β)·inv(α·β) = 1, and CANCELS with the minted 19.3.
     { id: '19.5', kind: 'lemma', leanName: "mul_inv_rev'", chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }], terms: [gv('α'), gv('β')],
@@ -1950,6 +1968,16 @@
   //   ['ob', existName, varName]                    obtain a witness
   //   ['p', name, sort]                             pick an inhabitant
   //   ['ab', levels]                                abandon a sub-proof
+  //   ['ren', oldName, newName]                     rename a potion
+  //   ['del', name]                                 tidy a potion away
+  //
+  // The last two look like housekeeping, and they are — but they MUST be logged, because a move names
+  // its ingredients and a crafted potion is named after its own statement. Tidy one away and its name
+  // falls free for the next brew to take; replay the log without the tidying and every later name is off
+  // by one. A reader's 19.4 (2026-11-21) is the case in point: five honest moves that replayed as
+  // `Eq.symm': that recipe does not apply to those ingredients`, which reads exactly like a forgery.
+  // Logging them also keeps `state.moves` in step with the undo history one-for-one, which is what makes
+  // the undo button's `moves.pop()` correct.
   function b64encode(str) {
     var utf8 = unescape(encodeURIComponent(str));
     if (typeof btoa === 'function') return btoa(utf8);
@@ -2000,6 +2028,11 @@
           case 'ab':
             r = abandon(env, m[1]);
             if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (abandon): ' + r.error };
+            env = r.env; break;
+          case 'ren': env = rename(env, m[1], m[2]); break;
+          case 'del':
+            r = deleteBinding(env, m[1]);
+            if (!r.ok) return { ok: false, error: 'move ' + (i + 1) + ' (delete ' + m[1] + '): ' + r.error };
             env = r.env; break;
           default: return { ok: false, error: 'move ' + (i + 1) + ': unknown kind ' + JSON.stringify(m[0]) };
         }
@@ -2067,21 +2100,21 @@
     '2.1': 3, '2.2': 6, '2.3': 5,
     '3.1': 2, '3.2': 1,
     '4.1': 2, '4.2': 3, '4.3': 1, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
-    '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 4, '5.8': 4, '5.9': 4, '5.10': 3, '5.11': 3,
-    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 10, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 14, '6.11': 12, '6.12': 14, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
-    '7.1': 1, '7.12': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.13': 7, '7.14': 7,
+    '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 3, '5.8': 4, '5.9': 3, '5.10': 3, '5.11': 3,
+    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 9, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 13, '6.11': 11, '6.12': 13, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
+    '7.1': 1, '7.12': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.13': 6, '7.14': 7,
     '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 9, '8.9': 8, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 2, '8.14': 2, '8.15': 10, '8.16': 3,
     '9.1': 1, '9.2': 6, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 7, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 6,
-    '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 11, '10.6': 8,
+    '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 9, '10.6': 8,
     '11.1': 3, '11.2': 4, '11.3': 4, '11.4': 1, '11.5': 2,
     '12.1': 5, '12.2': 2, '12.3': 5, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 13, '12.8': 4,
     '13.1': 3, '13.2': 3, '13.3': 4, '13.4': 4,
     '14.1': 2,
-    '15.1': 1, '15.3': 1, '15.2': 3, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 11, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 9, '15.18': 9, '15.19': 9, '15.20': 7, '15.21': 19,
+    '15.1': 1, '15.3': 1, '15.2': 3, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 9, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 8, '15.18': 8, '15.19': 8, '15.20': 5, '15.21': 19,
     '16.1': 4, '16.2': 7,
     '17.1': 3, '17.2': 1, '17.3': 1, '17.4': 1,
     '18.1': 1, '18.3': 1, '18.2': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 5, '18.8': 17, '18.9': 17, '18.10': 48, '18.11': 34, '18.12': 34, '18.13': 40,
-    '19.1': 3, '19.2': 3, '19.3': 18, '19.4': 12, '19.5': 18,
+    '19.1': 3, '19.2': 3, '19.3': 18, '19.4': 5, '19.5': 18,
     '20.1': 8, '20.2': 17, '20.3': 19, '20.4': 22, '20.5': 7, '20.6': 19, '20.7': 5,
   };
   function par(id) { return CANON[id] || null; }
@@ -2095,30 +2128,42 @@
     '2.3': { who: 'PistachioCake', date: '2026-11-12', also: ['an anonymous reader'] },
     '4.3': { who: 'an anonymous reader', date: '2026-11-12', also: ['Jacob', 'Dario Bajo', 'Ram Anvesh Reddy'] },
     '4.8': { who: 'an anonymous reader', date: '2026-11-12' },
+    '5.7': { who: 'Jacques Chemla', date: '2026-11-21' },
+    '5.9': { who: 'Kantian', date: '2026-11-18', also: ['jackchemla'] },
+    '6.5': { who: 'Kantian', date: '2026-11-18' },
     '6.8': { who: 'an anonymous reader', date: '2026-11-12', also: ['Kantian'] },
-    '6.13': { who: 'an anonymous reader', date: '2026-11-18' },   // 13, taking it off qwq zty's 15
-    '7.4': { who: 'an anonymous reader', date: '2026-11-14', also: ['qwq zty'] },
+    '6.10': { who: 'Kantian', date: '2026-11-18' },
+    '6.11': { who: 'Kantian', date: '2026-11-18' },
+    '6.12': { who: 'Kantian', date: '2026-11-18' },
+    '6.13': { who: 'an anonymous reader', date: '2026-11-18', also: ['Kantian'] },
+    '7.4': { who: 'an anonymous reader', date: '2026-11-14', also: ['qwq zty', 'Kantian'] },
     '7.6': { who: 'qwq zty', date: '2026-11-16' },
-    '8.8': { who: 'qwq zty', date: '2026-11-16' },
-    '8.9': { who: 'petrov', date: '2026-11-17' },                 // 8, taking it off qwq zty's 9
+    '7.13': { who: 'Kantian', date: '2026-11-18' },
+    '8.8': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
+    '8.9': { who: 'petrov', date: '2026-11-17' },
     '8.13': { who: 'qwq zty', date: '2026-11-16' },
-    '8.15': { who: 'qwq zty', date: '2026-11-16' },
-    '9.2': { who: 'qwq zty', date: '2026-11-16' },
-    '9.3': { who: 'qwq zty', date: '2026-11-16' },
+    '8.15': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
+    '9.2': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
+    '9.3': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
     '9.6': { who: 'Leaving Leaves', date: '2026-11-17' },
     '9.7': { who: 'an anonymous reader', date: '2026-11-12' },
     '9.10': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '10.5': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '11.4': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '12.3': { who: 'an anonymous reader', date: '2026-11-16' },
-    '12.7': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '15.5': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '15.6': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '15.7': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '15.10': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '15.15': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '15.16': { who: 'Giovanni Barbarino', date: '2026-11-14' },
-    '18.7': { who: 'Leaving Leaves', date: '2026-11-17' }
+    '10.5': { who: 'Kantian', date: '2026-11-18' },
+    '11.4': { who: 'Leaving Leaves', date: '2026-11-17', also: ['Kantian'] },
+    '12.3': { who: 'an anonymous reader', date: '2026-11-16', also: ['Kantian'] },
+    '12.7': { who: 'Leaving Leaves', date: '2026-11-17', also: ['Kantian'] },
+    '15.5': { who: 'Giovanni Barbarino', date: '2026-11-14', also: ['Kantian'] },
+    '15.6': { who: 'Giovanni Barbarino', date: '2026-11-14', also: ['Kantian'] },
+    '15.7': { who: 'Giovanni Barbarino', date: '2026-11-14', also: ['Kantian'] },
+    '15.10': { who: 'Kantian', date: '2026-11-18' },
+    '15.15': { who: 'Giovanni Barbarino', date: '2026-11-14', also: ['Kantian'] },
+    '15.16': { who: 'Giovanni Barbarino', date: '2026-11-14', also: ['Kantian'] },
+    '15.17': { who: 'Kantian', date: '2026-11-18' },
+    '15.18': { who: 'Kantian', date: '2026-11-18' },
+    '15.19': { who: 'Kantian', date: '2026-11-18' },
+    '15.20': { who: 'Kantian', date: '2026-11-18' },
+    '18.7': { who: 'Leaving Leaves', date: '2026-11-17' },
+    '19.4': { who: 'an anonymous reader', date: '2026-11-19' }
   };
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -2181,7 +2226,7 @@
     sortOf: sortOf, exprEq: exprEq, atomsOf: atomsOf,
     expandAbbrevs: expandAbbrevs, expandQuantWords: expandQuantWords, parse: parse, render: render, wordsRule: wordsRule, wordsToSymbols: wordsToSymbols, varPhrase: varPhrase,
     binding: binding, newEnv: newEnv, byName: byName, freshName: freshName,
-    SORTS: SORTS, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports, leanPrelude: leanPrelude,
+    SORTS: SORTS, symbolOwner: symbolOwner, defSort: defSort, SET: SET, NAT: NAT, leanImports: leanImports, leanPrelude: leanPrelude,
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, eachTuple: eachTuple, headCompatible: headCompatible, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,

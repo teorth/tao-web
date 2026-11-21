@@ -35,7 +35,13 @@ node dev/grimoire/perf.js 18.10 --ladder  # what does a click cost in a late cha
 ```
 
 The two suites are the quality bar: every change to the game is checked against them, and they are what
-makes the engine safe to refactor. Run both before committing, with `canon.js` and `order_audit.js`;
+makes the engine safe to refactor. Note what the *derivation* tools cannot see, though: `canon.js`,
+`prereqs.js` and `order_audit.js` all drive the ENGINE, which knows every recipe in the registry,
+while the player crafts through a panel that offers a filtered list. Those two came apart until
+2026-11-21 — a lemma that is a closed statement mints a recipe of arity 0, arity-0 recipes were
+filtered out of the panel, and eight lemmas were therefore unusable *in the game* while being
+perfectly usable in the scripts that measure the par. Chapter 20's whole ladder was affected. The
+smoke suite now compares the two lists for every level, which is the only place that check can live. Run both before committing, with `canon.js` and `order_audit.js`;
 `check_emitted.js` as well when a solution or an exercise changed, and `check_exports.js` when the
 export or a concrete sort's module changed. The last is a **different** guarantee: `check_emitted.js`
 puts all 158 proofs in one file, where a proof may lean on anything declared above it, while an export
@@ -65,8 +71,15 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-18: core
-4810, smoke 371.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-21: core 4900, smoke 427.**
+
+**And the second way a suite loses coverage, found 2026-11-21.** The sections spliced back on the
+17th went in *after* the smoke suite's `console.log` and `process.exit` — so `par`, `export` and
+`writing a quantifier` were present in the file, would have passed a header diff, and never ran.
+The count said 371 because only one of the four had landed above the exit. Three of them needed a
+`click()` on the DOM shim's elements before they passed, so they had never run against this engine
+at all. **A header diff is not enough: check that the file has exactly ONE tail.**
+`grep -c process.exit` on each suite is the whole check.
 
 **What the suites could not have caught (2026-11-18).** Two readers reported Chrome eating gigabytes
 and crawling from 18.8 on. Nothing was wrong with those levels: the recipe panel's “hide inactive”

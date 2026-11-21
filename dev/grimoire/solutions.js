@@ -113,9 +113,21 @@ const SOL = {
   '5.4': s => { s.a(A); s.a(B); const ab = s.c('And.intro', 'hA', 'hB'); s.d(s.c('modus_ponens', 'hABC', ab), 2); },
   '5.5': s => { s.a(B); s.a(A); const bc = s.c('modus_ponens', 'hABC', 'hA'); s.d(s.c('modus_ponens', bc, 'hB'), 2); },
   '5.6': s => { s.a(A); const b = s.c('modus_ponens', 'hAB', 'hA'); s.d(s.c('And.intro', 'hA', b), 1); },
-  '5.7': s => { s.a(A); const b = s.c('modus_ponens', 'hAB', 'hA'); s.d(s.c('And.intro', b, 'hA'), 1); },
+  // A RECORD (3, was 4): no sub-proof at all — implies_and_self gives A → A ∧ B, And.symm' is the
+  // flip as an implication, and implies_trans glues the two. Three minted lemmas, three moves.
+  '5.7': s => {
+    const aab = s.c('implies_and_self', 'hAB');     // A → A ∧ B
+    const flip = s.c("And.symm'", F(A), F(B));      // (A ∧ B) → (B ∧ A)
+    s.c('implies_trans', aab, flip);
+  },
   '5.8': s => { const a = s.c('And.left', 'hAB'), c = s.c('modus_ponens', 'hAC', a); s.c('And.intro', c, s.c('And.right', 'hAB')); },
-  '5.9': s => { const b = s.c('And.right', 'hAB'), c = s.c('modus_ponens', 'hBC', b); s.c('And.intro', s.c('And.left', 'hAB'), c); },
+  // A RECORD (3, was 4): turn the conjunction round, improve the half that is now on the left with the
+  // And.imp_left' just proved, and turn it back. A sandwich, and nothing is taken apart.
+  '5.9': s => {
+    const ba = s.c("And.comm'", 'hAB');             // B ∧ A
+    const ca = s.c("And.imp_left'", ba, 'hBC');     // C ∧ A
+    s.c("And.comm'", ca);
+  },
   '6.1': s => { s.c('case_analysis', 'hAC', 'hBC'); },
   '6.2': s => { s.a(A); const p1 = s.c('Or.inr', 'hA', F(B)); const i1 = s.d(p1, 1); s.a(B); const p2 = s.c('Or.inl', 'hB', F(A)); const i2 = s.d(p2, 1); s.c('case_analysis', i1, i2); },
   // 9.2b Or.comm' = the hypothesis form of Or.symm' (9.2): instantiate that lemma, then modus ponens
@@ -124,7 +136,14 @@ const SOL = {
   // 9.4 and 9.6 are 9.5 (Or.imp') with the other implication taken to be the identity (Impl.idem, 6.1a):
   // two crafts each, instead of the assume / case_analysis / modus_ponens chain they used to need.
   '6.6': s => { s.c("Or.imp'", 'hAB', 'hAC', s.c('Impl.idem', F(B))); },
-  '6.5': s => { s.a(A); const c = s.c('modus_ponens', 'hAC', 'hA'); const p1 = s.c('Or.inl', c, F(D)); const i1 = s.d(p1, 1); s.a(B); const dd = s.c('modus_ponens', 'hBD', 'hB'); const p2 = s.c('Or.inr', dd, F(C)); const i2 = s.d(p2, 1); const imp = s.c('case_analysis', i1, i2); s.c('modus_ponens', imp, 'hAB'); },
+  // A RECORD (9, was 10): the minted Or.elim' consumes the disjunction and both cases in ONE move, where
+  // case_analysis builds an implication that then has to be applied. The same move is worth one brew in
+  // every proof of this shape below — 6.10, 6.11, 6.12, 6.13, 10.5.
+  '6.5': s => {
+    s.a(A); const i1 = s.d(s.c('Or.inl', s.c('modus_ponens', 'hAC', 'hA'), F(D)), 1);
+    s.a(B); const i2 = s.d(s.c('Or.inr', s.c('modus_ponens', 'hBD', 'hB'), F(C)), 1);
+    s.c("Or.elim'", 'hAB', i1, i2);
+  },
   '6.7': s => { s.c("Or.imp'", 'hAB', s.c('Impl.idem', F(A)), 'hBC'); },
   '6.8': s => {
     s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(OR(B, C))), 1);
@@ -143,21 +162,34 @@ const SOL = {
     const x4 = s.c('Or.assoc_left', x3);       // C ∨ (A ∨ B)
     s.c("Or.comm'", x4);                       // (A ∨ B) ∨ C
   },
+  // A RECORD (13, was 14): Or.elim' in place of case_analysis + modus ponens.
   '6.10': s => {
-    s.a(A); const p1a = s.c('Or.inl', 'hA', F(B)); const p1b = s.c('Or.inl', 'hA', F(C)); const p1 = s.c('And.intro', p1a, p1b); const iA = s.d(p1, 1);
-    const hbc = s.a(AND(B, C)); const hb = s.c('And.left', hbc); const hc = s.c('And.right', hbc); const p2a = s.c('Or.inr', hb, F(A)); const p2b = s.c('Or.inr', hc, F(A)); const p2 = s.c('And.intro', p2a, p2b); const iBC = s.d(p2, 1);
-    const imp = s.c('case_analysis', iA, iBC); s.c('modus_ponens', imp, 'hABC');
+    s.a(A);
+    const p1 = s.c('And.intro', s.c('Or.inl', 'hA', F(B)), s.c('Or.inl', 'hA', F(C)));
+    const iA = s.d(p1, 1);
+    const hbc = s.a(AND(B, C));
+    const p2 = s.c('And.intro', s.c('Or.inr', s.c('And.left', hbc), F(A)),
+                                s.c('Or.inr', s.c('And.right', hbc), F(A)));
+    const iBC = s.d(p2, 1);
+    s.c("Or.elim'", 'hABC', iA, iBC);
   },
+  // A RECORD (11, was 12): Or.elim' in place of case_analysis + modus ponens.
   '6.11': s => {
-    const ha = s.c('And.left', 'hABC'); const hbc = s.c('And.right', 'hABC');
-    s.a(B); const p1 = s.c('And.intro', ha, 'hB'); const p1o = s.c('Or.inl', p1, F(AND(A, C))); const iB = s.d(p1o, 1);
-    s.a(C); const p2 = s.c('And.intro', ha, 'hC'); const p2o = s.c('Or.inr', p2, F(AND(A, B))); const iC = s.d(p2o, 1);
-    const imp = s.c('case_analysis', iB, iC); s.c('modus_ponens', imp, hbc);
+    const ha = s.c('And.left', 'hABC');
+    const hbc = s.c('And.right', 'hABC');
+    s.a(B); const iB = s.d(s.c('Or.inl', s.c('And.intro', ha, 'hB'), F(AND(A, C))), 1);
+    s.a(C); const iC = s.d(s.c('Or.inr', s.c('And.intro', ha, 'hC'), F(AND(A, B))), 1);
+    s.c("Or.elim'", hbc, iB, iC);
   },
+  // A RECORD (13, was 14): Or.elim' in place of case_analysis + modus ponens.
   '6.12': s => {
-    const hab = s.a(AND(A, B)); const ha1 = s.c('And.left', hab); const hb = s.c('And.right', hab); const bc1 = s.c('Or.inl', hb, F(C)); const p1 = s.c('And.intro', ha1, bc1); const iAB = s.d(p1, 1);
-    const hac = s.a(AND(A, C)); const ha2 = s.c('And.left', hac); const hc = s.c('And.right', hac); const bc2 = s.c('Or.inr', hc, F(B)); const p2 = s.c('And.intro', ha2, bc2); const iAC = s.d(p2, 1);
-    const imp = s.c('case_analysis', iAB, iAC); s.c('modus_ponens', imp, 'hABC');
+    const hab = s.a(AND(A, B));
+    const p1 = s.c('And.intro', s.c('And.left', hab), s.c('Or.inl', s.c('And.right', hab), F(C)));
+    const iAB = s.d(p1, 1);
+    const hac = s.a(AND(A, C));
+    const p2 = s.c('And.intro', s.c('And.left', hac), s.c('Or.inr', s.c('And.right', hac), F(B)));
+    const iAC = s.d(p2, 1);
+    s.c("Or.elim'", 'hABC', iAB, iAC);
   },
   // A RECORD (13, was 15): the same two nested case splits, but each one closed with the minted Or.elim'
   // in a single move instead of case_analysis followed by modus ponens.
@@ -234,10 +266,12 @@ const SOL = {
   '7.11': s => { s.c('implies_trans', 'hAB', s.c("Iff.imp'", 'hBC')); },
   // 10.12-10.14 (QED 10.3/10.4/10.5): Iff.intro bare, then glued onto already-minted lemmas
   '7.12': s => { s.c('Iff.intro', 'hAB', 'hBA'); },
+  // A RECORD (6, was 7): Impl.idem states A → A for free, and case_analysis takes it as BOTH cases of
+  // A ∨ A → A — so the backwards half needs no sub-proof of its own.
   '7.13': s => {
-    const i1 = s.d(s.c('Or.idem', s.a(A)), 1);
-    const i2 = s.d(s.c("or_self_elim'", s.a(OR(A, A))), 1);
-    s.c('Iff.intro', i1, i2);
+    const i1 = s.d(s.c('Or.idem', s.a(A)), 1);      // A → A ∨ A
+    const idem = s.c('Impl.idem', F(A));
+    s.c('Iff.intro', i1, s.c('case_analysis', idem, idem));
   },
   '7.14': s => {
     const i1 = s.d(s.c('And.assoc_left', s.a(AND(AND(A, B), C))), 1);
@@ -308,12 +342,14 @@ const SOL = {
   },
   // A RECORD (11, was 13): the A → A half comes from the minted Impl.idem rather than from assuming A and
   // discharging it, and Or.elim' consumes the disjunction directly instead of case_analysis + modus ponens.
+  // A RECORD (9, was 11, and 13 before that): case_analysis builds (False ∨ A) → A directly out of the
+  // two branch implications, so the backwards half never assumes False ∨ A — two moves saved over
+  // assuming it and discharging. Impl.idem still supplies the A branch for nothing.
   '10.5': s => {
-    const ha = s.a(A); const iF = s.d(s.c('Or.inr', ha, F(FALSE())), 1);           // A → False ∨ A
-    const hfa = s.a(OR(FALSE(), A));
-    const hf = s.a(FALSE()); const iFalse = s.d(s.c('False.elim', hf, F(A)), 1);   // False → A
-    const gotA = s.c("Or.elim'", hfa, iFalse, s.c('Impl.idem', F(A)));
-    s.c('Iff.intro', iF, s.d(gotA, 1));
+    const iF = s.d(s.c('Or.inr', s.a(A), F(FALSE())), 1);                          // A → False ∨ A
+    const hf = s.a(FALSE());
+    const iFalse = s.d(s.c('False.elim', hf, F(A)), 1);                            // False → A
+    s.c('Iff.intro', iF, s.c('case_analysis', iFalse, s.c('Impl.idem', F(A))));
   },
   '8.15': s => {
     const na = s.a(NOT(A));
@@ -460,35 +496,39 @@ const SOL = {
     s.ce('Exists.intro', EE('X', AND(Rp(X), NOT(Qu(X)))), rq, F(bO));
   },
   // 22.7b-d (QED 22.5b-d): the negated component comes from an inner reductio against the ¬∃ hypothesis
+  // A RECORD (8, was 9): `barbara` instead of universal_instantiation + modus ponens.
   '15.17': s => {
     const rb = s.obtain('hex', 'b');
-    const pb = s.c('modus_ponens', s.c('universal_instantiation', 'hRP', F(bO)), rb);
+    const pb = s.c('barbara', F(bO), 'hRP', rb);
     const qb = s.a(Qu(bO));
     const ex = s.ce('Exists.intro', EE('X', AND(Pp(X), Qu(X))), s.c('And.intro', pb, qb), F(bO));
     const nqb = s.n(ex, 'hnpq');
     s.ce('Exists.intro', EE('X', AND(Rp(X), NOT(Qu(X)))), s.c('And.intro', rb, nqb), F(bO));
   },
+  // A RECORD (8, was 9): `barbara` instead of universal_instantiation + modus ponens.
   '15.18': s => {
     const rb = s.obtain('hex', 'b');
     const pb = s.a(Pp(bO));
-    const qb = s.c('modus_ponens', s.c('universal_instantiation', 'hPQ', F(bO)), pb);
+    const qb = s.c('barbara', F(bO), 'hPQ', pb);
     const ex = s.ce('Exists.intro', EE('X', AND(Rp(X), Qu(X))), s.c('And.intro', rb, qb), F(bO));
     const npb = s.n(ex, 'hnrq');
     s.ce('Exists.intro', EE('X', AND(Rp(X), NOT(Pp(X)))), s.c('And.intro', rb, npb), F(bO));
   },
+  // A RECORD (8, was 9): `barbara` instead of universal_instantiation + modus ponens.
   '15.19': s => {
     const pb = s.obtain('hex', 'b');
-    const rb = s.c('modus_ponens', s.c('universal_instantiation', 'hPR', F(bO)), pb);
+    const rb = s.c('barbara', F(bO), 'hPR', pb);
     const qb = s.a(Qu(bO));
     const ex = s.ce('Exists.intro', EE('X', AND(Pp(X), Qu(X))), s.c('And.intro', pb, qb), F(bO));
     const nqb = s.n(ex, 'hnpq');
     s.ce('Exists.intro', EE('X', AND(Rp(X), NOT(Qu(X)))), s.c('And.intro', rb, nqb), F(bO));
   },
   // 22.7e (QED 22.5e): both components come straight off the same witness
+  // A RECORD (5, was 7): `barbara` twice, and the witness is the same variable both times.
   '15.20': s => {
     const pb = s.obtain('hex', 'b');
-    const qb = s.c('modus_ponens', s.c('universal_instantiation', 'hPQ', F(bO)), pb);
-    const rb = s.c('modus_ponens', s.c('universal_instantiation', 'hPR', F(bO)), pb);
+    const qb = s.c('barbara', F(bO), 'hPQ', pb);
+    const rb = s.c('barbara', F(bO), 'hPR', pb);
     s.ce('Exists.intro', EE('X', AND(Rp(X), Qu(X))), s.c('And.intro', rb, qb), F(bO));
   },
   // 22.9 (QED 22.7): merge two independent ∃ into a nested one, and split back
@@ -721,20 +761,16 @@ const SOL = {
     symm(c, b, e11);                                                                  // β = γ
   },
   // 25.4 involution: α = 1·α = (inv(inv α)·inv α)·α = inv(inv α)·(inv α·α) = inv(inv α)·1 = inv(inv α)
+  // A RECORD (5, was 12), and the largest cut any reader has sent: don't unfold the group — CANCEL. Both
+  // inv(α)·inv(inv(α)) and inv(α)·α are 1, so they are equal, and mul_left_cancel' (19.3) strikes the
+  // inv(α) off the front of both. One rewrite is all it takes to put the two equations together.
   '19.4': s => {
-    const a = ga, ia = ginv(a), iia = ginv(ia);
-    const symm = (l, r, e) => s.c("Eq.symm'", F(l), F(r), e);
-    const assoc3 = (x, y, z) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', 'mul_assoc', F(x)), F(y)), F(z));
-    const e1 = s.c('universal_instantiation', 'one_mul', F(a));                    // 1·α = α
-    const e2 = s.c('universal_instantiation', 'inv_mul', F(ia));                   // inv(inv α)·inv α = 1
-    const e2s = symm(gmul(iia, ia), g1, e2);                                       // 1 = inv(inv α)·inv α
-    const e3 = s.ce('rw', Eq(gmul(gmul(iia, ia), a), a), e1, e2s);
-    const e4 = assoc3(iia, ia, a);
-    const e5 = s.ce('rw', Eq(gmul(iia, gmul(ia, a)), a), e3, e4);
-    const e6 = s.c('universal_instantiation', 'inv_mul', F(a));                    // inv α·α = 1
-    const e7 = s.ce('rw', Eq(gmul(iia, g1), a), e5, e6);                           // inv(inv α)·1 = α
-    const e8 = s.c('universal_instantiation', 'mul_one', F(iia));                  // inv(inv α)·1 = inv(inv α)
-    s.ce('rw', Eq(iia, a), e7, e8);
+    const ia = ginv(ga), iia = ginv(ia);
+    const e1 = s.c('universal_instantiation', 'mul_inv', F(ia));          // inv(α) · inv(inv(α)) = 1
+    const e2 = s.c('universal_instantiation', 'inv_mul', F(ga));          // inv(α) · α = 1
+    const e2s = s.c("Eq.symm'", F(gmul(ia, ga)), F(g1), e2);              // 1 = inv(α) · α
+    const both = s.ce('rw', Eq(gmul(ia, iia), gmul(ia, ga)), e1, e2s);
+    s.c("mul_left_cancel'", F(ia), F(iia), F(ga), both);
   },
   // 25.5 inverse of a product: show (α·β)·(inv β·inv α) = 1, match it against (α·β)·inv(α·β) = 1, cancel
   '19.5': s => {
@@ -782,13 +818,14 @@ const SOL = {
     s.c('Iff.intro', fwd, bwd);
   },
   // 22.10 (QED 22.8): ∀(P→¬Q),∀(¬Q→R),¬∃(R∧S) ⊢ ∀(P→¬S)
-  // A RECORD (11, was 12): instantiate both ∀s at X and chain them with implies_trans into P(X) → R(X)
-  // BEFORE assuming P(X), which saves one modus ponens; and one two-level discharge closes the rest.
+  // A RECORD (9, was 11, and 12 before that): `barbara` — instantiate a ∀-implication AND apply it — is
+  // one move where universal_instantiation followed by modus ponens is two. It pays twice here, and in
+  // every 15.x below.
   '15.10': s => {
     s.v('X');
-    const pr = s.c('implies_trans', s.c('universal_instantiation', 'hPnQ', F(X)),
-                                    s.c('universal_instantiation', 'hnQR', F(X)));   // P(X) → R(X)
-    const rX = s.c('modus_ponens', pr, s.a(Pp(X)));
+    const hp = s.a(Pp(X));
+    const nq = s.c('barbara', F(X), 'hPnQ', hp);     // ¬ Q(X)
+    const rX = s.c('barbara', F(X), 'hnQR', nq);     // R(X)
     const hs = s.a(Sp(X));
     const ex = s.ce('Exists.intro', EE('x', AND(Rp(xO), Sp(xO))), s.c('And.intro', rX, hs), F(X));
     s.d(s.n(ex, 'hnrs'), 2);

@@ -28,7 +28,10 @@ function makeEl(tag) {
     querySelectorAll: () => [],
     getAttribute: k => e._attrs[k], setAttribute: (k, v) => { e._attrs[k] = v; },
     getBoundingClientRect: () => ({ left: 0, top: 0, width: 600, height: 340 }),
-    setPointerCapture: () => {}, setSelectionRange: () => {}, focus: () => {}
+    setPointerCapture: () => {}, setSelectionRange: () => {}, focus: () => {},
+    // the Save button makes an <a>, sets href/download and clicks it: a real anchor has .click(),
+    // and this shim's elements only had .fire(), so the export section threw here rather than failing
+    click: () => { (e._h.click || []).forEach(fn => fn({ target: e })); }, remove: () => {}
   };
   return e;
 }
@@ -894,6 +897,25 @@ ok(A.isSolved(), '2.1 is solved');
   ok(JSON.stringify(back) === JSON.stringify(A.state.moves), 'carrying exactly the moves that were played');
   ok(G.replayMoves(G.EX_BY_ID['2.1'], back).ok, 'which replay into a proof');
 })();
+// Tidying the bench is a move too. It has to be logged, or a replay of the log names the wrong potions
+// (and measures the tidied-away brews as if they were still in the proof) -- which is how a reader's
+// honest five-move 19.4 came back as "that recipe does not apply to those ingredients".
+(function () {
+  var before = A.state.moves.length;
+  A.doCraft('And.left', ['hAB']);          // hA2 : A -- a second copy, so it can be tidied away again
+  var made = A.state.env.bindings[A.state.env.bindings.length - 1].name;
+  A.renamePotion.call(null, made);         // the prompt stub answers, so this renames
+  var renamed = A.state.moves[A.state.moves.length - 1];
+  ok(renamed && renamed[0] === 'ren' && renamed[1] === made, 'a rename is logged, with both names');
+  A.deletePotion(renamed[2]);
+  var deleted = A.state.moves[A.state.moves.length - 1];
+  ok(deleted && deleted[0] === 'del' && deleted[1] === renamed[2], 'and so is a delete');
+  ok(A.state.moves.length === before + 3, 'three moves: the craft, the rename, the tidy');
+  var r = G.replayMoves(G.EX_BY_ID['2.1'], A.state.moves);
+  ok(r.ok, 'and the log still replays' + (r.ok ? '' : ': ' + r.error));
+  A.el.undo.fire('click'); A.el.undo.fire('click'); A.el.undo.fire('click');
+  ok(A.state.moves.length === before, 'undo unwinds all three, one for one with the board');
+})();
 // the log belongs to the board, so it survives leaving the level and coming back
 A.loadExercise('1.1');
 A.loadExercise('2.1');
@@ -1091,9 +1113,6 @@ get('term-in').value = 'g(c)'; A.el['term-in'].fire('input'); A.el['term-add'].f
 ok(get('term-in').classList.contains('bad') && /not a function/.test(get('term-err').textContent),
    'an unknown operation is reported rather than silently ignored');
 
-console.log(pass + ' passed, ' + fail + ' failed');
-process.exit(fail ? 1 : 0);
-
 // ---- par: the shortest proof the game knows, and what the player has managed ----
 // The number QED used to show on hover. It is the length of the scripted solution, so it is a target
 // that can be MISSED and can also be BEATEN -- and beating it is the one thing the game asks to hear about.
@@ -1242,6 +1261,73 @@ get('formula-in').value = '∀ x P(x)';
 A.el['formula-add'].fire('click');
 ok(A.state.formulas.length === shelfWas && /comma/.test(get('formula-err').textContent),
    'a quantifier without its comma is refused, with the reason');
+
+// ---- the recipe panel really offers what the proofs need ----
+// The scripted solutions craft through the ENGINE, which knows every recipe in the registry; the player
+// crafts through this panel, which offers a filtered list. Nothing used to compare the two, and they had
+// come apart: a lemma that is a CLOSED statement (no premises, no free variables -- ∀ a : Nat, 0 + a = a)
+// mints a recipe of arity 0, and arity-0 recipes were filtered out of the panel. Eight lemmas were
+// unusable, the whole chapter-20 ladder among them: 20.3 is meant to be proved with the zero_add' of
+// 20.1, so its par was unreachable in the game while being perfectly reachable in the script.
+// Giovanni Barbarino reported it from 20.3 on 2026-11-20 ("I cannot find a way to call succ_add").
+(function () {
+  var SOLS = require('./solutions.js');
+  var used = {};
+  G.EXERCISES.forEach(function (ex) {
+    if (!SOLS.SOL[ex.id]) return;
+    var sv = SOLS.solver(ex.id), realC = sv.c, realCE = sv.ce;
+    used[ex.id] = {};
+    sv.c = function (r) { used[ex.id][r] = 1; return realC.apply(null, arguments); };
+    sv.ce = function (r) { used[ex.id][r] = 1; return realCE.apply(null, arguments); };
+    SOLS.SOL[ex.id](sv);
+    if (ex.kind === 'lemma' && ex.leanName && !G.RECIPES[ex.leanName]) {
+      var rc = G.recipeFromExercise(ex);
+      G.RECIPES[rc.id] = rc; A.state.unlocked[ex.leanName] = rc;
+    }
+    A.state.solved[ex.id] = true;
+  });
+  var missing = [];
+  G.EXERCISES.forEach(function (ex) {
+    if (!used[ex.id]) return;
+    A.loadExercise(ex.id);
+    var offered = {};
+    A.availableRecipes().forEach(function (r) { offered[r.id] = 1; });
+    Object.keys(used[ex.id]).forEach(function (r) {
+      if (!offered[r]) missing.push(ex.id + ' needs ' + r);
+    });
+  });
+  ok(missing.length === 0, 'every recipe a par proof crafts is offered on that level'
+     + (missing.length ? ' -- MISSING: ' + missing.slice(0, 8).join('; ') : ''));
+  // and the case that went wrong, named outright
+  A.loadExercise('20.3');
+  ok(A.availableRecipes().some(function (r) { return r.id === "zero_add'"; }),
+     "20.3 offers the zero_add' its own par proof uses, though that lemma takes no ingredients");
+  ok(A.el.recipes.innerHTML.indexOf("zero_add'") >= 0, 'and its card is on the panel');
+})();
+
+// ---- a theory's operations are its own ----
+// The symbol registry is global; a level is over one or two sorts. So `c` -- the magma's constant, from
+// chapter 17 -- was a taken name everywhere, and a player on 20.4 who named a gem `c` got `c : M`, which
+// no Nat recipe will touch (Giovanni Barbarino, 2026-11-20).
+A.loadExercise('20.4');
+(function () {
+  var before = A.state.terms.length;
+  A.el['term-in'].value = 'c'; A.addTerm();
+  var added = A.state.terms[A.state.terms.length - 1];
+  ok(A.state.terms.length === before + 1 && added.tag === 'var' && G.sortOf(added) === 'Nat',
+     'on a Nat level, a gem named c is c : Nat -- not the magma\'s constant');
+})();
+A.loadExercise('17.2');
+(function () {
+  var before = A.state.terms.length;
+  A.el['term-in'].value = 'c'; A.addTerm();
+  var added = A.state.terms[A.state.terms.length - 1];
+  ok(added && added.tag === 'app' && added.sym === 'c' && G.sortOf(added) === 'M',
+     'on the magma it is still the theory\'s own constant');
+  ok(G.symbolOwner('c') === 'M' && G.symbolOwner('succ') === 'Nat' && G.symbolOwner('AND') === null,
+     'symbolOwner says which theory a symbol belongs to, and null for the logical ones');
+})();
+
 A.setCheat(false);
 
 console.log(pass + ' passed, ' + fail + ' failed');
