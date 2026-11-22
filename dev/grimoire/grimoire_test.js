@@ -1675,5 +1675,33 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   }
 }
 
+// ---------- every recipe can say what it is in words ----------
+// The recipe panel names itself after the spellbook's view, so an informal name is no longer optional
+// decoration: on the Informal view it is the ONLY name a card shows.
+{
+  const noWords = [];
+  G.BASE_RECIPES.forEach(function (r) { if (!r.informal) noWords.push('base ' + r.id); });
+  G.FORMULA_RECIPES.forEach(function (r) { if (!r.informal) noWords.push('formula ' + r.id); });
+  G.EXERCISES.forEach(function (e) {
+    if (e.kind !== 'lemma' || !e.leanName) return;
+    if (!G.recipeFromExercise(e).informal) noWords.push('minted ' + e.id);
+  });
+  G.EXERCISES.forEach(function (e) {
+    G.predRecipes(e).forEach(function (r) { if (!r.informal) noWords.push('predicate ' + e.id + ' ' + r.id); });
+  });
+  ok(noWords.length === 0, 'every recipe carries an informal name' + (noWords.length ? ' -- ' + noWords.slice(0, 5).join(', ') : ''));
+  eq(G.RECIPES['And.left'].informal, 'conjunction elimination (left)', 'which for And.left is what the spellbook prints');
+  eq(G.recipeFromExercise(EX_BY_ID['2.1']).informal, "the lemma And.comm'",
+     'and for a minted lemma names the lemma, as the spellbook does');
+  // the same string the informal proof uses, so the panel and the proof agree
+  {
+    const SOLS = require('./solutions.js');
+    const sv = SOLS.solver('2.2'); SOLS.SOL['2.2'](sv);
+    const prose = G.emitInformal(EX_BY_ID['2.2'], sv.env, {});
+    ok(prose.indexOf('(' + G.RECIPES['And.left'].informal + ')') >= 0,
+       'and it is the very string the informal proof puts in brackets');
+  }
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

@@ -71,7 +71,7 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-22: core 4938, smoke 470.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-22: core 4942, smoke 482.**
 
 **The spellbook is one walk now (2026-11-22), and that is worth knowing before touching the emitters.**
 The Lean reading and the informal one were two functions over the same `steps` tree with identical

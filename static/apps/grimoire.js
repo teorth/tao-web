@@ -1058,17 +1058,18 @@
   }
   // ---------- formula-crafting recipes (build a FORMULA on the bench, not a proof) ----------
   var FORMULA_RECIPES = [
-    { id: 'And', leanName: 'And', arity: 2, rule: 'A, B ↦ A ∧ B', make: function (a, b) { return AND(a, b); } },
-    { id: 'Or', leanName: 'Or', arity: 2, rule: 'A, B ↦ A ∨ B', make: function (a, b) { return OR(a, b); } },
-    { id: 'Implies', leanName: 'Implies', arity: 2, cap: 'assume', rule: 'A, B ↦ A → B', make: function (a, b) { return IMPLIES(a, b); } },
-    { id: 'Not', leanName: 'Not', arity: 1, cap: 'neg', rule: 'A ↦ ¬A', make: function (a) { return NOT(a); } },
-    { id: 'True', leanName: 'True', arity: 0, cap: 'tf', rule: '↦ True', make: function () { return TRUE(); } },
-    { id: 'False', leanName: 'False', arity: 0, cap: 'tf', rule: '↦ False', make: function () { return FALSE(); } }
+    { id: 'And', leanName: 'And', arity: 2, rule: 'A, B ↦ A ∧ B', informal: 'a conjunction', make: function (a, b) { return AND(a, b); } },
+    { id: 'Or', leanName: 'Or', arity: 2, rule: 'A, B ↦ A ∨ B', informal: 'a disjunction', make: function (a, b) { return OR(a, b); } },
+    { id: 'Implies', leanName: 'Implies', arity: 2, cap: 'assume', rule: 'A, B ↦ A → B', informal: 'an implication', make: function (a, b) { return IMPLIES(a, b); } },
+    { id: 'Not', leanName: 'Not', arity: 1, cap: 'neg', rule: 'A ↦ ¬A', informal: 'a negation', make: function (a) { return NOT(a); } },
+    { id: 'True', leanName: 'True', arity: 0, cap: 'tf', rule: '↦ True', informal: 'truth', make: function () { return TRUE(); } },
+    { id: 'False', leanName: 'False', arity: 0, cap: 'tf', rule: '↦ False', informal: 'falsehood', make: function () { return FALSE(); } }
   ];
   // predicate constructors from an exercise's signature (e.g. Q : Omega → Omega → Prop → a formula recipe Q(α,β))
   function predRecipes(ex) {
     return (ex && ex.preds || []).map(function (p) {
       return { id: p.name, leanName: p.name, arity: p.argSorts.length, argSort: p.argSorts[0], pred: true,
+        informal: 'the predicate ' + p.name,
         rule: p.argSorts.map(function (_, i) { return String.fromCharCode(945 + i); }).join(', ') + ' ↦ ' + p.name + '(' + p.argSorts.map(function (_, i) { return String.fromCharCode(945 + i); }).join(', ') + ')',
         make: function () { return appE(p.name, Array.prototype.slice.call(arguments)); } };
     });

@@ -67,6 +67,7 @@
   .recipe { border: 1px solid var(--line); border-radius: 8px; padding: .5rem .7rem; margin: .5rem 0; box-sizing: border-box; width: 100%; }
   .recipe.dim { opacity: .55; }
   .recipe .head { display: flex; align-items: baseline; gap: .2rem .6rem; flex-wrap: wrap; }
+  .recipe .rinf { color: var(--muted); font-size: .82rem; font-style: italic; }
   .recipe .rname { font-family: var(--mono); font-weight: 700; color: var(--accent); }
   .recipe .rule { color: var(--muted); font-size: .84rem; }
   .deduction { display: block; width: 100%; text-align: left; margin-top: .4rem; padding: .4rem .55rem;
@@ -454,6 +455,12 @@
   function R(e) { return G.render(e, dispOpts()); }
   function VS(name, sort) { return G.varPhrase(name, sort, dispOpts()); }      // `X : Ω` / `X in Ω`
   function RU(r) { return state.words ? (r.ruleWords || G.wordsRule(r.rule)) : r.rule; }   // a recipe's rule line
+  // What a recipe is CALLED, which follows the spellbook's view — the Lean name when you are reading
+  // Lean, and the words the spellbook itself uses when you are reading prose ("conjunction elimination
+  // (left)", "the lemma And.comm'"). Two different knobs, deliberately: this one picks the NAMING, and
+  // the Plain-English checkbox words the NOTATION in the rule and the statements.
+  function RN(r) { return state.style === 'informal' && r.informal ? r.informal : r.leanName; }
+  function RI(r) { return state.style === 'both' && r.informal ? r.informal : ''; }   // shown beside the Lean name
   function QF() { return state.words ? '“for all”' : '∀'; }               // naming a quantifier in prose
   function QS() { return state.words ? '“for some”' : '∃'; }
   function WP(s) { return state.words ? G.wordsRule(s) : s; }                 // hand-written prose carrying notation
@@ -825,7 +832,15 @@
   // ---- render: recipes with their available brews for the current selection ----
   function dedBtn(i, outStr, code, verb) {
     verb = verb || T('brew');
-    return '<button class="deduction" data-idx="' + i + '" title="' + esc(flavor(verb + ' ' + outStr +'  ·  ' + code)) + '"><span class="arrow">' + verb + ' →</span><span class="ty">' + esc(outStr) + '</span>  <code>' + esc(code) + '</code></button>';
+    return '<button class="deduction" data-idx="' + i + '" title="' + esc(flavor(verb + ' ' + outStr + (code ? '  ·  ' + code : ''))) + '"><span class="arrow">' + verb + ' →</span><span class="ty">' + esc(outStr) + '</span>' + (code ? '  <code>' + esc(code) + '</code>' : '') + '</button>';
+  }
+  // The second line of a brew button. Reading Lean, it is the term the move will write; reading prose, a
+  // Lean term is the one thing you did not ask to see, so it says where the statement comes from instead
+  // — the same "From A ∧ B" the spellbook will write when the move is made.
+  function brewNote(d) {
+    if (state.style !== 'informal') return d.lean;
+    var froms = (d.inputs || []).filter(function (x) { return x.proof; }).map(function (x) { return R(x.type); });
+    return froms.length ? 'from ' + froms.join(', ') : '';
   }
   // Every card the panel can show, for whatever is selected right now. The card SEQUENCE depends only on
   // the active capabilities and the unlocked recipes, never on the selection — the selection decides each
@@ -839,7 +854,7 @@
     var proofByRecipe = {};
     G.deductions(state.env, ingredients(), recipes, firstOnly ? { firstOnly: true } : null).forEach(function (d) {
       var i = state.ded.length; state.ded.push({ action: 'proof', d: d });
-      (proofByRecipe[d.recipeId] = proofByRecipe[d.recipeId] || []).push({ i: i, out: d.output, lean: d.lean });
+      (proofByRecipe[d.recipeId] = proofByRecipe[d.recipeId] || []).push({ i: i, out: d.output, lean: d.lean, inputs: d.inputs });
     });
     var assumeBrews = selFormulaExprs().filter(inContext).map(function (f) { var i = state.ded.length; state.ded.push({ action: 'assume', formula: f }); return { i: i, f: f }; });
     var dischargeBrews = [];
@@ -868,13 +883,18 @@
     }
 
     var cards = [];   // { active, html } — each recipe/constructor is a card, shown dimmed when it has no valid brew
-    function card(name, rule, active, body, title, minted) {
-      return { active: active, html: '<div class="recipe' + (active ? '' : ' dim') + (minted ? ' minted' : '') + '" title="' + esc(title || (name + ' — ' + rule)) + '"><div class="head"><span class="rname">' + esc(name) + '</span><span class="rule ty">' + esc(rule) + '</span></div>' + body + '</div>' };
+    function card(name, rule, active, body, title, minted, also) {
+      return { active: active, html: '<div class="recipe' + (active ? '' : ' dim') + (minted ? ' minted' : '') + '" title="' + esc(title || (name + ' — ' + rule)) + '"><div class="head"><span class="rname">' + esc(name) + '</span>'
+        + (also ? '<span class="rinf">' + esc(also) + '</span>' : '')
+        + '<span class="rule ty">' + esc(rule) + '</span></div>' + body + '</div>' };
     }
     // proof recipes
     recipes.forEach(function (r) {
       var brews = proofByRecipe[r.id] || [];
-      cards.push(card(r.leanName, RU(r), brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), b.lean); }).join(''), r.leanName + ' — ' + RU(r), r.minted));
+      // the tooltip names it both ways whichever view is on, so the Lean name is never out of reach
+      cards.push(card(RN(r), RU(r), brews.length > 0,
+        brews.map(function (b) { return dedBtn(b.i, R(b.out), brewNote(b)); }).join(''),
+        r.leanName + (r.informal ? '  —  ' + r.informal : '') + '  ·  ' + RU(r), r.minted, RI(r)));
     });
     // assume / introduce / discharge / reductio
     var notIntroBrew = null;
@@ -918,7 +938,9 @@
       formulaRecipeList().forEach(function (r) {
         if (r.cap && !hasCap(r.cap)) return;   // gated constructors appear only once their capability is active
         var brews = fByRecipe[r.id] || [];
-        cards.push(card(r.leanName, RU(r), brews.length > 0, brews.map(function (b) { return dedBtn(b.i, R(b.out), 'formula', T('scribe')); }).join(''), (state.fantasy ? 'Scribe a scroll' : 'Form a formula') + ' — ' + RU(r)));
+        cards.push(card(RN(r), RU(r), brews.length > 0,
+          brews.map(function (b) { return dedBtn(b.i, R(b.out), state.style === 'informal' ? '' : 'formula', T('scribe')); }).join(''),
+          (state.fantasy ? 'Scribe a scroll' : 'Form a formula') + ' — ' + r.leanName + (r.informal ? '  —  ' + r.informal : ''), false, RI(r)));
       });
     }
 
@@ -1661,6 +1683,7 @@
     el.styleLean.className = s === 'lean' ? 'on' : '';
     el.styleBoth.className = s === 'both' ? 'on' : '';
     el.styleInformal.className = s === 'informal' ? 'on' : '';
+    renderRecipes();   // the cards name themselves after the view too, so they are redrawn with it
     renderSpellbook(); persist();
   }
   el.styleLean.addEventListener('click', function () { setStyle('lean'); });

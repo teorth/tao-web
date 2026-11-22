@@ -524,6 +524,107 @@ progression, opt-in local saving, and a fantasy mode. The engine core has 2565 t
 prerequisite graph is checked against the derivation and proved sufficient for all 158 levels, and every one
 of the 158 emitted proofs compiles against core Lean with no Mathlib.</em></p>
 
+<h2>11. What readers did to it</h2>
+
+<p><em>Everything from here on was done after launch, and most of it was prompted by somebody else. The
+post went up on 11 November; the comments filled with proofs.</em></p>
+
+<p><em>The invitation was there to be taken. Each level shows the length of the shortest proof the game
+knows &mdash; derived from a scripted solution, not hand-written &mdash; and says that a shorter one is worth
+sending in. By the end of the fortnight <strong>thirty-nine of the 158 levels were held by readers</strong>, a
+quarter of the game. Kantian sent twenty-nine claimed records in one comment; twelve of them were genuine
+against the pars of that morning, and fourteen had already been found by somebody else, which the credit
+table now records as independent rediscoveries. The largest single cut was an anonymous reader's 19.4, from
+twelve moves to five: not by unfolding the group axioms more cleverly but by refusing to unfold them at all
+&mdash; both inv(&alpha;)&middot;inv(inv(&alpha;)) and inv(&alpha;)&middot;&alpha; are 1, so cancellation
+does the rest. My own proof had walked the long ladder.</em></p>
+
+<p><em>Taking a record is mechanical, and deliberately so. A solved proof's export ends with one line
+holding the moves that made it, which a tool in the repository replays through the engine from a fresh
+board: the claim is <em>checked, not believed</em> &mdash; it has to reach the goal, and it has to beat the
+par. The reader's proof then <em>becomes</em> that level's scripted solution, which is what moves the par,
+the derived unlock graph and the compile check together. Par is therefore &quot;the shortest proof the game
+knows&quot;, which is an honest thing to show and an unstable one: it has fallen by a third on some levels
+since launch.</em></p>
+
+<p><em>That line started as base64'd JSON and had to be rewritten, because Giovanni Barbarino found a
+shorter proof of the longest level in the game and the blog refused to accept a comment that long. The
+replay line alone ran to 6.5 KB. It is s-expressions now &mdash; about four times shorter, no quotes in it
+for a comment box to curl, and legible &mdash; and there is a &quot;Copy record&quot; button that copies
+nothing but the header and that line, which for a typical level is a couple of hundred characters.</em></p>
+
+<p><em>The hints went the other way from the plan in &sect;10. Playtesters wanted one everywhere, so every
+level has one now; outside the tutorials it sits behind a button, so that a player who would rather think
+first is not spoiled by text they never asked to read. And adopting a record has a consequence I had not
+thought about: a hint that walks a longer route than the par is a hint that costs the player moves the par
+does not allow for, so every record obsoletes its level's hint. Thirty-odd hints have been rewritten; where the longer route was the point of the level it is
+kept, and priced: <em>&quot;(by_cases' on A works too, and costs three more.)&quot;</em></em></p>
+
+<h2>12. Three bugs only a player could find</h2>
+
+<p><em>Two readers reported that Chrome slowed to a crawl and ate gigabytes from level 18.8 onwards. The
+levels were innocent. The recipe panel has a &quot;Hide inactive&quot; option, on by default, which decides
+whether to dim a card by building the card list a second time with <em>everything on the bench selected at
+once</em> &mdash; and the brew search then enumerated every ordered tuple of that selection, for every recipe
+in the book, building the whole list of orderings before trying the first one. A 28-step proof in chapter 18
+is sixty ingredients against a hundred-odd recipes: <strong>927 million tuples, materialised, on every
+render with nothing selected</strong>. One render exhausts a 4 GB heap. The search walks them lazily now,
+skips what a recipe's slots rule out, abandons a prefix its own unifier rejects, and asks for first brews
+only where all it needs is whether a card lights up. The worst click on that level went from &quot;never
+finishes&quot; to four milliseconds. Five thousand tests had passed throughout: a suite checks what code
+answers, and this was a bug about what it costs.</em></p>
+
+<p><em>Giovanni also reported that he could not call the lemma he had just proved. He was right, and the
+reason is the sharpest thing anyone has turned up here. A lemma whose statement is <em>closed</em> &mdash; no
+premises, no free variables, like &forall;&nbsp;a&nbsp;:&nbsp;Nat,&nbsp;0&nbsp;+&nbsp;a&nbsp;=&nbsp;a &mdash;
+mints a recipe that takes no ingredients, and the panel filtered those out. Eight lemmas were unusable, the
+whole of chapter 20's ladder among them. 20.3 is <em>meant</em> to be proved with 20.1's lemma, so <strong>its
+par was unreachable in the game while being perfectly reachable in the script that measures it</strong>. The
+derivation tools all drive the engine, which knows every recipe; the player works through a panel that offers
+a filtered list; and nothing compared the two. The test suite now does, for every level.</em></p>
+
+<p><em>The third was in the record pipeline, and it made an honest reader look like a forger. A crafted
+potion is named after its own statement, so tidying one away frees its name for the next brew &mdash; and
+tidying was not recorded as a move. An anonymous 19.4 came back as <code>Eq.symm': that recipe does not
+apply to those ingredients</code>, and only replayed once the one deleted potion was put back by hand.
+Renames and deletes are moves now. Rebuilding the replay line then exposed a second naming bug of the same
+family: capture-avoiding substitution drew its fresh variable name from a global counter, so the same proof
+played twice produced <code>b'1</code> one time and <code>b'3</code> the next, and six chapter-18 levels
+could not be replayed at all &mdash; including the one Giovanni was trying to send.</em></p>
+
+<h2>13. Both readings at once</h2>
+
+<p><em>The spellbook had two views and a toggle between them: Lean, or the informal reading. A reader
+suggested the informal one should be the default, so that you could play before knowing Lean syntax. The
+better answer turned out to be not to choose.</em></p>
+
+<p><em>The two emitters were, on inspection, the same walk written twice &mdash; the same four cases over the
+same tree of steps, in the same order, differing only in what each case printed. So they are one walk now,
+whose nodes carry both readings, and Lean, Informal and <strong>Both</strong> are projections of it. Both is
+what the spellbook opens on: each step read in words on the line above the Lean it produced, which is a
+proof in English and a Lean file at once, since the comments are comments. Clicking a line that opens a
+sub-proof folds it, as an editor folds a function; the fold is a property of the node, so the two readings
+cannot disagree about what is folded. Copy and Save export exactly what the view shows.</em></p>
+
+<p><em>A refactor of the code every export and every compile check depends on is not something to do
+hopefully, and it did not need to be: I kept the previous engine beside the new one and compared all four
+emitters across 2164 combinations of level, board and display option, which came out byte-identical. The
+standing guard states the same equality from the inside &mdash; the hybrid's code lines must be exactly the
+Lean view and its comment lines exactly the informal view, for unfinished proofs as well as finished
+ones.</em></p>
+
+<p><em>One request followed immediately from it, from a reader who noticed that the panel had not moved
+with the spellbook: with the prose view chosen, a card still headed itself <code>And.idem</code> and offered
+<code>And.idem hA</code> underneath, which is asking someone who chose English to read Lean anyway. Every
+recipe already carried the words the spellbook prints, so the card uses them &mdash; <em>conjunction
+elimination (left)</em> &mdash; and the brew button says where the statement comes from rather than what Lean
+will write. On Both, a card is named both ways; the tooltip always is.</em></p>
+
+<p><em>The counts, at the time of writing: 4942 tests on the engine, 482 on the interface, every one of the
+158 proofs compiling against core Lean as a single file and each one compiling alone, and the par table,
+the unlock graph and the QED correspondence all derived from the scripted solutions rather than
+maintained.</em></p>
+
   </article>
   <footer>Part of <a href="https://github.com/teorth/tao-web">tao-web</a>.</footer>
 </div>

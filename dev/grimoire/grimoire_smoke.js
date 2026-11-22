@@ -1467,6 +1467,54 @@ A.loadExercise('17.2');
   ok(G.readReplayLine(txt) !== null, 'the replay line still rides along');
 })();
 
+// ---- the recipe cards name themselves after the view ----
+// A reader's request: on the Informal view, a card headed `And.left` with `And.left hABC` under it is
+// asking someone who chose prose to read Lean anyway. The recipe already carries the words the spellbook
+// prints, so the card uses them -- and the brew button says where the statement comes from instead of
+// what Lean will write.
+(function () {
+  A.loadExercise('2.2'); A.el.reset.fire('click');
+  A.clickSel(A.state.env.bindings[0].name);
+  var cards = function () { return A.el.recipes.innerHTML; };
+  var head = function () { return /<span class="rname">([^<]*)<\/span>/.exec(cards()); };
+
+  A.setStyle('lean');
+  ok(/<span class="rname">And\.left<\/span>/.test(cards()), 'reading Lean, a card is headed by its Lean name');
+  ok(/<code>And\.left h/.test(cards()), 'and the brew button shows the term Lean will write');
+  ok(cards().indexOf('class="rinf"') < 0, 'with no second name beside it');
+
+  A.setStyle('both');
+  ok(/<span class="rname">And\.left<\/span><span class="rinf">conjunction elimination \(left\)<\/span>/.test(cards()),
+     'reading both, the Lean name is followed by the words the spellbook uses');
+  ok(/<code>And\.left h/.test(cards()), 'and the Lean term is still on the button');
+
+  A.setStyle('informal');
+  ok(/<span class="rname">conjunction elimination \(left\)<\/span>/.test(cards()),
+     'reading prose, the words ARE the name');
+  ok(cards().indexOf('>And.left<') < 0, 'and the Lean name is off the card');
+  ok(/title="And\.left  —  conjunction elimination \(left\)/.test(cards()),
+     'though never out of reach: the tooltip names it both ways in every view');
+  ok(/<code>from \(A ∧ B\) ∧ C<\/code>/.test(cards()),
+     'and the brew button says where the statement comes from, as the proof will');
+  ok(!/<code>And\.left h/.test(cards()), 'rather than what Lean writes');
+
+  // a minted lemma is named as the spellbook names it
+  (function () {
+    var e = G.EX_BY_ID['2.1'], rc = G.recipeFromExercise(e);
+    G.RECIPES[rc.id] = rc; A.state.unlocked[e.leanName] = rc; A.state.solved['2.1'] = true;
+    A.loadExercise('2.2'); A.clickSel(A.state.env.bindings[0].name);
+    ok(/<span class="rname">the lemma And\.comm&#039;<\/span>/.test(cards()) || /the lemma And\.comm/.test(cards()),
+       'a lemma you proved is named as the informal proof names it, lemma and all');
+  })();
+
+  // the formula constructors too
+  A.loadExercise('5.1');
+  ok(/<span class="rname">an implication<\/span>/.test(cards()) || /class="rname">a conjunction</.test(cards()),
+     'and so are the formula constructors');
+  A.setStyle('both');
+  A.loadExercise('1.1');
+})();
+
 A.setCheat(false);
 
 console.log(pass + ' passed, ' + fail + ' failed');
