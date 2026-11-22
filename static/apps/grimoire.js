@@ -1174,50 +1174,117 @@
     (ex.preds || []).forEach(function (p) { lines.push('variable {' + p.name + ' : ' + p.argSorts.concat([p.resultSort || PROP]).join(' → ') + '}'); });
     return lines.length ? lines.join('\n') + '\n\n' : '';
   }
-  function emitSteps(steps, indent, opts) {
-    var o = leanOpts(opts), out = [];
-    steps.forEach(function (s) {
+  // ---------- one walk, three readings ----------
+  // The Lean reading and the informal one used to be two functions over the same `steps` tree, with
+  // identical control flow: the same four cases, the same recursion, the same order. They are ONE walk
+  // now, and each node carries both readings — so the Lean view, the prose view, and the hybrid view
+  // that interleaves them are three projections of a single traversal and cannot drift apart.
+  //
+  // Each node keeps an indent for EACH reading, because the difference between them is real rather than
+  // an oversight: Lean closes a sub-proof from inside it (`exact …`, a level in) while the prose closes
+  // it from outside ("Discharging, we obtain …", level with the "Introduce" that opened it).
+  //
+  //     { kind, prose: [lines], code: [lines], codeIndent, proseIndent, path, foldable }
+  //
+  // `path` names a node for the UI's folding. It has to survive the re-render that follows every move,
+  // so it is derived from the position in the PROOF TREE and never from the row on screen.
+  function pad(n) { var out = ''; while (n-- > 0) out += '  '; return out; }
+  function stepNodes(steps, depth, path, opts, out) {
+    var o = leanOpts(opts), R = function (e) { return render(e, opts); };
+    steps.forEach(function (s, i) {
+      var p = (path ? path + '.' : '') + i;
       if (s.kind === 'discharge') {
-        out.push(indent + 'have ' + s.name + ' : ' + render(s.type, o) + ' := by');
-        s.levels.forEach(function (lv) {
-          out.push(indent + '  intro ' + lv.binder.name);
-          emitSteps(lv.steps, indent + '  ', opts).forEach(function (l) { out.push(l); });
+        out.push({ kind: 'open', path: p, foldable: true, codeIndent: depth + 1, proseIndent: depth,
+          prose: ['Introduce ' + s.levels.map(function (l) { return informalBinder(l.binder, opts); }).join(', then ') + ':'],
+          code: ['have ' + s.name + ' : ' + render(s.type, o) + ' := by'] });
+        s.levels.forEach(function (lv, j) {
+          out.push({ kind: 'intro', path: p + '/' + j, codeIndent: depth + 2, proseIndent: depth + 1,
+            prose: [], code: ['intro ' + lv.binder.name] });
+          stepNodes(lv.steps, depth + 1, p + '/' + j, opts, out);
         });
-        out.push(indent + '  exact ' + (s.contra ? (s.contra.fals ? s.contra.fals : 'absurd ' + s.contra.pos + ' ' + s.contra.neg) : s.conclName));
+        out.push({ kind: 'close', path: p + '$', closes: p, codeIndent: depth + 2, proseIndent: depth,
+          prose: [s.contra ? 'This is a contradiction, so we conclude ' + R(s.type) + '.'
+                           : 'Discharging, we obtain ' + R(s.type) + '.'],
+          code: ['exact ' + (s.contra ? (s.contra.fals ? s.contra.fals : 'absurd ' + s.contra.pos + ' ' + s.contra.neg) : s.conclName)] });
       } else if (s.kind === 'obtain') {   // non-destructive ∃-elim: copy, then destructure the copy (the ∃ survives)
-        out.push(indent + 'have ' + s.copyName + ' := ' + s.exist);
-        out.push(indent + 'obtain ⟨' + s.varName + ', ' + s.hxName + '⟩ := ' + s.copyName);
+        out.push({ kind: 'obtain', path: p, codeIndent: depth + 1, proseIndent: depth,
+          prose: ['Since ' + R(s.existType) + ', fix ' + varPhrase(s.varName, s.sort, opts) + ' with ' + R(s.witness) + '.'],
+          code: ['have ' + s.copyName + ' := ' + s.exist,
+                 'obtain ⟨' + s.varName + ', ' + s.hxName + '⟩ := ' + s.copyName] });
       } else if (s.kind === 'pick') {   // pick an arbitrary inhabitant of a nonempty sort
-        out.push(indent + 'have ' + s.varName + ' : ' + s.sort + ' := Classical.choice inferInstance');
+        out.push({ kind: 'pick', path: p, codeIndent: depth + 1, proseIndent: depth,
+          prose: ['Pick ' + varPhrase(s.varName, s.sort, opts) + ' arbitrarily (the sort is nonempty).'],
+          code: ['have ' + s.varName + ' : ' + s.sort + ' := Classical.choice inferInstance'] });
       } else {
-        out.push(indent + 'have ' + s.name + ' : ' + render(s.type, o) + ' := ' + s.lean);
+        var rec = RECIPES[s.recipe];
+        out.push({ kind: 'craft', path: p, codeIndent: depth + 1, proseIndent: depth,
+          prose: ['From ' + (s.froms || []).map(R).join(', ') + ' we deduce ' + R(s.type) + '  (' + (rec && rec.informal || s.recipe) + ').'],
+          code: ['have ' + s.name + ' : ' + render(s.type, o) + ' := ' + s.lean] });
       }
     });
     return out;
   }
-  function emitLean(ex, env, opts) {   // env = the root env (a completed proof)
-    var lines = [leanHeader(ex, opts)].concat(emitSteps(env.steps, '  ', opts));
-    var gn = goalNameIn(env);
-    lines.push('  ' + (gn ? 'exact ' + gn : 'sorry'));
-    return lines.join('\n');
-  }
-  // live view when the player may be inside an open sub-environment (cur = current innermost env)
-  function emitLive(ex, cur, opts) {
+  // `cur` is the environment the player is in, which may be inside one or more open sub-proofs; the walk
+  // climbs to the root and narrates the open chain at the end, where both readings have something to say
+  // about work that is not finished.
+  function proofNodes(ex, cur, opts) {
     var chain = [], e = cur; while (e.parent) { chain.unshift(e); e = e.parent; }
-    var root = e;
-    if (!chain.length) return emitLean(ex, root, opts);
-    var lines = [leanHeader(ex, opts)].concat(emitSteps(root.steps, '  ', opts));
-    var typeExpr = binderChain(chain.map(function (c) { return c.assumption; }), varE('?a'));
-    lines.push('  have this : ' + render(typeExpr, leanOpts(opts)) + ' := by');
-    chain.forEach(function (c) {
-      lines.push('    intro ' + c.assumption.name);
-      emitSteps(c.steps, '    ', opts).forEach(function (l) { lines.push(l); });
-    });
-    lines.push('    sorry');
+    var root = e, out = [];
+    out.push({ kind: 'head', path: 'head', codeIndent: 0, proseIndent: 0,
+      prose: informalHeader(ex, opts), code: [leanHeader(ex, opts)] });
+    stepNodes(root.steps, 0, '', opts, out);
+    if (chain.length) {
+      var binders = chain.map(function (c) { return c.assumption; });
+      out.push({ kind: 'open', path: 'open', foldable: true, codeIndent: 1, proseIndent: 0,
+        prose: ['Introduce ' + chain.map(function (c) { return informalBinder(c.assumption, opts); }).join(', then ') + ':'],
+        code: ['have this : ' + render(binderChain(binders, varE('?a')), leanOpts(opts)) + ' := by'] });
+      chain.forEach(function (c, j) {
+        out.push({ kind: 'intro', path: 'open/' + j, codeIndent: 2, proseIndent: 1,
+          prose: [], code: ['intro ' + c.assumption.name] });
+        stepNodes(c.steps, 1, 'open/' + j, opts, out);
+      });
+      // what is still owed. Lean says `sorry`; the prose says what discharging will conclude, spelt with
+      // a … where Lean puts its `?a` metavariable.
+      out.push({ kind: 'pending', path: 'open$', closes: 'open', codeIndent: 2, proseIndent: 1,
+        prose: ['(Not discharged yet: discharging will conclude ' + render(binderChain(binders, varE('…')), opts) + '.)'],
+        code: ['sorry'] });
+    }
     var gn = goalNameIn(root);
-    lines.push('  ' + (gn ? 'exact ' + gn : 'sorry'));
-    return lines.join('\n');
+    out.push({ kind: 'goal', path: 'goal', codeIndent: 1, proseIndent: 0,
+      prose: gn ? ['This is what we wished to prove.  ∎'] : [], code: [gn ? 'exact ' + gn : 'sorry'] });
+    return out;
   }
+  // 'lean' → the code alone, 'prose' → the informal reading alone, 'both' → each step's prose as a Lean
+  // comment above its code, which is a Lean file as well as a reading of one.
+  //
+  // One ROW per line, each still carrying the node it came from: the text join wants the lines, and the
+  // UI wants to know which node a line belongs to — to colour the comments, and to fold a sub-proof by
+  // the path of the node that opens it.
+  function nodeRows(nodes, mode) {
+    var out = [];
+    nodes.forEach(function (n) {
+      if (mode !== 'lean') n.prose.forEach(function (l) {
+        out.push({ path: n.path, kind: n.kind, foldable: !!n.foldable, cls: 'prose',
+                   text: pad(mode === 'both' ? n.codeIndent : n.proseIndent) + (mode === 'both' ? '-- ' : '') + l });
+      });
+      if (mode !== 'prose') n.code.forEach(function (l) {
+        out.push({ path: n.path, kind: n.kind, foldable: !!n.foldable, cls: 'code', text: pad(n.codeIndent) + l });
+      });
+    });
+    return out;
+  }
+  function nodeLines(nodes, mode) { return nodeRows(nodes, mode).map(function (r) { return r.text; }); }
+  // Which rows a fold hides: everything INSIDE the block that node opens — its intros, their steps, and
+  // the line that closes it. The paths say so structurally, so this holds however the proof is nested.
+  function foldHides(path, rowPath) { return rowPath.indexOf(path + '/') === 0 || rowPath === path + '$'; }
+  // The four names the rest of the app already uses. `emitLean`/`emitInformal` take a finished root env
+  // and `emitLive`/`emitInformalLive` the env in hand, but the walk climbs to the root either way, so
+  // they are the same function under two names — kept because the call sites say which they mean.
+  function emitLean(ex, env, opts) { return nodeLines(proofNodes(ex, env, opts), 'lean').join('\n'); }
+  function emitLive(ex, cur, opts) { return nodeLines(proofNodes(ex, cur, opts), 'lean').join('\n'); }
+  function emitInformal(ex, env, opts) { return nodeLines(proofNodes(ex, env, opts), 'prose').join('\n'); }
+  function emitInformalLive(ex, cur, opts) { return nodeLines(proofNodes(ex, cur, opts), 'prose').join('\n'); }
+  function emitBoth(ex, cur, opts) { return nodeLines(proofNodes(ex, cur, opts), 'both').join('\n'); }
 
   // How long a proof is, in MOVES -- the number the map compares against the par for the level. One unit
   // per thing the player did: a craft, an `obtain` and a `pick` are one move each, and so is a discharge,
@@ -1240,63 +1307,16 @@
     return n;
   }
 
-  // informal proof in the style of the original QED game (statements, not hypothesis labels)
-  // How an assumption or an arbitrary variable is announced. Shared, because the live view below has
-  // to word an OPEN sub-proof exactly as the finished one will be worded once it is discharged.
+  // How an assumption or an arbitrary variable is announced in the informal reading. Shared, because an
+  // OPEN sub-proof has to be worded exactly as the finished one will be once it is discharged.
   function informalBinder(b, opts) {
     return b.kind === 'var' ? 'an arbitrary ' + varPhrase(b.name, b.sort, opts) : render(b.type, opts);
-  }
-  function informalSteps(steps, opts) {
-    var R = function (e) { return render(e, opts); }, out = [];
-    steps.forEach(function (s) {
-      if (s.kind === 'discharge') {
-        out.push('Introduce ' + s.levels.map(function (l) { return informalBinder(l.binder, opts); }).join(', then ') + ':');
-        s.levels.forEach(function (l) { informalSteps(l.steps, opts).forEach(function (x) { out.push('  ' + x); }); });
-        out.push(s.contra ? 'This is a contradiction, so we conclude ' + R(s.type) + '.'
-                          : 'Discharging, we obtain ' + R(s.type) + '.');
-      } else if (s.kind === 'obtain') {
-        out.push('Since ' + R(s.existType) + ', fix ' + varPhrase(s.varName, s.sort, opts) + ' with ' + R(s.witness) + '.');
-      } else if (s.kind === 'pick') {
-        out.push('Pick ' + varPhrase(s.varName, s.sort, opts) + ' arbitrarily (the sort is nonempty).');
-      } else {
-        var rec = RECIPES[s.recipe];
-        out.push('From ' + (s.froms || []).map(R).join(', ') + ' we deduce ' + R(s.type) + '  (' + (rec && rec.informal || s.recipe) + ').');
-      }
-    });
-    return out;
   }
   function informalHeader(ex, opts) {
     var R = function (e) { return render(e, opts); }, L = [];
     if (ex.givens.length) L.push('We are given ' + ex.givens.map(function (g) { return R(g.type); }).join(', ') + '.');
     L.push('We wish to prove ' + R(ex.goal) + '.');
     return L;
-  }
-  function emitInformal(ex, env, opts) {   // env = root
-    var L = informalHeader(ex, opts);
-    informalSteps(env.steps, opts).forEach(function (x) { L.push(x); });
-    if (env.bindings.some(function (b) { return exprEq(b.type, env.goal); })) L.push('This is what we wished to prove.  ∎');
-    return L.join('\n');
-  }
-  // Live informal view, the counterpart of emitLive: the player may be working inside one or more open
-  // sub-proofs, under an assumption or under an arbitrary variable. A `discharge` STEP is only written
-  // into the parent once the sub-proof closes, so reading the root alone -- which is what this used to
-  // do -- showed nothing at all of the work in progress, while the Lean view showed it under a `sorry`.
-  // The open levels are therefore narrated here, in the same words the finished discharge will use,
-  // and closed with a line saying what is still owed; it plays the part Lean's `sorry` plays, and the
-  // pending conclusion is spelt with a `…` where Lean puts its `?a` metavariable -- which also saves
-  // the line from having to word "under this assumption" and "for this arbitrary variable" differently.
-  function emitInformalLive(ex, cur, opts) {
-    var chain = [], e = cur; while (e.parent) { chain.unshift(e); e = e.parent; }
-    var root = e;
-    if (!chain.length) return emitInformal(ex, root, opts);
-    var L = informalHeader(ex, opts);
-    informalSteps(root.steps, opts).forEach(function (x) { L.push(x); });
-    L.push('Introduce ' + chain.map(function (c) { return informalBinder(c.assumption, opts); }).join(', then ') + ':');
-    chain.forEach(function (c) { informalSteps(c.steps, opts).forEach(function (x) { L.push('  ' + x); }); });
-    var pending = binderChain(chain.map(function (c) { return c.assumption; }), varE('…'));
-    L.push('  (Not discharged yet: discharging will conclude ' + render(pending, opts) + '.)');
-    if (root.bindings.some(function (b) { return exprEq(b.type, root.goal); })) L.push('This is what we wished to prove.  ∎');
-    return L.join('\n');
   }
 
   // ---------- exercises + progression DAG ----------
@@ -2316,6 +2336,7 @@
     RECIPES: RECIPES, BASE_RECIPES: BASE_RECIPES, eachTuple: eachTuple, headCompatible: headCompatible, craft: craft, rename: rename, deleteBinding: deleteBinding, deductions: deductions,
     proofIng: proofIng, formulaIng: formulaIng, recipeFromExercise: recipeFromExercise, defRecipe: defRecipe,
     leanHeader: leanHeader, leanPreamble: leanPreamble, emitLean: emitLean, emitLive: emitLive, emitInformal: emitInformal, emitInformalLive: emitInformalLive,
+    proofNodes: proofNodes, nodeLines: nodeLines, nodeRows: nodeRows, foldHides: foldHides, emitBoth: emitBoth,
     proofLength: proofLength, CANON: CANON, par: par, CANON_CREDIT: CANON_CREDIT, credit: credit, exNum: exNum,
     playgroundURL: playgroundURL, PLAYGROUND: PLAYGROUND, PLAYGROUND_MAX: PLAYGROUND_MAX,
     encodeMoves: encodeMoves, decodeMoves: decodeMoves, replayMoves: replayMoves,

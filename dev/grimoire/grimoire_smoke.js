@@ -53,6 +53,14 @@ ok(!threw, 'inline script runs without throwing' + (threw ? ': ' + threw : ''));
 const A = window.__grimoire;
 ok(A && typeof A.doCraft === 'function', 'test hook exposed');
 
+// What a player meets, before any later section has changed a setting: the spellbook shows BOTH
+// readings, each step's informal reading as a comment above the Lean it produced.
+ok(A.state.style === 'both', 'the spellbook opens on both readings');
+ok(A.el.styleBoth.className === 'on' && A.el.styleLean.className === '' && A.el.styleInformal.className === '',
+   'and the three-way control says so');
+ok(A.el.spellbook.innerHTML.indexOf('class="sl cmt"') >= 0 || A.state.env.steps.length === 0,
+   'so a comment row is what a fresh board shows (or there is nothing proved yet to comment on)');
+
 // ---- progression tree: fresh state exposes only 1.1, and gating hides later tools ----
 ok(Object.keys(A.accessible()).length === 1 && A.accessible()['1.1'], 'only exercise 1.1 is accessible at the start');
 ok(A.hasCap('and.intro') && !A.hasCap('and.elim') && !A.hasCap('formula') && !A.hasCap('assume') && !A.hasCap('mp'), 'only the and.intro capability is active at the start');
@@ -1380,6 +1388,83 @@ A.loadExercise('17.2');
   A.el.benchlist.checked = false; A.el.benchlist.fire('change');
   ok(A.el.bench.className === '' && A.state.benchList === false, 'turning it off puts the chips back');
   A.state.save = wasSave;
+})();
+
+// ---- the spellbook's three views, and folding a sub-proof ----
+// "Both" is what a new player meets: each step's informal reading as a comment above the Lean it
+// produced. The three views are projections of one walk in the engine, so what is on screen cannot
+// disagree with the file the Copy button writes.
+(function () {
+  A.loadExercise('4.2'); A.el.reset.fire('click');     // a level with a sub-proof to fold
+  A.setStyle('both');
+  // prove it: assume A, pair it with itself, discharge
+  A.clickFormula(0); A.doCraftIdx(A.state.ded.findIndex(function (d) { return d.action === 'assume'; }));
+  A.doCraft('And.intro', ['hA', 'hA']);
+  var dd = A.state.ded.findIndex(function (d) { return d.action === 'discharge'; });
+  A.clickSel('hAA'); A.doCraftIdx(A.state.ded.findIndex(function (d) { return d.action === 'discharge'; }));
+  ok(A.isSolved(), '4.2 is solved');
+
+  var html = function () { return A.el.spellbook.innerHTML; };
+  var text = function () { return strip(html().replace(/<span class="sl/g, '\n<span class="sl')); };
+  ok(/-- Introduce A:/.test(text()) && /have hAA : A \u2227 A := And\.intro hA hA/.test(text()),
+     'both readings are on screen at once');
+  ok(html().indexOf('class="sl cmt"') >= 0 && html().indexOf('class="sl cod"') >= 0,
+     'the comments and the code are marked apart, so they can be styled apart');
+
+  A.setStyle('lean');
+  ok(!/-- Introduce A:/.test(text()) && /have hAA/.test(text()), 'Lean alone drops the comments');
+  ok(A.el.spellbook.className === 'lean', 'and keeps the monospace');
+  A.setStyle('informal');
+  ok(/Introduce A:/.test(text()) && !/have hAA/.test(text()), 'Informal alone drops the code');
+  ok(A.el.spellbook.className === '', 'and reads as prose');
+  A.setStyle('both');
+
+  // the fold: one handle per sub-proof opener, and it hides what is inside the block
+  var fold = /data-fold="([^"]+)"/.exec(html());
+  ok(!!fold, 'a sub-proof opener carries a fold handle');
+  ok(/aria-expanded="true"/.test(html()), 'and says it is open');
+  var before = (text().match(/\n/g) || []).length;
+  A.state.folds[fold[1]] = true; A.setStyle('both');
+  var after = (text().match(/\n/g) || []).length;
+  ok(after < before, 'folding it hides rows (' + before + ' \u2192 ' + after + ')');
+  ok(/\u25b8 \d+ lines?/.test(text()), 'and says how many');
+  ok(/aria-expanded="false"/.test(html()), 'and that it is folded');
+  ok(/have hAA : A \u2227 A/.test(text()) === false, 'the work inside the block is out of sight');
+  ok(/have hAAA/.test(text()) || /:= by/.test(text()), 'while the line that opens it stays');
+  A.state.folds = {}; A.setStyle('both');
+  ok(/have hAA : A \u2227 A/.test(text()), 'unfolding brings it back');
+
+  // folds belong to the proof in front of you
+  A.state.folds[fold[1]] = true;
+  A.loadExercise('1.1');
+  ok(Object.keys(A.state.folds).length === 0, 'and are dropped when the level changes');
+
+  // the view is remembered, and an old save that asked for Lean still gets Lean
+  A.loadExercise('4.2');
+  A.setStyle('lean');
+  var wasSave = A.state.save;
+  A.state.save = true; A.persist();
+  ok(JSON.parse(localStorage.getItem(A.SAVE_KEY)).style === 'lean', 'the save carries the chosen view');
+  A.state.style = 'both';   // not setStyle: that would persist, overwriting the save under test
+  A.boot();
+  ok(A.state.style === 'lean' && A.el.styleLean.className === 'on', 'and a reload restores it');
+  A.state.save = wasSave;
+  A.setStyle('both');
+})();
+
+// ---- the export is what the "both" view shows ----
+(function () {
+  A.loadExercise('2.1'); A.el.reset.fire('click');
+  A.doCraft('And.left', ['hAB']); A.doCraft('And.right', ['hAB']); A.doCraft('And.intro', ['hB', 'hA']);
+  ok(A.isSolved(), '2.1 is solved');
+  var txt = A.proofText();
+  ok(/^  -- From A \u2227 B we deduce A  \(conjunction elimination \(left\)\)\.\n  have hA : A := And\.left hAB$/m.test(txt),
+     'each step is read in words on the line above its Lean');
+  ok(txt.indexOf('-- We wish to prove B \u2227 A.') >= 0, 'the statement is read out too');
+  // the old shape put every informal line in a block ahead of the theorem; nothing should sit there now
+  var head = txt.slice(0, txt.indexOf('theorem'));
+  ok((head.match(/^-- From /gm) || []).length === 0, 'and no longer twice over, in a block of its own');
+  ok(G.readReplayLine(txt) !== null, 'the replay line still rides along');
 })();
 
 A.setCheat(false);

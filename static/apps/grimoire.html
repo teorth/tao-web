@@ -79,6 +79,13 @@
     background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: .8rem .9rem; }
   #spellbook.lean { font-family: var(--mono); white-space: pre; }
   #spellbook .kw { color: var(--accent); }
+  /* One row per line, so a sub-proof can be folded and a comment can be told from the code it explains.
+     The rows are blocks, which is why nothing between them needs a newline of its own. */
+  #spellbook .sl { display: block; }
+  #spellbook .cmt { color: var(--muted); }
+  #spellbook .fold { cursor: pointer; border-radius: 3px; }
+  #spellbook .fold:hover, #spellbook .fold:focus-visible { background: var(--accent-soft); outline: none; }
+  #spellbook .foldnote { color: var(--accent); }
   .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; }
   .seg button { border: 0; border-radius: 0; padding: .28rem .6rem; font: inherit; color: var(--muted); background: var(--panel); cursor: pointer; }
   .seg button.on { background: var(--accent); color: #fff; font-weight: 600; }
@@ -291,11 +298,11 @@
       <div class="spellhead">
         <h2 class="sec" id="spellHead" style="margin:0"></h2>
         <span class="spellctl">
-          <span class="seg"><button id="styleLean" class="on" type="button" title="Show the proof as Lean code">Lean</button><button id="styleInformal" type="button" title="Show the proof as informal prose (QED style)">Informal</button></span>
-          <button id="copyproof" class="exp" type="button" title="Copy the whole proof — the informal reading as comments, then the Lean — to the clipboard">⧉ Copy</button>
+          <span class="seg"><button id="styleLean" type="button" title="Show the Lean alone">Lean</button><button id="styleBoth" class="on" type="button" title="Show both readings: each step's informal reading as a comment above the Lean it produced. This is a Lean file as well as a proof in words — the comments are comments.">Both</button><button id="styleInformal" type="button" title="Show the informal reading alone (QED style)">Informal</button></span>
+          <button id="copyproof" class="exp" type="button" title="Copy the whole proof — each step read in words as a comment above the Lean it produced — to the clipboard">⧉ Copy</button>
           <button id="playproof" class="exp" type="button" title="Open this proof in the Lean 4 web playground, where you can edit it and see what Lean itself says — including what happens when you break it. The code travels in the link's fragment, which your browser does not send to any server; the playground compiles it in your own browser.">↗ Playground</button>
           <button id="copyrecord" class="exp" type="button" hidden title="Copy JUST the line that carries your moves — a few hundred characters, short enough for a comment box. It is all I need to replay the proof and check it; the Lean is for you. Use this if a shorter proof you have found is too long to post.">⚑ Copy record</button>
-          <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: the informal reading as comments, then Lean that compiles on its own — no import needed, and the proofs of the lemmas you built it from carried along with it">⤓ Save</button>
+          <button id="saveproof" class="exp" type="button" title="Download the whole proof as a .lean file: each step read in words as a comment above the Lean it produced, compiling on its own — no import needed, and the proofs of the lemmas you built it from carried along with it">⤓ Save</button>
         </span>
       </div>
       <pre id="spellbook" class="lean"></pre>
@@ -333,9 +340,11 @@
       reader’s rather than mine already — a quarter of the game. One cut a proof from eight moves to
       three, another did a congruence in five where I had taken eight, and a third proved that the
       inverse of an inverse is the thing itself in five moves against my twelve.
-      <strong>Copy</strong> and <strong>Save</strong>
-      under the spellbook export the proof: the informal reading as comments, then Lean that compiles on
-      its own. There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
+      The spellbook shows the proof three ways: <strong>Lean</strong> alone, the <strong>informal</strong>
+      reading alone, or — as it opens — <strong>both</strong>, each step read in words on the line above
+      the Lean it produced. Clicking a line that opens a sub-proof folds it, as an editor folds a
+      function. <strong>Copy</strong> and <strong>Save</strong> export what the “both” view shows: a file
+      that is a proof in words and a Lean file at once, and compiles on There is no <code>import</code> line — Lean 4 takes <code>Init</code> by itself, and nothing
       here needs Mathlib — but solving a lemma mints it as a recipe, so a proof that uses one carries your
       proof of that lemma along with it, and the chain can run deeper than the proof you just finished.</p>
     <p><strong>↗ Playground</strong> sends the same text to the
@@ -395,7 +404,7 @@
   'use strict';
   var G = window.Grimoire;
   var ids = ['exsel', 'prevex', 'nextex', 'nextunsolved', 'undo', 'reset', 'fantasy', 'goal', 'bench', 'repeat', 'clearsel', 'deducehint',
-             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleInformal', 'copyproof', 'saveproof', 'copyrecord', 'playproof', 'wrap',
+             'autoclear', 'recipes', 'spellbook', 'styleLean', 'styleBoth', 'styleInformal', 'copyproof', 'saveproof', 'copyrecord', 'playproof', 'wrap',
              'benchHead', 'benchvars', 'recipesHead', 'spellHead', 'formulaHead', 'formulaBench',
              'formula-in', 'formula-add', 'formula-err', 'formula-quant', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
@@ -407,7 +416,7 @@
 
   // Where to write in -- quoted in the how-to, in an export, and in the banner a record raises.
   var BLOG = 'https://terrytao.wordpress.com/2026/11/11/lean-grimoire/';
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], moves: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true, benchList: false };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'both', folds: {}, ded: [], moves: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true, benchList: false };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -506,6 +515,7 @@
     else { state.env = G.newEnv(state.ex); state.history = []; state.formulas = (state.ex.formulas || []).slice(); state.terms = exTerms(state.ex); state.moves = []; }
     state.sel = []; state.selF = []; state.selT = []; state.selV = []; state.justUnlocked = null; state.justUnlockedEx = [];
     state.hintOpen = false;   // asking for a hint is a decision about ONE level, not a setting
+    state.folds = {};         // and so is folding a sub-proof: the paths mean nothing in another proof
     renderAll();
   }
   // Abandon a sub-proof: back out to an ancestor, discarding what was crafted inside. Unlike discharging,
@@ -955,22 +965,62 @@
     el.deducehint.textContent = (ingredients().length === 0 && !state.env.parent) ? T('pick') : '';
   }
 
-  // ---- render: spellbook (Lean or informal QED-style) ----
-  function renderSpellbook() {
-    if (state.style === 'informal') {
-      el.spellbook.className = '';
-      el.spellbook.innerHTML = esc(G.emitInformalLive(state.ex, state.env, dispOpts()));
-    } else {
-      // the one view words mode leaves alone: this is real Lean, to be read as Lean and pasted into one
-      el.spellbook.className = 'lean';
-      el.spellbook.innerHTML = esc(G.leanPreamble(state.ex) + G.emitLive(state.ex, state.env, { parens: state.parens })).replace(/\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g, '<span class="kw">$1</span>');
-    }
+  // ---- render: spellbook (the Lean, the informal reading, or both interleaved) ----
+  // One walk in the engine yields a node per step carrying BOTH readings (`proofNodes`); this picks which
+  // of them to print. `words` mode words the informal reading and leaves the Lean alone, which is the
+  // point of showing them together: the same statement, in English and in Lean, on adjacent lines.
+  //
+  // A node that opens a sub-proof can be clicked to fold it. The fold is keyed by the node's PATH in the
+  // proof, not by the row on screen, because the spellbook is re-rendered after every move; and it hides
+  // the rows inside that block in whichever reading is showing, so the two cannot disagree about what is
+  // folded. Folds are deliberately not saved: they describe a reading of a proof in progress.
+  var KW = /\b(variable|theorem|example|have|exact|sorry|by|intro|Prop)\b/g;
+  function kw(t) { return t.replace(KW, '<span class="kw">$1</span>'); }
+  function foldedUnder(path) {
+    for (var p in state.folds) if (state.folds[p] && G.foldHides(p, path)) return true;
+    return false;
   }
+  function renderSpellbook() {
+    var mode = state.style === 'informal' ? 'prose' : state.style === 'both' ? 'both' : 'lean';
+    el.spellbook.className = mode === 'prose' ? '' : 'lean';
+    var opts = mode === 'lean' ? { parens: state.parens } : dispOpts();
+    var rows = G.nodeRows(G.proofNodes(state.ex, state.env, opts), mode);
+    var out = [];
+    if (mode !== 'prose') {
+      // the `variable` declarations that make the proof stand alone; they belong to no step
+      G.leanPreamble(state.ex).replace(/\n+$/, '').split('\n').forEach(function (l) {
+        out.push('<span class="sl cod">' + kw(esc(l)) + '</span>');
+      });
+    }
+    rows.forEach(function (r, i) {
+      if (foldedUnder(r.path)) return;
+      var body = r.cls === 'prose' ? esc(r.text) : kw(esc(r.text));
+      // the handle sits on the last row of the opener: its code line, or its prose line in prose mode
+      var handle = r.foldable && (mode === 'prose' ? r.cls === 'prose' : r.cls === 'code');
+      if (!handle) { out.push('<span class="sl ' + (r.cls === 'prose' ? 'cmt' : 'cod') + '">' + body + '</span>'); return; }
+      var folded = !!state.folds[r.path];
+      var n = rows.filter(function (x) { return G.foldHides(r.path, x.path); }).length;
+      out.push('<span class="sl fold ' + (r.cls === 'prose' ? 'cmt' : 'cod') + '" data-fold="' + esc(r.path) + '"'
+        + ' role="button" tabindex="0" aria-expanded="' + (folded ? 'false' : 'true') + '"'
+        + ' title="' + (folded ? 'Unfold this sub-proof' : 'Fold this sub-proof') + '">' + body
+        + (folded ? '<span class="foldnote">  \u25b8 ' + n + ' line' + (n === 1 ? '' : 's') + '</span>' : '') + '</span>');
+    });
+    el.spellbook.innerHTML = out.join('');
+    Array.prototype.forEach.call(el.spellbook.querySelectorAll('[data-fold]'), function (sp) {
+      var path = sp.getAttribute('data-fold');
+      sp.addEventListener('click', function () { toggleFold(path); });
+      sp.addEventListener('keydown', function (ev) {
+        if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); toggleFold(path); }
+      });
+    });
+  }
+  function toggleFold(path) { state.folds[path] = !state.folds[path]; renderSpellbook(); }
 
   // ---- export the proof ----
-  // One file carrying both readings: the informal proof as Lean comments, then the Lean itself, which
-  // compiles as it stands (core Lean, no Mathlib). So an export is at once something to read, something
-  // to check, and something to paste into a comment if it turns out to be shorter than the game's own.
+  // One file carrying both readings, interleaved as the spellbook's "Both" view shows them: each step's
+  // informal reading as a comment above the Lean it produced. It compiles as it stands (core Lean, no
+  // Mathlib) -- the comments are comments -- so an export is at once something to read, something to
+  // check, and something to paste into a comment if it turns out to be shorter than the game's own.
   // Written from the current view's options, less `words`: an exported Lean file is Lean.
   //
   // "As it stands" has to be earned, and twice over. The game's compile-check compiles all 158 proofs as
@@ -1010,7 +1060,6 @@
                           + (G.credit(ex.id) ? ', found by ' + G.credit(ex.id) : '') + '.' : '')
                   // the one line a reader of the file should see first, since it is why it was sent
                   + (done && pr && len < pr ? '  THIS ONE IS SHORTER.' : ''), '--'];
-    var informal = G.emitInformalLive(ex, state.env, { parens: state.parens }).split('\n').map(function (l) { return ('-- ' + l).replace(/\s+$/, ''); });
     var opts = { parens: state.parens };
     var chain = proofChain(state.env);
     // one prelude for every concrete sort anywhere in the file, not just in the proof at the end of it
@@ -1045,8 +1094,8 @@
     var replay = (done && state.moves && state.moves.length)
       ? ['', G.replayLine(ex.id, state.moves)]
       : [];
-    return head.concat(informal, [''], prelude ? [prelude] : [],
-                       body, [G.leanPreamble(ex) + G.emitLive(ex, state.env, opts)], replay).join('\n') + '\n';
+    return head.concat([''], prelude ? [prelude] : [],
+                       body, [G.leanPreamble(ex) + G.emitBoth(ex, state.env, opts)], replay).join('\n') + '\n';
   }
   function flashBtn(btn, msg) {
     var was = btn.textContent;
@@ -1400,7 +1449,7 @@
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
     state.benchList = !!saved.benchList;           // default off: chips flowing across
-    state.style = saved.style === 'informal' ? 'informal' : 'lean';
+    state.style = saved.style === 'informal' || saved.style === 'lean' ? saved.style : 'both';   // default: both
     state.cheat = !!saved.cheat;   // off unless it was explicitly switched on, and confirmed, before
   }
 
@@ -1607,8 +1656,15 @@
   el.repeat.addEventListener('change', function () { state.repeat = el.repeat.checked; });
   el.fantasy.addEventListener('change', function () { setFantasy(el.fantasy.checked); });
   function setFantasy(on) { state.fantasy = on; el.wrap.className = 'wrap' + (on ? ' fantasy' : ''); renderAll(); }
-  function setStyle(s) { state.style = s; el.styleLean.className = s === 'lean' ? 'on' : ''; el.styleInformal.className = s === 'informal' ? 'on' : ''; renderSpellbook(); }
+  function setStyle(s) {
+    state.style = s;
+    el.styleLean.className = s === 'lean' ? 'on' : '';
+    el.styleBoth.className = s === 'both' ? 'on' : '';
+    el.styleInformal.className = s === 'informal' ? 'on' : '';
+    renderSpellbook(); persist();
+  }
   el.styleLean.addEventListener('click', function () { setStyle('lean'); });
+  el.styleBoth.addEventListener('click', function () { setStyle('both'); });
   el.styleInformal.addEventListener('click', function () { setStyle('informal'); });
   el.autoclear.addEventListener('change', function () { state.autoclear = el.autoclear.checked; persist(); });
   el.parens.addEventListener('change', function () { state.parens = el.parens.checked; renderAll(); });
@@ -1750,6 +1806,7 @@
     el.cheat.classList.toggle('on', state.cheat);
     el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');
     el.styleLean.className = state.style === 'lean' ? 'on' : '';
+    el.styleBoth.className = state.style === 'both' ? 'on' : '';
     el.styleInformal.className = state.style === 'informal' ? 'on' : '';
     loadExercise(saved && saved.last && G.EX_BY_ID[saved.last] && accessible()[saved.last] ? saved.last : G.EXERCISES[0].id);
   }

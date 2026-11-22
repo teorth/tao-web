@@ -71,7 +71,25 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-21: core 4915, smoke 436.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-22: core 4938, smoke 470.**
+
+**The spellbook is one walk now (2026-11-22), and that is worth knowing before touching the emitters.**
+The Lean reading and the informal one were two functions over the same `steps` tree with identical
+control flow; they are a single traversal (`proofNodes`) whose nodes carry both readings, and the three
+views — Lean, informal, and the hybrid that interleaves them — are projections of it. The export is the
+hybrid, so what the spellbook shows and what Copy writes cannot disagree.
+
+Each node keeps an indent for EACH reading, because the difference is real: Lean closes a sub-proof from
+inside it (`exact …`) while the prose closes it from outside ("Discharging, we obtain …"). A node also
+carries a `path`, which is what the UI folds by — derived from the position in the proof tree, because
+the spellbook is re-rendered after every move and a fold keyed to a row on screen would not survive it.
+
+The refactor was checkable, and that is why it was safe: a scratch script required the previous
+`grimoire.js` beside the new one and compared all four emitters across 2164 board/option combinations,
+which came out byte-identical. The permanent guard is in the core suite — the hybrid's code lines must be
+exactly the Lean view and its comment lines exactly the informal view, for every scripted proof and for
+part-finished boards too — together with the expected-text assertions that have always pinned the format
+(`emit exercise 1.1` and friends). If you change an emitter, those are what will tell you.
 
 **And the second way a suite loses coverage, found 2026-11-21.** The sections spliced back on the
 17th went in *after* the smoke suite's `console.log` and `process.exit` — so `par`, `export` and

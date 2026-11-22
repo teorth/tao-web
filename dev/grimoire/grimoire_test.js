@@ -1593,5 +1593,87 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   ok(/b'2/.test(render(G.substE(tmpl2, "b'1", G.OMEGA, b))), 'a name already in use is stepped over');
 }
 
+// ---------- one walk, three readings ----------
+// The Lean reading and the informal one were two functions over the same `steps` tree, with identical
+// control flow. They are one walk now (`proofNodes`), and the three views are projections of it. The
+// tests that matter are the equalities: the projections have to be what the two emitters always were,
+// and the hybrid has to be exactly the two of them interleaved -- otherwise a view is lying about a proof.
+{
+  const SOLS = require('./solutions.js');
+  G.EXERCISES.forEach(function (e) {
+    if (e.kind === 'lemma' && e.leanName && !G.RECIPES[e.leanName]) G.RECIPES[e.leanName] = G.recipeFromExercise(e);
+  });
+
+  // ---- the hybrid is the interleaving, for every scripted proof and every board on the way to it ----
+  let drift = [], boards = 0;
+  G.EXERCISES.forEach(function (e) {
+    if (!SOLS.SOL[e.id]) return;
+    const seen = [], sv = SOLS.solver(e.id);
+    ['c', 'a', 'd', 'n', 'v', 'obtain', 'pick', 'ce', 'ab'].forEach(function (k) {
+      const f = sv[k];
+      sv[k] = function () { const r = f.apply(null, arguments); seen.push(sv.env); return r; };
+    });
+    SOLS.SOL[e.id](sv);
+    // the finished proof, and a sample of the part-finished ones (which exercise the open-sub-proof path)
+    seen.filter(function (_, i) { return i % 4 === 0; }).concat([sv.env]).forEach(function (env) {
+      boards++;
+      const both = G.emitBoth(e, env, {}).split('\n');
+      const code = both.filter(function (l) { return !/^\s*-- /.test(l); }).join('\n');
+      if (code !== G.emitLive(e, env, {})) drift.push(e.id + ': the code in the hybrid is not the Lean view');
+      // the prose carries the Lean indent in the hybrid (a comment sits with the line it explains) and its
+      // own in the prose view, so compare the lines unindented
+      const flat = function (t) { return t.split('\n').map(function (l) { return l.trim(); }).join('\n'); };
+      const prose = both.filter(function (l) { return /^\s*-- /.test(l); }).map(function (l) { return l.replace(/^\s*-- /, ''); }).join('\n');
+      if (flat(prose) !== flat(G.emitInformalLive(e, env, {}))) drift.push(e.id + ': the comments in the hybrid are not the informal view');
+    });
+  });
+  ok(drift.length === 0, 'the hybrid is exactly the two readings interleaved, across ' + boards + ' boards'
+     + (drift.length ? ' -- ' + Array.from(new Set(drift)).slice(0, 4).join('; ') : ''));
+
+  // ---- the hybrid is a Lean file: every comment line is a comment ----
+  const both13 = G.emitBoth(EX_BY_ID['9.6'], (function () { const sv = SOLS.solver('9.6'); SOLS.SOL['9.6'](sv); return sv.env; })(), {});
+  ok(both13.split('\n').every(function (l) { return !/^\s*--/.test(l) || /^\s*-- /.test(l); }),
+     'each comment opens with `-- ` and nothing else can be mistaken for one');
+  ok(/^  -- Introduce B:\n  have hBA : B \u2192 \u00ac A := by$/m.test(both13),
+     'a comment sits at the indent of the line it explains, directly above it');
+
+  // ---- the words option words the PROSE and leaves the Lean alone ----
+  {
+    const sv = SOLS.solver('2.1'); SOLS.SOL['2.1'](sv);
+    const w = G.emitBoth(EX_BY_ID['2.1'], sv.env, { words: true });
+    ok(/-- .*\band\b/.test(w), 'in words mode the comments are worded: ' + (/-- (From.*)/.exec(w) || [])[1]);
+    ok(/have hA : A := And\.left hAB/.test(w) && w.indexOf('A and B :=') < 0, 'while the Lean stays Lean');
+  }
+
+  // ---- rows, and what a fold hides ----
+  {
+    const sv = SOLS.solver('9.6'); SOLS.SOL['9.6'](sv);
+    const nodes = G.proofNodes(EX_BY_ID['9.6'], sv.env, {});
+    const rows = G.nodeRows(nodes, 'both');
+    eq(rows.map(function (r) { return r.text; }).join('\n'), G.emitBoth(EX_BY_ID['9.6'], sv.env, {}),
+       'the rows and the text are the same thing');
+    ok(rows.every(function (r) { return r.cls === 'prose' || r.cls === 'code'; }), 'every row says which reading it is');
+    ok(rows.some(function (r) { return r.foldable; }), 'and the sub-proof openers are marked foldable');
+    const open = nodes.filter(function (n) { return n.foldable; })[0];
+    const inside = rows.filter(function (r) { return G.foldHides(open.path, r.path); });
+    ok(inside.length > 0, 'folding the first sub-proof hides its ' + inside.length + ' inner rows');
+    ok(!inside.some(function (r) { return r.path === open.path; }), 'but not the line that opens it');
+    ok(inside.some(function (r) { return /exact absurd/.test(r.text); }), 'the line that closes the block is inside the fold');
+    // a nested block's rows are hidden by the fold of either block
+    const nested = nodes.filter(function (n) { return n.foldable; })[1];
+    ok(nested && G.foldHides(open.path, nested.path), 'and a fold of the outer block hides the inner one too');
+    ok(!G.foldHides(nested.path, open.path), 'not the other way round');
+  }
+
+  // ---- the paths a fold is keyed by survive a re-walk, which is what makes folding stick ----
+  {
+    const sv = SOLS.solver('20.3'); SOLS.SOL['20.3'](sv);
+    const a = G.proofNodes(EX_BY_ID['20.3'], sv.env, {}).map(function (n) { return n.path; });
+    const b = G.proofNodes(EX_BY_ID['20.3'], sv.env, { words: true, parens: true }).map(function (n) { return n.path; });
+    eq(a.join(' '), b.join(' '), 'the paths do not depend on how the statements are rendered');
+    ok(new Set(a).size === a.length, 'and no two nodes share one (' + a.length + ' nodes)');
+  }
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
