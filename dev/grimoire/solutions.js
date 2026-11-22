@@ -145,12 +145,15 @@ const SOL = {
     s.c("Or.elim'", 'hAB', i1, i2);
   },
   '6.7': s => { s.c("Or.imp'", 'hAB', s.c('Impl.idem', F(A)), 'hBC'); },
+  // A RECORD (13, was 14): the same three leaves, but the LAST glue is Or.elim' — which takes the
+  // disjunction and both cases together — instead of a case_analysis that then needs a modus_ponens.
+  // The first glue stays a case_analysis, because what it has to produce is an implication.
   '6.8': s => {
     s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(OR(B, C))), 1);
-    s.a(B); const bc = s.c('Or.inl', 'hB', F(C)); const iB = s.d(s.c('Or.inr', bc, F(A)), 1);
+    s.a(B); const iB = s.d(s.c('Or.inr', s.c('Or.inl', 'hB', F(C)), F(A)), 1);
     const impAB = s.c('case_analysis', iA, iB);
-    s.a(C); const bc2 = s.c('Or.inr', 'hC', F(B)); const iC = s.d(s.c('Or.inr', bc2, F(A)), 1);
-    s.c('modus_ponens', s.c('case_analysis', impAB, iC), 'hABC');
+    s.a(C); const iC = s.d(s.c('Or.inr', s.c('Or.inr', 'hC', F(B)), F(A)), 1);
+    s.c("Or.elim'", 'hABC', impAB, iC);
   },
   // 9.8 the cheap way, now that both Or.comm' (9.2b) and Or.assoc_left (9.7) are in hand:
   //   A ∨ (B ∨ C) → (B ∨ C) ∨ A → B ∨ (C ∨ A) → (C ∨ A) ∨ B → C ∨ (A ∨ B) → (A ∨ B) ∨ C

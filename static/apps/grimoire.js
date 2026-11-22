@@ -1536,7 +1536,7 @@
     { id: '6.6', kind: 'lemma', leanName: "Or.imp_left'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hAC', IMPLIES(A, C))], formulas: [A, B, C], goal: OR(C, B), prereqs: ['6.5'], qed: '9.4(a)', hint: "Or.imp' maps both sides of a disjunction at once — and the side you want left alone is mapped by the identity implication, which Impl.idem brews from a bare formula.", needs: [] },
     { id: '6.7', kind: 'lemma', leanName: "Or.imp_right'", chapter: 6, givens: [binding('hAB', OR(A, B)), binding('hBC', IMPLIES(B, C))], formulas: [A, B, C], goal: OR(A, C), prereqs: ['6.5'], qed: '9.4(b)', hint: 'As the level before, with the identity implication on the left-hand side this time.', needs: [] },
     // associativity siblings (QED 9.2a/b) and distributivity (QED 9.3a–d) — optional alternate pathways
-    { id: '6.8', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 6, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['6.1'], qed: '9.2(a)', hint: 'The long way round, and worth walking once. Three leaves in all — A, B and C — and each has to be swung into A ∨ (B ∨ C) by hand: assume each in turn and discharge, and you hold three implications that all land in the same place. Two case analyses glue those into one implication out of (A ∨ B) ∨ C, and hABC fires it.', needs: [] },
+    { id: '6.8', kind: 'lemma', leanName: 'Or.assoc_left', chapter: 6, givens: [binding('hABC', OR(OR(A, B), C))], formulas: [A, B, C], goal: OR(A, OR(B, C)), prereqs: ['6.1'], qed: '9.2(a)', hint: "The long way round, and worth walking once. Three leaves in all — A, B and C — and each has to be swung into A ∨ (B ∨ C) by hand: assume each in turn and discharge, and you hold three implications that all land in the same place. A case_analysis glues the first two into (A ∨ B) → (A ∨ (B ∨ C)), and then Or.elim' takes hABC and that and the C case together — one brew, where a second case_analysis would need a modus_ponens after it.", needs: [] },
     // 6.9 is reachable from BOTH 6.8 (Or.assoc_left) and 6.3 (Or.comm'), so both are in principle in hand
     // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
     { id: '6.9', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 6, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['6.3', '6.8'], qed: '9.2(b)', hint: "No assumptions at all this time. Or.comm' and Or.assoc_left are both recipes now, and alternating them walks the brackets across: five single-ingredient brews.", needs: [] },
@@ -2187,7 +2187,7 @@
     '3.1': 2, '3.2': 1,
     '4.1': 2, '4.2': 3, '4.3': 1, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
     '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 3, '5.8': 4, '5.9': 3, '5.10': 3, '5.11': 3,
-    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 9, '6.6': 2, '6.7': 2, '6.8': 14, '6.9': 5, '6.10': 13, '6.11': 11, '6.12': 13, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
+    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 9, '6.6': 2, '6.7': 2, '6.8': 13, '6.9': 5, '6.10': 13, '6.11': 11, '6.12': 13, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
     '7.1': 1, '7.12': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.13': 6, '7.14': 7,
     '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 9, '8.9': 8, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 2, '8.14': 2, '8.15': 10, '8.16': 3,
     '9.1': 1, '9.2': 6, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 7, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 6,
@@ -2216,10 +2216,10 @@
     '4.8': { who: 'an anonymous reader', date: '2026-11-12' },
     '5.7': { who: 'Jacques Chemla', date: '2026-11-21' },
     '5.9': { who: 'Kantian', date: '2026-11-18', also: ['jackchemla'] },
-    '6.5': { who: 'Kantian', date: '2026-11-18' },
-    '6.8': { who: 'an anonymous reader', date: '2026-11-12', also: ['Kantian'] },
-    '6.10': { who: 'Kantian', date: '2026-11-18' },
-    '6.11': { who: 'Kantian', date: '2026-11-18' },
+    '6.5': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
+    '6.8': { who: 'Jacques Chemla', date: '2026-11-22' },   // 13, off the 14 an anonymous reader and Kantian held
+    '6.10': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
+    '6.11': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
     '6.12': { who: 'Kantian', date: '2026-11-18' },
     '6.13': { who: 'an anonymous reader', date: '2026-11-18', also: ['Kantian'] },
     '7.4': { who: 'an anonymous reader', date: '2026-11-14', also: ['qwq zty', 'Kantian'] },

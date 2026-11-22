@@ -1294,8 +1294,9 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   // 4.3: one, because Impl.idem already says A → A at any formula at all
   eq(G.par('4.3'), 1, '4.3 holds the submitted record');
   ok(G.EX_BY_ID['4.3'].hint.indexOf('Impl.idem') >= 0, 'and its hint admits the one-move route');
-  // 6.8: fourteen, by building the three branch implications without nesting them
-  eq(G.par('6.8'), 14, '6.8 holds the submitted record');
+  // 6.8: thirteen — the three branch implications, and Or.elim' for the last glue (2026-11-22; it was
+  // 14 with a second case_analysis, and 17 before any reader touched it)
+  eq(G.par('6.8'), 13, '6.8 holds the submitted record');
   // 9.7: three where the game had eight — the largest saving sent in
   eq(G.par('9.7'), 3, '9.7 holds the submitted record');
   ok(G.EX_BY_ID['9.7'].hint.indexOf("Or.imp_left'") >= 0, 'and its hint maps the excluded middle');

@@ -31,6 +31,15 @@
   h2.sec { font-size: .82rem; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin: 0 0 .5rem; }
 
   #bench { display: flex; flex-wrap: wrap; gap: .5rem; min-height: 2.4rem; }
+  /* “One per line”: the bench as a list. The chips flow across by default, which is compact and reads
+     well while the statements are short — but by Chapter 15 a single potion can be longer than the line,
+     and a wrapped chip among flowing ones is hard to pick out. Stacked, each statement gets the full
+     width, the names line up under each other, and the counts sit at the right. */
+  #bench.list, #benchvars.list { flex-direction: column; align-items: stretch; }
+  #bench.list .potion, #benchvars.list .gem { justify-content: flex-start; text-align: left; }
+  #bench.list .potion .count, #benchvars.list .gem .count { margin-left: auto; }
+  #benchvars.list { align-items: flex-start; }
+  #benchvars.list .ctxlabel { margin-bottom: .1rem; }
   .potion { display: inline-flex; align-items: center; gap: .4rem; padding: .3rem .7rem .3rem .5rem; color: var(--ink);
     border: 1px solid var(--line); border-radius: 999px; background: var(--panel); cursor: pointer; user-select: none; }
   .potion:hover { border-color: var(--accent); }
@@ -269,6 +278,7 @@
       <div class="selbar">
         <label title="When on, tapping a potion always adds another copy (instead of toggling it off), so you can select the same one twice"><input type="checkbox" id="repeat"> Repeat-select</label>
         <label title="When on, the ingredient selection is emptied after each craft. Turn it off to keep the same ingredients selected — handy when drawing several statements from one potion, e.g. taking both halves out of a conjunction"><input type="checkbox" id="autoclear" checked> Clear after crafting</label>
+        <label title="Stack the potions and gems one per line instead of letting them flow across. Easier to read once the statements get long — each one gets the full width of the bench."><input type="checkbox" id="benchlist"> One per line</label>
         <button id="clearsel" type="button" title="Clear the current ingredient selection">Clear</button>
       </div>
       <div id="deducehint" class="hint" style="margin-top:.5rem"></div>
@@ -390,14 +400,14 @@
              'formula-in', 'formula-add', 'formula-err', 'formula-quant', 'formula-shelf', 'parens', 'words', 'achwrap', 'achsum', 'ach', 'ctxmenu',
              'termBench', 'termHead', 'term-sorts', 'term-in', 'term-add', 'term-err', 'term-shelf',
              'mapwrap', 'mapsum', 'mapzin', 'mapzout', 'mapfit', 'mapcur', 'mapfollow', 'cheat', 'mapview', 'mapsvg', 'mapg',
-             'save', 'hideinactive', 'dialog', 'dlg-msg', 'dlg-btns',
+             'save', 'hideinactive', 'benchlist', 'dialog', 'dlg-msg', 'dlg-btns',
              'lede', 'howto'];
   var el = {}; ids.forEach(function (id) { el[id] = document.getElementById(id); });
   var ORIG = { lede: el.lede.innerHTML, howto: el.howto.innerHTML };   // authored (fantasy) prose
 
   // Where to write in -- quoted in the how-to, in an export, and in the banner a record raises.
   var BLOG = 'https://terrytao.wordpress.com/2026/11/11/lean-grimoire/';
-  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], moves: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true };
+  var state = { ex: null, env: null, history: [], sel: [], selF: [], selT: [], selV: [], formulas: [], terms: [], progress: {}, unlocked: {}, solved: {}, best: {}, hintOpen: false, justUnlocked: null, justUnlockedEx: [], repeat: false, autoclear: true, fantasy: true, parens: true, words: false, style: 'lean', ded: [], moves: [], cheat: false, save: false, saveWarned: false, hideInactive: true, mapFollow: true, benchList: false };
 
   // ---- progression: which exercises are accessible + which capabilities are active ----
   function accessible() {   // id -> true; the cheat reveals every exercise (but does not solve them)
@@ -777,6 +787,7 @@
   // the data half of the proof state: context variables (given constants + ∀-introduced + ∃-obtained), shown as gems
   function renderBenchVars() {
     var vars = (state.env.vars || []);
+    el.benchvars.className = state.benchList ? 'list' : '';
     if (!vars.length) { el.benchvars.innerHTML = ''; return; }
     el.benchvars.innerHTML = '<span class="ctxlabel">' + (state.fantasy ? 'gems in hand' : 'in context') + ':</span> ' +
       vars.map(function (v) {
@@ -790,6 +801,7 @@
   }
   function renderBench() {
     renderBenchVars();
+    el.bench.className = state.benchList ? 'list' : '';
     el.bench.innerHTML = state.env.bindings.map(potionHTML).join('');
     Array.prototype.forEach.call(el.bench.querySelectorAll('.potion'), function (btn) {
       var nm = btn.getAttribute('data-name');
@@ -1342,7 +1354,7 @@
     if (state.ex) progress[state.ex.id] = { env: state.env, formulas: state.formulas, terms: state.terms, moves: state.moves };   // the live board
     return { v: 1, solved: state.solved, progress: progress, best: state.best, last: state.ex ? state.ex.id : null,
              fantasy: state.fantasy, parens: state.parens, words: state.words, style: state.style, hideInactive: state.hideInactive,
-             mapFollow: state.mapFollow, autoclear: state.autoclear, cheat: state.cheat };
+             mapFollow: state.mapFollow, autoclear: state.autoclear, benchList: state.benchList, cheat: state.cheat };
   }
   // If the browser's quota is full, drop every other level's half-finished work and try again with just
   // the solved set, the records and the board in front of the player — and if even that will not fit, say
@@ -1387,6 +1399,7 @@
     state.hideInactive = saved.hideInactive !== false;   // default on
     state.mapFollow = saved.mapFollow !== false;   // default on
     state.autoclear = saved.autoclear !== false;   // default on
+    state.benchList = !!saved.benchList;           // default off: chips flowing across
     state.style = saved.style === 'informal' ? 'informal' : 'lean';
     state.cheat = !!saved.cheat;   // off unless it was explicitly switched on, and confirmed, before
   }
@@ -1601,6 +1614,7 @@
   el.parens.addEventListener('change', function () { state.parens = el.parens.checked; renderAll(); });
   el.words.addEventListener('change', function () { state.words = el.words.checked; renderAll(); });
   el.hideinactive.addEventListener('change', function () { state.hideInactive = el.hideinactive.checked; renderRecipes(); });
+  el.benchlist.addEventListener('change', function () { state.benchList = el.benchlist.checked; renderBench(); persist(); });
 
   // right-click context menu (rename/delete a potion; delete a formula)
   // Right-click menus for scrolls (formulas) and gems (variables). Assuming a formula and introducing a
@@ -1731,6 +1745,7 @@
     // literal) rather than being duplicated as a `checked` attribute in the markup
     el.fantasy.checked = state.fantasy; el.parens.checked = state.parens; el.words.checked = state.words;
     el.hideinactive.checked = state.hideInactive;
+    el.benchlist.checked = state.benchList;
     el.mapfollow.checked = state.mapFollow; el.autoclear.checked = state.autoclear; el.repeat.checked = state.repeat;
     el.cheat.classList.toggle('on', state.cheat);
     el.wrap.className = 'wrap' + (state.fantasy ? ' fantasy' : '');

@@ -1358,6 +1358,30 @@ A.loadExercise('17.2');
   G.CANON['1.2'] = was;
 })();
 
+// ---- "One per line": the bench as a list ----
+// The chips flow across by default, which is compact while the statements are short; by Chapter 15 one
+// potion can be longer than the line, and a wrapped chip among flowing ones is hard to pick out.
+(function () {
+  A.loadExercise('15.17');
+  ok(A.el.bench.className === '' && A.el.benchvars.className === '', 'the bench flows across by default');
+  A.el.benchlist.checked = true; A.el.benchlist.fire('change');
+  ok(A.state.benchList === true, 'the option is remembered in the state');
+  ok(A.el.bench.className === 'list', 'the potions stack');
+  ok(A.el.benchvars.className === 'list', 'and so do the gems');
+  ok(A.el.bench.innerHTML.indexOf('class="potion') >= 0, 'the potions are still potions, not re-rendered differently');
+  // it goes into the save with the other display settings, and comes back on a reload
+  var wasSave = A.state.save;
+  A.state.save = true; A.persist();
+  var blob = JSON.parse(localStorage.getItem(A.SAVE_KEY) || 'null');
+  ok(blob && blob.benchList === true, 'the save carries it');
+  A.state.benchList = false;
+  A.boot();
+  ok(A.state.benchList === true && A.el.benchlist.checked, 'and a reload brings it back, checkbox and all');
+  A.el.benchlist.checked = false; A.el.benchlist.fire('change');
+  ok(A.el.bench.className === '' && A.state.benchList === false, 'turning it off puts the chips back');
+  A.state.save = wasSave;
+})();
+
 A.setCheat(false);
 
 console.log(pass + ' passed, ' + fail + ' failed');
