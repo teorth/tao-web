@@ -33,7 +33,11 @@ function replayLines(text) {
   for (let i = 0; i < lines.length; i++) {
     const m = /--\s*grimoire-replay\s+v(\d+)\s+(\S+)\s+(.*)$/.exec(lines[i]);
     if (!m) continue;
-    let payload = m[3];
+    // … and a comment box curls the apostrophes INSIDE it. v2 was meant to have nothing for one to
+    // curl, which was wrong: half the recipe names end in a prime (`Or.imp'`, `And.comm'`), and the
+    // first v2 record that arrived came back as `unknown recipe Or.imp’`. The payload is identifiers,
+    // sorts and symbols, so straightening every quote in it is safe — and nothing else is touched.
+    let payload = m[3].replace(/[‘’ʼ´`]/g, "'").replace(/[“”]/g, '"');
     if (+m[1] === 1) {
       while (i + 1 < lines.length && /^[A-Za-z0-9+/=]+$/.test(lines[i + 1].trim())) payload += lines[++i].trim();
     }

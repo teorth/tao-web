@@ -1561,8 +1561,8 @@
     // 6.9 is reachable from BOTH 6.8 (Or.assoc_left) and 6.3 (Or.comm'), so both are in principle in hand
     // as recipes: comm, assoc, comm, assoc, comm gets there in five moves instead of a dozen case splits.
     { id: '6.9', kind: 'lemma', leanName: 'Or.assoc_right', chapter: 6, givens: [binding('hABC', OR(A, OR(B, C)))], formulas: [A, B, C], goal: OR(OR(A, B), C), prereqs: ['6.3', '6.8'], qed: '9.2(b)', hint: "No assumptions at all this time. Or.comm' and Or.assoc_left are both recipes now, and alternating them walks the brackets across: five single-ingredient brews.", needs: [] },
-    { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', hint: "Case-analyse hABC. The A case proves both halves of the goal at once; the B ∧ C case splits and swings each half in separately. Close with Or.elim', which consumes hABC and both cases in one brew, rather than case_analysis and a modus_ponens.", needs: [] },
-    { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', hint: "Split hABC first, so A is in hand throughout, then case-analyse the disjunction: each case pairs A with what it has and swings the result into the goal. Or.elim' is the cheaper close, by one brew, over case_analysis and a modus_ponens.", needs: [] },
+    { id: '6.10', kind: 'lemma', leanName: "or_and_left'", chapter: 6, givens: [binding('hABC', OR(A, AND(B, C)))], formulas: [A, B, C], goal: AND(OR(A, B), OR(A, C)), prereqs: ['6.1'], qed: '9.3(a)', hint: "Not a case split at all. Each half of the goal is hABC with its right-hand side improved: B ∧ C → B turns it into A ∨ B, and B ∧ C → C into A ∨ C, each in a single brew with Or.imp_right'. Prove those two small implications, improve hABC twice, and pair the results. (Case-analysing hABC works too, and costs four more.)", needs: [] },
+    { id: '6.11', kind: 'lemma', leanName: "and_or_left'", chapter: 6, givens: [binding('hABC', AND(A, OR(B, C)))], formulas: [A, B, C], goal: OR(AND(A, B), AND(A, C)), prereqs: ['6.1'], qed: '9.3(b)', hint: "Split hABC first, so A is in hand throughout. Then assume B and pair it with A, assume C and pair it with A — and let Or.imp' take the disjunction and both implications together. It swings each result into the goal for you, so neither Or.inl nor Or.inr appears at all. (Swinging them in by hand and closing with Or.elim' costs two more.)", needs: [] },
     { id: '6.12', kind: 'lemma', leanName: 'and_or_left_rev', chapter: 6, givens: [binding('hABC', OR(AND(A, B), AND(A, C)))], formulas: [A, B, C], goal: AND(A, OR(B, C)), prereqs: ['6.1'], qed: '9.3(c)', hint: "Case-analyse hABC. Both cases carry A, and the other half of each only needs swinging into B ∨ C. Close with Or.elim' rather than case_analysis and a modus_ponens.", needs: [] },
     { id: '6.13', kind: 'lemma', leanName: 'or_and_left_rev', chapter: 6, givens: [binding('hABC', AND(OR(A, B), OR(A, C)))], formulas: [A, B, C], goal: OR(A, AND(B, C)), prereqs: ['6.1'], qed: '9.3(d)', hint: "Split hABC into A ∨ B and A ∨ C, then case-analyse A ∨ B. The A case is immediate; the B case needs a second case analysis, on A ∨ C, inside it. Each of those closes in a single move if you reach for Or.elim' rather than case_analysis followed by a modus ponens.", needs: [] },
     // 6.14 (QED 9.1b): A ∨ A ⊢ A — two crafts, feeding the identity implication to Or.elim' twice.
@@ -1626,7 +1626,7 @@
     // Negation introduction (reductio) + excluded middle (classical). 9.1 introduces em; 8.3/9.2
     // are double-negation (intro via reductio, elim via em); 8.4 is the contrapositive.
     { id: '9.1', kind: 'example', chapter: 9, givens: [], formulas: [A], goal: OR(A, NOT(A)), prereqs: ['8.1'], qed: '12.1(d)', qedNote: 'QED states the reversed form, ¬A ∨ A', hint: 'No potion is needed here. Select nothing but the formula A, and brew Classical.em.', needs: ['em'] },
-    { id: '9.2', kind: 'lemma', leanName: 'not_not_elim', chapter: 9, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.1'], qed: '12.2(a)', hint: 'Excluded middle on A splits the problem: the A case proves A outright, and the ¬ A case contradicts hnnA, so absurd supplies A there too.', needs: [] },
+    { id: '9.2', kind: 'lemma', leanName: 'not_not_elim', chapter: 9, givens: [binding('hnnA', NOT(NOT(A)))], formulas: [A, NOT(A)], goal: A, prereqs: ['9.1'], qed: '12.2(a)', hint: "No sub-proof needed, and no absurd. Excluded middle gives A ∨ ¬ A; Or.comm' turns it round; Or.inl weakens hnnA into ¬ ¬ A ∨ A; and resolution' cancels the ¬ A against the ¬ ¬ A, which leaves A ∨ A for or_self_elim'. (Splitting on excluded middle and contradicting hnnA works too, and costs one more.)", needs: [] },
     { id: '9.3', kind: 'lemma', leanName: "by_cases'", chapter: 9, givens: [binding('hAB', IMPLIES(A, B)), binding('hnAB', IMPLIES(NOT(A), B))], formulas: [A, B], goal: B, prereqs: ['9.1'], qed: '12.1(c)', qedNote: 'the excluded middle in case-analysis form, stated there with assumptions', hint: 'case_analysis glues the two implications into one that starts from A ∨ (¬ A), and Classical.em supplies that disjunction. Solving it adds a recipe the rest of the chapter leans on.', needs: [] },
     // 9.4–9.5 (QED 12.3a/b): proof by contradiction — assume ¬A, contradict, then strip the double negation
     // with the minted `not_not_elim` (9.2). The two differ only in the order of the contradictory pair.
@@ -2208,10 +2208,10 @@
     '3.1': 2, '3.2': 1,
     '4.1': 2, '4.2': 3, '4.3': 1, '4.4': 3, '4.5': 3, '4.6': 3, '4.7': 3, '4.8': 3,
     '5.1': 1, '5.2': 4, '5.3': 6, '5.4': 5, '5.5': 5, '5.6': 4, '5.7': 3, '5.8': 4, '5.9': 3, '5.10': 3, '5.11': 3,
-    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 9, '6.6': 2, '6.7': 2, '6.8': 13, '6.9': 5, '6.10': 13, '6.11': 11, '6.12': 13, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
+    '6.1': 1, '6.2': 7, '6.3': 2, '6.4': 2, '6.5': 9, '6.6': 2, '6.7': 2, '6.8': 13, '6.9': 5, '6.10': 9, '6.11': 9, '6.12': 13, '6.13': 13, '6.14': 2, '6.15': 3, '6.16': 3,
     '7.1': 1, '7.12': 1, '7.2': 7, '7.3': 9, '7.4': 2, '7.5': 4, '7.6': 4, '7.7': 4, '7.8': 3, '7.9': 2, '7.10': 2, '7.11': 2, '7.13': 6, '7.14': 7,
     '8.1': 3, '8.2': 3, '8.3': 2, '8.4': 5, '8.5': 5, '8.6': 4, '8.7': 7, '8.8': 9, '8.9': 8, '8.10': 7, '8.11': 2, '8.12': 3, '8.13': 2, '8.14': 2, '8.15': 10, '8.16': 3,
-    '9.1': 1, '9.2': 6, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 7, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 6,
+    '9.1': 1, '9.2': 5, '9.3': 2, '9.4': 6, '9.5': 6, '9.6': 7, '9.7': 3, '9.8': 7, '9.9': 7, '9.10': 6,
     '10.1': 2, '10.2': 3, '10.3': 3, '10.4': 8, '10.5': 9, '10.6': 8,
     '11.1': 3, '11.2': 4, '11.3': 4, '11.4': 1, '11.5': 2,
     '12.1': 5, '12.2': 2, '12.3': 5, '12.4': 5, '12.5': 9, '12.6': 7, '12.7': 13, '12.8': 4,
@@ -2239,8 +2239,8 @@
     '5.9': { who: 'Kantian', date: '2026-11-18', also: ['jackchemla'] },
     '6.5': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
     '6.8': { who: 'Jacques Chemla', date: '2026-11-22' },   // 13, off the 14 an anonymous reader and Kantian held
-    '6.10': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
-    '6.11': { who: 'Kantian', date: '2026-11-18', also: ['Jacques Chemla'] },
+    '6.10': { who: 'Giovanni Barbarino', date: '2026-11-22' },   // 9, off the 13 Kantian and Jacques Chemla held
+    '6.11': { who: 'Giovanni Barbarino', date: '2026-11-22', also: ['an anonymous reader'] },   // 9, move for move the same proof
     '6.12': { who: 'Kantian', date: '2026-11-18' },
     '6.13': { who: 'an anonymous reader', date: '2026-11-18', also: ['Kantian'] },
     '7.4': { who: 'an anonymous reader', date: '2026-11-14', also: ['qwq zty', 'Kantian'] },
@@ -2250,7 +2250,7 @@
     '8.9': { who: 'petrov', date: '2026-11-17' },
     '8.13': { who: 'qwq zty', date: '2026-11-16' },
     '8.15': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
-    '9.2': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
+    '9.2': { who: 'Giovanni Barbarino', date: '2026-11-22' },   // 5, off the 6 qwq zty and Kantian held
     '9.3': { who: 'qwq zty', date: '2026-11-16', also: ['Kantian'] },
     '9.6': { who: 'Leaving Leaves', date: '2026-11-17' },
     '9.7': { who: 'an anonymous reader', date: '2026-11-12' },

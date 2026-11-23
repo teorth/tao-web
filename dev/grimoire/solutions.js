@@ -165,24 +165,27 @@ const SOL = {
     const x4 = s.c('Or.assoc_left', x3);       // C ∨ (A ∨ B)
     s.c("Or.comm'", x4);                       // (A ∨ B) ∨ C
   },
-  // A RECORD (13, was 14): Or.elim' in place of case_analysis + modus ponens.
+  // A RECORD (9, was 13): do not case-analyse at all. Each half of the goal is the GIVEN disjunction with
+  // its right-hand side improved — B ∧ C → B for one, B ∧ C → C for the other — and `Or.imp_right'` does
+  // exactly that in one brew. Two little sub-proofs and a pairing, where the case split needed thirteen.
   '6.10': s => {
-    s.a(A);
-    const p1 = s.c('And.intro', s.c('Or.inl', 'hA', F(B)), s.c('Or.inl', 'hA', F(C)));
-    const iA = s.d(p1, 1);
-    const hbc = s.a(AND(B, C));
-    const p2 = s.c('And.intro', s.c('Or.inr', s.c('And.left', hbc), F(A)),
-                                s.c('Or.inr', s.c('And.right', hbc), F(A)));
-    const iBC = s.d(p2, 1);
-    s.c("Or.elim'", 'hABC', iA, iBC);
+    const bc1 = s.a(AND(B, C));
+    const iB = s.d(s.c('And.left', bc1), 1);              // (B ∧ C) → B
+    const ab = s.c("Or.imp_right'", 'hABC', iB);          // A ∨ B
+    const bc2 = s.a(AND(B, C));
+    const iC = s.d(s.c('And.right', bc2), 1);             // (B ∧ C) → C
+    const ac = s.c("Or.imp_right'", 'hABC', iC);          // A ∨ C
+    s.c('And.intro', ab, ac);
   },
-  // A RECORD (11, was 12): Or.elim' in place of case_analysis + modus ponens.
+  // A RECORD (9, was 11): the two branch implications need not swing their results into the goal by hand
+  // — `Or.imp'` takes the disjunction and BOTH implications and does it, so neither Or.inl nor Or.inr
+  // appears in the proof at all.
   '6.11': s => {
     const ha = s.c('And.left', 'hABC');
     const hbc = s.c('And.right', 'hABC');
-    s.a(B); const iB = s.d(s.c('Or.inl', s.c('And.intro', ha, 'hB'), F(AND(A, C))), 1);
-    s.a(C); const iC = s.d(s.c('Or.inr', s.c('And.intro', ha, 'hC'), F(AND(A, B))), 1);
-    s.c("Or.elim'", hbc, iB, iC);
+    s.a(B); const iB = s.d(s.c('And.intro', ha, 'hB'), 1);   // B → A ∧ B
+    s.a(C); const iC = s.d(s.c('And.intro', ha, 'hC'), 1);   // C → A ∧ C
+    s.c("Or.imp'", hbc, iB, iC);
   },
   // A RECORD (13, was 14): Or.elim' in place of case_analysis + modus ponens.
   '6.12': s => {
@@ -221,13 +224,14 @@ const SOL = {
   '8.2': s => { const na = s.c('And.left', 'hnAA'); const a = s.c('And.right', 'hnAA'); s.c('absurd', a, na, F(B)); },
   '9.1': s => { s.c('Classical.em', F(A)); },
   '8.3': s => { const hna = s.a(NOT(A)); s.n('hA', hna); },
+  // A RECORD (5, was 6): no sub-proof and no `absurd`. Excluded middle gives A ∨ ¬ A, turned round to
+  // ¬ A ∨ A; the given ¬ ¬ A, weakened to ¬ ¬ A ∨ A, is the clause that resolves against it; and
+  // `resolution'` cancels the ¬ A against the ¬ ¬ A, leaving A ∨ A.
   '9.2': s => {
-    const na = s.a(NOT(A));
-    const a1 = s.c('absurd', na, 'hnnA', F(A));
-    const imp = s.d(a1, 1);
-    const em = s.c('Classical.em', F(A));
-    const aa = s.c("Or.imp_right'", em, imp);
-    s.c("or_self_elim'", aa);
+    const em = s.c('Classical.em', F(A));                 // A ∨ ¬ A
+    const flip = s.c("Or.comm'", em);                     // ¬ A ∨ A
+    const nn = s.c('Or.inl', 'hnnA', F(A));               // ¬ ¬ A ∨ A
+    s.c("or_self_elim'", s.c("resolution'", flip, nn));
   },
   '8.4': s => { const hnb = s.a(NOT(B)); const ha = s.a(A); const hb = s.c('modus_ponens', 'hAB', ha); const nA = s.n(hb, hnb); s.d(nA, 1); },
   '8.5': s => { const ha = s.a(A); const c = s.c('modus_ponens', 'hAcon', ha); s.n(s.c('And.left', c), s.c('And.right', c)); },

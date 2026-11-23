@@ -1703,5 +1703,36 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   }
 }
 
+// ---------- what a comment box does to a pasted record ----------
+// The filer reads what a reader pasted, and a blog is not a text file: WordPress turns the line's
+// leading `--` into an em dash and curls every apostrophe. v2 was designed with "no quotes in it to be
+// curled", which was wrong -- half the recipe names end in a prime -- and the first v2 record to arrive
+// came back as `unknown recipe Or.imp’`, which reads exactly like a forgery. The payload is
+// identifiers, sorts and symbols, so the filer straightens every quote in it.
+{
+  const FR = require('./file_record.js');
+  const line = G.replayLine('6.11', [['c', "Or.imp'", ['hBC', 'hB', 'hC'], null]]);
+  ok(line.indexOf("Or.imp'") > 0, 'a replay line can carry a lemma whose name ends in a prime');
+  // as the blog serves it back: em-dashed, curled
+  const mangled = line.replace(/^--/, '—').replace(/'/g, '’');
+  const read = FR.replayLines(mangled);
+  ok(read.length === 1 && read[0].version === 2 && read[0].id === '6.11', 'the filer finds it anyway');
+  ok(read[0].payload.indexOf("Or.imp'") >= 0 && read[0].payload.indexOf('’') < 0,
+     'with the quotes straightened: ' + read[0].payload);
+  ok(JSON.stringify(G.decodeMovesText(read[0].payload)) === JSON.stringify([['c', "Or.imp'", ['hBC', 'hB', 'hC'], null]]),
+     'so the moves come back exactly');
+  // the other curls a comment box produces, and the left single quote for good measure
+  ['‘', 'ʼ', '´', '`'].forEach(function (q) {
+    const r = FR.replayLines(line.replace(/'/g, q));
+    ok(r.length === 1 && r[0].payload.indexOf("Or.imp'") >= 0, 'and ' + JSON.stringify(q) + ' is straightened too');
+  });
+  // a v1 line is base64 and has no quotes to curl, but it may be WRAPPED by the comment box
+  const v1 = '-- grimoire-replay v1 2.1 ' + G.encodeMoves([['c', 'And.left', ['hAB'], null]]);
+  const split = v1.slice(0, 40) + String.fromCharCode(10) + v1.slice(40);
+  const back = FR.replayLines(split);
+  ok(back.length === 1 && JSON.stringify(G.decodeMoves(back[0].payload)) === JSON.stringify([['c', 'And.left', ['hAB'], null]]),
+     'a v1 payload wrapped across lines is put back together');
+}
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);

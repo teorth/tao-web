@@ -71,7 +71,7 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-22: core 4942, smoke 482.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-23: core 4952, smoke 482.**
 
 **The spellbook is one walk now (2026-11-22), and that is worth knowing before touching the emitters.**
 The Lean reading and the informal one were two functions over the same `steps` tree with identical
@@ -149,7 +149,12 @@ the blog refused the comment, and that proof's replay line alone was 6.5 KB. The
 produces is about 2 KB, and the game has a **Copy record** button that copies the header and that line
 and nothing else. v1 lines still read: records were posted in that format. The filer also normalises what
 a comment box does to a pasted line (a leading `--` curled into an em dash, base64 wrapped across lines),
-so the raw text of a blog comment can be fed to it as it stands.
+so the raw text of a blog comment can be fed to it as it stands — including the apostrophes it curls.
+That last one was a mistake in the v2 design: the line was said to have "no quotes in it to be curled",
+and then the first v2 record that arrived came back as `unknown recipe Or.imp’`, because half the recipe
+names end in a prime. The filer straightens every quote in a payload, which is safe where a payload is
+identifiers, sorts and symbols, and the core suite now mangles a line the way the blog does before
+reading it back.
 
 Two traps worth knowing about, both of which bit on real submissions:
 
