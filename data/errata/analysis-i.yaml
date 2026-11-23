@@ -483,7 +483,7 @@ editions:
     date: '2026-09-28'
   - id: fourth-edition-0145
     page: '162'
-    text: "“certain sets—including the real numbers $\mathbf R$ are” should be “certain sets, including the real numbers $\mathbf R$, are”."
+    text: "“certain sets—including the real numbers $\\mathbf R$ are” should be “certain sets, including the real numbers $\\mathbf R$, are”."
     reported_by:
     - Ivan Panchenko
     date: '2026-09-28'
