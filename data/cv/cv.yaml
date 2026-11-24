@@ -771,6 +771,11 @@ lectures:
   venue: Caltech
   date: '2026'
   topic: Math 2.0
+- name: Harvard Science Book Talk
+  url: "https://www.youtube.com/watch?v=pOQ7IO4_Vxg"
+  venue: Harvard University
+  date: '2026'
+  topic: Six Math Essentials
 editorial_note:
   text: Advice on submitting papers to journals
   url: "https://www.math.ucla.edu/~tao/submissions.html"
