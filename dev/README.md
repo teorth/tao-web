@@ -71,7 +71,9 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-24: core 4986, smoke 482.**
+why the counts are written down here and in the commit that moves them. **As of 2026-11-24: core 4989, smoke 482.** (A record moves this number by a hair on its own: one of the
+assertions is "the hint names a real recipe", once per recipe a hint mentions, so rewriting a hint shifts it.
+The signal is a FALL of more than that, and the real check is a diff of the section headers.)
 
 **The spellbook is one walk now (2026-11-22), and that is worth knowing before touching the emitters.**
 The Lean reading and the informal one were two functions over the same `steps` tree with identical
@@ -212,3 +214,20 @@ lands. `prereqs.js --check` still reports those levels, now as "par leans on the
 rule permits", and fails only on a missing *mechanic* gate; `prereqs.js --verify` replays every level as
 a player who has solved exactly its prerequisites, and lists the pars that are out of reach at opening
 without counting them as faults.
+
+**And what to do when a record breaks that rule, which is the 7.12 move again (2026-11-24).** Two of
+Kantian's twelve leaned on the lemma minted by the very next level — 6.8 (`Or.assoc_left`) on
+`Or.mono_right'`, and 8.9 (`not_and_of_not_or'`) on `imp_of_not_or'`. Both proofs are real, and a player
+who has solved those lemmas can find them in the game; neither was a legal par. The call (TT) was to
+move the lemmas in front, exactly as 7.12 moved: `Or.mono_left'`/`Or.mono_right'` (ids 6.15/6.16, and
+built from 6.6/6.7 anyway) now sit behind 6.7 and are shown as 6.8/6.9, pushing ids 6.8–6.14 to 6.10–6.16;
+and id 8.10 swaps with 8.9. **No id changed, so no saved game migrates** — and `order_audit.js` §A is
+then clean. The alternative, where a reorder would be wrong, is to file the shortest proof that uses
+only earlier lemmas and credit the reader for the idea: for 6.8 that was 11 moves against their 9.
+
+**Nothing warns the player, or used to warn you.** The game calls any proof under par a record — it
+counts moves and knows nothing about reading order — so a reader can be told "🏆 A new record" for a
+proof that cannot become the par. Since 2026-11-24 `file_record.js` says so: a submission whose moves
+reach forward is replayed with the whole book stocked (it used to fail as `unknown recipe`, which reads
+exactly like a forgery — the same trap as the un-minted lemmas above), and the advice block names the
+lemma, the level that mints it, and the two ways out. The player-facing banner still says nothing about it.

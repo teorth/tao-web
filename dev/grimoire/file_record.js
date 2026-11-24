@@ -53,12 +53,30 @@ function replayLines(text) {
 // base-recipe proof (2.1), so the gap sat here unnoticed until five records arrived at once.
 const ORDER = {}; G.EXERCISES.forEach((e, i) => { ORDER[e.id] = i; });
 const IS_BASE = {}; G.BASE_RECIPES.forEach(r => { IS_BASE[r.id] = true; });
-function stockRecipes(id) {
+function stockRecipes(id, all) {
   Object.keys(G.RECIPES).forEach(k => { if (!IS_BASE[k]) delete G.RECIPES[k]; });
   G.EXERCISES.forEach(e => {
-    if (ORDER[e.id] < ORDER[id] && e.kind === 'lemma' && e.leanName && !G.RECIPES[e.leanName])
+    if ((all || ORDER[e.id] < ORDER[id]) && e.kind === 'lemma' && e.leanName && !G.RECIPES[e.leanName])
       G.RECIPES[e.leanName] = G.recipeFromExercise(e);
   });
+}
+
+// Which lemmas a set of moves reaches for that the list only mints LATER than this level. The game
+// calls any proof under par a record — it counts moves and knows nothing about reading order — but
+// §A of the ordering rule says a par may lean only on lemmas minted earlier, so a proof like that
+// cannot become the par until the lemma's level moves in front of it. Reported, not judged: the proof
+// is real, and the two that turned up on 2026-11-24 were worth reordering two chapters for.
+function reachesForward(id, moves) {
+  const ord = {}, owner = {};
+  G.EXERCISES.forEach((e, i) => { ord[e.id] = i; if (e.kind === 'lemma' && e.leanName) owner[e.leanName] = e.id; });
+  const here = ord[id], out = [];
+  (moves || []).forEach(m => {
+    if (m[0] !== 'c') return;
+    const o = owner[m[1]];
+    if (o != null && ord[o] > here && !out.some(f => f.lemma === m[1]))
+      out.push({ lemma: m[1], level: o, shownAs: G.exNum(G.EX_BY_ID[o]) });
+  });
+  return out;
 }
 
 // Every replay line in a pasted comment, checked. `parOf` is injectable so the tests can ask what the
@@ -75,10 +93,18 @@ function assess(text, parOf) {
     const moves = v === 1 ? G.decodeMoves(line.payload) : G.decodeMovesText(line.payload);
     if (!moves) { r.verdict = 'the replay line is not readable — it may have been truncated in the paste'; out.push(r); return; }
     stockRecipes(id);
-    const res = G.replayMoves(ex, moves);
+    let res = G.replayMoves(ex, moves);
+    // An unknown recipe here is usually not a forgery: it is a proof that reaches forward in the list.
+    // Replay it with the whole book stocked, so the tool can tell the two apart.
+    if (!res.ok && /unknown recipe/.test(res.error)) {
+      stockRecipes(id, true);
+      const again = G.replayMoves(ex, moves);
+      if (again.ok) res = again;
+    }
     if (!res.ok) { r.verdict = 'NOT A PROOF: ' + res.error; out.push(r); return; }
     const p = par(id);
-    Object.assign(r, { length: res.length, par: p, moves: moves, record: p != null && res.length < p });
+    Object.assign(r, { length: res.length, par: p, moves: moves, record: p != null && res.length < p,
+                       forward: reachesForward(id, moves) });
     r.verdict = p == null ? 'proves it in ' + res.length + ' (this level has no par yet)'
       : res.length < p ? 'A RECORD: ' + res.length + ' moves against a par of ' + p
       : res.length === p ? 'matches the par of ' + p + ' — nothing to record'
@@ -114,7 +140,7 @@ function scriptFor(id, moves) {
   return "  '" + id + "': s => {\n    " + lines.join('\n    ') + '\n  },';
 }
 
-if (require.main !== module) { module.exports = { assess, scriptFor, stockRecipes, replayLines, normalise }; return; }
+if (require.main !== module) { module.exports = { assess, scriptFor, stockRecipes, replayLines, normalise, reachesForward }; return; }
 
 const argv = process.argv.slice(2);
 const asJson = argv.includes('--json');
@@ -138,6 +164,15 @@ if (asJson) {
   out.forEach(r => {
     console.log('\n' + r.id + (r.shownAs && r.shownAs !== r.id ? '  (shown as ' + r.shownAs + ')' : '') + ' — ' + r.verdict);
     if (!r.record) return;
+    if (r.forward && r.forward.length) {
+      console.log('\n  ⚠ This proof reaches FORWARD in the list: it uses '
+        + r.forward.map(f => f.lemma + ' (minted by ' + f.level
+          + (f.shownAs !== f.level ? ', shown as ' + f.shownAs : '') + ')').join(', ') + '.');
+      console.log('    A par may lean only on lemmas minted EARLIER — order_audit.js §A — so filing it as it');
+      console.log('    stands would be an ordering error. Either move that level in front of this one (which is');
+      console.log('    what chapters 6 and 8 did on 2026-11-24, and costs a `num` shift, never an id), or file the');
+      console.log('    shortest proof that uses only earlier lemmas and credit the reader for the idea.');
+    }
     console.log('\n  1. the script, into dev/grimoire/solutions.js, replacing the entry for ' + r.id + ':\n');
     console.log(scriptFor(r.id, r.moves).split('\n').map(l => '  ' + l).join('\n'));
     console.log('\n     The expressions are dumped as data, which is correct but unreadable. Rewrite them with');

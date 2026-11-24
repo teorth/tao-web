@@ -1296,7 +1296,7 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   ok(G.EX_BY_ID['4.3'].hint.indexOf('Impl.idem') >= 0, 'and its hint admits the one-move route');
   // 6.8: thirteen — the three branch implications, and Or.elim' for the last glue (2026-11-22; it was
   // 14 with a second case_analysis, and 17 before any reader touched it)
-  eq(G.par('6.8'), 13, '6.8 holds the submitted record');
+  eq(G.par('6.8'), 9, '6.8 holds the submitted record');
   // 9.7: three where the game had eight — the largest saving sent in
   eq(G.par('9.7'), 3, '9.7 holds the submitted record');
   ok(G.EX_BY_ID['9.7'].hint.indexOf("Or.imp_left'") >= 0, 'and its hint maps the excluded middle');
@@ -1732,6 +1732,27 @@ ok(G.emitLean(EX_BY_ID['2.3'], newEnv(EX_BY_ID['2.3']), { parens: true }).indexO
   const back = FR.replayLines(split);
   ok(back.length === 1 && JSON.stringify(G.decodeMoves(back[0].payload)) === JSON.stringify([['c', 'And.left', ['hAB'], null]]),
      'a v1 payload wrapped across lines is put back together');
+}
+
+// ---------- a shorter proof that reaches FORWARD in the list ----------
+// The game calls any proof under par a record: it counts moves and knows nothing about reading order.
+// But a par may lean only on a lemma minted EARLIER (order_audit.js §A), so such a proof is real and
+// still cannot become the par until that lemma's level moves in front of it -- which is what chapters 6
+// and 8 did on 2026-11-24, for two of Kantian's. The filer used to fail these as `unknown recipe`,
+// indistinguishable from a forgery; it replays them with the whole book stocked and says what is wrong.
+{
+  const FR = require('./file_record.js');
+  // a real two-move proof of 6.7, leaning on Or.mono_right' -- which is 6.16, one place further down
+  const moves = [['c', "Or.mono_right'", ['hBC', G.varE('A')], null], ['c', 'modus_ponens', ['hABAC', 'hAB'], null]];
+  const r = FR.assess(G.replayLine('6.7', moves), () => 3)[0];
+  ok(/^A RECORD: 2 moves/.test(r.verdict), 'a forward-leaning proof still replays as a proof: ' + r.verdict);
+  eq(JSON.stringify(r.forward.map(function (f) { return f.lemma + '@' + f.level; })),
+     JSON.stringify(["Or.mono_right'@6.16"]), 'and the filer names the lemma the list mints later');
+  eq(FR.reachesForward('6.8', [['c', "Or.mono_right'", ['x'], null]]).length, 0,
+     'while 6.8 may now use it, because 6.16 was moved in front of 6.8');
+  const plain = [['c', 'And.left', ['hAB'], null], ['c', 'And.right', ['hAB'], null], ['c', 'And.intro', ['hB', 'hA'], null]];
+  eq(FR.assess(G.replayLine('2.1', plain), () => 9)[0].forward.length, 0,
+     'and an ordinary record reaches forward for nothing');
 }
 
 console.log(pass + ' passed, ' + fail + ' failed');

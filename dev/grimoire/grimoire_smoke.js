@@ -735,7 +735,7 @@ A.setFantasy(false);
 var opts = get('exsel').children.map(function (o) { return o.textContent; });
 ok(opts.some(function (t) { return t.indexOf('★ Exercise 6.1 — new: case analysis') === 0; }),
    'the dropdown stars the tutorials and names the mechanic');
-ok(opts.some(function (t) { return t.indexOf("Exercise 6.10 — or_and_left'") === 0; }),
+ok(opts.some(function (t) { return t.indexOf("Exercise 6.12 — or_and_left'") === 0; }),
    'practice levels are listed by their lemma name');
 
 // the QED correspondence under the goal: shown for a level that descends from a QED exercise, with

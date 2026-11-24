@@ -183,15 +183,16 @@ const SOL = {
     s.c("Or.elim'", 'hAB', i1, i2);
   },
   '6.7': s => { s.c("Or.imp'", 'hAB', s.c('Impl.idem', F(A)), 'hBC'); },
-  // A RECORD (13, was 14): the same three leaves, but the LAST glue is Or.elim' — which takes the
-  // disjunction and both cases together — instead of a case_analysis that then needs a modus_ponens.
-  // The first glue stays a case_analysis, because what it has to produce is an implication.
+  // A RECORD (9, was 13, and 14 before that): the A case need not be proved at all. `Or.mono_right'`
+  // turns B → (B ∨ C) into (A ∨ B) → (A ∨ (B ∨ C)), which IS the left case of the given, carrying the
+  // untouched A along with it — so one little sub-proof does the work of two and no case_analysis
+  // appears. (This is the record the chapter was reordered for: Or.mono_right' is 6.16, and a par may
+  // only lean on a lemma minted earlier in the list, so 6.15/6.16 moved up behind 6.7.)
   '6.8': s => {
-    s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(OR(B, C))), 1);
-    s.a(B); const iB = s.d(s.c('Or.inr', s.c('Or.inl', 'hB', F(C)), F(A)), 1);
-    const impAB = s.c('case_analysis', iA, iB);
-    s.a(C); const iC = s.d(s.c('Or.inr', s.c('Or.inr', 'hC', F(B)), F(A)), 1);
-    s.c("Or.elim'", 'hABC', impAB, iC);
+    s.a(B); const iB = s.d(s.c('Or.inl', 'hB', F(C)), 1);                       // B → (B ∨ C)
+    const left = s.c("Or.mono_right'", iB, F(A));                               // (A ∨ B) → (A ∨ (B ∨ C))
+    s.a(C); const iC = s.d(s.c('Or.inr', s.c('Or.inr', 'hC', F(B)), F(A)), 1);  // C → (A ∨ (B ∨ C))
+    s.c("Or.elim'", 'hABC', left, iC);
   },
   // 9.8 the cheap way, now that both Or.comm' (9.2b) and Or.assoc_left (9.7) are in hand:
   //   A ∨ (B ∨ C) → (B ∨ C) ∨ A → B ∨ (C ∨ A) → (C ∨ A) ∨ B → C ∨ (A ∨ B) → (A ∨ B) ∨ C
@@ -294,13 +295,15 @@ const SOL = {
     const got = s.c("or_self_elim'", aa);
     s.n(got, nA);
   },
-  // 12.12. A RECORD (8, was 9): assume A ∧ B, double-negate each half, and De Morgan the pair back up
-  // into ¬((¬A) ∨ (¬B)) — which is exactly what contradicts the given. No case analysis at all.
+  // 12.12. A RECORD (6, was 8, and 9 before that): read A → ¬ B straight off the given with
+  // imp_of_not_or', then assume A ∧ B and improve its left half along that implication — which leaves
+  // (¬ B) ∧ B, a contradiction sitting in one potion. (The other record the reorder was for: that lemma
+  // is 8.10, which now sits in front of this level.)
   '8.9': s => {
+    const imp = s.c("imp_of_not_or'", 'hnAonB');          // A → ¬ B
     const hab = s.a(AND(A, B));
-    const nna = s.c("not_not_intro'", s.c('And.left', hab));
-    const nnb = s.c("not_not_intro'", s.c('And.right', hab));
-    s.n('hnAonB', s.c("not_or_intro'", s.c('And.intro', nna, nnb)));
+    const bb = s.c("And.imp_left'", hab, imp);            // (¬ B) ∧ B
+    s.n(s.c('And.right', bb), s.c('And.left', bb));
   },
   // 12.13 (classical): split on A via the minted by_cases'. If A holds, ¬B follows by reductio against ¬(A ∧ B).
   // 10.8: assume the left side, push it through the ↔, discharge — the implication inside a ↔
