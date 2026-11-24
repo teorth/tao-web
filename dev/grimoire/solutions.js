@@ -47,13 +47,19 @@ function solver(exId) {
 // Both commutativity laws have identical shape, so they share one script: unfold `x ∈ a op b` on each side
 // with the membership axiom, bridge the two bodies with the propositional symmetry lemma (an implication in
 // both directions makes the ↔), chain the three biconditionals, then apply extensionality.
+// A RECORD in all four of chapter 18's laws (Kantian, 2026-11-24), and one idea: `mem_union x` is
+// `∀ a, ∀ b, (x ∈ a ∪ b ↔ …)`, so the several unfoldings a law needs are instantiations of ONE
+// partly-instantiated potion, not independent walks down the same axiom from the top. That is why no
+// script here uses an `inst3` any more: it costs a move a law in the commutativity pair (17 → 16) and
+// four in the associativity and distributivity ones.
 function setLaw(s, memAx, symmLemma, op) {
   const SET = G.SET, sv2 = (n) => G.varE(n, SET), mem = (x, a) => G.appE('MEM', [x, a]);
   const a = sv2('a'), b = sv2('b'), x = sv2('x');
-  const inst3 = (h, p, q, r) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', h, F(p)), F(q)), F(r));
+  const at = (h, t) => s.c('universal_instantiation', h, F(t));
   s.v('x', SET);
-  const e1 = inst3(memAx, x, a, b);                       // x ∈ a op b  ↔  (x∈a ⋆ x∈b)
-  const e2 = inst3(memAx, x, b, a);                       // x ∈ b op a  ↔  (x∈b ⋆ x∈a)
+  const m = at(memAx, x);                                 // ∀ a, ∀ b, (x ∈ a op b ↔ …)
+  const e1 = at(at(m, a), b);                             // x ∈ a op b  ↔  (x∈a ⋆ x∈b)
+  const e2 = at(at(m, b), a);                             // x ∈ b op a  ↔  (x∈b ⋆ x∈a)
   const i1 = s.c(symmLemma, F(mem(x, a)), F(mem(x, b)));  // (x∈a ⋆ x∈b) → (x∈b ⋆ x∈a)
   const i2 = s.c(symmLemma, F(mem(x, b)), F(mem(x, a)));  // and back
   const bridge = s.c('Iff.intro', i1, i2);
@@ -68,10 +74,13 @@ function setLaw(s, memAx, symmLemma, op) {
 function assocLaw(s, memAx, congrL, congrR, assocL, assocR, op) {
   const SET = G.SET, sv2 = (n) => G.varE(n, SET), mem = (x, a) => G.appE('MEM', [x, a]);
   const a = sv2('a'), b = sv2('b'), c = sv2('c'), x = sv2('x');
-  const inst3 = (h, p, q, r) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', h, F(p)), F(q)), F(r));
+  const at = (h, t) => s.c('universal_instantiation', h, F(t));
   s.v('x', SET);
-  const u1 = inst3(memAx, x, op(a, b), c), u2 = inst3(memAx, x, a, b);
-  const u3 = inst3(memAx, x, a, op(b, c)), u4 = inst3(memAx, x, b, c);
+  const m = at(memAx, x), mA = at(m, a);
+  const u2 = at(mA, b);                                   // x ∈ a op b      ↔ (x∈a ⋆ x∈b)
+  const u3 = at(mA, op(b, c));                            // x ∈ a op (b op c) ↔ (x∈a ⋆ x∈ b op c)
+  const u1 = at(at(m, op(a, b)), c);                      // x ∈ (a op b) op c ↔ (x∈ a op b ⋆ x∈c)
+  const u4 = at(at(m, b), c);                             // x ∈ b op c      ↔ (x∈b ⋆ x∈c)
   const h = s.a(mem(x, op(op(a, b), c)));
   const p2 = s.c(congrL, s.c('Iff.mp', u1, h), u2);
   const p4 = s.c(congrR, s.c(assocL, p2), s.c("Iff.symm'", u4));
@@ -82,6 +91,35 @@ function assocLaw(s, memAx, congrL, congrR, assocL, assocR, op) {
   const bwd = s.d(s.c('Iff.mpr', u1, q4), 1);
   const all = s.d(s.c('Iff.intro', fwd, bwd), 1);
   s.c('modus_ponens', s.c('universal_instantiation', s.c('universal_instantiation', 'ext', F(op(op(a, b), c))), F(op(a, op(b, c)))), all);
+}
+// And the two distributive laws are the same proof as each other, which nothing in the file said until
+// Kantian sent both of them in the same shape. `out` distributes over `in`; the congruences reach into
+// whichever side was unfolded; `distrib`/`distribRev` are the propositional law and its converse. No
+// sub-proof unpacks a membership here — the congruences rewrite inside the connective instead, which is
+// what takes 18.10 from 48 moves to 35.
+function distribLaw(s, memOut, memIn, outCongrR, inCongrL, inCongrR, distrib, distribRev, out, inn) {
+  const SET = G.SET, sv2 = (n) => G.varE(n, SET), mem = (x, a) => G.appE('MEM', [x, a]);
+  const a = sv2('a'), b = sv2('b'), c = sv2('c'), x = sv2('x');
+  const at = (h, t) => s.c('universal_instantiation', h, F(t));
+  s.v('x', SET);
+  const mo = at(memOut, x), mi = at(memIn, x), moA = at(mo, a);
+  const oab = at(moA, b);                                 // x ∈ a out b        ↔ (x∈a ⊕ x∈b)
+  const oac = at(moA, c);
+  const oabc = at(moA, inn(b, c));                        // x ∈ a out (b in c) ↔ (x∈a ⊕ x∈ b in c)
+  const ibc = at(at(mi, b), c);                           // x ∈ b in c        ↔ (x∈b ⊗ x∈c)
+  const iR = at(at(mi, out(a, b)), out(a, c));            // the right-hand side, unfolded
+  const h = s.a(mem(x, out(a, inn(b, c))));
+  const p2 = s.c(outCongrR, s.c('Iff.mp', oabc, h), ibc); // x∈a ⊕ (x∈b ⊗ x∈c)
+  const p3 = s.c(distrib, p2);                            // (x∈a ⊕ x∈b) ⊗ (x∈a ⊕ x∈c)
+  const p5 = s.c(inCongrR, s.c(inCongrL, p3, s.c("Iff.symm'", oab)), s.c("Iff.symm'", oac));
+  const fwd = s.d(s.c('Iff.mpr', iR, p5), 1);
+  const h2 = s.a(mem(x, inn(out(a, b), out(a, c))));
+  const q3 = s.c(inCongrR, s.c(inCongrL, s.c('Iff.mp', iR, h2), oab), oac);
+  const q5 = s.c(outCongrR, s.c(distribRev, q3), s.c("Iff.symm'", ibc));
+  const bwd = s.d(s.c('Iff.mpr', oabc, q5), 1);
+  const all = s.d(s.c('Iff.intro', fwd, bwd), 1);
+  const extAt = s.c('universal_instantiation', s.c('universal_instantiation', 'ext', F(out(a, inn(b, c)))), F(inn(out(a, b), out(a, c))));
+  s.c('modus_ponens', extAt, all);
 }
 const SOL = {
   '1.1': s => { s.c('And.intro', s.c('And.intro', 'hA', 'hB'), 'hC'); },
@@ -651,7 +689,9 @@ const SOL = {
   // 26.6  transitivity: a + k = b and b + j = c give a + (k + j) = c — which is associativity.
   '20.6': s => {
     const a = nv('a'), b = nv('b'), c = nv('c');
-    const unf = (x, y) => s.c('universal_instantiation', s.c('universal_instantiation', 'le_def', F(x)), F(y));
+    const at = (h, t) => s.c('universal_instantiation', h, F(t));
+    const leA = at('le_def', a);                                                  // ∀ b, (a ≤ b ↔ ∃ k, a + k = b)
+    const unf = (x, y) => (x === a ? at(leA, y) : at(at('le_def', x), y));
     const kj = s.obtain(s.c('Iff.mp', unf(a, b), 'hab'), 'k');                    // a + k = b
     const k = nv('k');
     const jj = s.obtain(s.c('Iff.mp', unf(b, c), 'hbc'), 'j');                    // b + j = c
@@ -679,64 +719,12 @@ const SOL = {
   '18.9': s => setLaw(s, 'mem_inter', "And.symm'", (x, y) => G.appE('inter', [x, y])),
   '18.11': s => assocLaw(s, 'mem_union', "Or.congr_left'", "Or.congr_right'", 'Or.assoc_left', 'Or.assoc_right', (x, y) => G.appE('union', [x, y])),
   '18.12': s => assocLaw(s, 'mem_inter', "And.congr_left'", "And.congr_right'", 'And.assoc_left', 'And.assoc_right', (x, y) => G.appE('inter', [x, y])),
-  // 27.7: the dual capstone — ∪ over ∩. Both operands of the ∩ need unfolding, so both congruences appear.
-  '18.13': s => {
-    const SET = G.SET, sv2 = (n) => G.varE(n, SET), mem = (x, a) => G.appE('MEM', [x, a]);
-    const un = (p, q) => G.appE('union', [p, q]), it = (p, q) => G.appE('inter', [p, q]);
-    const a = sv2('a'), b = sv2('b'), c = sv2('c'), x = sv2('x');
-    const inst3 = (h, p, q, r) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', h, F(p)), F(q)), F(r));
-    s.v('x', SET);
-    const u1 = inst3('mem_union', x, a, it(b, c));      // x ∈ a∪(b∩c) ↔ (x∈a ∨ x∈b∩c)
-    const u2 = inst3('mem_inter', x, b, c);             // x ∈ b∩c ↔ (x∈b ∧ x∈c)
-    const u3 = inst3('mem_inter', x, un(a, b), un(a, c));
-    const u4 = inst3('mem_union', x, a, b), u5 = inst3('mem_union', x, a, c);
-    const h = s.a(mem(x, un(a, it(b, c))));
-    const p2 = s.c("Or.congr_right'", s.c('Iff.mp', u1, h), u2);       // x∈a ∨ (x∈b ∧ x∈c)
-    const p3 = s.c("or_and_left'", p2);                                 // (x∈a∨x∈b) ∧ (x∈a∨x∈c)
-    const p5 = s.c("And.congr_right'", s.c("And.congr_left'", p3, s.c("Iff.symm'", u4)), s.c("Iff.symm'", u5));
-    const fwd = s.d(s.c('Iff.mpr', u3, p5), 1);
-    const h2 = s.a(mem(x, it(un(a, b), un(a, c))));
-    const q3 = s.c("And.congr_right'", s.c("And.congr_left'", s.c('Iff.mp', u3, h2), u4), u5);
-    const q5 = s.c("Or.congr_right'", s.c('or_and_left_rev', q3), s.c("Iff.symm'", u2));
-    const bwd = s.d(s.c('Iff.mpr', u1, q5), 1);
-    const all = s.d(s.c('Iff.intro', fwd, bwd), 1);
-    s.c('modus_ponens', s.c('universal_instantiation', s.c('universal_instantiation', 'ext', F(un(a, it(b, c)))), F(it(un(a, b), un(a, c)))), all);
-  },
-  // 27.4 distributivity: the same "unfold, bridge, extensionality" shape, but the bridge is Chapter 9's
-  // and_or_left' one way and and_or_left_rev the other, with Or.imp' pushing the conjunctions back through
-  // mem_inter on each branch.
-  '18.10': s => {
-    const SET = G.SET, sv2 = (n) => G.varE(n, SET), mem = (x, a) => G.appE('MEM', [x, a]);
-    const un = (p, q) => G.appE('union', [p, q]), it = (p, q) => G.appE('inter', [p, q]);
-    const a = sv2('a'), b = sv2('b'), c = sv2('c'), x = sv2('x');
-    const inst3 = (h, p, q, r) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', h, F(p)), F(q)), F(r));
-    s.v('x', SET);
-    const mu = inst3('mem_union', x, b, c);            // x ∈ b∪c ↔ (x∈b ∨ x∈c)
-    const miL = inst3('mem_inter', x, a, un(b, c));    // x ∈ a∩(b∪c) ↔ (x∈a ∧ x∈b∪c)
-    const miB = inst3('mem_inter', x, a, b);           // x ∈ a∩b ↔ (x∈a ∧ x∈b)
-    const miC = inst3('mem_inter', x, a, c);           // x ∈ a∩c ↔ (x∈a ∧ x∈c)
-    const muR = inst3('mem_union', x, it(a, b), it(a, c));
-    // → : unfold, distribute, then repack each conjunction as a membership
-    const h1 = s.a(mem(x, it(a, un(b, c))));
-    const p1 = s.c("And.congr_right'", s.c('Iff.mp', miL, h1), mu);      // x∈a ∧ (x∈b ∨ x∈c)
-    const p2 = s.c("and_or_left'", p1);                                   // (x∈a∧x∈b) ∨ (x∈a∧x∈c)
-    const q1 = s.d(s.c('Iff.mpr', miB, s.a(AND(mem(x, a), mem(x, b)))), 1);
-    const q2 = s.d(s.c('Iff.mpr', miC, s.a(AND(mem(x, a), mem(x, c)))), 1);
-    const p3 = s.c("Or.imp'", p2, q1, q2);                                // x∈a∩b ∨ x∈a∩c
-    const fwd = s.d(s.c('Iff.mpr', muR, p3), 1);
-    // ← : the same journey backwards
-    const h2 = s.a(mem(x, un(it(a, b), it(a, c))));
-    const r1 = s.c('Iff.mp', muR, h2);
-    const r2 = s.d(s.c('Iff.mp', miB, s.a(mem(x, it(a, b)))), 1);
-    const r3 = s.d(s.c('Iff.mp', miC, s.a(mem(x, it(a, c)))), 1);
-    const r4 = s.c("Or.imp'", r1, r2, r3);                                // (x∈a∧x∈b) ∨ (x∈a∧x∈c)
-    const r5 = s.c('and_or_left_rev', r4);                                // x∈a ∧ (x∈b ∨ x∈c)
-    const r6 = s.c("And.congr_right'", r5, s.c("Iff.symm'", mu));         // x∈a ∧ x∈b∪c
-    const bwd = s.d(s.c('Iff.mpr', miL, r6), 1);
-    const all = s.d(s.c('Iff.intro', fwd, bwd), 1);
-    const extAt = s.c('universal_instantiation', s.c('universal_instantiation', 'ext', F(it(a, un(b, c)))), F(un(it(a, b), it(a, c))));
-    s.c('modus_ponens', extAt, all);
-  },
+  // 27.7: the dual capstone — ∪ over ∩.
+  '18.13': s => distribLaw(s, 'mem_union', 'mem_inter', "Or.congr_right'", "And.congr_left'", "And.congr_right'",
+    "or_and_left'", 'or_and_left_rev', (p, q) => G.appE('union', [p, q]), (p, q) => G.appE('inter', [p, q])),
+  // 27.4 distributivity: ∩ over ∪, the same proof as 18.13 with the two connectives exchanged.
+  '18.10': s => distribLaw(s, 'mem_inter', 'mem_union', "And.congr_right'", "Or.congr_left'", "Or.congr_right'",
+    "and_or_left'", 'and_or_left_rev', (p, q) => G.appE('inter', [p, q]), (p, q) => G.appE('union', [p, q])),
   // ---- Chapter 25: groups. The axioms are already on the bench; no exercise restates them. ----
   // 25.1: instantiate each hypothesis at the OTHER constant, then rewrite one equation with the other —
   // both say something about α · β, so rewriting that subterm turns `α · β = β` straight into `α = β`.
@@ -745,27 +733,23 @@ const SOL = {
     const e2 = s.c('universal_instantiation', 'hR', F(ga));   // α · β = α
     s.ce('rw', Eq(ga, gb), e1, e2);
   },
-  // 25.3 left cancellation: β = 1·β = (inv α·α)·β = inv α·(α·β) = inv α·(α·γ) = (inv α·α)·γ = 1·γ = γ.
-  // Each step is one rewrite; the backwards ones use Eq.symm' — an Ω lemma applied at G.
+  // 25.3 left cancellation. A RECORD (13, was 18): do not walk β all the way to γ along a chain of
+  // equalities. Associativity at inv α and α gives (inv α·α)·z = inv α·(α·z) for any z, so instantiate
+  // that ONE potion at β and at γ; the given turns the β side into inv α·(α·γ); inv α·α = 1 collapses
+  // both left-hand sides to 1·β and 1·γ; and 1·β = β, 1·γ = γ finish it. Five rewrites, no Eq.symm'.
   '19.3': s => {
-    const a = ga, b = gb, c = G.varE('γ', GRP);
-    const symm = (l, r, e) => s.c("Eq.symm'", F(l), F(r), e);
-    const assoc3 = (x, y, z) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', 'mul_assoc', F(x)), F(y)), F(z));
-    const inv_a = ginv(a);
-    const e1 = s.c('universal_instantiation', 'one_mul', F(b));                       // 1·β = β
-    const e2 = s.c('universal_instantiation', 'inv_mul', F(a));                       // inv α·α = 1
-    const e2s = symm(gmul(inv_a, a), g1, e2);                                         // 1 = inv α·α
-    const e3 = s.ce('rw', Eq(gmul(gmul(inv_a, a), b), b), e1, e2s);                   // (inv α·α)·β = β
-    const e4 = assoc3(inv_a, a, b);                                                   // (inv α·α)·β = inv α·(α·β)
-    const e5 = s.ce('rw', Eq(gmul(inv_a, gmul(a, b)), b), e3, e4);                    // inv α·(α·β) = β
-    const e6 = s.ce('rw', Eq(gmul(inv_a, gmul(a, c)), b), e5, 'h');                   // inv α·(α·γ) = β
-    const e7 = assoc3(inv_a, a, c);                                                   // (inv α·α)·γ = inv α·(α·γ)
-    const e7s = symm(gmul(gmul(inv_a, a), c), gmul(inv_a, gmul(a, c)), e7);           // inv α·(α·γ) = (inv α·α)·γ
-    const e8 = s.ce('rw', Eq(gmul(gmul(inv_a, a), c), b), e6, e7s);                   // (inv α·α)·γ = β
-    const e9 = s.ce('rw', Eq(gmul(g1, c), b), e8, e2);                                // 1·γ = β
-    const e10 = s.c('universal_instantiation', 'one_mul', F(c));                      // 1·γ = γ
-    const e11 = s.ce('rw', Eq(c, b), e9, e10);                                        // γ = β
-    symm(c, b, e11);                                                                  // β = γ
+    const a = ga, b = gb, c = G.varE('γ', GRP), ia = ginv(a);
+    const at = (h, t) => s.c('universal_instantiation', h, F(t));
+    const as2 = at(at('mul_assoc', ia), a);                               // ∀ z, (inv α·α)·z = inv α·(α·z)
+    const e1 = at(as2, b);                                                // (inv α·α)·β = inv α·(α·β)
+    const e2 = s.ce('rw', Eq(gmul(gmul(ia, a), b), gmul(ia, gmul(a, c))), e1, 'h');
+    const u = at('inv_mul', a);                                           // inv α·α = 1
+    const e3 = s.ce('rw', Eq(gmul(g1, b), gmul(ia, gmul(a, c))), e2, u);  // 1·β = inv α·(α·γ)
+    const f1 = at(as2, c);                                                // (inv α·α)·γ = inv α·(α·γ)
+    const f2 = s.ce('rw', Eq(gmul(g1, c), gmul(ia, gmul(a, c))), f1, u);  // 1·γ = inv α·(α·γ)
+    const f3 = s.ce('rw', Eq(gmul(ia, gmul(a, c)), c), at('one_mul', c), f2);   // inv α·(α·γ) = γ
+    const g2 = s.ce('rw', Eq(b, gmul(ia, gmul(a, c))), e3, at('one_mul', b));   // β = inv α·(α·γ)
+    s.ce('rw', Eq(b, c), g2, f3);
   },
   // 25.4 involution: α = 1·α = (inv(inv α)·inv α)·α = inv(inv α)·(inv α·α) = inv(inv α)·1 = inv(inv α)
   // A RECORD (5, was 12), and the largest cut any reader has sent: don't unfold the group — CANCEL. Both
@@ -779,25 +763,24 @@ const SOL = {
     const both = s.ce('rw', Eq(gmul(ia, iia), gmul(ia, ga)), e1, e2s);
     s.c("mul_left_cancel'", F(ia), F(iia), F(ga), both);
   },
-  // 25.5 inverse of a product: show (α·β)·(inv β·inv α) = 1, match it against (α·β)·inv(α·β) = 1, cancel
+  // 25.5 the inverse of a product. A RECORD (17, was 18): show that (α·β)·(inv β·inv α) = 1, which is
+  // also what (α·β)·inv (α·β) equals, and cancel α·β off the front with 19.3's lemma. Both halves of
+  // the ⋅ are built by instantiating ONE associativity potion twice, which is where the move comes from.
   '19.5': s => {
-    const a = ga, b = gb, ab = gmul(a, b), ia = ginv(a), ib = ginv(b), iab = ginv(ab), rhs = gmul(ib, ia);
-    const symm = (l, r, e) => s.c("Eq.symm'", F(l), F(r), e);
-    const assoc3 = (x, y, z) => s.c('universal_instantiation', s.c('universal_instantiation', s.c('universal_instantiation', 'mul_assoc', F(x)), F(y)), F(z));
-    const f1 = assoc3(a, b, rhs);                                                  // (α·β)·(ib·ia) = α·(β·(ib·ia))
-    const f2 = assoc3(b, ib, ia);                                                  // (β·ib)·ia = β·(ib·ia)
-    const f2s = symm(gmul(gmul(b, ib), ia), gmul(b, gmul(ib, ia)), f2);            // β·(ib·ia) = (β·ib)·ia
-    const f3 = s.ce('rw', Eq(gmul(ab, rhs), gmul(a, gmul(gmul(b, ib), ia))), f1, f2s);
-    const f4 = s.c('universal_instantiation', 'mul_inv', F(b));                    // β·ib = 1
-    const f5 = s.ce('rw', Eq(gmul(ab, rhs), gmul(a, gmul(g1, ia))), f3, f4);
-    const f6 = s.c('universal_instantiation', 'one_mul', F(ia));                   // 1·ia = ia
-    const f7 = s.ce('rw', Eq(gmul(ab, rhs), gmul(a, ia)), f5, f6);
-    const f8 = s.c('universal_instantiation', 'mul_inv', F(a));                    // α·ia = 1
-    const f9 = s.ce('rw', Eq(gmul(ab, rhs), g1), f7, f8);                          // (α·β)·(ib·ia) = 1
-    const h1 = s.c('universal_instantiation', 'mul_inv', F(ab));                   // (α·β)·inv(α·β) = 1
-    const f9s = symm(gmul(ab, rhs), g1, f9);                                       // 1 = (α·β)·(ib·ia)
-    const h2 = s.ce('rw', Eq(gmul(ab, iab), gmul(ab, rhs)), h1, f9s);
-    s.c("mul_left_cancel'", F(ab), F(iab), F(rhs), h2);                            // inv(α·β) = ib·ia
+    const a = ga, b = gb, ia = ginv(a), ib = ginv(b);
+    const at = (h, t) => s.c('universal_instantiation', h, F(t));
+    const asB = at(at(at('mul_assoc', b), ib), ia);                       // (β·inv β)·inv α = β·(inv β·inv α)
+    const bb = at('mul_inv', b);                                          // β·inv β = 1
+    const e1 = s.ce('rw', Eq(gmul(g1, ia), gmul(b, gmul(ib, ia))), asB, bb);
+    const e2 = s.ce('rw', Eq(ia, gmul(b, gmul(ib, ia))), e1, at('one_mul', ia));
+    const aa = at('mul_inv', a);                                          // α·inv α = 1
+    const e3 = s.ce('rw', Eq(gmul(a, gmul(b, gmul(ib, ia))), g1), aa, e2);
+    const asA = at(at(at('mul_assoc', a), b), gmul(ib, ia));              // (α·β)·(inv β·inv α) = α·(β·(inv β·inv α))
+    const e4 = s.ce('rw', Eq(gmul(gmul(a, b), gmul(ib, ia)), g1), asA, e3);
+    const prod = at('mul_inv', gmul(a, b));                               // (α·β)·inv (α·β) = 1
+    const e5 = s.c("Eq.symm'", F(gmul(gmul(a, b), gmul(ib, ia))), F(g1), e4);
+    const e6 = s.ce('rw', Eq(gmul(gmul(a, b), ginv(gmul(a, b))), gmul(gmul(a, b), gmul(ib, ia))), prod, e5);
+    s.c("mul_left_cancel'", F(gmul(a, b)), F(ginv(gmul(a, b))), F(gmul(ib, ia)), e6);
   },
   // 25.2: inv 1 · 1 is both inv 1 (by mul_one) and 1 (by inv_mul), so rewriting one into the other is enough
   '19.2': s => {
@@ -814,12 +797,13 @@ const SOL = {
   '18.5': s => { s.ce('rw', Eq(beta, alpha), s.c('Eq.refl', F(alpha)), 'hab'); },
   // 24.5 transitivity: rewrite β in `α = β` along `β = γ`
   '18.6': s => { s.ce('rw', Eq(alpha, gamma), 'hab', 'hbc'); },
-  // 24.6 congruence. A RECORD (5, was 8), and a lovely one: assume P(α) and discharge it at once, which
-  // costs two moves and buys P(α) → P(α). Now rewriting along α = β gives EITHER direction, depending on
-  // which occurrence of α you rewrite — so both halves of the ↔ come from that one implication, and the
-  // backwards direction never needs the equation flipped. Eq.symm' goes unused here.
+  // 24.6 congruence. A RECORD (4, was 5, and 8 before that). Rewriting along α = β gives EITHER
+  // direction depending on which occurrence of α you rewrite, so both halves of the ↔ come from one
+  // implication and Eq.symm' goes unused. That implication is P(α) → P(α), and Kantian's record gets it
+  // for nothing from `Impl.idem` instead of paying two moves to assume P(α) and discharge it — the same
+  // move that took a move off 7.13.
   '18.7': s => {
-    const refl = s.d(s.a(Pp(alpha)), 1);                                  // P(α) → P(α)
+    const refl = s.c('Impl.idem', F(Pp(alpha)));                          // P(α) → P(α)
     const fwd = s.ce('rw', IMPLIES(Pp(alpha), Pp(beta)), refl, 'hab');    // rewrite the α on the right
     const bwd = s.ce('rw', IMPLIES(Pp(beta), Pp(alpha)), refl, 'hab');    // and the one on the left
     s.c('Iff.intro', fwd, bwd);

@@ -1872,13 +1872,13 @@
     // 18.7: congruence as a ↔ — needs BOTH directions, so it reuses the minted Eq.symm' to rewrite backwards.
     { id: '18.7', kind: 'lemma', leanName: "Eq.congr_iff'", chapter: 18, sorts: [OMEGA], preds: [{ name: 'P', argSorts: [OMEGA], resultSort: PROP }], consts: [cO('α'), cO('β')], terms: [alpha, beta],
       givens: [binding('hab', eq(alpha, beta))], formulas: [appE('P', [alpha]), appE('P', [beta])],
-      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['18.5'], hint: "Assume P(α) and discharge it immediately: two moves, and what you hold is P(α) → P(α). Now rewriting along hab gives EITHER direction of the ↔, according to which occurrence of α you rewrite — so both halves come out of that one implication and the equation never has to be flipped. (Doing it with the Eq.symm' you have just proved costs three more, and is worth seeing once: a minted lemma asks for its constants as terms.)", needs: [] },
+      goal: IFF(appE('P', [alpha]), appE('P', [beta])), prereqs: ['18.5'], hint: "Rewriting along hab gives EITHER direction of the ↔, according to which occurrence of α you rewrite — so both halves come out of one implication, P(α) → P(α), and the equation never has to be flipped. Impl.idem hands you that implication for nothing. (Assuming P(α) and discharging it builds the same thing and costs a move more; doing it with the Eq.symm' you have just proved costs four more, and is worth seeing once: a minted lemma asks for its constants as terms.)", needs: [] },
     // SETS. Two sets are equal when they have the same members, so each law below
     // is the propositional law of Chapter 2 or 6, transported through membership by extensionality.
     { id: '18.8', kind: 'lemma', leanName: "union_comm'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
-      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), prereqs: ['6.2', '7.2', '7.3', '18.1'], hint: "Extensionality says two sets are equal when they have the same members. So fix an arbitrary x, unfold both sides with mem_union, bridge the two bodies with Or.symm' in each direction, chain the biconditionals, and hand the quantified result to ext.", needs: [] },
+      goal: appE('EQ', [sunion(sv2('a'), sv2('b')), sunion(sv2('b'), sv2('a'))]), prereqs: ['6.2', '7.2', '7.3', '18.1'], hint: "Extensionality says two sets are equal when they have the same members. So fix an arbitrary x, unfold both sides with mem_union, bridge the two bodies with Or.symm' in each direction, chain the biconditionals, and hand the quantified result to ext. One economy worth carrying through the rest of the chapter: mem_union is ∀ a, ∀ b, …, so feed it x ONCE and instantiate that potion twice over — starting again from the axiom for the second side costs a move every time.", needs: [] },
     { id: '18.9', kind: 'lemma', leanName: "inter_comm'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }], terms: [sv2('a'), sv2('b')],
       givens: [], formulas: [],
@@ -1889,14 +1889,14 @@
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sinter(sv2('a'), sunion(sv2('b'), sv2('c'))),
-                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), prereqs: ['6.5', '6.11', '6.12', '7.2', '7.9', '18.1'], hint: "The longest level in the game, and mechanical throughout: fix x, unfold every membership with mem_inter and mem_union, and what is left is the propositional distributive law from Chapter 6 — and_or_left' forwards, and_or_left_rev back. Then pack the memberships up again and apply ext.", needs: [] },
+                        sunion(sinter(sv2('a'), sv2('b')), sinter(sv2('a'), sv2('c')))]), prereqs: ['6.5', '6.11', '6.12', '7.2', '7.9', '18.1'], hint: "Fix x, unfold every membership with mem_inter and mem_union, and what is left is the propositional distributive law from Chapter 6 — and_or_left' forwards, and_or_left_rev back. Nothing here needs a sub-proof that unpacks a membership: Or.congr_left' and Or.congr_right' rewrite inside the disjunction where it stands. Then ext. (It was the longest level in the game at 48 moves until Kantian did it in 35, which is exactly the length of its dual 18.13.)", needs: [] },
     // 18.11–18.12: associativity, the same shape again — the bridge is Chapter 2/6's associativity, with the
     // left- and right-slot congruences (7.5/7.6, 7.9/7.10) reaching into whichever operand is unfolded.
     { id: '18.11', kind: 'lemma', leanName: "union_assoc'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
       goal: appE('EQ', [sunion(sunion(sv2('a'), sv2('b')), sv2('c')), sunion(sv2('a'), sunion(sv2('b'), sv2('c')))]),
-      prereqs: ['6.9', '7.2', '7.6', '7.10', '18.1'], hint: "Unfold the nested operand on each side, re-associate with the Chapter 6 lemma, and use Or.congr_left' and Or.congr_right' to reach into whichever operand was unfolded. Then ext.", needs: [] },
+      prereqs: ['6.9', '7.2', '7.6', '7.10', '18.1'], hint: "Unfold the nested operand on each side, re-associate with the Chapter 6 lemma, and use Or.congr_left' and Or.congr_right' to reach into whichever operand was unfolded. Then ext. Three of the four unfoldings are instantiations of mem_union at x and then at a, so instantiate those once and specialise.", needs: [] },
     { id: '18.12', kind: 'lemma', leanName: "inter_assoc'", chapter: 18, sorts: [SET],
       consts: [{ name: 'a', sort: SET }, { name: 'b', sort: SET }, { name: 'c', sort: SET }],
       terms: [sv2('a'), sv2('b'), sv2('c')], givens: [], formulas: [],
@@ -1929,7 +1929,7 @@
       consts: [{ name: 'α', sort: GRP }, { name: 'β', sort: GRP }, { name: 'γ', sort: GRP }],
       terms: [gv('α'), gv('β'), gv('γ')],
       givens: [binding('h', appE('EQ', [gmul(gv('α'), gv('β')), gmul(gv('α'), gv('γ'))]))],
-      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), prereqs: ['18.5', '19.1'], qed: '24.4', qedNote: 'the cancellation law; QED carries the group axioms as premises', hint: "What you want is to multiply h on the left by inv(α), and rewriting is how that is done: β = 1 · β = (inv(α) · α) · β = inv(α) · (α · β), then h, then back down the same ladder to γ. Eq.symm' turns an equation round whenever a rewrite needs it the other way.", needs: [] },
+      formulas: [], goal: appE('EQ', [gv('β'), gv('γ')]), prereqs: ['18.5', '19.1'], qed: '24.4', qedNote: 'the cancellation law; QED carries the group axioms as premises', hint: "Associativity at inv(α) and α says (inv(α) · α) · z = inv(α) · (α · z) for every z — so instantiate that one potion at β and at γ. The given rewrites the β one into … = inv(α) · (α · γ); inv(α) · α = 1 collapses both left-hand sides to 1 · β and 1 · γ; and one_mul finishes each. (Walking β up that ladder and back down it to γ, with Eq.symm' turning the equations round, also works and costs five more.)", needs: [] },
     // 19.4 (QED 24.6): the inverse is an involution. A pure chain of rewrites through the axioms.
     { id: '19.4', kind: 'lemma', leanName: "inv_inv'", chapter: 19, sorts: [GRP], consts: [{ name: 'α', sort: GRP }], terms: [gv('α')],
       givens: [], formulas: [], goal: appE('EQ', [ginv(ginv(gv('α'))), gv('α')]), prereqs: ['18.5', '19.1'], qed: '24.6', qedNote: 'the inverse is an involution; QED carries the group axioms as premises', hint: "Do not unfold the group — cancel. Both inv(α) · inv(inv(α)) and inv(α) · α are 1, so flip one of them with Eq.symm' and rewrite to put the two equations together; then mul_left_cancel' strikes the inv(α) off the front of both sides. Five brews. (The ladder α = 1 · α = (inv(inv(α)) · inv(α)) · α = … also works, and costs seven more.)", needs: [] },
@@ -1967,7 +1967,7 @@
     { id: '20.6', kind: 'lemma', leanName: "le_trans'", chapter: 20, sorts: [NAT],
       consts: [{ name: 'a', sort: NAT }, { name: 'b', sort: NAT }, { name: 'c', sort: NAT }], terms: [nv('a'), nv('b'), nv('c')],
       givens: [binding('hab', nle(nv('a'), nv('b'))), binding('hbc', nle(nv('b'), nv('c')))],
-      formulas: [], goal: nle(nv('a'), nv('c')), prereqs: ['20.4'], hint: 'Unfold both potions with le_def and obtain the two witnesses. Then a + (k + j) = c is one application of associativity away, and k + j is the witness for a ≤ c.', needs: [] },
+      formulas: [], goal: nle(nv('a'), nv('c')), prereqs: ['20.4'], hint: 'Unfold both potions with le_def and obtain the two witnesses. Then a + (k + j) = c is one application of associativity away, and k + j is the witness for a ≤ c. Note that le_def a serves twice — for a ≤ b and for the a ≤ c you are building — so instantiate it once.', needs: [] },
     // 20.7: the capstone. QED had to hand you the key fact as a hypothesis; here it is a theorem of the
     // module, and everything else in the proof is the player's own ≤ machinery.
     { id: '20.7', kind: 'example', chapter: 20, sorts: [NAT], terms: [nv('n')],
@@ -2220,9 +2220,9 @@
     '15.1': 1, '15.3': 1, '15.2': 3, '15.4': 2, '15.5': 10, '15.6': 6, '15.7': 4, '15.8': 9, '15.9': 7, '15.10': 9, '15.11': 4, '15.12': 5, '15.13': 5, '15.14': 14, '15.15': 5, '15.16': 4, '15.17': 8, '15.18': 8, '15.19': 8, '15.20': 5, '15.21': 19,
     '16.1': 4, '16.2': 7,
     '17.1': 3, '17.2': 1, '17.3': 1, '17.4': 1,
-    '18.1': 1, '18.3': 1, '18.2': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 5, '18.8': 17, '18.9': 17, '18.10': 48, '18.11': 34, '18.12': 34, '18.13': 40,
-    '19.1': 3, '19.2': 3, '19.3': 18, '19.4': 5, '19.5': 18,
-    '20.1': 8, '20.2': 17, '20.3': 19, '20.4': 22, '20.5': 7, '20.6': 19, '20.7': 5,
+    '18.1': 1, '18.3': 1, '18.2': 1, '18.4': 1, '18.5': 2, '18.6': 1, '18.7': 4, '18.8': 16, '18.9': 16, '18.10': 35, '18.11': 30, '18.12': 30, '18.13': 35,
+    '19.1': 3, '19.2': 3, '19.3': 13, '19.4': 5, '19.5': 17,
+    '20.1': 8, '20.2': 17, '20.3': 19, '20.4': 22, '20.5': 7, '20.6': 18, '20.7': 5,
   };
   function par(id) { return CANON[id] || null; }
   // Where a par came from somebody else. The scripted solutions are the author's; when a player finds a
@@ -2269,8 +2269,17 @@
     '15.18': { who: 'Kantian', date: '2026-11-18' },
     '15.19': { who: 'Kantian', date: '2026-11-18' },
     '15.20': { who: 'Kantian', date: '2026-11-18' },
-    '18.7': { who: 'Leaving Leaves', date: '2026-11-17' },
-    '19.4': { who: 'an anonymous reader', date: '2026-11-19' }
+    '18.7': { who: 'Kantian', date: '2026-11-24' },   // 4, off the 5 Leaving Leaves held
+    '18.8': { who: 'Kantian', date: '2026-11-24' },
+    '18.9': { who: 'Kantian', date: '2026-11-24' },
+    '18.10': { who: 'Kantian', date: '2026-11-24' },   // 35, off 48 — the largest cut in the game so far
+    '18.11': { who: 'Kantian', date: '2026-11-24' },   // 30: their 18.12 shape, two moves better than the ∪ proof they sent
+    '18.12': { who: 'Kantian', date: '2026-11-24' },
+    '18.13': { who: 'Kantian', date: '2026-11-24' },
+    '19.3': { who: 'Kantian', date: '2026-11-24' },
+    '19.4': { who: 'an anonymous reader', date: '2026-11-19' },
+    '19.5': { who: 'Kantian', date: '2026-11-24' },
+    '20.6': { who: 'Kantian', date: '2026-11-24' }
   };
   var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
                 'July', 'August', 'September', 'October', 'November', 'December'];
