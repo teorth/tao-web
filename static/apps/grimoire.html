@@ -203,6 +203,10 @@
     background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: .28rem .55rem; cursor: pointer; }
   #goal .record { display: block; margin-top: .5rem; padding: .45rem .6rem; font-size: .92rem; line-height: 1.5;
     color: var(--ink); background: color-mix(in srgb, #c08a2e 22%, transparent); border: 1px solid #c08a2e; border-radius: 6px; }
+  #goal .finale, #ach .finale { display: block; margin-top: .6rem; padding: .5rem .65rem; font-size: .92rem; line-height: 1.55;
+    color: var(--ink); background: color-mix(in srgb, #c08a2e 18%, transparent); border: 1px solid #c08a2e; border-radius: 6px; }
+  #ach .finale { margin: 0 0 .5rem; }
+  .wrap.fantasy #goal .finale strong:first-of-type { font-family: var(--fantasy-face); letter-spacing: .01em; }
   #goal .matched { color: var(--ok, #2c9c4a); font-weight: 600; }
   #goal .prov strong { font-weight: 600; color: var(--muted); }
 </style>
@@ -372,6 +376,11 @@
       the shape of the proof stays visible; an experienced Lean user would write most of these proofs in a
       line or two. To learn Lean properly, start with
       <a href="https://leanprover-community.github.io/learn.html">the Lean community's learning resources</a>.</p>
+    <p>If what you want is another game rather than a textbook, the
+      <a href="https://adam.math.hhu.de/">Lean Game Server</a> runs several — the
+      <strong>Natural Number Game</strong> is the usual place to start. They are played in real Lean, so
+      the kernel itself checks each step, and the tactics you type are the ones a Lean user really
+      writes.</p>
   </details>
 
   <details class="note" id="numbering">
@@ -687,6 +696,23 @@
   function formulaPool() { var pool = selFormulaExprs().slice(); state.sel.forEach(function (n) { var b = G.byName(state.env, n); if (b) pool.push(b.type); }); selTermExprs().concat(selGemExprs()).forEach(function (t) { pool.push(t); }); return pool.filter(inContext); }
   function formulaRecipeList() { return G.FORMULA_RECIPES.concat(G.predRecipes(state.ex)); }   // + this exercise's predicate constructors
 
+  // ---- the finale ----
+  // Everything else in the goal panel points at the next thing to do. When there is no next thing, say so,
+  // and point out of the game instead: the games on the Lean Game Server are the same shape as this one and
+  // are played in real Lean, which is the honest place to send someone who has finished here.
+  var GAMES = 'https://adam.math.hhu.de/';
+  function allSolved() { return G.EXERCISES.every(function (e) { return state.solved[e.id]; }); }
+  function finaleHTML() {
+    var n = G.EXERCISES.length;
+    return '<div class="finale">' + (state.fantasy
+      ? '🏆 <strong>The grimoire is complete.</strong> Every one of the ' + n + ' spells, brewed.'
+      : '🏆 <strong>Every exercise solved</strong> — all ' + n + ' of them.')
+      + ' Thank you for playing.<br>'
+      + 'If you would like more games of this kind, the <a href="' + GAMES + '">Lean Game Server</a> runs'
+      + ' several — the <strong>Natural Number Game</strong> is where most people start. Those are played'
+      + ' in real Lean, with the kernel itself checking each step rather than the imitation of it here.</div>';
+  }
+
   // ---- render: goal ----
   function rootEnv() { var e = state.env; while (e.parent) e = e.parent; return e; }
   function assumptionChain() { var out = [], e = state.env; while (e.parent) { out.unshift(e.assumption); e = e.parent; } return out; }
@@ -777,7 +803,9 @@
     var main = solved
       ? '✔ <strong class="qed">QED!</strong> You ' + T('qed') + ' <span class="ty big">' + esc(R(root.goal)) + '</span> in ' + len + ' move' + (len === 1 ? '' : 's') + '.' + verdict + unlock + exUnlock
       : T('craft') + ' <span class="ty big">' + esc(R(root.goal)) + '</span>';
-    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + hint + score + prov;
+    // with everything solved there is no next level to offer, so the panel congratulates instead
+    var fin = solved && allSolved() ? finaleHTML() : '';
+    el.goal.innerHTML = badge + givens + '<div>' + main + '</div>' + hint + score + prov + fin;
     // once solved, offer the next thing to do right where the player is looking (appended as a real
     // element, not markup, so it carries its own handler)
     if (solved) {
@@ -1206,7 +1234,12 @@
       ? '<div><strong>Against the shortest proofs known:</strong> ' + matched + ' matched'
         + (records ? ', <strong>' + records + ' beaten 🏆</strong>' : '') + '</div>'
       : '';
-    el.ach.innerHTML =
+    var done = allSolved()
+      ? '<div class="finale">🏆 <strong>All ' + G.EXERCISES.length + ' solved.</strong> For more games of'
+        + ' this kind, see the <a href="' + GAMES + '">Lean Game Server</a> — start with the Natural Number'
+        + ' Game, played in real Lean.</div>'
+      : '';
+    el.ach.innerHTML = done +
       '<div><strong>Exercises solved:</strong> ' + (solved.length ? solved.sort().map(esc).join(', ') : '—') + '</div>' + standing +
       '<div><strong>Recipes unlocked:</strong> ' + (recipes.length ? recipes.map(function (r) { return '<code>' + esc(r) + '</code>'; }).join(', ') : '—') + '</div>';
   }

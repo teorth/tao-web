@@ -1517,5 +1517,35 @@ A.loadExercise('17.2');
 
 A.setCheat(false);
 
+// ---------- the finale ----------
+// Finishing every level is the one state the goal panel has nothing to point at: `nextUnsolved()` is
+// null, so the "next quest" button is absent and the panel would just stop. It congratulates instead,
+// and recommends the Lean Game Server (TT, 2026-11-26), which is where someone who has finished this
+// game should go next -- those are played in real Lean. The section above left every level solved.
+(function () {
+  G.EXERCISES.forEach(function (ex) { A.state.solved[ex.id] = true; });
+  A.loadExercise('1.1');
+  A.doCraft('And.intro', ['hA', 'hB']);
+  A.doCraft('And.intro', ['hAB', 'hC']);
+  var g = get('goal').innerHTML;
+  ok(/QED/.test(g), 'the finale needs a solved board to sit under');
+  ok(/class="finale"/.test(g), 'with every level solved, the goal panel carries the finale');
+  ok(g.indexOf('adam.math.hhu.de') > 0 && /Natural Number Game/.test(g),
+     'which recommends the Lean Game Server, and names the game to start with');
+  ok(g.indexOf('' + G.EXERCISES.length) > 0, 'and counts the levels rather than hard-coding how many there are');
+  ok(!/gonext/.test(g), 'and there is no next quest to offer');
+  // the achievements panel keeps it, so it is not a one-off a player can scroll past
+  ok(/class="finale"/.test(get('ach').innerHTML) && get('ach').innerHTML.indexOf('adam.math.hhu.de') > 0,
+     'the achievements panel carries it too');
+  // one level short of the lot, and none of that appears
+  delete A.state.solved['20.7'];
+  A.loadExercise('1.1');
+  A.doCraft('And.intro', ['hA', 'hB']);
+  A.doCraft('And.intro', ['hAB', 'hC']);
+  ok(/QED/.test(get('goal').innerHTML) && !/class="finale"/.test(get('goal').innerHTML),
+     'one level short of the set, a solved board says nothing about finishing');
+  ok(!/class="finale"/.test(get('ach').innerHTML), 'and the achievements panel does not either');
+})();
+
 console.log(pass + ' passed, ' + fail + ' failed');
 process.exit(fail ? 1 : 0);
