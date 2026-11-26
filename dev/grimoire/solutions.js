@@ -236,15 +236,16 @@ const SOL = {
     const iAC = s.d(p2, 1);
     s.c("Or.elim'", 'hABC', iAB, iAC);
   },
-  // A RECORD (13, was 15): the same two nested case splits, but each one closed with the minted Or.elim'
-  // in a single move instead of case_analysis followed by modus ponens.
+  // A RECORD (12, was 13, and 15 before that): the B case does not split A ∨ C a second time. Under B,
+  // assume C as well and pair them, then discharge only the C level — what you hold is C → (B ∧ C), and
+  // `Or.imp_right'` improves the A ∨ C already in hand with it. One assumption more, one case split less.
   '6.13': s => {
-    const hab = s.c('And.left', 'hABC');
-    const hac = s.c('And.right', 'hABC');
-    s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(AND(B, C))), 1);
-    const hb = s.a(B);
-    s.a(C); const bc = s.c('And.intro', hb, 'hC'); const iC = s.d(s.c('Or.inr', bc, F(A)), 1);
-    const iB = s.d(s.c("Or.elim'", hac, iA, iC), 1);
+    const hab = s.c('And.left', 'hABC');                     // A ∨ B
+    const hac = s.c('And.right', 'hABC');                    // A ∨ C
+    s.a(A); const iA = s.d(s.c('Or.inl', 'hA', F(AND(B, C))), 1);   // A → (A ∨ (B ∧ C))
+    const hb = s.a(B); s.a(C);
+    const cbc = s.d(s.c('And.intro', hb, 'hC'), 1);          // C → (B ∧ C)
+    const iB = s.d(s.c("Or.imp_right'", hac, cbc), 1);       // B → (A ∨ (B ∧ C))
     s.c("Or.elim'", hab, iA, iB);
   },
   '7.1': s => { s.c('Iff.mp', 'hAB', 'hA'); },

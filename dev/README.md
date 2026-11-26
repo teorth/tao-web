@@ -71,7 +71,7 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-24: core 4989, smoke 482.** (A record moves this number by a hair on its own: one of the
+why the counts are written down here and in the commit that moves them. **As of 2026-11-25: core 4986, smoke 482.** (A record moves this number by a hair on its own: one of the
 assertions is "the hint names a real recipe", once per recipe a hint mentions, so rewriting a hint shifts it.
 The signal is a FALL of more than that, and the real check is a diff of the section headers.)
 
