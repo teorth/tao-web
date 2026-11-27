@@ -226,15 +226,16 @@ const SOL = {
     s.a(C); const iC = s.d(s.c('And.intro', ha, 'hC'), 1);   // C → A ∧ C
     s.c("Or.imp'", hbc, iB, iC);
   },
-  // A RECORD (13, was 14): Or.elim' in place of case_analysis + modus ponens.
+  // A RECORD (9, was 13, and 14 before that): neither disjunct is taken apart. B → (B ∨ C) lifts to
+  // (A ∧ B) → (A ∧ (B ∨ C)) in one brew with `And.mono_right'`, which carries the untouched A along, and
+  // C → (B ∨ C) lifts the same way — so the two cases cost two tiny sub-proofs and two brews between them.
+  // The same idea as Kantian's 6.8, with ∧ and ∨ the other way round.
   '6.12': s => {
-    const hab = s.a(AND(A, B));
-    const p1 = s.c('And.intro', s.c('And.left', hab), s.c('Or.inl', s.c('And.right', hab), F(C)));
-    const iAB = s.d(p1, 1);
-    const hac = s.a(AND(A, C));
-    const p2 = s.c('And.intro', s.c('And.left', hac), s.c('Or.inr', s.c('And.right', hac), F(B)));
-    const iAC = s.d(p2, 1);
-    s.c("Or.elim'", 'hABC', iAB, iAC);
+    s.a(B); const iB = s.d(s.c('Or.inl', 'hB', F(C)), 1);              // B → (B ∨ C)
+    const left = s.c("And.mono_right'", iB, F(A));                     // (A ∧ B) → (A ∧ (B ∨ C))
+    s.a(C); const iC = s.d(s.c('Or.inr', 'hC', F(B)), 1);              // C → (B ∨ C)
+    const right = s.c("And.mono_right'", iC, F(A));                    // (A ∧ C) → (A ∧ (B ∨ C))
+    s.c("Or.elim'", 'hABC', left, right);
   },
   // A RECORD (12, was 13, and 15 before that): the B case does not split A ∨ C a second time. Under B,
   // assume C as well and pair them, then discharge only the C level — what you hold is C → (B ∧ C), and

@@ -71,7 +71,7 @@ reported 4747/353. They were spliced back on 2026-11-17 and all of them passed a
 engine unchanged — the drift really had been additive — giving **core 4752, smoke 371**.
 
 So: **if either number falls, something was dropped.** That is the whole early-warning system, which is
-why the counts are written down here and in the commit that moves them. **As of 2026-11-26: core 4986, smoke 490.** (A record moves this number by a hair on its own: one of the
+why the counts are written down here and in the commit that moves them. **As of 2026-11-27: core 4985, smoke 490.** (A record moves this number by a hair on its own: one of the
 assertions is "the hint names a real recipe", once per recipe a hint mentions, so rewriting a hint shifts it.
 The signal is a FALL of more than that, and the real check is a diff of the section headers.)
 
@@ -144,6 +144,13 @@ suites.
 
 A proof exported before 2026-11-16 carries no replay line, and has to be read and scripted by hand, as
 the first twenty records were. Asking the reader to press Copy again is usually quicker.
+
+**Where to look for them (2026-11-27).** The rendered comment page is served from a cache that can be
+days behind: `comment-page-2/` showed nothing newer than 24 November while two comments from the 26th and
+27th were already live. The post's **comment feed** —
+`https://terrytao.wordpress.com/2026/11/11/lean-grimoire/feed/` — is not cached that way and carries the
+last ten comments with their bodies, so that is what to read. One wrinkle: the feed escapes each comment's
+own markup inside the CDATA, so unescape before stripping tags, or the `<br />`s survive as text.
 
 The line itself is **v2** since 2026-11-21: the moves as s-expressions rather than base64'd JSON, about
 four times shorter and legible, because a reader with a shorter 18.10 could not post the export at all —
